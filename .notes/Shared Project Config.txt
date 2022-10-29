@@ -1,0 +1,78 @@
+
+usage of shared projects
+
+Revit library:
+include: 
+ShExStorageC
+ShExStorageN
+ShExStorageR
+ShStudy
+
+Non-Revit / Windows App:
+include: 
+ShExStorageC
+ShExStorageN
+ShStudy
+
+
+description of shared projects
+
+ShExStorageC
+* shared code used to create and process schemas - app specific
+* expectation: to ge copied, as is, from project to project
+* contains revit specific code
+* contains app specific code
+* schema field stuff goes here:
+	> ShSchemaFields
+* schema data stuff goes here:
+	> ShSchemaData
+* ex storage stuff goes here
+	> ShExStorage
+
+
+ShExStorageN
+* shared code used to process schemas - not revit specific
+* expectation: to be copied, as is, from project to project
+* must be kept non-revit specific - this allows the creation of non-revit / window apps for testing
+* must be kept non-app specific
+* schema field stuff goes here:
+	> ShSchemaFields
+* schema data stuff goes here:
+	> ShSchemaData
+* ex storage stuff goes here
+	> ShExStorage
+
+
+ShExStorageR
+* shared code used to process schemas - with revit specific
+* expectation: to be copied, as is, from project to project
+* contains revit specific code
+* must be kept non-app specific
+* schema field stuff goes here:
+	> ShSchemaFields
+* schema data stuff goes here:
+	> ShSchemaData
+* ex storage stuff goes here
+	> ShExStorage
+
+
+ShStudy
+* shared code for debugging code
+* expectation: everything gets eliminated in a release project
+* must be kept non-revit specific
+* must be kept non-app specific
+
+
+
+
+
+// may not need the below or may need to extract
+
+SharedApp (not being used)
+* template for a shared app
+
+
+SharedCode  (not beint used)
+* some general routines
+* some revit helpers
+* some test & show routines

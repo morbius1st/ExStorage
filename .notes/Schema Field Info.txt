@@ -1,0 +1,131 @@
+﻿classes
+
+* ScFieldSupport		/ support information & enums
+	> enum for schema type
+	> enums for Keys  (TKey)  / one per lock / table / row
+	> enum update rules		/ keep here?
+	> enum bool opts		/ keep here?
+	> enum for field display level	/ purpose? / keep here?
+	> format types			/ here or separate?
+* IScField<TKey>					/ interface that defines the components of a field
+* voided	* AScField				/ abstract class, implements IScField / setups up base field members
+* voided	* AScFieldsDef			/ abstract class that is the basis for
+* ScFieldDef<TKey>  (* schemafieldkey -> lock / table / row) / implementation of IScField<>
+
+* ShScFields<TKey>		/ abstract class that holds the collection of fields
+* ScFields	/ Lock / Table / Row	/ the concrete implementation of ShScFields<>
+* ScFields the storage for all of the Schema Fields
+	> has static access
+
+
+three schemas
+
+* lock
+	* the schema that defines the lock semephore
+	* contains data used to identify the lock
+
+*  table
+	* the schema that has the defined name and can be found
+	* contains data that is used to find the remaining information
+	* contains management information (name, description, date created, etc.)
+	* contains one or more row(s) as sub-schema
+
+*  row
+	* data about each row
+
+
+
+* schema field
+	* one field is composed of field definition mebers
+
+* schema field definition members
+	> provides information about a single schema field
+	> name: FieldDefinition
+	* key			/ string
+	* name			/ string
+	* sequence		/ string
+	* description	/ string
+	* format code	/ string
+
+* enum to access the various definitions
+	> used as the key for the field definitions
+	> used as the key for the actual data
+	> equals an integer that is the key to the field
+	> for shet schema
+		> name: ExTableKey
+		> Starts at 200
+		> example names:
+		* RK_FIELD_NAME 200 + 0
+		* RK_DESCRIPTION 200 + 1
+		* etc
+	> for row schema
+		> name: ExcelKey
+		> starts at 300
+		> example names:
+		* CK_FIELD_NAME 300+0
+		* CK_DESCRIPTION 300+1
+	> for lock schema
+		> name: ExLockKey
+		> starts at 100
+		> Example names:
+		* LK_FIELD_NAME 100+0
+		* LK_DESCRIPTION 100+1
+
+* one class to hold / manage the schema fields
+	> access via static object
+	> name: FieldsManager
+	> holds the one copy of
+	* TableFields
+	* RowFields
+	* LockFields
+
+* abstract class to create several field definitions to describe the actual fields in a schema
+	> each item describes a single schema field
+	> abstract class name: ASchemaFields<TE> where TE is enum
+	> includes / incorporates / dictates (4) fields required in each schema
+	* name, description, version, date
+		> name will be used in the ui
+		> needs to be worded to all multiple types of usage
+		> such as:
+		* enter text for {name}
+		* current text of {name} is:
+
+
+* concrete lock field schema class
+	> describes the actual fields for the lock schema
+	> name: FieldsLock
+	> actual fields:
+		* (4) standard fields: name, description, version, date
+			> date is the last modification date (creation date at first)
+		* User_Name		/ string		/ name of the user that created the lock
+		* Machine_Name	/ string		/ the name of the machine that created the lock
+		* GUID			/ string		/ GUID for the lock (fixed & preset)
+
+* concrete table field schema class
+	> describes the actual fields for the table schema
+	> name: FieldsTable
+	> actual fields:
+		* (4) standard fields: name, description, version, date
+			> date is the last modification date (creation date at first)
+		* Developer		/ string		/ name of the developer
+		* GUID			/ string		/ schema GUID (required)
+	> permissions:
+		* can be read
+		* cannot be written
+
+* concrete row field schema class
+	> describes the actual fields for the table schema
+	> name: FieldsRow
+	> actual fields:
+		* (4) standard fields: name, description, version, date
+			> date is the last modification date (creation date at first)
+		* Sequence			/ string		/ the update order (and will be sorted per this)
+		* Update_Rule		/ string?		/ when / how to update this entry (e.g. never, as_needed, upon_request, etc.)
+		* Row_Family_Name	/ string		/ the name of the associated revit family
+		* Skip				/ bool			/ process / do not process this entry
+		* XL_File_Path		/ string		/ the absolute path to the excel worksheet
+		* XL_Worksheet_Name	/ string		/ the name of the worksheet witin the excel file
+	> permissions:
+		* can be read
+		* cannot be written
+

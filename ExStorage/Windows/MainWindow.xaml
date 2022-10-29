@@ -1,0 +1,358 @@
+﻿<Window
+		x:Class="ExStorage.Windows.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:local="clr-namespace:ExStorage.Windows"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		xmlns:awin="clr-namespace:SharedApp.Windows.ShSupport"
+		xmlns:resLocal="clr-namespace:ExStorage.Properties"
+		xmlns:resShared="clr-namespace:SharedApp.Windows.ShResources"
+		xmlns:supportShared="clr-namespace:SharedApp.Windows.ShSupport"
+		Title="Main Window"
+		Width="1000"
+		Height="650"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		mc:Ignorable="d"
+		Background="{DynamicResource Normal.Window.Background}"
+		Foreground="White"
+		SnapsToDevicePixels="True"
+>
+
+	<Window.Resources>
+
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="SharedSupport/MasterColorList.xaml" />
+				<ResourceDictionary Source="SharedSupport/VisualStates.xaml" />
+				<ResourceDictionary Source="SharedSupport/CsScrollViewer.xaml" />
+				<ResourceDictionary Source="SharedSupport/CsScrollBar.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+
+			<sys:Double x:Key="BtnHeight">28.0</sys:Double>
+			<sys:Double x:Key="BtnWidth">110.0</sys:Double>
+
+			<Style x:Key="BtnBaseStyle"
+					TargetType="Button"
+					BasedOn="{StaticResource Button.Normal.Style}"
+					>
+				<Setter Property="Height" Value="{StaticResource BtnHeight}" />
+				<Setter Property="Width" Value="{StaticResource BtnWidth}" />
+			</Style>
+
+			<Style x:Key="BtnBottomRow"
+					TargetType="Button"
+					BasedOn="{StaticResource BtnBaseStyle}"
+					>
+				<Setter Property="Margin" Value="3,0,3,0" />
+			</Style>
+
+			<Style x:Key="BtnOps"
+					TargetType="Button"
+					BasedOn="{StaticResource BtnBaseStyle}"
+					>
+				<Setter Property="Margin" Value="0,2,0,0" />
+			</Style>
+
+			<Style x:Key="BdrStkPnl"
+					TargetType="Border"
+					>
+				<Setter Property="BorderBrush" Value="White" />
+				<Setter Property="BorderThickness" Value="0,0.5,0,0.5" />
+				<Setter Property="Margin" Value="3,0,3,0" />
+			</Style>
+
+			<Style x:Key="BdrTxBlkHdr"
+					TargetType="Border"
+					>
+				<Setter Property="Padding" Value="0,1,0,2" />
+				<Setter Property="BorderBrush" Value="White" />
+				<Setter Property="BorderThickness" Value="0,0,0,0.5" />
+			</Style>
+			<Style x:Key="FocusVisual">
+				<Setter Property="Control.Template">
+					<Setter.Value>
+						<ControlTemplate>
+							<Rectangle
+									Margin="2"
+									StrokeDashArray="1 2"
+									SnapsToDevicePixels="true"
+									StrokeThickness="1"
+									Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+									/>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+
+			<Style x:Key="TblkStackedBtn" TargetType="TextBlock">
+				<Setter Property="FontSize" Value="12"/>
+				<Setter Property="Margin" Value="0"/>
+				<Setter Property="Padding" Value="0"/>
+				<Setter Property="HorizontalAlignment" Value="Center"/>
+
+			</Style>
+
+		</ResourceDictionary>
+
+	</Window.Resources>
+
+	<Grid Margin="3">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="116" />
+			<ColumnDefinition Width="116" />
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="80" />
+			<RowDefinition />
+			<RowDefinition Height="50" />
+		</Grid.RowDefinitions>
+
+		<StackPanel
+				Grid.Column="0"
+				Grid.Row="0"
+				Orientation="Vertical"
+				>
+
+			<DockPanel HorizontalAlignment="Stretch">
+				<TextBlock
+						Width="120"
+						HorizontalAlignment="Left"
+						DockPanel.Dock="Left"
+						Text="local string resx|"
+						/>
+				<TextBlock
+						HorizontalAlignment="Stretch"
+						Text="{x:Static resLocal:Resources.WhoAmI}"
+						/>
+			</DockPanel>
+
+			<DockPanel HorizontalAlignment="Stretch">
+				<TextBlock
+						Width="120"
+						HorizontalAlignment="Left"
+						DockPanel.Dock="Left"
+						Text="shared string resx|"
+						/>
+				<TextBlock
+						HorizontalAlignment="Stretch"
+						Text="{x:Static resShared:ShStrings.WhoAmI}"
+						/>
+			</DockPanel>
+
+
+
+		</StackPanel>
+
+		<TextBox
+				Grid.Column="0"
+				Grid.Row="1"
+				
+				Margin="0,0,2,0"
+				FontFamily="Consolas"
+				Background="Transparent"
+				Foreground="White"
+				BorderThickness="0"
+				Text="{Binding MessageBoxText,
+											 Mode=OneWay}"
+				VerticalScrollBarVisibility="Visible"
+				HorizontalScrollBarVisibility="Visible"
+				>
+
+			<TextBox.Resources>
+
+				<Style TargetType="{x:Type ScrollViewer}">
+					<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
+					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonLength" Value="10" />
+					<Setter Property="supportShared:CsScrollBarAp.ScrollBarWidth" Value="4" />
+					<Setter Property="supportShared:CsScrollBarAp.TrackWidth" Value="4" />
+					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconGirth" Value="8" />
+					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconLength" Value="10" />
+					<Setter Property="supportShared:CsScrollBarAp.VertBorderThickness" Value="1,0,0,0" />
+					<Setter Property="supportShared:CsScrollBarAp.VertBorderColor">
+						<Setter.Value>
+							<SolidColorBrush Color="{StaticResource Blue.350}" />
+						</Setter.Value>
+					</Setter>
+					<Setter Property="supportShared:CsScrollBarAp.HorizBorderThickness" Value="0,1,0,0" />
+					<Setter Property="supportShared:CsScrollBarAp.HorizBorderColor">
+						<Setter.Value>
+							<SolidColorBrush Color="{StaticResource Blue.350}" />
+						</Setter.Value>
+					</Setter>
+
+					<Setter Property="supportShared:CsScrollViewerAp.CornerRectBkgBrush">
+						<Setter.Value>
+							<SolidColorBrush Color="{StaticResource Gray.150}" />
+						</Setter.Value>
+					</Setter>
+
+					<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrThickness" Value="1,1,0,0" />
+					<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrBrush">
+						<Setter.Value>
+							<SolidColorBrush Color="{StaticResource Blue.350}" />
+						</Setter.Value>
+					</Setter>
+
+
+				</Style>
+
+			</TextBox.Resources>
+
+		</TextBox>
+
+		<StackPanel
+				Grid.Column="0"
+				Grid.Row="2"
+				Grid.ColumnSpan="3"
+				HorizontalAlignment="Right"
+				Orientation="Horizontal"
+				>
+
+			<!--  <Button x:Name="BtnExit2"  -->
+			<!--  Content="Exit 2"  -->
+			<!--  Style="{StaticResource BtnBottomRow}"  -->
+			<!--  />  -->
+
+			<Button x:Name="BtnExit"
+					Content="Exit"
+					Style="{DynamicResource BtnBottomRow}"
+					Click="BtnExit_OnClick"
+					/>
+
+		</StackPanel>
+
+		<Border
+				Grid.Column="1"
+				Grid.Row="0"
+				Grid.RowSpan="2"
+				Style="{StaticResource BdrStkPnl}"
+				>
+			<StackPanel
+					VerticalAlignment="Top"
+					Orientation="Vertical"
+					>
+
+				<Border Style="{StaticResource BdrTxBlkHdr}">
+					<TextBlock
+							Foreground="White"
+							TextAlignment="Center"
+							Text="Show Info"
+							/>
+				</Border>
+
+				<Button x:Name="BtnShowExid"
+						Content="Show Exid"
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowExid_OnClick"
+				/>
+
+
+				<!-- removed
+
+				<Button x:Name="BtnShow01"
+						Content="Show Fn11"
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowFn11_OnClick"
+						/>
+
+				<Button
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowFn12_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock 
+									Style="{StaticResource TblkStackedBtn}"
+									Margin="0,-2,0,-2"
+									Text="Show Fn12" />
+							<TextBlock 
+									Style="{StaticResource TblkStackedBtn}"
+									Text="(All DS)" />
+						</StackPanel>
+					</Button.Content>
+				</Button>
+		-->
+
+
+			</StackPanel>
+		</Border>
+
+		<Border
+				Grid.Column="2"
+				Grid.Row="0"
+				Grid.RowSpan="2"
+				Style="{StaticResource BdrStkPnl}"
+				>
+			<StackPanel
+					VerticalAlignment="Top"
+					Orientation="Vertical"
+					>
+
+				<Border Style="{StaticResource BdrTxBlkHdr}">
+					<TextBlock
+							Foreground="White"
+							TextAlignment="Center"
+							Text="Tests"
+							/>
+				</Border>
+
+				<Button x:Name="BtnTest01"
+						Content="1) Find All Ds"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestFindAllDs1_OnClick"
+						/>
+
+				<Button x:Name="BtnTest02"
+						Content="2) Find Schemas"
+						Style="{StaticResource BtnOps}"
+						Click="BtnGetSchemaByName2_OnClick"
+						/>
+
+				<Button x:Name="BtnTest03"
+						Content="3) Find Ds by Name"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestFindDsByName3_OnClick"
+						/>
+
+				<Button x:Name="BtnTest04"
+						Content="4) Delete Ds by Name"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestDeleteDsByName4_OnClick"
+						/>
+
+				<Button x:Name="BtnTest05"
+						Content="5) Get Ds Entity"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestGetDsEntity5_OnClick"
+						/>
+
+				<Button x:Name="BtnTest06"
+						Content="6) Get Entity Data"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestGetEntityData6_OnClick"
+						/>
+
+				<Button x:Name="BtnTest07"
+						Content="7) Ds Exists?"
+						Style="{StaticResource BtnOps}"
+						Click="BtnTestDoesDsExist7_OnClick"
+						/>
+
+				<Button x:Name="BtnTest08"
+						Content="8) Begin Ph 1"
+						Style="{StaticResource BtnOps}"
+						Click="BtnBegin8_OnClick"
+						/>
+
+
+			</StackPanel>
+		</Border>
+
+	</Grid>
+
+</Window>

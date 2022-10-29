@@ -1,0 +1,121 @@
+﻿
+storage system 1
+
+N		0: IScField			0: IScData
+			|					|
+			v					v
+N		1: ScFieldDef		1: ScDataDef
+
+
+N		0: ShScFieldBase
+			|	+-> Dictionary<SchemaRowKey, ScFieldDef<SchemaRowKey>> fields
+			|	+-> Dictionary<SchemaRowKey, ScDataDef<SchemaRowKey>> data
+			|
+			v
+C		1: ScRowBase   (ScLockBase // ScTableBase)
+			|
+			+--------------------------------+
+			|                                |
+			v                                v
+C		3: ScRowFieldss                   3: ScRowData
+				ScLockFields					ScLockData
+				ScTableFields					ScTableData
+
+
+
+storage system 2
+
+N	0: IShScFieldBase<Tkey>
+		Dictionary<SchemaRowKey, ScFieldDef<SchemaRowKey>> fields
+
+N	1: AShScFields<Tkey>			1: AShScData<Tkey>
+										v
+										create concrete <- input field data
+	    +-------------------------------+
+		v								v
+C	2: ScFields2					2: ScData2
+
+
+
+field : a class that holds a group of data that describes a single entry in yyy
+fields : a collection of xxx's that describes a single subject zzz
+info : a subject, one of two, that holds the actual information
+meta : holds the meta information and, 
+data : holds the live information
+
+
+modify system 1:
+1. eliminate N/ShScFieldBase
+2. create N/IShScFields 
+	-> has only (1) dictionary
+	-> needs routines to add to dictionary
+	-> needs routines to create schema (move the abstract class)
+
+
+
+storage system 1
+
+N		-1: IShScFieldBase
+			+-------------------+
+			v                   v
+N		0: IShScFieldMeta	   0: IShScFieldData
+			|					   |
+			v					   v
+N		1: ShScFieldDefMeta	   1: ShScFieldDefData
+
+
+N		0: IShScInfoBase<Tkey, Tdata>
+			|	+-> dictionary
+
+N		1: AShScInfoBase : IShScInfoBase<> 
+			|   +-> add, etc.
+			+-------------------------------+
+			v                               v
+C		3: ScMetaTable (static)          3: ScDataRow
+			ScMetaLock (static)				ScDataLock
+			ScMetaTable (static) 			ScDataTable
+
+
+to add information:
+
+C		ScInfoFactory
+			+-> CreateTable() / CreateRow() / Create Lock()
+				+-> (out MetaTable, out DataTable) - etc.
+
+
+
+
+
+abstract ShScFieldBase<TKey, TX>   where TKey is schemafieldkey / where tx will be the complete list of fields
+
+abstract ScRowBase  : ShScFieldBase<SchemaRowKey>
+* add fields            to field     to data
+	> key                  x            x
+	> name                 x
+	> desc                 x
+	> value                x            x
+	> ModelPath            x            x
+	> ModelName            x            x
+	> Version              x
+	> UserName             x            x
+	> ModifyDate           x            x
+	> Sequence             x            x
+	> UpdateRule           x            x
+	> RowFamilyName       x            x
+	> Skip                 x            x
+	> XlFilePath           x            x
+	> XlWorksheet          x            x
+
+ScRowFieldBase
+* add fields
+
+
+abstract ScRowDataBase
+* add fields
+	
+	
+	
+ScFieldRow
+* Dictionary<SchemaRowKey, ScRowBase> RowFields => fields		// the list of fields
+* List<Dictionary<ScFieldColumns, string>> => ScFieldsValues		// list of field values for display
+* Add() to add the fields to the dictionary							// adds each field to the dictionary

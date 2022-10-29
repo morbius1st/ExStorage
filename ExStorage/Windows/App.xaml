@@ -1,0 +1,25 @@
+﻿<Application
+		x:Class="ExStorage.App"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:local="clr-namespace:ExStorage.Windows"
+		StartupUri="Windows/MainWindow.xaml"
+		>
+	<Application.Resources>
+
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="SharedResources/MasterColorList.xaml" />
+				<ResourceDictionary Source="SharedResources/VisualStates.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<Style x:Key="btnAppRes" TargetType="Button">
+				<Setter Property="Background" Value="PaleTurquoise"/>
+				<Setter Property="HorizontalAlignment" Value="Stretch"/>
+				<Setter Property="VerticalAlignment" Value="Stretch"/>
+			</Style>
+
+		</ResourceDictionary>
+
+	</Application.Resources>
+</Application>

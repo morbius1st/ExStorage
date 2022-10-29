@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e585f3cb-722f-4173-9b50-86e8eee9a26a</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ShStudy</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)IWin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ScValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugSupport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShFieldDisplayData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShowLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ColData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShShowProcedures01.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShTestProcedures01.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)ShSchemaFields\" />
+  </ItemGroup>
+</Project>

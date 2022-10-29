@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>ExStorage</AssemblyName>
+    <RootNamespace>ExStorage</RootNamespace>
+    <FileAlignment>512</FileAlignment>
+    <OutputType>Library</OutputType>
+    <ProjectGuid>{DDC429DE-0FCC-45A7-A152-112E9AB46CC4}</ProjectGuid>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DbgExs2021|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineConstants>TRACE;DEBUG;USER_SETTINGS, APP_SETTINGS, SUITE_SETTINGS, MACH_SETTINGS, SITE_SETTINGS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'RelExs2021|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <StartAction>Program</StartAction>
+    <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\SharedApp\Windows\ShSupport\AWindow.cs">
+      <Link>Windows\SharedSupport\AWindow.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedApp\Windows\ShResources\ShStrings.Designer.cs">
+      <Link>Windows\SharedResources\ShStrings.Designer.cs</Link>
+    </Compile>
+    <EmbeddedResource Include="..\SharedApp\Windows\ShResources\ShStrings.resx">
+      <LogicalName>SharedApp.Windows.ShResources.ShStrings.resources</LogicalName>
+      <Link>Windows\SharedResources\ShStrings.resx</Link>
+    </EmbeddedResource>
+    <Compile Include="..\SharedApp\Windows\ShSupport\CsScrollBarAp.cs">
+      <Link>Windows\SharedSupport\CsScrollBarAp.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedApp\Windows\ShSupport\CsScrollViewerAp.cs">
+      <Link>Windows\SharedSupport\CsScrollViewerAp.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedApp\Windows\ShSupport\VisualStatesAttached.cs">
+      <Link>Windows\SharedSupport\VisualStatesAttached.cs</Link>
+    </Compile>
+    <Compile Include="..\SharedApp\Windows\ShSupport\ValueConverters.cs">
+      <Link>Windows\SharedSupport\ValueConverters.cs</Link>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Include="AppRibbon.cs" />
+    <Compile Include="Settings\AppSettings.cs" />
+    <Compile Include="Settings\DataSet.cs" />
+    <Compile Include="Settings\HeadingSetting.cs" />
+    <Compile Include="Settings\MachineSettings.cs" />
+    <Compile Include="Settings\SiteSettings.cs" />
+    <Compile Include="Settings\SuiteSettings.cs" />
+    <Compile Include="Settings\UserSettings.cs" />
+    <Compile Include=".RevitSupport\RvtCommand.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestProcedures\ShowsProcedures01.cs" />
+    <Compile Include="TestProcedures\TestProcedures01.cs" />
+    <Compile Include="Windows\MainWindowModel.cs" />
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs">
+      <Link>.Linked\CsUtilitiesMedia.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsExtensions.cs">
+      <Link>.Linked\CsExtensions.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilities.cs">
+      <Link>.Linked\CsUtilities.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsXmlUtilities.cs">
+      <Link>.Linked\CsXmlUtilities.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\MessageUtilities.cs">
+      <Link>.Linked\MessageUtilities.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs">
+      <Link>.Linked\CsFilePath.cs</Link>
+    </Compile>
+    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs">
+      <Link>.Linked\SettingsMgr.cs</Link>
+    </Compile>
+    <Page Include="..\SharedApp\Windows\ShSupport\CsScrollBar.xaml">
+      <Link>Windows\SharedSupport\CsScrollBar.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\SharedApp\Windows\ShSupport\CsScrollViewer.xaml">
+      <Link>Windows\SharedSupport\CsScrollViewer.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\SharedApp\Windows\ShSupport\MasterColorList.xaml">
+      <Link>Windows\SharedSupport\MasterColorList.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\SharedApp\Windows\ShSupport\VisualStates.xaml">
+      <Link>Windows\SharedSupport\VisualStates.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Windows\LocalResources\" />
+    <Folder Include="Windows\LocalSupport\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\information16.png" />
+    <Resource Include="Assets\information32.png" />
+    <Content Include="Other\ExStorage.addin" />
+  </ItemGroup>
+  <Import Project="..\ShExStorageR\ShExStorageR.projitems" Label="Shared" />
+  <Import Project="..\ShExStorageN\ShExStorageN.projitems" Label="Shared" />
+  <Import Project="..\ShExStorageC\ShExStorageC.projitems" Label="Shared" />
+  <Import Project="..\ShStudy\ShStudy.projitems" Label="Shared" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>echo build configuration: $(ConfigurationName)
+if exist "$(AppData)\Autodesk\REVIT\Addins\2021" copy "$(ProjectDir)other\*.addin" "$(AppData)\Autodesk\REVIT\Addins\2021"
+if exist "$(AppData)\Autodesk\REVIT\Addins\2021" copy "$(ProjectDir)$(OutputPath)*.dll" "$(AppData)\Autodesk\REVIT\Addins\2021"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- 
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <Target Name="AfterClean">
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2021\ExStorage.addin" />
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2021\ExStorage.dll" />
+  </Target>
+</Project>

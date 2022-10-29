@@ -1,0 +1,117 @@
+
+$ProjectName$ is the primary project
+
+App2 is a second project just to help set up shared resources
+	references <SharedCode> 
+	uses "shared" sample data
+	uses other shared elements
+
+-- best practices --
+* when a shared RESX file (and its associated CS file) are linked into a project, edit the .csproj file to make the proper dependancy setting.
+		that is, add the <DependantUpon> tag and reference the resx file.
+
+-- notes -- 
+* most of the information provided is for illustration purposes and can be replaced.
+* don't change folder names (for shared information) unless the revision is carried throughout all of the related files (CS files, XAML files, and .csproj files)
+	changing names can cause things to break.
+* sometimes, thinks do not go as expected.  VS can get confused.  Best to un-load a project and re-load or un-load the solution and re-load.
+
+-- expections / intent --
+each project
+* can have local resource file(s) [strings (resx) / images]  (CS files and XAML files)
+* can use shared resource file(s) [strings (resx) / images]  (CS files and XAML files)
+* can use shared code files
+* can use shared WPF files
+* configured to use designtime sample data 
+
+The above are referenced / directly used and are not used from a satellite assembly.
+
+
+
+-- other "shared" projects --
+Sh{name}	shared CS code files that several apps may use - e.g. ShExStorage
+	This is a sub-set of the SharedApp project
+	This has code files from SharedApp LINKED into this project
+	May have shared code group specific code files
+
+-- shared project system --
+SharedCode (shared project) 
+	has some or all of the CS code files from SharedApp
+	this gets referenced into a project
+	there can be multiple versions of this project that different sub-sets of the CS code files
+		this can help with prevention of duplicate names and / or overriding of code when a local
+		code file gets made that uses the same namespace (primarly for testing)
+SharedApp (WPF project - not a shared project - needed as custon tool will not run otherwise)
+	Xaml code files
+	Xaml image files (SVG)
+	Associated CS code files
+		Code behind file
+		Attached properties
+		Value converters
+	Resource files (Images)
+	Resource files (string resx)
+
+-- shared WPF windows / dialogs (examples) --
+ShSplashWin		Shared window
+ShDialogEx		Shared Example Dialog Window(s)
+
+
+create (link shared information only into App2 as that is only a example project)
+App2 project (Wpf project [not a library])
+Sh{name}		project (shared project) (e.g. ShDialogEx)
+SharedCode		project (shared project)
+SharedApp		project (WPF project)
+
+
+/{Solution}
+
+/{project}
+	/.Shared  {if needed}
+		/{as needed}
+	/Windows
+		/LocalResources  (string and images)
+			file
+			file
+		/LocalSupport (xaml and CS)
+			file
+			file
+		/SharedResources (string and images)
+			file
+			file
+		/SharedSupport (xaml and CS)
+			file
+			file
+
+
+/SharedRes			(WPF project) 
+		(string resource files) 
+		(image resource files - non-xaml based)
+	/StringRes -> Resx.resx
+	/ImageRes (& sub-folders) -> as needed
+
+/SharedApp			(WPF project)
+	/ProceduresRoot
+		(shared procedures - linked into a SharedCode shared project)
+	/SamplesRoot
+		(samples for testing / design time display - linked into a SharedCode shared project)
+	/Windows
+		/Resources
+				(shared image files)
+				(shared strings resx file)
+		/Support
+				(xaml support files {resourceDictionaries})
+				(CS files to support the above - e.g. valueConverters, attached properties)
+		/SVG
+				(xaml SVG files)
+	
+	
+/SharedCode			(shared project)
+	/{as needed}
+		/{as needed}.cs
+
+
+
+
+
+
+

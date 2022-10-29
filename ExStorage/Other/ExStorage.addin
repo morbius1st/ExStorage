@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Command">
+    <Text>ExStorage</Text>
+    <Description>Description of ExStorage</Description>
+    <Assembly>ExStorage.dll</Assembly>
+    <FullClassName>RevitSupport.RvtCommand</FullClassName>
+    <ClientId>8f47d5e4-837f-4efe-8bbf-bd6dba16770c</ClientId>
+    <VendorId>pro.cyberstudio</VendorId>
+    <VendorDescription>CyberStudio</VendorDescription>
+  </AddIn>
+  <AddIn Type="Application">
+    <Name>Application ExStorage</Name>
+    <Assembly>ExStorage.dll</Assembly>
+    <FullClassName>ExStorage.AppRibbon</FullClassName>
+    <ClientId>11f6d18e-0052-4fa2-a3a0-ba0f9fdd9631</ClientId>
+    <VendorId>pro.cyberstudio</VendorId>
+    <VendorDescription>CyberStudio</VendorDescription>
+  </AddIn>
+</RevitAddIns>

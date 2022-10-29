@@ -1,0 +1,16 @@
+﻿<Application x:Class="SharedApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SharedApp"
+             StartupUri="Windows/SharedAppWin.xaml">
+    <Application.Resources>
+
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="Windows/ShSupport/MasterColorList.xaml"/>
+          <ResourceDictionary Source="Windows/ShSupport/VisualStates.xaml"/>
+				</ResourceDictionary.MergedDictionaries>
+			</ResourceDictionary>
+         
+		</Application.Resources>
+</Application>

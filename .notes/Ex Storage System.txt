@@ -1,0 +1,63 @@
+﻿notes:
+
+keep in mind:
+
+* user can have multiple revit files open at the same time
+* revit schema's are all kept in a joint memory area
+* unless a mistake, a user can only have a revit file open once -- but it, as a mistake, they could open more than once.
+* a revit file can be opened by more than one user on different machines
+* the ex storage information could be access by two users at the same time - unlikely but possible
+
+Exid has the unique schema name preface.
+{vendor id}_{DB title (cleaned)}
+
+two schema levels + locks
+
+
+
+Application method
+Per Revit Database
+
+^ (1) table data stores
+	> named:
+		pro.cyberstudio_{revit DB title (cleaned)}_table
+	> holds multiple rows as sub-schema
+	> identifies basic information
+		* description, version, model name, model path, developer, creation date
+	* holds basic management information
+	* needs to hold a list of found rows
+	* must have a unique name but one that can be re-created from just opening the database
+
+
+^ each row (is a sub-schema to table)
+	> named:
+		pro.cyberstudio_{revit DB title (cleaned) }_rows.family
+	> holds data for a single row
+		* basic information and
+		* excel path, worksheet, row family, sequence, etc.
+	> will also hold the data for each row family instance
+	* this will be a sub-schema of the table schema
+	* holds the information for a specific excel worksheet & family
+	* is the starting point to read / process all of the associated family
+	* needs to have a list of all of the associated family
+
+
+^ each cell family instance (is a sub-dictionary [but not schema] to row)
+	> holds information associated to each cell family instance
+
+
+
+TKey      = SchemaTableKey | SchemaRowKey
+TRowKey   = SchemaRowKey
+TTblKey   = SchemaTableKey
+
+TData     = ShScFieldDefData<TRowKey> | ShScFieldDefData<TTblKey>
+TRdata    = ShScFieldDefData<TRowKey>
+TTdata    = ShScFieldDefData<TTblKey>
+
+row or table
+>AShScInfoBase<TKey, TData>
+	^
+	+-> IShScInfoBase<Tkey, Tdata> 
+
+
