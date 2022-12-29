@@ -1,6 +1,6 @@
 ﻿#region using
 
-using static ShExStorageC.ShSchemaFields.SchemaTableKey;
+using static ShExStorageC.ShSchemaFields1.SchemaSheetKey;
 using static ShExStorageN.ShSchemaFields.SchemaFieldDisplayLevel;
 
 #endregion
@@ -10,21 +10,21 @@ using static ShExStorageN.ShSchemaFields.SchemaFieldDisplayLevel;
 
 namespace ShSCFieldsC
 {
-	public class ScFieldsTable :  ShScFields<SchemaTableKey>
+	public class ScFieldsSheet :  ShScFields<SchemaSheetKey>
 	{
 		public const string SF_SUBSCHEMA_NAME = "RowsSubSchemaName_";
 
-		public const string SF_SCHEMA_NAME = "Rows>Schema>Fields>Table";
-		public const string SF_SCHEMA_DESC = "Rows Table DS";
+		public const string SF_SCHEMA_NAME = "Rows>Schema>Fields>Sheet";
+		public const string SF_SCHEMA_DESC = "Rows Sheet DS";
 		
-		public ScFieldsTable()
+		public ScFieldsSheet()
 		{
 			init();
 		}
 
 	#region public properties
 
-		public  Dictionary<SchemaTableKey, ScFieldDef<SchemaTableKey>> TableFields => fields;
+		public  Dictionary<SchemaSheetKey, ScFieldDef<SchemaSheetKey>> SheetFields => fields;
 
 		public string SchemaName => fields[TK_SCHEMA_NAME].Name;
 		public string UserName   => fields[TK_USER_NAME].Name;
@@ -45,17 +45,17 @@ namespace ShSCFieldsC
 		/// </summary>
 		private void setFields()
 		{
-			fields = new Dictionary<SchemaTableKey, ScFieldDef<SchemaTableKey>>();
+			fields = new Dictionary<SchemaSheetKey, ScFieldDef<SchemaSheetKey>>();
 
 			Add(TK_SCHEMA_NAME , "Name"       , "Name"                            , SF_SCHEMA_NAME          , DL_BASIC);
 			Add(TK_DESCRIPTION , "Description", "Description"                     , SF_SCHEMA_DESC          , DL_BASIC);
 			Add(TK_MODEL_PATH  , "ModelPath"  , "Path of Model"                   , MODEL_PATH                 , DL_MEDIUM);
 			Add(TK_MODEL_NAME  , "ModelName"  , "Name of Model"                   , MODEL_NAME                 , DL_MEDIUM);
-			Add(TK_VERSION     , "Version"    , "Table Schema Version"            , "1.0"                      , DL_MEDIUM);
-			Add(TK_USER_NAME   , "UserName"   , "User Name of Table Creator"      , UtilityLibrary.CsUtilities.UserName     , DL_ADVANCED);
+			Add(TK_VERSION     , "Version"    , "Sheet Schema Version"            , "1.0"                      , DL_MEDIUM);
+			Add(TK_USER_NAME   , "UserName"   , "User Name of Sheet Creator"      , UtilityLibrary.CsUtilities.UserName     , DL_ADVANCED);
 			Add(TK_MODIFY_DATE , "ModifyDate" , "Date Modified (or Created)"      , DateTime.UtcNow.ToString() , DL_MEDIUM);
 			Add(TK_DEVELOPER   , "Developer"  , "Name of Developer"               , UtilityLibrary.CsUtilities.CompanyName                 , DL_MEDIUM);
-			Add(TK_GUID        , "GUID"       , "Table GUID"                      , "{not set}"                , DL_BASIC);
+			Add(TK_GUID        , "GUID"       , "Sheet GUID"                      , "{not set}"                , DL_BASIC);
 		}
 
 		

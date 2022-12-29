@@ -12,12 +12,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)IWin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ScValues.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugMessages.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugSupport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShFieldDisplayData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShowLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ColData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShShowProcedures01.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShTestProcedures01.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\GenericTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)ShSchemaFields\" />

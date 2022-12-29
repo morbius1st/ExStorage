@@ -3,9 +3,16 @@
 // File:             TestProcedures01.cs
 // Created:      2022-01-16 (9:41 PM)
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStorage.Windows;
-using SharedApp.Windows.ShSupport;
+using RevitSupport;
+using SettingsManager;
+using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
+using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
+using ShExStorageC.ShSchemaFields;
 using ShExStorageN.ShExStorage;
 using ShExStorageR.ShExStorage;
 using ShStudy.ShEval;
@@ -14,9 +21,24 @@ namespace ExStorage.TestProcedures
 {
 	public class TestProcedures01
 	{
-		public const string DS_ROWS_TABLE = "Rows│ Table Data Storage";
+		public const string DS_ROWS_SHEET = "Rows│ Sheet Data Storage";
 		public const string DS_ROWS_AP = "Rows│ App Data Storage";
 		public const string DS_PRO_CS = "pro_cyberstudio_HasDataStorage";
+
+
+		private int famIdx;
+
+		public List<string[]> FauxFamNames { get; set; }  =
+			new List<string[]>
+			{
+				new [] { "FamA1", "FamA2", "FamA3" },
+				new [] { "FamB1", "FamB2", "FamB3" },
+				new [] { "FamC1", "FamC2", "FamC3" },
+				new [] { "FamD1", "FamD2", "FamD3" },
+				new [] { "FamE1", "FamE2", "FamE3" },
+			};
+
+		private string[] a = new [] { "test" };
 
 		private ShDebugMessages M { get; set; }
 
@@ -30,135 +52,133 @@ namespace ExStorage.TestProcedures
 			M = MainWindow.M;
 
 			sp01 = new ShowsProcedures01();
-
 		}
-
-
 
 	#region general test routines
 
 		// sub-tests
 
-		private void TestGetDsByName3(ExStorageLibraryR exLib, string name)
-		{
-			ExStoreRtnCode result;
+		// private void TestGetDsByName3(ShExStorageLibR shExLib, string name)
+		// {
+		// 	ExStoreRtnCode result;
+		//
+		// 	ExId exid = new ExId(true, name);
+		//
+		// 	exid.OverrideDsName(name);
+		//
+		// 	DataStorage ds;
+		//
+		// 	result = shExLib.FindDs(name, out ds);
+		//
+		// 	if (result != ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		M.WriteLine($"GetDsByName| not good| {result.ToString()}", $"looking for name| {name}");
+		// 		return;
+		// 	}
+		//
+		// 	M.WriteLine("\nGetDsByName| ds found");
+		// 	sp01.ShowDsDetails(ds);
+		// }
 
-			ExId exid = new ExId("name");
-			exid.ExsId = name;
+		// private bool TestDeleteDsByName4(ShExStorageLibR shExLib, string name)
+		// {
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = name;
+		//
+		// 	ExStoreRtnCode result = shExLib.DelSheetDs(exid.Document, exid.ExsIdSheetDsName);
+		//
+		// 	return result == ExStoreRtnCode.XRC_GOOD;
+		// }
 
-			DataStorage ds;
+		// private void TestGetDsEntityBySchema5(ShExStorageLibR shExLib, string name)
+		// {
+		// 	ExStoreRtnCode result;
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = name;
+		//
+		// 	Schema sc;
+		//
+		// 	result = shExLib.FindSchema(exid.ExsIdSheetDsName, out sc);
+		//
+		// 	if (result == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		M.WriteLine("get schema| good");
+		//
+		// 		TestGetDsEntityBySchema5(shExLib, name, sc);
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine("get schema| failed");
+		// 	}
+		// }
 
-			result = exLib.GetDs(exid, out ds);
+		// private void TestGetDsEntityBySchema5(ShExStorageLibR shExLib, string name, Schema sc)
+		// {
+		// 	ExStoreRtnCode result;
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = name;
+		// 	Entity e = null;
+		//
+		// 	DataStorage ds;
+		//
+		// 	result = shExLib.FindDs(name, out ds);
+		//
+		// 	if (result == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		M.WriteLine($"datastore found| {ds.Name}");
+		//
+		// 		result = shExLib.GetDsEntity(ds, sc, out e);
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine($"datastore not found|");
+		// 	}
+		// }
 
-			if (result != ExStoreRtnCode.XRC_GOOD)
-			{
-				M.WriteLine($"GetDsByName| not good| {result.ToString()}", $"looking for name| {name}");
-				return;
-			}
-
-			M.WriteLine("\nGetDsByName| ds found");
-			sp01.ShowDsDetails(ds);
-		}
-
-		private bool TestDeleteDsByName4(ExStorageLibraryR exLib, string name)
-		{
-			ExId exid = new ExId("name");
-			exid.ExsId = name;
-
-			ExStoreRtnCode result = exLib.DelDs(exid);
-
-			return result == ExStoreRtnCode.XRC_GOOD;
-		}
-
-		private void TestGetDsEntityBySchema5(ExStorageLibraryR exLib, string name)
-		{
-			ExStoreRtnCode result;
-			ExId exid = new ExId("name");
-			exid.ExsId = name;
-
-			Schema sc;
-
-			result = exLib.GetSchema(exid, out sc);
-
-			if (result == ExStoreRtnCode.XRC_GOOD)
-			{
-				M.WriteLine("get schema| good");
-
-				TestGetDsEntityBySchema5(exLib, name, sc);
-			}
-			else
-			{
-				M.WriteLine("get schema| failed");
-			}
-		}
-
-		private void TestGetDsEntityBySchema5(ExStorageLibraryR exLib, string name, Schema sc)
-		{
-			ExStoreRtnCode result;
-			ExId exid = new ExId("name");
-			exid.ExsId = name;
-			Entity e = null;
-
-			DataStorage ds;
-
-			result = exLib.GetDs(exid, out ds);
-
-			if (result == ExStoreRtnCode.XRC_GOOD)
-			{
-				M.WriteLine($"datastore found| {ds.Name}");
-
-				result = exLib.GetDsEntity(ds, sc, out e);
-			}
-			else
-			{
-				M.WriteLine($"datastore not found|");
-			}
-		}
-
-		private void TestGetDsEntityByName5(ExStorageLibraryR exLib, string name)
-		{
-			ExStoreRtnCode result;
-
-			Schema sc;
-			ExId exid = new ExId("name");
-			exid.ExsId = name;
-			Entity e = null;
-
-			result = exLib.GetSchema(exid, out sc);
-
-			if (result == ExStoreRtnCode.XRC_GOOD)
-			{
-				M.WriteLine($"schema found| {sc.GUID.ToString()}");
-
-				DataStorage ds;
-
-				result = exLib.GetDs(exid, out ds);
-
-				if (result == ExStoreRtnCode.XRC_GOOD)
-				{
-					result = exLib.GetDsEntity(ds, sc, out e);
-				}
-			}
-
-			if (result == ExStoreRtnCode.XRC_GOOD)
-			{
-				sp01.ShowEntityDetails(e);
-			}
-			else
-			{
-				M.WriteLine("get schema| failed");
-				M.WriteLine("get entity| failed");
-			}
-		}
+		// private void TestGetDsEntityByName5(ShExStorageLibR shExLib, string name)
+		// {
+		// 	ExStoreRtnCode result;
+		//
+		// 	Schema sc;
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = name;
+		// 	Entity e = null;
+		//
+		// 	result = shExLib.FindSchema(exid.ExsIdSheetDsName, out sc);
+		//
+		// 	if (result == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		M.WriteLine($"schema found| {sc.GUID.ToString()}");
+		//
+		// 		DataStorage ds;
+		//
+		// 		result = shExLib.FindDs(name, out ds);
+		//
+		// 		if (result == ExStoreRtnCode.XRC_GOOD)
+		// 		{
+		// 			result = shExLib.GetDsEntity(ds, sc, out e);
+		// 		}
+		// 	}
+		//
+		// 	if (result == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		sp01.ShowEntityDetails(e);
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine("get schema| failed");
+		// 		M.WriteLine("get entity| failed");
+		// 	}
+		// }
 
 
 		// tests
 
-		public void TestGetAllDs1(ExStorageLibraryR exLib)
+		public void TestGetAllDs1(ShExStorageLibR shExLib)
 		{
 			ExStoreRtnCode result;
 
-			result = exLib.GetAllDs();
+			result = shExLib.GetAllDs();
 
 			if (result != ExStoreRtnCode.XRC_GOOD)
 			{
@@ -167,137 +187,168 @@ namespace ExStorage.TestProcedures
 				return;
 			}
 
-			sp01.ShowAllDs1(exLib);
+			sp01.ShowAllDs1(shExLib);
 
 			// M.ShowMsg();
 		}
 
-		public void TestFindDsByName3(ExStorageLibraryR exLib)
+		// public void TestFindDsByName3(ShExStorageLibR shExLib)
+		// {
+		// 	TestGetDsByName3(shExLib, DS_ROWS_SHEET);
+		// 	TestGetDsByName3(shExLib, DS_ROWS_AP);
+		// 	TestGetDsByName3(shExLib, DS_PRO_CS);
+		//
+		// 	// M.ShowMsg();
+		// }
+
+		// public void TestDeleteDsByName4(ShExStorageLibR shExLib)
+		// {
+		// 	bool result = TestDeleteDsByName4(shExLib, DS_PRO_CS);
+		//
+		// 	if (result)
+		// 	{
+		// 		M.WriteLine("delete by name| worked");
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine("delete by name| failed");
+		// 	}
+		//
+		// 	// M.ShowMsg();
+		// }
+
+		// public void TestFindExistSchema2(ShExStorageLibR shExLib)
+		// {
+		// 	ExStoreRtnCode result;
+		//
+		// 	Schema sc;
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		//
+		// 	result = shExLib.FindSchema(exid.ExsIdSheetSchemaName, out sc);
+		// 	sp01.ShowSchema2(result, sc, exid.ExsIdSheetSchemaName);
+		//
+		// 	exid.ExsId = DS_ROWS_SHEET;
+		// 	result = shExLib.FindSchema(exid.ExsId, out sc);
+		// 	sp01.ShowSchema2(result, sc, DS_ROWS_SHEET);
+		//
+		// 	exid.ExsId = DS_ROWS_AP;
+		// 	result = shExLib.FindSchema(exid.ExsId, out sc);
+		// 	sp01.ShowSchema2(result, sc, DS_ROWS_AP);
+		//
+		// 	exid.ExsId = DS_PRO_CS;
+		// 	result = shExLib.FindSchema(exid.ExsId, out sc);
+		// 	sp01.ShowSchema2(result, sc, DS_PRO_CS);
+		// }
+
+		// public void TestGetDsEntity5(ShExStorageLibR shExLib)
+		// {
+		// 	M.WriteLine($"get entity by name");
+		//
+		// 	M.NewLine();
+		//
+		// 	M.WriteLine($"get entity for Ds named| {DS_PRO_CS}");
+		// 	TestGetDsEntityByName5(shExLib, DS_PRO_CS);
+		//
+		// 	M.NewLine();
+		//
+		// 	M.WriteLine($"get entity for Ds named| {DS_ROWS_SHEET}");
+		// 	TestGetDsEntityByName5(shExLib, DS_ROWS_SHEET);
+		//
+		// 	M.NewLine();
+		//
+		// 	M.WriteLine($"get entity by schema");
+		//
+		// 	M.NewLine();
+		//
+		// 	M.WriteLine($"get entity for Ds named| {DS_PRO_CS}");
+		// 	TestGetDsEntityBySchema5(shExLib, DS_PRO_CS);
+		//
+		// 	M.NewLine();
+		//
+		// 	M.WriteLine($"get entity for Ds named| {DS_ROWS_SHEET}");
+		// 	TestGetDsEntityBySchema5(shExLib, DS_ROWS_SHEET);
+		//
+		//
+		// 	// M.ShowMsg();
+		// }
+
+		// public void TestGetEntityData6(ShExStorageLibR shExLib)
+		// {
+		// 	ExStoreRtnCode result;
+		//
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = DS_PRO_CS;
+		//
+		// 	DataStorage ds;
+		// 	Schema sc;
+		// 	Entity e = null;
+		//
+		// 	result = shExLib.FindDs(exid.ExsIdSheetDsName, out ds);
+		// 	result = shExLib.FindSchema(exid.ExsIdSheetDsName, out sc);
+		// 	result = shExLib.GetDsEntity(ds, sc, out e);
+		//
+		// 	sp01.ShowEntityData6(shExLib, e, sc);
+		//
+		// 	// M.ShowMsg();
+		// }
+
+		// public void TestDoesDsExist7(ShExStorageLibR shExLib)
+		// {
+		// 	M.NewLine();
+		//
+		// 	ExStoreRtnCode result;
+		//
+		// 	DataStorage ds;
+		//
+		// 	ExId1 exid = ExId1.GetInstance(RvtCommand.RvtDoc);
+		// 	exid.ExsId = DS_PRO_CS;
+		//
+		// 	M.WriteLineAligned("does ds exist?|", $"checking| {exid.ExsId}");
+		//
+		// 	result = shExLib.FindDs(exid.ExsIdSheetDsName, out ds);
+		//
+		// 	M.WriteLineAligned("does ds exist?|", $"{result == ExStoreRtnCode.XRC_GOOD}");
+		// 	M.NewLine();
+		//
+		//
+		// 	exid.ExsId = "Bogus_Name";
+		//
+		// 	M.WriteLineAligned("does ds exist?|", $"checking| {exid.ExsId}");
+		//
+		// 	result = shExLib.FindDs(exid.ExsIdSheetDsName, out ds);
+		//
+		// 	M.WriteLineAligned("does ds exist?|", $"{result == ExStoreRtnCode.XRC_GOOD}");
+		// 	M.NewLine();
+		//
+		// 	// M.ShowMsg();
+		// }
+
+		private static int fauxRowIdx = 0;
+
+		public void MakeFauxRow(ShtExId exid, ScDataRow rowd)
 		{
-			TestGetDsByName3(exLib, DS_ROWS_TABLE);
-			TestGetDsByName3(exLib, DS_ROWS_AP);
-			TestGetDsByName3(exLib, DS_PRO_CS);
+			famIdx = UserSettings.Data.UserSettingsValue;
 
-			// M.ShowMsg();
-		}
+			M.WriteLineStatus($"faux row data| fam idx| {famIdx}");
 
-		public void TestDeleteDsByName4(ExStorageLibraryR exLib)
-		{
-			bool result = TestDeleteDsByName4(exLib, DS_PRO_CS);
+			if (fauxRowIdx > 2) fauxRowIdx = 0;
+			// string fauxIdx = (fauxRowIdx++ * 11).ToString("000");
+			string fauxWksPath = Path.GetTempPath();
+			// string fauxWksName = $"{fauxIdx}_{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}";
+			// string fauxFamName = $"{fauxIdx}_{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}";
+			string fauxFamName = FauxFamNames[famIdx][fauxRowIdx++];
+			string fauxSeq = $"x1";
 
-			if (result)
-			{
-				M.WriteLine("delete by name| worked");
-			}
-			else
-			{
-				M.WriteLine("delete by name| failed");
-			}
+			// row data initially created.  finish with bogus information
+			rowd.Fields[RK0_SCHEMA_NAME].SetValue = exid.RowSchemaName(fauxFamName);
 
-			// M.ShowMsg();
-		}
+			rowd.Fields[RK2_CELL_FAMILY_NAME].SetValue = fauxFamName;
+			rowd.Fields[RK2_XL_FILE_PATH].SetValue = fauxWksPath;
+			rowd.Fields[RK2_XL_WORKSHEET_NAME].SetValue = "ExcelFileName.xls";
 
-		public void TestFindExistSchema2(ExStorageLibraryR exLib)
-		{
-			ExStoreRtnCode result;
-
-			Schema sc;
-			ExId exid = new ExId("name");
-
-			exid.ExsId = DS_ROWS_TABLE;
-			result = exLib.GetSchema(exid, out sc);
-			sp01.ShowSchema2(result, sc);
-
-			exid.ExsId = DS_ROWS_AP;
-			result = exLib.GetSchema(exid, out sc);
-			sp01.ShowSchema2(result, sc);
-
-			exid.ExsId = DS_PRO_CS;
-			result = exLib.GetSchema(exid, out sc);
-			sp01.ShowSchema2(result, sc);
-		}
-
-		public void TestGetDsEntity5(ExStorageLibraryR exLib)
-		{
-			M.WriteLine($"get entity by name");
-
-			M.NewLine();
-
-			M.WriteLine($"get entity for Ds named| {DS_PRO_CS}");
-			TestGetDsEntityByName5(exLib, DS_PRO_CS);
-
-			M.NewLine();
-
-			M.WriteLine($"get entity for Ds named| {DS_ROWS_TABLE}");
-			TestGetDsEntityByName5(exLib, DS_ROWS_TABLE);
-
-			M.NewLine();
-
-			M.WriteLine($"get entity by schema");
-
-			M.NewLine();
-
-			M.WriteLine($"get entity for Ds named| {DS_PRO_CS}");
-			TestGetDsEntityBySchema5(exLib, DS_PRO_CS);
-
-			M.NewLine();
-
-			M.WriteLine($"get entity for Ds named| {DS_ROWS_TABLE}");
-			TestGetDsEntityBySchema5(exLib, DS_ROWS_TABLE);
-
-
-			// M.ShowMsg();
-		}
-
-		public void TestGetEntityData6(ExStorageLibraryR exLib)
-		{
-			ExStoreRtnCode result;
-
-			ExId exid = new ExId("name");
-			exid.ExsId = DS_PRO_CS;
-
-			DataStorage ds;
-			Schema sc;
-			Entity e = null;
-
-			result = exLib.GetDs(exid, out ds);
-			result = exLib.GetSchema(exid, out sc);
-			result = exLib.GetDsEntity(ds, sc, out e);
-
-			sp01.ShowEntityData6(exLib, e, sc);
-
-			// M.ShowMsg();
-		}
-
-		public void TestDoesDsExist7(ExStorageLibraryR exLib)
-		{
-			M.NewLine();
-
-			ExStoreRtnCode result;
-
-			DataStorage ds;
-
-			ExId exid = new ExId("name");
-			exid.ExsId = DS_PRO_CS;
-
-			M.WriteLineAligned("does ds exist?|", $"checking| {exid.ExsId}");
-
-			result = exLib.GetDs(exid, out ds);
-
-			M.WriteLineAligned("does ds exist?|", $"{result == ExStoreRtnCode.XRC_GOOD}");
-			M.NewLine();
-
-
-			exid.ExsId = "Bogus_Name";
-
-			M.WriteLineAligned("does ds exist?|", $"checking| {exid.ExsId}");
-
-			result = exLib.GetDs(exid, out ds);
-
-			M.WriteLineAligned("does ds exist?|", $"{result == ExStoreRtnCode.XRC_GOOD}");
-			M.NewLine();
-
-			// M.ShowMsg();
+			rowd.Fields[RK2_SEQUENCE].SetValue = "A1";
+			rowd.Fields[RK2_SKIP].SetValue = false;
+			rowd.Fields[RK2_UPDATE_RULE].SetValue = UR_UPON_REQUEST;
 		}
 
 	#endregion

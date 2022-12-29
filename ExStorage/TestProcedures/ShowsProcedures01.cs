@@ -1,6 +1,4 @@
-﻿
-
-// Solution:     ExStorage
+﻿// Solution:     ExStorage
 // Project:       ExStorage
 // File:             ShowsProcedures01.cs
 // Created:      2022-01-16 (9:47 PM)
@@ -31,45 +29,44 @@ namespace ExStorage.TestProcedures
 		}
 
 
-
-
 	#region general data show
 
-		public void ShowEid(ExId exId)
+		public void ShowEid(AExId exid)
 		{
-			// ExId exId = exLib.ExId;
-
 			M.NewLine();
-			M.WriteDebugMsgLine("getting", "data storage id");
-			M.WriteDebugMsgLine("EsId", exId.ExsId);
-			M.WriteDebugMsgLine("VendorId", exId.VendorId);
-			M.WriteDebugMsgLine("DocumentName", exId.DocumentName);
-			M.WriteDebugMsgLine("DocName", exId.DocName);
-			// M.ShowMsg();
+			M.WriteDebugMsgLine("getting       | ", "data storage id");
+			M.WriteDebugMsgLine($"ExId         | ", $"{AExId.Exid}");
+			M.WriteDebugMsgLine($"ExId ds name | ", $"{exid.DsName}");
+			M.WriteDebugMsgLine($"ExId sch name| ", $"{exid.SchemaName}");
+			M.WriteDebugMsgLine($"ExId row     | ", $"{exid.RowSchemaName("faux name")}");
+			M.WriteDebugMsgLine($"DocumentName | ", $"{AExId.DocumentName}");
+			M.WriteDebugMsgLine($"DocName      | ", $"{AExId.DocNameClean}");
+			M.WriteDebugMsgLine($"VendorId     | ", $"{AExId.VendorId}");
+			M.WriteDebugMsgLine($"CompanyId    | ", $"{AExId.CompanyId}");
+			M.NewLine();
 		}
 
-		public void ShowAllDs1(ExStorageLibraryR exLib)
+		public void ShowAllDs1(ShExStorageLibR shExLib)
 		{
 			M.NewLine();
 
-			if (exLib.Da.AllDs == null)
+			if (shExLib.AllDs == null)
 			{
 				M.WriteDebugMsgLine("get all Ds", "*** failed ***");
 				return;
 			}
 
-			if (exLib.Da.AllDs.Count < 1)
+			if (shExLib.AllDs.Count < 1)
 			{
 				M.WriteDebugMsgLine("get all Ds", "found none");
 				return;
 			}
 
-			M.WriteDebugMsgLine("get all Ds| count| ", exLib.Da.AllDs.Count.ToString());
+			M.WriteDebugMsgLine("get all Ds| count| ", shExLib.AllDs.Count.ToString());
 
-			foreach (DataStorage ds in exLib.Da.AllDs)
+			foreach (DataStorage ds in shExLib.AllDs)
 			{
 				M.WriteDebugMsgLine("name| ", $"{ds.Name} | guid count| {ds.GetEntitySchemaGuids().Count}");
-
 			}
 		}
 
@@ -92,7 +89,7 @@ namespace ExStorage.TestProcedures
 				result = guids[0].ToString();
 			}
 
-			M.WriteLine($"ds name| {ds.Name}", 
+			M.WriteLine($"ds name| {ds.Name}",
 				$"is pinned?| {ds.Pinned} | schema guid| {result}");
 
 			/*
@@ -115,10 +112,12 @@ namespace ExStorage.TestProcedures
 			M.NewLine();
 		}
 
-		public void ShowSchema2(ExStoreRtnCode result, Schema schema)
+		public void ShowSchema2(ExStoreRtnCode result, Schema schema, string findName)
 		{
 			M.NewLine();
-			M.WriteDebugMsgLine("got schema| result|", $"{result.ToString()}| schema name| {schema?.SchemaName ?? "is null"}");
+			M.WriteDebugMsgLine("got schema| result|", $"find name| {findName} | {result.ToString()}| schema name| {schema?.SchemaName ?? "is null"}");
+
+			return;
 
 			if (schema != null)
 			{
@@ -177,7 +176,6 @@ namespace ExStorage.TestProcedures
 					{
 						M.WriteLineAligned($"\tgot sub-schema| false");
 					}
-					
 				}
 			}
 		}
@@ -234,7 +232,7 @@ namespace ExStorage.TestProcedures
 
 			return result;
 		}
-		
+
 		public void ShowEntityDetails(Entity e)
 		{
 			if (e == null)
@@ -257,10 +255,10 @@ namespace ExStorage.TestProcedures
 			// M.ShowMsg();
 		}
 
-		public void ShowEntityData6(ExStorageLibraryR exLib,	Entity e, Schema sc)
+		public void ShowEntityData6(ShExStorageLibR shExLib,	Entity e, Schema sc)
 		{
 			M.WriteLineAligned("fields and values for|", $"{sc.SchemaName}");
-			
+
 			foreach (Field f in sc.ListFields())
 			{
 				try
@@ -272,28 +270,23 @@ namespace ExStorage.TestProcedures
 
 						M.NewLine();
 						M.MarginUp();
-						ShowEntityData6(exLib, et, scx);
+						ShowEntityData6(shExLib, et, scx);
 						M.NewLine();
 						M.MarginDn();
-
 					}
 					else
 					{
-						string s = exLib.GetEntityDataAsString(e, f);
+						string s = shExLib.GetEntityDataAsString(e, f);
 						M.WriteLineAligned($"value for| {f.FieldName}", $"{s}");
 					}
 				}
-				catch 
+				catch
 				{
 					M.WriteLineAligned($"value for| {f.FieldName}", "error");
 				}
 			}
-
 		}
-		
 
 	#endregion
-
-
 	}
 }

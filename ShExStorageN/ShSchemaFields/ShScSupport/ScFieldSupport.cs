@@ -11,27 +11,15 @@ namespace ShExStorageN.ShSchemaFields.ShScSupport
 {
 	public static class ShExConst
 	{
-		// public const int K_SCHEMA_NAME	= 0;
-		// public const int K_DESCRIPTION	= 1;
-		// public const int K_VERSION		= 2;
-		// public const int K_MODIFY_DATE	= 3;
-
 
 		// data storage type
-		public const int DT_LOCK		= 0;
-		public const int DT_TABLE		= 1;
+		public const int DT_LOCK	= 0;
+		public const int DT_SHEET	= 1;
 		public const int DT_ROW		= 2;
 
-		public const string K_NOT_DEFINED = null;
+		public const string K_NOT_DEFINED = "";
 		public const string K_NOT_DEFINED_STR = "<not defined>";
 	}
-
-	// public enum SchemaStoreOptions
-	// {
-	// 	SO_ALL,
-	// 	SO_FIELD,
-	// 	SO_DATA
-	// }
 
 	public enum SchemaFieldDisplayLevel
 	{
@@ -41,7 +29,7 @@ namespace ShExStorageN.ShSchemaFields.ShScSupport
 		DL_ADVANCED			= 2
 	}
 
-	public enum RowUpdateRules
+	public enum CellUpdateRules
 	{
 		UR_UNDEFINED    = -1,
 		UR_NEVER        = 0,

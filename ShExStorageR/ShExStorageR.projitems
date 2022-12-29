@@ -9,17 +9,9 @@
     <Import_RootNamespace>ShExStorageR</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Schema Field Info.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Ex Storage Info %28for Revit%29.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageAdmin.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageLibraryR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExStorageLibR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExStorManagerR.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShRevitUtil\RevitAddins.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ShSchemaFields\" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExSchemaLibR.cs" />
   </ItemGroup>
 </Project>

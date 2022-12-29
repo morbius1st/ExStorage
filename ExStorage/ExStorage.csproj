@@ -36,6 +36,9 @@
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=4242.42.42.42, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.2022.3.1\lib\net20\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -113,6 +116,7 @@
     <Compile Include="TestProcedures\ShowsProcedures01.cs" />
     <Compile Include="TestProcedures\TestProcedures01.cs" />
     <Compile Include="Windows\MainWindowModel.cs" />
+    <Compile Include="Windows\StaticInfo.cs" />
     <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs">
       <Link>.Linked\CsUtilitiesMedia.cs</Link>
     </Compile>
@@ -171,6 +175,10 @@
     <Resource Include="Assets\information16.png" />
     <Resource Include="Assets\information32.png" />
     <Content Include="Other\ExStorage.addin" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\ShExStorageR\ShExStorageR.projitems" Label="Shared" />
   <Import Project="..\ShExStorageN\ShExStorageN.projitems" Label="Shared" />

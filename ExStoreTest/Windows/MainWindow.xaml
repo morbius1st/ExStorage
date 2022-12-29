@@ -1,0 +1,90 @@
+﻿<Window
+		x:Class="ExStoreTest.Windows.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:local="clr-namespace:ExStoreTest.Windows"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		x:Name="mainWin"
+		Title="MainWindow"
+		Width="1200"
+		Height="650"
+		mc:Ignorable="d"
+		Background="#222222"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		>
+	<Window.Resources>
+
+	</Window.Resources>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="120" />
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="40" />
+		</Grid.RowDefinitions>
+
+		<StackPanel
+					Grid.Column="1"
+					Grid.Row="0"
+					VerticalAlignment="Top"
+					Orientation="Vertical"
+				>
+			<Button
+					x:Name="Btn_Write"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Write"
+					Width="120"
+					Click="Btn_Write_OnClick" />
+
+			<Button
+					x:Name="Btn_Delete"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Delete"
+					Width="120"
+					Click="Btn_Delete_OnClick" />
+			</StackPanel>
+
+		<Button
+				x:Name="Btn_Exit"
+				Grid.Column="1"
+				Grid.Row="1"
+				Margin="5"
+				Content="Exit"
+				Click="Btn_Exit_OnClick"
+				/>
+
+		<Button
+				x:Name="Btn_Clear"
+				Grid.Column="0"
+				Grid.Row="1"
+				Margin="5"
+				Content="Clear Message"
+				Width="120"
+				HorizontalAlignment="Right"
+				Click="Btn_Clear_OnClick"
+				/>
+
+
+
+		<TextBox
+				Foreground="White"
+				Background="Transparent" 
+				FontFamily="Consolas"
+				FontSize="12"
+				Text="{Binding Path=Message}"
+				VerticalScrollBarVisibility="Visible"
+				HorizontalScrollBarVisibility="Visible"
+				/>
+
+
+	</Grid>
+</Window>

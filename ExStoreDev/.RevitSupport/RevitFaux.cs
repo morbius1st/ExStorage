@@ -10,6 +10,75 @@ using System.Threading.Tasks;
 // user name: jeffs
 // created:   10/16/2022 11:14:25 AM
 
+
+namespace Autodesk.Revit.DB.ExtensibleStorage
+{
+	public class DataStorage
+	{
+		public DataStorage(Document doc, string name) { }
+		public DataStorage() { }
+
+		public static DataStorage Create(Document doc)
+		{
+			return new DataStorage();
+		}
+
+		public void SetEntity(Entity e) {}
+	}
+
+	public class Entity
+	{
+		public Entity() {}
+
+		public Entity(Schema s) { }
+
+		public void Set(Field f, dynamic value) { }
+
+		public Entity Get<T>(string name)
+			where T: class, new()
+		{
+			return new Entity(new Schema());
+		}
+
+		public Schema Schema => new Schema();
+	}
+
+	public class Schema
+	{
+		public Field GetField(string fieldName)
+		{
+			return new Field();
+		}
+	}
+
+	public class SchemaBuilder
+	{
+		public FieldBuilder AddSimpleField(string name, Type t)
+		{
+			return new FieldBuilder();
+		}
+
+		public SchemaBuilder(Guid g) { }
+
+		public Schema Finish()
+		{
+			return new Schema();
+		}
+	}
+
+	public class FieldBuilder
+	{
+		public FieldBuilder() { }
+		public FieldBuilder(Guid g) { }
+	}
+
+	public class Field
+	{
+		public bool IsValidObject => true;
+	}
+}
+
+
 namespace Autodesk.Revit.DB
 {
 	public class ForgeTypeId

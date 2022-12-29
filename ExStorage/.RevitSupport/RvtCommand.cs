@@ -54,7 +54,7 @@ namespace RevitSupport
 			// Access current selection
 			// Selection sel = Command.rvt_Uidoc.Selection;
 
-			showMainWin();
+			Result r = showMainWin();
 
 			return Result.Succeeded;
 		}

@@ -1,0 +1,139 @@
+
+needed routines
+
+modify / needed procedures
+create sheet - create the sheet for the first time
+open sheet - read sheet and set the lock
+update sheet - modify the current sheet
+close sheet - save the sheet data and remove the lock
+delete sheet - remove sheet from the model
+
+read sheet - read sheet for information only - will not modify
+	+-> read sheet current - read and save into sheetCurrent
+	+-> read sheet temp - read and save into sheetTemp
+
+sheet lock status - determine the lock status of the sheet
+
+
+
+need to adjust so that the writing process can be given a ds
+
+
+
+app process  - only from the standpoint of ex storage data
+
+start aapp
+	-> determine if data exists
+		-> yes: read existing data
+
+/* the below is canceled - 
+// no reason to read lock unless 
+// and until need to change data
+			-> flag
+			-> check if lock exists
+				-> yes or no: flag
+		-> no: 
+			-> flag
+	-> done
+*/
+
+
+new condtion - create data
+	-> set data
+	-> validate: no current data
+	-> write data
+		-> create ds
+		-> write lock
+			-> flag
+		-> write data
+			-> flags
+		-> delete lock
+			-> flag
+	-> done
+
+existing condition - update data
+	-> set data
+	-> update
+		-> validate: ds exists
+		-> write lock
+			-> flag
+		-> delete entity & schema - keep ds
+			-> flag
+		-> write data
+			-> flags
+		-> delete lock
+			-> flag
+	-> done
+
+
+
+
+
+
+
+
+
+
+
+
+below are the different "conditions"
+
+0. start app / create config data / read sheet
+	a. exists / read / set sheet - return good
+	b. does not exist - return fail / sheet does not exist
+	
+
+	MainWin loads
+	-> new mainwinmodel
+		-> config ...
+		-> smR = instance
+			-> new ShExSchemaLibR()
+			-> new ShExStorageLibR()
+		-> smR.Init(Exid);
+		-> result = ReadSheet();
+
+
+
+	
+1. create sheet with live data
+	a. create again - return fail / sheet exists
+	b. delete sheet - return good / sheet = null
+		b.1 create sheet - return good
+		b.2 delete sheet - return fail / sheet does not exist
+		b.3 save sheet - return fail / sheet does not exist
+	c. save sheet / no lock - return good
+		c.1 read sheet - return good
+		c.2 create sheet - return fail / sheet exists
+		c.3 delete sheet - return good
+	d. save sheet / has lock - return fail / locked
+	e. exit program / flag not saved
+	
+	
+	
+2. sheet is config data (as in just started
+	a. create sheet - return good
+	b. delete sheet - return fail / no sheet data
+	c. save sheet - return fail / no sheet data
+	d. read sheet
+		d.1 found - return good
+		d.2 not found - return fail / not found
+	
+	
+	
+3. read sheet (some duplicate from above)
+	a. sheet data already exists - return fail / sheet exists
+	b. sheet is config data only
+		b.1. found - return good
+		b.2. not found - return fail / sheet not found
+	
+	
+	
+4. update data - existing found
+	a. sheet data is valid (not just config)
+		a.1 not locked
+			a.1.a delete existing - worked
+				a.1.a.1 save sheet - return good
+			a.1.a delete existing - failed / return cannot delete existing / report problem
+		a.2 is locked - return fail / is locked
+	b. sheet data is not valid (is just config) - return fail / no sheet data
+	

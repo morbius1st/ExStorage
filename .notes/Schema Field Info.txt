@@ -2,7 +2,7 @@
 
 * ScFieldSupport		/ support information & enums
 	> enum for schema type
-	> enums for Keys  (TKey)  / one per lock / table / row
+	> enums for Keys  (TKey)  / one per lock / sheet / row
 	> enum update rules		/ keep here?
 	> enum bool opts		/ keep here?
 	> enum for field display level	/ purpose? / keep here?
@@ -10,10 +10,10 @@
 * IScField<TKey>					/ interface that defines the components of a field
 * voided	* AScField				/ abstract class, implements IScField / setups up base field members
 * voided	* AScFieldsDef			/ abstract class that is the basis for
-* ScFieldDef<TKey>  (* schemafieldkey -> lock / table / row) / implementation of IScField<>
+* ScFieldDef<TKey>  (* schemafieldkey -> lock / sheet / row) / implementation of IScField<>
 
 * ShScFields<TKey>		/ abstract class that holds the collection of fields
-* ScFields	/ Lock / Table / Row	/ the concrete implementation of ShScFields<>
+* ScFields	/ Lock / Sheet / Row	/ the concrete implementation of ShScFields<>
 * ScFields the storage for all of the Schema Fields
 	> has static access
 
@@ -24,7 +24,7 @@ three schemas
 	* the schema that defines the lock semephore
 	* contains data used to identify the lock
 
-*  table
+*  sheet
 	* the schema that has the defined name and can be found
 	* contains data that is used to find the remaining information
 	* contains management information (name, description, date created, etc.)
@@ -52,7 +52,7 @@ three schemas
 	> used as the key for the actual data
 	> equals an integer that is the key to the field
 	> for shet schema
-		> name: ExTableKey
+		> name: ExSheetKey
 		> Starts at 200
 		> example names:
 		* RK_FIELD_NAME 200 + 0
@@ -75,7 +75,7 @@ three schemas
 	> access via static object
 	> name: FieldsManager
 	> holds the one copy of
-	* TableFields
+	* SheetFields
 	* RowFields
 	* LockFields
 
@@ -101,9 +101,9 @@ three schemas
 		* Machine_Name	/ string		/ the name of the machine that created the lock
 		* GUID			/ string		/ GUID for the lock (fixed & preset)
 
-* concrete table field schema class
-	> describes the actual fields for the table schema
-	> name: FieldsTable
+* concrete sheet field schema class
+	> describes the actual fields for the sheet schema
+	> name: FieldsSheet
 	> actual fields:
 		* (4) standard fields: name, description, version, date
 			> date is the last modification date (creation date at first)
@@ -114,7 +114,7 @@ three schemas
 		* cannot be written
 
 * concrete row field schema class
-	> describes the actual fields for the table schema
+	> describes the actual fields for the sheet schema
 	> name: FieldsRow
 	> actual fields:
 		* (4) standard fields: name, description, version, date

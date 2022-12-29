@@ -1,4 +1,4 @@
-﻿<Window
+﻿<Window x:Name="mainWin"
 		x:Class="ExStorage.Windows.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,15 +10,19 @@
 		xmlns:resLocal="clr-namespace:ExStorage.Properties"
 		xmlns:resShared="clr-namespace:SharedApp.Windows.ShResources"
 		xmlns:supportShared="clr-namespace:SharedApp.Windows.ShSupport"
+		xmlns:shExStC="clr-namespace:ShExStorageC.ShSchemaFields.ScSupport"
+		xmlns:shExScC="clr-namespace:ShExStorageC.ShSchemaFields"
+		xmlns:shExStN="clr-namespace:ShExStorageN.ShExStorage"
 		Title="Main Window"
-		Width="1000"
-		Height="650"
+		Height="1050"
+		Width="2000"
 		DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		mc:Ignorable="d"
 		Background="{DynamicResource Normal.Window.Background}"
 		Foreground="White"
 		SnapsToDevicePixels="True"
->
+		Loaded="MainWindow_OnLoaded"
+		>
 
 	<Window.Resources>
 
@@ -30,9 +34,34 @@
 				<ResourceDictionary Source="SharedSupport/CsScrollBar.xaml" />
 			</ResourceDictionary.MergedDictionaries>
 
+			<sys:Double x:Key="PanelWidth01">400</sys:Double>
+			<sys:Double x:Key="TitleWidth01">170</sys:Double>
 
-			<sys:Double x:Key="BtnHeight">28.0</sys:Double>
+			<sys:Double x:Key="TitleWidth02a">70</sys:Double>
+			<sys:Double x:Key="TitleWidth02b">85</sys:Double>
+
+			<sys:Double x:Key="PanelWidth02">190</sys:Double>
+
+			<sys:Double x:Key="BtnHeight">20.0</sys:Double>
 			<sys:Double x:Key="BtnWidth">110.0</sys:Double>
+
+			<SolidColorBrush x:Key="TbxBorder" Color="{StaticResource True.Blue.300}" />
+
+			<!-- <shExStC:PassThruConverter x:Key="PassThru" /> -->
+			<shExStC:KeyToFieldValueConverter x:Key="KeyToField" />
+			<!-- <shExStC:KeyToFieldValueConverter x:Key="KeyToValue" /> -->
+			<!-- <shExStC:KeyToFieldNameConverter x:Key="KeyToFieldName" /> -->
+
+
+			<Style x:Key="tblk.title01"
+					TargetType="TextBlock"
+					>
+				<Setter Property="Width" Value="{StaticResource TitleWidth02b}" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="TextAlignment" Value="Right" />
+				<Setter Property="Margin" Value="0,0,5,0">
+				</Setter>
+			</Style>
 
 			<Style x:Key="BtnBaseStyle"
 					TargetType="Button"
@@ -60,17 +89,27 @@
 					TargetType="Border"
 					>
 				<Setter Property="BorderBrush" Value="White" />
-				<Setter Property="BorderThickness" Value="0,0.5,0,0.5" />
+				<Setter Property="BorderThickness" Value="0,2,0,0.5" />
 				<Setter Property="Margin" Value="3,0,3,0" />
 			</Style>
 
-			<Style x:Key="BdrTxBlkHdr"
+			<Style x:Key="BdrTxBlkHdrBottLine"
 					TargetType="Border"
 					>
 				<Setter Property="Padding" Value="0,1,0,2" />
 				<Setter Property="BorderBrush" Value="White" />
 				<Setter Property="BorderThickness" Value="0,0,0,0.5" />
 			</Style>
+
+			<Style x:Key="BdrTxBlkHdrTnBLine"
+					TargetType="Border"
+					>
+				<Setter Property="Padding" Value="0,1,0,2" />
+				<Setter Property="BorderBrush" Value="White" />
+				<Setter Property="BorderThickness" Value="0,2,0,0.5" />
+			</Style>
+
+
 			<Style x:Key="FocusVisual">
 				<Setter Property="Control.Template">
 					<Setter.Value>
@@ -87,11 +126,13 @@
 				</Setter>
 			</Style>
 
-			<Style x:Key="TblkStackedBtn" TargetType="TextBlock">
-				<Setter Property="FontSize" Value="12"/>
-				<Setter Property="Margin" Value="0"/>
-				<Setter Property="Padding" Value="0"/>
-				<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Style x:Key="ShtkStackedBtn"
+					TargetType="TextBlock"
+					>
+				<Setter Property="FontSize" Value="12" />
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalAlignment" Value="Center" />
 
 			</Style>
 
@@ -101,6 +142,8 @@
 
 	<Grid Margin="3">
 		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="380" />
+			<ColumnDefinition Width="350" />
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="116" />
 			<ColumnDefinition Width="116" />
@@ -108,115 +151,1157 @@
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="80" />
-			<RowDefinition />
-			<RowDefinition Height="50" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="300" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<StackPanel
+		<Grid
+				Grid.Column="1"
+				Grid.Row="1"
+				Grid.RowSpan="2"
+				VerticalAlignment="Stretch"
+				HorizontalAlignment="Stretch"
+				>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+
+
+			<ListBox
+					Grid.Column="0"
+					Grid.Row="0"
+					Margin="0,0,5,15"
+					HorizontalAlignment="Stretch"
+					Background="Transparent"
+					DataContext="{Binding MwModel.SheetDataCurrent.Fields}"
+					ItemsSource="{Binding Values}"
+					d:ItemsSource="{d:SampleData}"
+					HorizontalContentAlignment="Stretch"
+					>
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<DockPanel
+								Dock="top"
+								HorizontalAlignment="Stretch"
+								>
+
+							<TextBlock
+									DockPanel.Dock="Left"
+									Width="110"
+									Foreground="White"
+									Text="{Binding Path=Meta1Field.FieldName}"
+									/>
+
+							<TextBox
+									DockPanel.Dock="Right"
+									Text="{Binding Path=Value}"
+									/>
+
+						</DockPanel>
+
+					</DataTemplate>
+
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+
+			<ListBox
+					Grid.Column="0"
+					Grid.Row="1"
+					HorizontalAlignment="Stretch"
+					Background="Transparent"
+					DataContext="{Binding MwModel.SheetDataCurrent.Rows}"
+					ItemsSource="{Binding Values}"
+					d:ItemsSource="{d:SampleData ItemCount=6}"
+					HorizontalContentAlignment="Stretch"
+					ScrollViewer.VerticalScrollBarVisibility="Visible"
+					ScrollViewer.HorizontalScrollBarVisibility="Visible"
+					ScrollViewer.CanContentScroll="False"
+					>
+				<ListBox.ItemTemplate>
+
+					<DataTemplate DataType="{x:Type shExScC:ScDataRow}">
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Text="{Binding Path=SchemaName}"
+									Foreground="White"
+									/>
+
+							<ListBox
+									DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackPanel}}, Path=DataContext}"
+									ItemsSource="{Binding Path=Fields}"
+									Background="Blue"
+									HorizontalContentAlignment="Stretch"
+									>
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<DockPanel HorizontalAlignment="Stretch">
+											<TextBlock
+													Width="110"
+													Text="{Binding Path=Value.FieldName}"
+													Foreground="White"
+													/>
+											<TextBox
+													Text="{Binding Path=Value.Value}"
+													HorizontalAlignment="Stretch"
+													/>
+
+										</DockPanel>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+
+							</ListBox>
+						</StackPanel>
+					</DataTemplate>
+
+
+				</ListBox.ItemTemplate>
+			</ListBox>
+
+
+			<!--    -->
+			<!--  <TreeView  -->
+			<!--  Grid.Column="0"  -->
+			<!--  Grid.Row="1"  -->
+			<!--  Height="200"  -->
+			<!--  HorizontalAlignment="Stretch"  -->
+			<!--  Background="Transparent"  -->
+			<!--  DataContext="{Binding MwModel.smR.Sheet}"  -->
+			<!--  ItemsSource="{Binding Rows}"  -->
+			<!--  d:ItemsSource="{d:SampleData}"  -->
+			<!--  HorizontalContentAlignment="Stretch"  -->
+			<!--  Foreground="White"  -->
+			<!--  >  -->
+			<!--    -->
+			<!-- 	<TreeView.Resources> -->
+			<!--  <HierarchicalDataTemplate  -->
+			<!--  DataType="{x:Type shExScC:ScDataRow1}"  -->
+			<!--  ItemsSource="{Binding Fields}"  -->
+			<!--  >  -->
+			<!--  ~1~ <TextBlock Foreground="White" @1@  -->
+			<!--  ~1~ 		Text="{Binding Path=SchemaName, TargetNullValue='name is null'}" @1@  -->
+			<!--  ~1~ /> @1@  -->
+			<!--    -->
+			<!-- 		</HierarchicalDataTemplate>	 -->
+			<!--    -->
+			<!--  <HierarchicalDataTemplate  -->
+			<!--  DataType="{x:Type shExScC:ScFieldsDefDataSheet}"  -->
+			<!--  ItemsSource="{Binding}"  -->
+			<!--    -->
+			<!--  >  -->
+			<!--  ~1~ <TextBlock Foreground="White" @1@  -->
+			<!--  ~1~ 		Text="{Binding Path=SchemaName}" @1@  -->
+			<!--  ~1~ /> @1@  -->
+			<!--    -->
+			<!-- 		</HierarchicalDataTemplate> -->
+			<!--    -->
+			<!-- 		<Style TargetType="{x:Type TextBlock}"> -->
+			<!-- 			<Setter Property="Foreground" Value="White"/> -->
+			<!-- 		</Style> -->
+			<!--    -->
+			<!--  ~1~ <HierarchicalDataTemplate  @1@  -->
+			<!--  ~1~ DataType="{x:Type shExScC:ScFieldsDefDataSheet}" @1@  -->
+			<!--  ~1~ 		ItemsSource="{Binding Path=}" @1@  -->
+			<!--  ~1~ > @1@  -->
+			<!--  ~1~ 	<TextBlock Foreground="White" @1@  -->
+			<!--  ~1~ 			Text="{Binding SchemaName}" @1@  -->
+			<!--  ~1~ 	/> @1@  -->
+			<!--  ~1~ @1@  -->
+			<!-- 		~1~ </HierarchicalDataTemplate> @1@ -->
+			<!--    -->
+			<!-- 	</TreeView.Resources> -->
+			<!--    -->
+			<!-- </TreeView> -->
+			<!--    -->
+
+
+		</Grid>
+
+		<DockPanel
 				Grid.Column="0"
 				Grid.Row="0"
-				Orientation="Vertical"
+				Grid.RowSpan="3"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Top"
 				>
 
-			<DockPanel HorizontalAlignment="Stretch">
+			<Grid DockPanel.Dock="Top">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="140" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
 				<TextBlock
-						Width="120"
-						HorizontalAlignment="Left"
 						DockPanel.Dock="Left"
-						Text="local string resx|"
-						/>
-				<TextBlock
-						HorizontalAlignment="Stretch"
-						Text="{x:Static resLocal:Resources.WhoAmI}"
-						/>
-			</DockPanel>
-
-			<DockPanel HorizontalAlignment="Stretch">
-				<TextBlock
-						Width="120"
+						Grid.Column="0"
+						Grid.Row="0"
+						Width="{StaticResource TitleWidth01}"
 						HorizontalAlignment="Left"
-						DockPanel.Dock="Left"
-						Text="shared string resx|"
+						Text="smR Return Code| "
 						/>
 				<TextBlock
-						HorizontalAlignment="Stretch"
-						Text="{x:Static resShared:ShStrings.WhoAmI}"
+						Grid.Column="1"
+						Grid.Row="0"
+						HorizontalAlignment="left"
+						Text="{Binding Path=smRntCode, FallbackValue='&lt;none&gt;'}"
 						/>
-			</DockPanel>
+
+				<TextBlock
+						Grid.Column="0"
+						Grid.Row="1"
+						Width="{StaticResource TitleWidth01}"
+						HorizontalAlignment="Left"
+						Text="DataStorage / Schema name| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="1"
+						HorizontalAlignment="Stretch"
+						Text="{Binding Path=MwModel.SheetDataCurrent.SchemaName, TargetNullValue='&lt;empty&gt;', FallbackValue='&lt;not found&gt;'}"
+						/>
 
 
+				<TextBlock
+						Grid.Column="0"
+						Grid.Row="2"
+						HorizontalAlignment="Left"
+						Text="Exid | ExsId| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="2"
+						HorizontalAlignment="Stretch"
+						Text="{Binding Source={x:Static shExStN:AExId.Exid}, FallbackValue='&lt;not found&gt;'}"
+						/>
 
-		</StackPanel>
+				<!-- data -->
+				<DockPanel
+						Grid.Column="0"
+						Grid.Row="3"
+						Grid.ColumnSpan="2"
+						>
 
-		<TextBox
-				Grid.Column="0"
+					<!-- title -->
+					<Border
+							DockPanel.Dock="Top"
+							Margin="0,10,0,0"
+							Padding="0"
+							Style="{StaticResource BdrTxBlkHdrTnBLine}">
+						<TextBlock
+								Foreground="White"
+								TextAlignment="Center"
+								Text="Data" />
+					</Border>
+
+
+					<ScrollViewer
+							HorizontalScrollBarVisibility="Visible"
+							VerticalScrollBarVisibility="Auto"
+							>
+						<DockPanel>
+
+							<!-- sheet current -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Sheet Current"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid |" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidCurrent.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidCurrent.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="has sheet|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasSheet, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataCurrent.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataCurrent.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							<!-- sheet editing -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Sheet Edit"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid (cur)|" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidCurrent.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid (cur)|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidCurrent.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="has sheet 4 edit|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasSheetForEdit, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataEditing.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataEditing.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							<!-- sheet temp -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Sheet Temp"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid|" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidTemp.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="ShtExid|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetExidTemp.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="has sht temp|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasSheetTemp, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataTemp.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataTemp.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							<!-- lock current -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Lock Current"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidCurrent.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidCurrent.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="has lk current|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasLockCurrent, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockDataCurrent.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockDataCurrent.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							<!-- lock temp -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Lock Temp"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidATemp.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidATemp.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="has lk temp|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasLockTemp, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockDataTemp.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockDataTemp.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							<!-- lock B -->
+							<Border
+									DockPanel.Dock="Top"
+									Margin="0,10,0,1"
+									BorderThickness=".5,10,0,0"
+									BorderBrush="White"
+									CornerRadius="10,0,0,0"
+									DataContext="{Binding ElementName=mainWin, Path=MwModel}">
+
+								<DockPanel>
+
+									<TextBlock
+											DockPanel.Dock="Top"
+											Background="{DynamicResource Normal.Window.Background}"
+											Margin="36,-14,0,3"
+											Padding="5,0,5,0"
+											HorizontalAlignment="left"
+											Text="Lock B"
+											Foreground="White" />
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="user name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidBJohn.UserName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="LokExid|" />
+										<TextBlock
+												Text="ds Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockExidBJohn.DsName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="has lk Bjohn|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding HasLockBJohn, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="user Name|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockBDataJohn.UserName, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Lock|" />
+										<TextBlock
+												Text="schema Name|"
+												Style="{StaticResource tblk.title01}" />
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding LockBDataJohn.SchemaName, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+								</DockPanel>
+
+							</Border>
+
+							</DockPanel>
+						</ScrollViewer>
+
+
+				</DockPanel>
+
+
+				<!--<TextBlock
+						DockPanel.Dock="Left"
+						Grid.Column="0"
+						Grid.Row="3"
+						HorizontalAlignment="Left"
+						Text="SheetInit| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="3"
+						Margin="10,0,0,0"
+						HorizontalAlignment="left"
+						Text="{Binding Path=MwModel.SheetInit, FallbackValue='&lt;not found&gt;'}"
+						/>
+
+
+				<TextBlock
+						DockPanel.Dock="Left"
+						Grid.Column="0"
+						Grid.Row="4"
+						HorizontalAlignment="Left"
+						Text="SheetLoaded| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="4"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Stretch"
+						Text="{Binding Path=MwModel.SheetLoaded, FallbackValue='&lt;not found&gt;'}"
+						/>
+
+
+				<TextBlock
+						DockPanel.Dock="Left"
+						Grid.Column="0"
+						Grid.Row="5"
+						HorizontalAlignment="Left"
+						Text="LockInit| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="5"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Stretch"
+						Text="{Binding Path=MwModel.LockInit, FallbackValue='&lt;not found&gt;'}"
+						/>
+
+
+				<TextBlock
+						DockPanel.Dock="Left"
+						Grid.Column="0"
+						Grid.Row="6"
+						HorizontalAlignment="Left"
+						Text="LockLoaded| "
+						/>
+				<TextBlock
+						Grid.Column="1"
+						Grid.Row="6"
+						Margin="10,0,0,0"
+						HorizontalAlignment="Stretch"
+						Text="{Binding Path=MwModel.LockLoaded, FallbackValue='&lt;not found&gt;'}"
+						/>-->
+
+
+			</Grid>
+
+		</DockPanel>
+
+
+		<Border
+				Grid.Column="2"
+				Grid.Row="2"
+				BorderBrush="{StaticResource TbxBorder}"
+				BorderThickness="1"
+				Margin="1"
+				>
+			<TextBox
+					Margin="0,0,2,0"
+					FontFamily="Consolas"
+					Background="Transparent"
+					Foreground="White"
+					BorderThickness="0"
+					Text="{Binding StatusBoxText, Mode=OneWay}"
+					VerticalScrollBarVisibility="Visible"
+					HorizontalScrollBarVisibility="Visible"
+					>
+
+				<TextBox.Resources>
+
+					<Style TargetType="{x:Type ScrollViewer}">
+						<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.ScrollBarWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.TrackWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconGirth" Value="8" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderThickness" Value="1,0,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderThickness" Value="0,1,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRectBkgBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Gray.150}" />
+							</Setter.Value>
+						</Setter>
+
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrThickness" Value="1,1,0,0" />
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+
+					</Style>
+
+				</TextBox.Resources>
+
+			</TextBox>
+		</Border>
+		<Border
+				Grid.Column="2"
 				Grid.Row="1"
-				
-				Margin="0,0,2,0"
-				FontFamily="Consolas"
-				Background="Transparent"
-				Foreground="White"
-				BorderThickness="0"
-				Text="{Binding MessageBoxText,
-											 Mode=OneWay}"
-				VerticalScrollBarVisibility="Visible"
-				HorizontalScrollBarVisibility="Visible"
+				BorderBrush="{StaticResource TbxBorder}"
+				BorderThickness="1"
+				Margin="1"
 				>
 
-			<TextBox.Resources>
+			<TextBox
+					Margin="0,0,2,0"
+					FontFamily="Consolas"
+					Background="Transparent"
+					Foreground="White"
+					BorderThickness="0"
+					Text="{Binding MessageBoxText, Mode=OneWay}"
+					VerticalScrollBarVisibility="Visible"
+					HorizontalScrollBarVisibility="Visible"
+					>
 
-				<Style TargetType="{x:Type ScrollViewer}">
-					<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
-					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonLength" Value="10" />
-					<Setter Property="supportShared:CsScrollBarAp.ScrollBarWidth" Value="4" />
-					<Setter Property="supportShared:CsScrollBarAp.TrackWidth" Value="4" />
-					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconGirth" Value="8" />
-					<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconLength" Value="10" />
-					<Setter Property="supportShared:CsScrollBarAp.VertBorderThickness" Value="1,0,0,0" />
-					<Setter Property="supportShared:CsScrollBarAp.VertBorderColor">
-						<Setter.Value>
-							<SolidColorBrush Color="{StaticResource Blue.350}" />
-						</Setter.Value>
-					</Setter>
-					<Setter Property="supportShared:CsScrollBarAp.HorizBorderThickness" Value="0,1,0,0" />
-					<Setter Property="supportShared:CsScrollBarAp.HorizBorderColor">
-						<Setter.Value>
-							<SolidColorBrush Color="{StaticResource Blue.350}" />
-						</Setter.Value>
-					</Setter>
+				<TextBox.Resources>
 
-					<Setter Property="supportShared:CsScrollViewerAp.CornerRectBkgBrush">
-						<Setter.Value>
-							<SolidColorBrush Color="{StaticResource Gray.150}" />
-						</Setter.Value>
-					</Setter>
+					<Style TargetType="{x:Type ScrollViewer}">
+						<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.ScrollBarWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.TrackWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconGirth" Value="8" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderThickness" Value="1,0,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderThickness" Value="0,1,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
 
-					<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrThickness" Value="1,1,0,0" />
-					<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrBrush">
-						<Setter.Value>
-							<SolidColorBrush Color="{StaticResource Blue.350}" />
-						</Setter.Value>
-					</Setter>
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRectBkgBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Gray.150}" />
+							</Setter.Value>
+						</Setter>
+
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrThickness" Value="1,1,0,0" />
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
 
 
-				</Style>
+					</Style>
 
-			</TextBox.Resources>
+				</TextBox.Resources>
 
-		</TextBox>
+			</TextBox>
+		</Border>
+
 
 		<StackPanel
-				Grid.Column="0"
-				Grid.Row="2"
+				Grid.Column="2"
+				Grid.Row="3"
 				Grid.ColumnSpan="3"
 				HorizontalAlignment="Right"
 				Orientation="Horizontal"
+				Margin="5,5,0,5"
 				>
 
-			<!--  <Button x:Name="BtnExit2"  -->
-			<!--  Content="Exit 2"  -->
-			<!--  Style="{StaticResource BtnBottomRow}"  -->
-			<!--  />  -->
+			<Button x:Name="BtnExit2"
+					Content="Clear Text Box"
+					Style="{StaticResource BtnBottomRow}"
+					Click="BtnClear_OnClick"
+					/>
 
 			<Button x:Name="BtnExit"
 					Content="Exit"
@@ -227,7 +1312,7 @@
 		</StackPanel>
 
 		<Border
-				Grid.Column="1"
+				Grid.Column="3"
 				Grid.Row="0"
 				Grid.RowSpan="2"
 				Style="{StaticResource BdrStkPnl}"
@@ -237,7 +1322,7 @@
 					Orientation="Vertical"
 					>
 
-				<Border Style="{StaticResource BdrTxBlkHdr}">
+				<Border Style="{StaticResource BdrTxBlkHdrBottLine}">
 					<TextBlock
 							Foreground="White"
 							TextAlignment="Center"
@@ -249,7 +1334,32 @@
 						Content="Show Exid"
 						Style="{StaticResource BtnOps}"
 						Click="BtnShowExid_OnClick"
-				/>
+						/>
+
+				<Button x:Name="BtnShowSheet1"
+						Content="Show Sheet 1"
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowSheet1_OnClick"
+						/>
+
+
+				<Button x:Name="BtnShowLockA"
+						Content="Show Lock A"
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowLockA_OnClick"
+						/>
+
+				<Button x:Name="BtnShowLockB"
+						Content="Show Lock B"
+						Style="{StaticResource BtnOps}"
+						Click="BtnShowLockB_OnClick"
+						/>
+
+				<!--  <Button x:Name="BtnShowSheet2"  -->
+				<!--  Content="Show Sheet 2"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnShowSheet2_OnClick"  -->
+				<!--  />  -->
 
 
 				<!-- removed
@@ -266,12 +1376,12 @@
 						>
 					<Button.Content>
 						<StackPanel Orientation="Vertical">
-							<TextBlock 
-									Style="{StaticResource TblkStackedBtn}"
+							<TextBlock
+									Style="{StaticResource ShtkStackedBtn}"
 									Margin="0,-2,0,-2"
 									Text="Show Fn12" />
-							<TextBlock 
-									Style="{StaticResource TblkStackedBtn}"
+							<TextBlock
+									Style="{StaticResource ShtkStackedBtn}"
 									Text="(All DS)" />
 						</StackPanel>
 					</Button.Content>
@@ -283,7 +1393,7 @@
 		</Border>
 
 		<Border
-				Grid.Column="2"
+				Grid.Column="4"
 				Grid.Row="0"
 				Grid.RowSpan="2"
 				Style="{StaticResource BdrStkPnl}"
@@ -293,7 +1403,7 @@
 					Orientation="Vertical"
 					>
 
-				<Border Style="{StaticResource BdrTxBlkHdr}">
+				<Border Style="{StaticResource BdrTxBlkHdrBottLine}">
 					<TextBlock
 							Foreground="White"
 							TextAlignment="Center"
@@ -301,58 +1411,407 @@
 							/>
 				</Border>
 
-				<Button x:Name="BtnTest01"
-						Content="1) Find All Ds"
+				<!--    -->
+				<!--  <Button x:Name="BtnTest01"  -->
+				<!--  Content="1) Find All Ds"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestFindAllDs1_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest02"  -->
+				<!--  Content="2) Find Schemas"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnGetSchemaByName2_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest03"  -->
+				<!--  Content="3) Find Ds by Name"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestFindDsByName3_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest04"  -->
+				<!--  Content="4a) Delete Sheet Ds"  -->
+				<!--  FontSize="10"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestDeleteSheetDs4_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest04b"  -->
+				<!--  Content="4b) Delete Sheet Entity"  -->
+				<!--  FontSize="10"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestDeleteSheetEntity4b_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest04c"  -->
+				<!--  Content="4c) Delete Sheet Schema"  -->
+				<!--  FontSize="10"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestDeleteSheetSchema4c_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest05"  -->
+				<!--  Content="5) Get Ds Entity"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestGetDsEntity5_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest06"  -->
+				<!--  Content="6) Get Entity Data"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestGetEntityData6_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest07"  -->
+				<!--  Content="7) Ds Exists?"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnTestDoesDsExist7_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button x:Name="BtnTest08"  -->
+				<!--  Content="8) Begin Ph 1"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnBegin8_OnClick"  -->
+				<!--  />  -->
+
+
+				<!--  <Button x:Name="BtnTest0B"  -->
+				<!--  Content="B) Init Sht Data"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnInitDataB_OnClick"  -->
+				<!--  />  -->
+
+				<Button x:Name="BtnTest10"
+						Content="10) What Exists?"
 						Style="{StaticResource BtnOps}"
-						Click="BtnTestFindAllDs1_OnClick"
+						Click="BtnWhatExists10_OnClick"
 						/>
 
-				<Button x:Name="BtnTest02"
-						Content="2) Find Schemas"
-						Style="{StaticResource BtnOps}"
-						Click="BtnGetSchemaByName2_OnClick"
-						/>
 
-				<Button x:Name="BtnTest03"
-						Content="3) Find Ds by Name"
+				<Button x:Name="BtnTest13"
+						Content="13) Read Tables"
 						Style="{StaticResource BtnOps}"
-						Click="BtnTestFindDsByName3_OnClick"
-						/>
-
-				<Button x:Name="BtnTest04"
-						Content="4) Delete Ds by Name"
-						Style="{StaticResource BtnOps}"
-						Click="BtnTestDeleteDsByName4_OnClick"
-						/>
-
-				<Button x:Name="BtnTest05"
-						Content="5) Get Ds Entity"
-						Style="{StaticResource BtnOps}"
-						Click="BtnTestGetDsEntity5_OnClick"
-						/>
-
-				<Button x:Name="BtnTest06"
-						Content="6) Get Entity Data"
-						Style="{StaticResource BtnOps}"
-						Click="BtnTestGetEntityData6_OnClick"
-						/>
-
-				<Button x:Name="BtnTest07"
-						Content="7) Ds Exists?"
-						Style="{StaticResource BtnOps}"
-						Click="BtnTestDoesDsExist7_OnClick"
-						/>
-
-				<Button x:Name="BtnTest08"
-						Content="8) Begin Ph 1"
-						Style="{StaticResource BtnOps}"
-						Click="BtnBegin8_OnClick"
+						Click="BtnReadTables_OnClick"
 						/>
 
 
+				<!--  <Button x:Name="BtnTest11"  -->
+				<!--  Content="11) init data"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnInit11_OnClick"  -->
+				<!--  />  -->
+
+
+				<Border
+						Margin="0,7,0,0"
+						Style="{StaticResource BdrTxBlkHdrTnBLine}"
+						>
+					<TextBlock
+							Foreground="White"
+							TextAlignment="Center"
+							Text="Sheet"
+							/>
+				</Border>
+
+
+
+				<Border
+						Margin="0,10,0,1"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+						>
+					<StackPanel>
+						<TextBlock
+								Background="{DynamicResource Normal.Window.Background}"
+								Margin="0,-14,0,3"
+								Padding="5,0,5,0"
+								HorizontalAlignment="Center"
+								Text="Sheet Basic"
+								Foreground="White"
+								/>
+
+						<Button x:Name="BtnTest0A"
+								Content="Make Data"
+								Style="{StaticResource BtnOps}"
+								Click="BtnMakeMakeSheetDataA_OnClick"
+								/>
+
+
+						<Button x:Name="BtnTest09"
+								Content="Write"
+								Style="{StaticResource BtnOps}"
+								Click="BtnWriteSheet9_OnClick"
+								/>
+
+						<Button x:Name="BtnTest09b"
+								Content="Read"
+								Style="{StaticResource BtnOps}"
+								Click="BtnReadSheet9b_OnClick"
+								/>
+
+						<Button x:Name="BtnTest12"
+								Content="Delete"
+								Style="{StaticResource BtnOps}"
+								Click="BtnDeleteSheet12_OnClick"
+								/>
+
+					</StackPanel>
+
+				</Border>
+
+
+
+
+
+
+				<Border
+						Margin="0,7,0,0"
+						Style="{StaticResource BdrTxBlkHdrTnBLine}"
+						>
+					<TextBlock
+							Foreground="White"
+							TextAlignment="Center"
+							Text="Lock"
+							/>
+				</Border>
+
+				<Border
+						Margin="0,10,0,1"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+						>
+					<StackPanel>
+						<TextBlock
+								Background="{DynamicResource Normal.Window.Background}"
+								Margin="0,-14,0,3"
+								Padding="5,0,5,0"
+								HorizontalAlignment="Center"
+								Text="Lock A"
+								Foreground="White"
+								/>
+
+
+						<Button
+								IsEnabled="False"
+								Content="Make Data (fixed)"
+								Style="{StaticResource BtnOps}"
+								/>
+								<!-- Click="BtnMakeLockAdata_OnClick" -->
+
+						<Button x:Name="BtnTestL5"
+								Content="Write"
+								Style="{StaticResource BtnOps}"
+								Click="BtnCreateLockA_OnClick"
+								/>
+
+						<Button x:Name="BtnTestL7"
+								Content="Read"
+								Style="{StaticResource BtnOps}"
+								Click="BtnReadLockA_OnClick"
+								/>
+
+						<Button x:Name="BtnTestL3"
+								Content="Delelete"
+								Style="{StaticResource BtnOps}"
+								Click="BtnDelLockA_OnClick"
+								/>
+					</StackPanel>
+
+				</Border>
+
+				<Border
+						Margin="0,10,0,1"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+						>
+					<StackPanel>
+						<TextBlock
+								Background="{DynamicResource Normal.Window.Background}"
+								Margin="0,-14,0,3"
+								Padding="5,0,5,0"
+								HorizontalAlignment="Center"
+								Text="Lock B"
+								Foreground="White"
+								/>
+
+						<!--  <Button x:Name="BtnTest0L2"  -->
+						<!--  Content="Make Data"  -->
+						<!--  Style="{StaticResource BtnOps}"  -->
+						<!--  Click="BtnMakeLockDataB_OnClick" />  -->
+
+
+						<Button
+								Content="Make Data"
+								Style="{StaticResource BtnOps}"
+								Click="BtnMakeLockBdata_OnClick"
+								/>
+
+						<Button x:Name="BtnTestL6"
+								Content="Write"
+								Style="{StaticResource BtnOps}"
+								Click="BtnCreateLockB_OnClick"
+								/>
+
+						<Button x:Name="BtnTestL8"
+								Height="Auto"
+								Style="{StaticResource BtnOps}"
+								Click="BtnReadLockB_OnClick"
+								>
+							<Button.Content>
+								<StackPanel Orientation="Vertical">
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,0,0,0"
+											Padding="0"
+											Text="Read"
+											/>
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,-4,0,2"
+											Padding="0"
+											Text="User name: johns"
+											/>
+								</StackPanel>
+							</Button.Content>
+						</Button>
+
+						<Button x:Name="BtnTestL4"
+								Height="Auto"
+								Style="{StaticResource BtnOps}"
+								Click="BtnDelLockBjeffs_OnClick"
+								>
+							<Button.Content>
+								<StackPanel Orientation="Vertical">
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,0,0,0"
+											Padding="0"
+											Text="Delete"
+											/>
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,-4,0,2"
+											Padding="0"
+											Text="User name: jeffs"
+											/>
+								</StackPanel>
+							</Button.Content>
+						</Button>
+
+						<Button x:Name="BtnTestL14"
+								Height="Auto"
+								Style="{StaticResource BtnOps}"
+								Click="BtnDelLockBjohns_OnClick"
+								>
+							<Button.Content>
+								<StackPanel Orientation="Vertical">
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,0,0,0"
+											Padding="0"
+											Text="Delete"
+											/>
+									<TextBlock
+											HorizontalAlignment="Center"
+											Margin="0,-4,0,2"
+											Padding="0"
+											Text="User name: johns"
+											/>
+								</StackPanel>
+							</Button.Content>
+						</Button>
+
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- <StackPanel Orientation="Horizontal"> -->
+				<!--  <Border  -->
+				<!--  HorizontalAlignment="Stretch"  -->
+				<!--  Height="10"  -->
+				<!--  Margin="0,4,0,0"  -->
+				<!--  BorderThickness="1,10,0,0"  -->
+				<!--  BorderBrush="White"  -->
+				<!--  CornerRadius="10,0,0,0"  -->
+				<!--  >  -->
+				<!-- 	</Border> -->
+				<!--    -->
+				<!--    -->
+				<!--  ~1~ <Border @1@  -->
+				<!--  ~1~ 		Height="10" @1@  -->
+				<!--  ~1~ 		Width="30" @1@  -->
+				<!--  ~1~ 		Margin="0,4,0,0" @1@  -->
+				<!--  ~1~ 		BorderThickness="0,10,0,0" @1@  -->
+				<!--  ~1~ 		BorderBrush="White" @1@  -->
+				<!--  ~1~ 		CornerRadius="0,0,0,0" @1@  -->
+				<!--  ~1~ /> @1@  -->
+				<!--    -->
+				<!--    -->
+				<!-- </StackPanel> -->
+
+				<Border
+						Height="10"
+						HorizontalAlignment="Stretch"
+						Margin="0,8,0,0"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+						>
+				</Border>
+				<Border
+						Margin="0,-1,0,0"
+						BorderThickness="1,1.5,0,0"
+						BorderBrush="White"
+						CornerRadius="0,0,0,0"
+						>
+					<Border
+							Margin="-1,-1,0,0"
+							BorderThickness="1,1,0,0"
+							BorderBrush="White"
+							CornerRadius="4,0,0,0"
+							>
+
+						<StackPanel>
+
+							<TextBlock
+									Background="{DynamicResource Normal.Window.Background}"
+									Margin="0,-13,0,-2"
+									Padding="5,0,5,0"
+									HorizontalAlignment="Center"
+									Text="Aux Tests"
+									Foreground="White"
+									/>
+
+
+							<Button x:Name="BtnTestL10"
+									Content="Get User Name A"
+									Style="{StaticResource BtnOps}"
+									Click="BtnGetLockAOwner_OnClick"
+									/>
+
+							<Button x:Name="BtnTestL12"
+									Content="Get User Name B"
+									Style="{StaticResource BtnOps}"
+									Click="BtnGetLockBOwner_OnClick"
+									/>
+
+							<Button x:Name="BtnTestL11"
+									Content="Can Delete"
+									Style="{StaticResource BtnOps}"
+									Click="BtnCanDelLock_OnClick"
+									/>
+						</StackPanel>
+
+					</Border>
+				</Border>
 			</StackPanel>
-		</Border>
 
+		</Border>
 	</Grid>
 
 </Window>

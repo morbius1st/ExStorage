@@ -15,6 +15,7 @@ namespace ShStudy
 	public interface IWin
 	{
 		string MessageBoxText { get; set; }
+		string StatusBoxText { get; set; }
 
 	}
 }

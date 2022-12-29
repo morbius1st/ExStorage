@@ -18,6 +18,10 @@ namespace SettingsManager
 	public class UserSettingDataFile : IDataFile
 	{
 		[IgnoreDataMember]
+		private int uValue = 1;
+
+
+		[IgnoreDataMember]
 		public string DataFileVersion => "user 7.4u";
 
 		[IgnoreDataMember]
@@ -27,7 +31,28 @@ namespace SettingsManager
 		public string DataFileNotes => "user / any notes go here";
 
 		[DataMember(Order = 1)]
-		public int UserSettingsValue { get; set; } = 7;
+		public int UserSettingsValue
+		{
+			get => uValue; 
+			
+			set
+			{
+				if (value > 4)
+				{
+					uValue = 0;
+				} 
+				else if (value < 0)
+				{
+					uValue = 4;
+				}
+				else
+				{
+					uValue = value;
+				}
+
+			}
+
+		}
 	}
 
 	#endregion

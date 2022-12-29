@@ -10,17 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExId.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScInfoBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\DynaValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStoreRtnCode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScInfoBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScFieldDefData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScFieldDefMeta.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\DynaValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldsBase2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScSupport\ScFieldSupport.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScSupport\" />
-    <Folder Include="$(MSBuildThisFileDirectory)ShSupport\" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldBase1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldsBase1.cs" />
   </ItemGroup>
 </Project>

@@ -7,12 +7,18 @@ using Autodesk.Revit.Creation;
 using ShExStorageR.ShExStorage;
 using SharedApp.Windows.ShSupport;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.ExtensibleStorage;
 using ShExStorageN.ShExStorage;
 using ShStudy.ShEval;
 // using EnvDTE;
 using RevitSupport;
+using SettingsManager;
 using ShExStorageC.ShSchemaFields;
+using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageN.ShSchemaFields;
 using ShStudy;
+using SettingsManager;
+using Document = Autodesk.Revit.DB.Document;
 
 #endregion
 
@@ -20,6 +26,7 @@ using ShStudy;
 // itemname: MainWindow
 // username: jeffs
 // created:  12/27/2021 7:15:47 PM
+
 
 namespace ExStorage.Windows
 {
@@ -30,20 +37,19 @@ namespace ExStorage.Windows
 	{
 	#region private fields
 
-		public static ShDebugMessages M { get; private set; } 
+		public static ShDebugMessages M { get; private set; }
 		private string messageBoxText;
+		private string statusBoxText;
 
 		private MainWindowModel mwModel;
 
-		// fields
-		private ScDataTable tbld;
-		private ScDataRow rowd;
-		private ScDataLock lokd;
+		// private ExId exid;
 
+		private UserSettings uStg;
 
-		#endregion
+	#endregion
 
-		#region ctor
+	#region ctor
 
 		public MainWindow()
 		{
@@ -51,67 +57,129 @@ namespace ExStorage.Windows
 
 			M = new ShDebugMessages(this);
 
-			init();
+			StaticInfo.MainWin = this;
 
+			config();
 		}
 
 	#endregion
 
 	#region public properties
 
+		public MainWindowModel MwModel => mwModel;
+
 		public string MessageBoxText
 		{
 			get => messageBoxText;
 			set
 			{
-				messageBoxText = value; 
+				messageBoxText = value;
 				OnPropertyChanged();
 			}
 		}
 
-		public ExId Exid { get; private set; }
+		public string StatusBoxText
+		{
+			get => statusBoxText;
+			set
+			{
+				statusBoxText = value;
+				OnPropertyChanged();
+			}
+		}
 
-		// public ExStoreRtnCode LastResult => result;
-		// public bool LastResultSuccess => result == ExStoreRtnCode.XRC_GOOD;
+		// public ExId Exid
+		// {
+		// 	get => exid;
+		// 	set => exid = value;
+		// }
+
+		// public string DataStoreSchemaName => MwModel?.smR?.Sheet?.SchemaName ?? "<not init>";
+
+		public ShtExId ShtExid => mwModel?.SheetExidCurrent;
+
+		// public string smRHasData => mwModel?.smR?.HasData.ToString() ?? "<not init>";
+		public string smRntCode => mwModel?.smR?.ReturnCode.ToString() ?? "<not init>";
 
 	#endregion
 
 	#region private properties
 
+
 	#endregion
 
 	#region public methods
 
-		public void ShowMsg()
+		public void UpdateProperty(string property)
 		{
-			OnPropertyChanged(nameof(MessageBoxText));
+			OnPropertyChanged(property);
+
 		}
 
 	#endregion
 
 	#region private methods
 
-		private void init()
+		private void config()
 		{
-			mwModel = new MainWindowModel(this, M);
+			M.WriteLineStatus("before init mainwinmodel");
 
-			Exid = new ExId(RvtCommand.RvtDoc.Title);
+			AExId.Config(RvtCommand.RvtDoc);
 
-			// MessageBoxText = "Hello ExStorage\n";
-			//
-			// sp01 = new ShowsProcedures01(this);
-			//
-			// exsLib = new ExStorageLib(Command.RvtDoc);
+			// mwModel = new MainWindowModel(M, ExId1.GetInstance(RvtCommand.RvtDoc));
+			mwModel = new MainWindowModel(M, new ShtExId("Primary Sheet ExId", ShtExId.ROOT));
+
+			StaticInfo.MainWinModel = mwModel;
+
+			getUserSettings();
 		}
 
-		#endregion
+		private void getUserSettings()
+		{
+			UserSettings.Admin.Read();
 
-		#region event consuming
+			UserSettings.Data.UserSettingsValue += 1;
+
+			UserSettings.Admin.Write();
+		}
+
+		// private void MwModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		// {
+		// 	if (e.PropertyName.Equals(nameof(mwModel.SmRtnCode)))
+		// 	{
+		// 		OnPropertyChanged(nameof(smRntCode));
+		// 	} 
+		// 	else if (e.PropertyName.Equals(nameof(mwModel.SheetInit)))
+		// 	{
+		// 		OnPropertyChanged(nameof(MwModel));
+		// 	}
+		// }
+
+	#endregion
+
+	#region event consuming
+
+		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("begin mainwin loaded");
+
+			mwModel.ShowSheet1();
+
+			OnPropertyChanged(nameof(MwModel));
+
+			M.WriteLineStatus("end mainwin loaded");
+		}
 
 		private void BtnExit_OnClick(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;
 			this.Close();
+		}
+
+		private void BtnClear_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("clear messages button");
+			M.MsgClr();
 		}
 
 	#endregion
@@ -136,87 +204,406 @@ namespace ExStorage.Windows
 
 	#endregion
 
-
 	#region shows
 
 		private void BtnShowExid_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.ShowExid(Exid);
+			M.WriteLineStatus("show Exid button");
+			mwModel.ShowExid(ShtExid);
 		}
 
-		private void BtnShowFn11_OnClick(object sender, RoutedEventArgs e)
+		private void BtnShowSheet1_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.ShowProcFn11();
+			M.WriteLineStatus("show sheet button");
+			mwModel.ShowSheet1();
 		}
 
-		private void BtnShowFn12_OnClick(object sender, RoutedEventArgs e)
+		private void BtnShowLockA_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.ShowProcFn12();
+			M.WriteLineStatus("show lock A button");
+			mwModel.ShowLockA();
+		}
+
+		private void BtnShowLockB_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("show lock B button");
+			mwModel.ShowLockB();
 		}
 
 	#endregion
-
 
 	#region tests
 
-		private void BtnTestFindAllDs1_OnClick(object sender, RoutedEventArgs e)
+		private void BtnReadTables_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.GetAllDs1();
+			M.WriteLineStatus("init sheet button");
+
+			mwModel.GetTables();
 		}
 
-		private void BtnTestFindDsByName3_OnClick(object sender, RoutedEventArgs e)
+
+		private void BtnWhatExists10_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.FindDsByName3();
+			mwModel.doTheyExist();
+		}
+		
+
+		// sheet
+
+
+		private void BtnMakeMakeSheetDataA_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("make data button");
+
+			mwModel.MakeSheetData();
+
+			M.WriteLine("make sheet data - WORKED");
 		}
 
-		private void BtnTestDeleteDsByName4_OnClick(object sender, RoutedEventArgs e)
+		private void BtnWriteSheet9_OnClick(object sender, RoutedEventArgs e)
 		{
-			mwModel.DeleteDsByName4();
-		}
+			M.WriteLineStatus("write sheet button");
 
-		private void BtnGetSchemaByName2_OnClick(object sender, RoutedEventArgs e)
-		{
-			mwModel.GetSchemaByName2();
-		}
+			M.WriteLine("\n*** begin process| WRITE SHEET | ***\n");
 
-		private void BtnTestGetDsEntity5_OnClick(object sender, RoutedEventArgs e)
-		{
-			mwModel.GetDsEntity5();
-		}
+			// M.WriteLineStatus("make sheet data");
+			//
+			// mwModel.MakeSheetData();
 
-		private void BtnTestGetEntityData6_OnClick(object sender, RoutedEventArgs e)
-		{
-			mwModel.GetEntityData6();
-		}
+			M.WriteLineStatus("before write sheet");
 
-		private void BtnTestDoesDsExist7_OnClick(object sender, RoutedEventArgs e)
-		{
-			mwModel.DoesDsExist7();
-		}
+			// bool result = mwModel.WriteSheet(shtd);
+			bool result = mwModel.TestWriteSheetCurrent();
 
-		// process tests
+			M.WriteLineStatus($"after write sheet| status| {result}");
 
-		// begin phase 1
-		private void BtnBegin8_OnClick(object sender, RoutedEventArgs e)
-		{
-			ExStoreRtnCode result = mwModel.TestBeginPhase1(Exid);
-
-			if (result == ExStoreRtnCode.XRC_DS_EXISTS)
+			if (result)
 			{
-				M.WriteLineAligned("DS already exists - cannot make new - exiting\n");
-				return;
+				M.WriteLine("\n*** WRITE SHEET worked ***\n");
 			}
 			else
 			{
-				M.WriteLineAligned("DS not found - proceeding\n");
+				M.WriteLine($"\n*** WRITE SHEET failed ***\n");
 			}
+		}
 
-			tbld = mwModel.MakeTableData(Exid);
+		private void BtnReadSheet9b_OnClick(object sender, RoutedEventArgs a)
+		{
+			M.WriteLine("\n*** begin process| READ SHEET | ***\n");
 
-			mwModel.ShowTableData(tbld);
+			bool result = mwModel.TestReadSheetCurrent();
+
+			if (result)
+			{
+				M.WriteLine("\n*** READ SHEET worked ***\n");
+				// mwModel.ShowSheetData(mwModel.smR.Sheet);
+				mwModel.ShowSheet1();
+			}
+			else
+			{
+				M.WriteLine($"\n*** READ SHEET failed ***");
+				M.WriteLine($"*** Add some data first maybe? ***\n");
+			}
+		}
+
+		private void BtnDeleteSheet12_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwModel.DeleteSheet();
+		}
+
+		// private void BtnInitDataB_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("init sheet button");
+		//
+		// 	mwModel.InitSheet();
+		// }
+
+
+
+		// lock A
+
+		// private void BtnMakeLockAdata_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("make data lock A button");
+		// 	
+		// 	mwModel.CreateLockData();
+		// }
+
+		private void BtnCreateLockA_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("write lock A button");
+			
+			bool result = mwModel.CreateLockCurrent();
+
+			if (result)
+			{
+				M.WriteLine("write lock A WORKED");
+			}
+			else
+			{
+				M.WriteLine("write lock A FAILED");
+
+			}
+		}
+
+		private void BtnReadLockA_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("read lock A button");
+			ScDataLock lokd;
+			mwModel.ReadLockCurrent(out lokd);
+		}
+
+		private void BtnGetLockAOwner_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("get lock A owner Id button");
+
+			string owner;
+
+			bool result = mwModel.GetUserNameLockCurrent(out owner);			
+			
+			if (result)
+			{
+				M.WriteLine($"read lock A owner Id is| {mwModel.LockDataCurrent?.UserName ?? "is null"}");
+			}
+		}
+
+		private void BtnDelLockA_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("del lock A button");
+
+			bool result = mwModel.DeleteLockCurrent();
+
+			if (result)
+			{
+				M.WriteLine("del lock A WORKED");
+			} else
+			{
+				M.WriteLine("del lock A FAILED");
+			}
 
 		}
 
+		// lock B
+
+		private void BtnMakeLockBdata_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("make data lock B button");
+			
+			mwModel.CreateLockBData();
+
+			M.WriteLine("make lock B data WORKED");
+		}
+
+		private void BtnCreateLockB_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("write lock B button");
+
+			bool result = mwModel.CreateLockB();
+
+			if (result)
+			{
+				M.WriteLine("write lock B WORKED");
+			}
+			else
+			{
+				M.WriteLine("write lock B FAILED");
+
+			}
+
+		}
+
+		private void BtnReadLockB_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("read lock B button");
+			ScDataLock lokd;
+			mwModel.ReadLockB(out lokd);
+
+		}
+
+		private void BtnGetLockBOwner_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("get lock B owner Id button");
+
+			string owner;
+
+			bool result = mwModel.GetUserNameLockB(out owner);
+			// todo allow for locktemp to be null
+			if (result)
+			{
+				M.WriteLine($"read lock B owner Id is| {mwModel.LockDataTemp?.UserName ?? "is null"}");
+			}
+
+		}
+
+		private void BtnDelLockBjeffs_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("del lock B jeffs button");
+
+			bool result = mwModel.DeleteLockBjeffs();
+
+			if (result)
+			{
+				M.WriteLine("del lock B jeffs WORKED - incorrect");
+			} else
+			{
+				M.WriteLine("del lock B jeffs FAILED - correct");
+			}
+
+		}
+
+		private void BtnDelLockBjohns_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("del lock B johns button");
+
+			bool result = mwModel.DeleteLockBjohns();
+
+			if (result)
+			{
+				M.WriteLine("del lock B johns WORKED - correct");
+			} else
+			{
+				M.WriteLine("del lock B johns FAILED - incorrect");
+			}
+
+		}
+
+		// lock A and B
+
+		private void BtnCanDelLock_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineStatus("can del lock button");
+
+			string username = UtilityLibrary.CsUtilities.UserName;
+
+			bool result = mwModel.CanDeleteLockCurrent();
+
+			M.WriteLine($"can del lock A?| {username} vs {mwModel.LockDataCurrent?.UserName ?? "null name"}");
+
+			if (result)
+			{
+				M.WriteLine("can del lock A! - correct");
+			}
+			else
+			{
+				M.WriteLine("can NOT del lock A - incorrect");
+			}
+
+			M.NewLine();
+
+			result = mwModel.CanDeleteLockB();
+
+			M.WriteLine($"can del lock B?| {username} vs {mwModel.LockDataTemp?.UserName ?? "null name"}");
+
+			if (result)
+			{
+				M.WriteLine("can del lock B! - correct");
+			}
+			else
+			{
+				M.WriteLine("can NOT del lock B - incorrect");
+			}
+		}
+
+
+
 	#endregion
+
+
+	#region old / not used
+
+
+
+
+		// private void BtnMakeLockDataA_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("make lock A button");
+		//
+		// 	mwModel.MakeLockDataA();
+		// }
+
+		// private void BtnMakeLockDataB_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("make lock B button");
+		//
+		// 	mwModel.MakeLockDataB();
+		// }
+
+
+		// private void BtnInit11_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.MakeDataGeneric();
+		// }
+
+
+		// private void BtnShowFn11_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.ShowProcFn11();
+		// }
+		//
+		// private void BtnShowFn12_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.ShowProcFn12();
+		// }
+
+		// private void BtnTestFindAllDs1_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.GetAllDs1();
+		// }
+		//
+		// private void BtnTestFindDsByName3_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.FindDsByName3();
+		// }
+		//
+		// private void BtnTestDeleteSheetDs4_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	// includes a transaction
+		// 	// mwModel.DeleteSheetDs(exid);
+		// }
+		//
+		// private void BtnTestDeleteSheetEntity4b_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	// mwModel.DeleteSheetEntity(exid);
+		// }
+		//
+		// private void BtnTestDeleteSheetSchema4c_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	// mwModel.DeleteSheetSchema(exid);
+		// }
+		//
+		// private void BtnGetSchemaByName2_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.GetSchemaByName2();
+		// }
+		//
+		// private void BtnTestGetDsEntity5_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.GetDsEntity5();
+		// }
+		//
+		// private void BtnTestGetEntityData6_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.GetEntityData6();
+		// }
+		//
+		// private void BtnTestDoesDsExist7_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.DoesDsExist7();
+		// }
+		//
+		// private void BtnBegin8_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	// ExStoreRtnCode result = mwModel.TestBegin(Exid);
+		// 	//
+		// 	// if (result == ExStoreRtnCode.XRC_DS_EXISTS)
+		// 	// {
+		// 	// 	M.WriteLineAligned("DS already exists - cannot make new - exiting\n");
+		// 	// }
+		// }
+
+	#endregion
+
+
+
 	}
 }

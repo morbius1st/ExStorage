@@ -7,13 +7,20 @@ namespace ShExStorageN.ShExStorage
 {
 	public enum ExStoreRtnCode
 	{
+		XRC_USERNAME_MATCH				= -45,
+		XRC_USERNAME_MISMATCH			= -40,
+		XRC_LOCK_CANNOT_DEL				= -34,
+		XRC_LOCK_EXISTS					= -32,
+		XRC_LOCK_NOT_EXIST				= -30,
 		XRC_DATA_NOT_FOUND              = -25,
 		XRC_ENTITY_NOT_FOUND            = -20,
+		XRC_ENTITY_EXISTS               = -19,
 		XRC_SCHEMA_NOT_FOUND            = -15,
 		XRC_DS_EXISTS                   = -11,
 		XRC_DS_NOT_FOUND		        = -10,
 		XRC_TOO_MANY_OPEN_DOCS          = -6,
 		XRC_DUPLICATE                   = -5,
+		XRC_VOID						= -1,
 		// negative - status codes
 		// 0 & positive - process codes
 		XRC_FAIL                        = 0,

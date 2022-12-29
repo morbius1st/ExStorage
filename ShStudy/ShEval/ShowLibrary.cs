@@ -8,8 +8,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using ShExStorageC.ShSchemaFields;
 using ShExStorageC.ShSchemaFields.ScSupport;
-
-using ShExStorageN.ShSchemaFields;
 using ShStudy.ShEval;
 using UtilityLibrary;
 
@@ -49,7 +47,7 @@ namespace ShStudy.ShEval
 		private const int TBL_BDR_END = 2;
 
 
-		private string[][] tblBorder = new []
+		private string[][] shtBorder = new []
 		{
 			//      begin  middle   end
 			new [] { " > ", " < > ", " < " }, // header
@@ -62,15 +60,22 @@ namespace ShStudy.ShEval
 
 	#endregion
 
-		private IWin W;
+		private ShDebugMessages M { get; }
 
-		// public string textMsg01 { get; set; }
 		public int ColumnWidth { get; set; } = 30;
 
-		public ShowLibrary(IWin w)
+		public ShowLibrary(ShDebugMessages msgs)
 		{
-			W = w;
+			M = msgs;
 		}
+
+
+		/*
+		// private IWin W;
+
+		// public string textMsg01 { get; set; }
+		
+
 
 		public void Write(string msg)
 		{
@@ -98,7 +103,7 @@ namespace ShStudy.ShEval
 		{
 			Write(fmtMsg(msg1, "", whenNull1, null, divString, colWidth));
 		}
-
+		*/
 
 	#region main methods
 		
@@ -149,7 +154,7 @@ namespace ShStudy.ShEval
 		// 	}
 		// }
 
-
+		
 		public void WriteRow<TE>( List<TE> order,
 			Dictionary<TE, ColData> hdrData,
 			Dictionary<TE, string> colInfo, 
@@ -159,7 +164,7 @@ namespace ShStudy.ShEval
 		{
 			int rowType = isHeader ? IS_HDR : IS_ROW;
 
-			StringBuilder[] sb = initTblRow(maxLines, tblBorder[rowType][TBL_BDR_BEG]);
+			StringBuilder[] sb = initShtRow(maxLines, shtBorder[rowType][TBL_BDR_BEG]);
 			bool[] hasRow = new bool[maxLines];
 
 			// JustifyVertical jv = JustifyVertical.MIDDLE;
@@ -182,14 +187,14 @@ namespace ShStudy.ShEval
 				// break up the header text into individual lines of header text
 				hdrTxt = ColumnifyString(colInfo[key], cd.ColWidth, titleWidth, maxLines, cd.Just[rowType], jv, true, true);
 
-				appendInfo2(ref sb, hdrTxt, tblBorder[rowType][TBL_BDR_MID], ref hasRow);
+				appendInfo2(ref sb, hdrTxt, shtBorder[rowType][TBL_BDR_MID], ref hasRow);
 			}
 
 			key = order[i];
 			cd = hdrData[key];
 			titleWidth = isHeader ? cd.TitleWidth : lastColAlign ? cd.ColWidth : colInfo[key]?.Length ?? cd.ColWidth;
 			int colWidth = lastColAlign ? cd.ColWidth : colInfo[key]?.Length ?? cd.ColWidth;
-			string colBdr = lastColAlign ? tblBorder[rowType][TBL_BDR_END] : "";
+			string colBdr = lastColAlign ? shtBorder[rowType][TBL_BDR_END] : "";
 
 			// break up the header text into individual lines of header text
 			hdrTxt = ColumnifyString(colInfo[key], colWidth, titleWidth, maxLines, cd.Just[rowType], jv, true, true);
@@ -200,12 +205,12 @@ namespace ShStudy.ShEval
 			{
 				if (hasRow[i])
 				{
-					writeMsg1(sb[i].ToString(), -1, "null?", null);
-					WriteNewLine();
+					M.WriteLine(sb[i]?.ToString() ?? "null?");
+					// M.NewLine();
 				}
 			}
 		}
-
+		
 	#endregion
 
 	#region support methods
@@ -220,7 +225,7 @@ namespace ShStudy.ShEval
 			}
 		}
 
-		private StringBuilder[] initTblRow(int maxLines, string preface)
+		private StringBuilder[] initShtRow(int maxLines, string preface)
 		{
 			StringBuilder[] sb = new StringBuilder[maxLines];
 

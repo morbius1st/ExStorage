@@ -5,13 +5,10 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1F55FC05-3DEF-4162-9698-963047C0FF8C}"
 	ProjectSection(SolutionItems) = preProject
-		.notes\Ex Data Storage Info (non-Revit).txt = .notes\Ex Data Storage Info (non-Revit).txt
-		.notes\Ex Storage Info (for Revit).txt = .notes\Ex Storage Info (for Revit).txt
 		.notes\Ex Storage System.txt = .notes\Ex Storage System.txt
-		.notes\Project Configuration Information.txt = .notes\Project Configuration Information.txt
+		Process Notes.txt = Process Notes.txt
 		.notes\Schema Field Info.txt = .notes\Schema Field Info.txt
 		.notes\Shared Project Config.txt = .notes\Shared Project Config.txt
-		.notes\ShExSchemaField Notes.txt = .notes\ShExSchemaField Notes.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExStoreDev", "ExStoreDev\ExStoreDev.csproj", "{11F2B492-A419-44CB-8E82-D0DC143BAB7A}"
@@ -27,6 +24,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExStorage", "ExStorage\ExStorage.csproj", "{DDC429DE-0FCC-45A7-A152-112E9AB46CC4}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ShVoided", "ShVoided\ShVoided.shproj", "{EF40C9B6-B9AF-423D-AFF0-A5E530081C89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExStoreTest", "ExStoreTest\ExStoreTest.csproj", "{2FE90D23-7C02-472E-A12E-F1723654682E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Old Notes", "Old Notes", "{6DBFB77A-7921-48F7-9F52-EB409E00236F}"
+	ProjectSection(SolutionItems) = preProject
+		.notes\Old Notes\DataStorage - Schema Creation Process.txt = .notes\Old Notes\DataStorage - Schema Creation Process.txt
+		.notes\Old Notes\Ex Data Storage Info (non-Revit).txt = .notes\Old Notes\Ex Data Storage Info (non-Revit).txt
+		.notes\Old Notes\Ex Storage Info (for Revit).txt = .notes\Old Notes\Ex Storage Info (for Revit).txt
+		.notes\Old Notes\Project Configuration Information.txt = .notes\Old Notes\Project Configuration Information.txt
+		.notes\Old Notes\ShExSchemaField Notes (old).txt = .notes\Old Notes\ShExSchemaField Notes (old).txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,9 +58,20 @@ Global
 		{DDC429DE-0FCC-45A7-A152-112E9AB46CC4}.Release|Any CPU.ActiveCfg = RelExs2021|Any CPU
 		{DDC429DE-0FCC-45A7-A152-112E9AB46CC4}.RelExs2021|Any CPU.ActiveCfg = RelExs2021|Any CPU
 		{DDC429DE-0FCC-45A7-A152-112E9AB46CC4}.RelExs2021|Any CPU.Build.0 = RelExs2021|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.DbgExd2021|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.DbgExs2021|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.RelExs2021|Any CPU.ActiveCfg = Release|Any CPU
+		{2FE90D23-7C02-472E-A12E-F1723654682E}.RelExs2021|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6DBFB77A-7921-48F7-9F52-EB409E00236F} = {1F55FC05-3DEF-4162-9698-963047C0FF8C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {308062A7-B905-4DC1-B6B3-8E9036F86ADA}

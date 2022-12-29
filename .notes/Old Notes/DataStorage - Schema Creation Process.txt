@@ -1,0 +1,22 @@
+
+
+see ExStorageLibraryC1 & ShExSchemaLibR for concrete implementation
+
+
+
+Save ...
+> runs the process using a transaction
+> saves the entity to the data storage
+
+save ...
+> level 2 run the save and write process
+> create the schema & entity
+> write the data to the entity
+
+
+create ...
+> create the sheet schemas + row entity fields -> schema
+> create the sheet entity
+> add the row fields
+
+

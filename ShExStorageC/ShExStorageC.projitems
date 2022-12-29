@@ -10,15 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageLibraryC.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IScDataTable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IScDataWorkBook.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScMetaTable.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScMetaLock.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageLibraryC1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataRow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScMetaRow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldSupport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataSheet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldConverters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScInfoMeta.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldSupport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDefData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDefMeta.cs" />
   </ItemGroup>
 </Project>

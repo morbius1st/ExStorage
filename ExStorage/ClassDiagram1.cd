@@ -1,0 +1,880 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="UtilityLibrary.CsExtensions" Collapsed="true">
+    <Position X="28.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EALAgAAAAAAAAAAAAQCAAABAAEAAABAAAAoAAAAAAQA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.FilePath&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>JBQAAAYEEIKBBAwEjEqQCOjAwEAAAQCwOEAAABFSBBo=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UtilityLibrary.DllImports" Collapsed="true">
+    <Position X="30.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.FilePathInfo&lt;T&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAgAEgAoCBBAoEwABAEOCAwEAQgYCAEIAACBBQIEI=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="UtilityLibrary.FilePathUtil" Collapsed="true">
+    <Position X="18" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAoAIAIBAEBAABEACAAAACoAIAAAAEAQjA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.AFileName" Collapsed="true">
+    <Position X="9.5" Y="21" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAQAgAhAAEAAAABAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UtilityLibrary.FileNameSimple" Collapsed="true">
+    <Position X="8.25" Y="22.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAgAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UtilityLibrary.FileNameAsSheetFile" Collapsed="true">
+    <Position X="10.5" Y="22.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAgAAACAAAAAAAgAAEAEgAAABAAAAAAAAAIAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="UtilityLibrary.FileExtensionClassifier" Collapsed="true">
+    <Position X="26.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.MessageException" Collapsed="true">
+    <Position X="30.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.CsUtilities" Collapsed="true">
+    <Position X="19.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAQBAAAAQAAAAAAAAAgAACAAAAAAAkAQQABACBAEA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.Extensions" Collapsed="true">
+    <Position X="25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.CsUtilitiesMedia" Collapsed="true">
+    <Position X="21.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.CsXmlUtilities" Collapsed="true">
+    <Position X="23.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAQAAAAAAAABA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsXmlUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.MessageUtilities2" Collapsed="true">
+    <Position X="19.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICAABAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\MessageUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UtilityLibrary.MessageUtilities" Collapsed="true">
+    <Position X="18" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAgAIABAAAACBAAAIACCAAAIJAAAALEAgAAAABAwA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\MessageUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.Aav74" Collapsed="true">
+    <Position X="18" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.Heading" Collapsed="true">
+    <Position X="23.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAgAAAQAAAgAAAAAQAAACAAAAAEBAAAAAAAAAAEAQA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SettingsMgr&lt;TPath, TInfo, TData&gt;" Collapsed="true">
+    <Position X="23.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwEAAAEAgAABQIABAAAAAAgAAAAAEBAAAAAAEEAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.PathAndFileBase" Collapsed="true">
+    <Position X="6.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAIgAARCAEAQAEBaAABQAgQAAAAAAAAAAEAAAAJCFCA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SettingInfoBase&lt;TData&gt;" Collapsed="true">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAQgAgAAAAAgCAQAAAAAAAAAAAAEABAAAAAgAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SettingsManager.BaseSettingsStatic&lt;TPath, TInfo, TData&gt;" Collapsed="true">
+    <Position X="5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAIAAAAAAQAAAAAAABAAAAAAAEAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.UserSettingPath" Collapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.UserSettingInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="3" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.UserSettings" Collapsed="true">
+    <Position X="2.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.AppSettingPath" Collapsed="true">
+    <Position X="7.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.AppSettingInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.AppSettings" Collapsed="true">
+    <Position X="7.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SuiteSettingPath" Collapsed="true">
+    <Position X="12" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SuiteSettingInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="12" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SuiteSettings" Collapsed="true">
+    <Position X="9.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.MachSettingPath" Collapsed="true">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.MachSettingInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.MachSettings" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SiteSettingPath" Collapsed="true">
+    <Position X="5.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAACAABAAgAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SiteSettingInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="5.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.SiteSettings" Collapsed="true">
+    <Position X="5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.StorageMgrInfo&lt;TData&gt;" Collapsed="true">
+    <Position X="7.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.StorageMgrPath" Collapsed="true">
+    <Position X="9.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAQAAAAAAAAAAABAAgAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.DataManager&lt;TData&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAACAIAIAAABAAQAAgAAAABAAAAAABEAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SettingsManager.AppSettingDataFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAQAAAAAAAAAAAAAACAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Settings\AppSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SettingsManager.DataSet" Collapsed="true">
+    <Position X="26.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAABAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Settings\DataSet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SettingsManager.MachSettingDataFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAACAAQAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>Settings\MachineSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SettingsManager.SiteSettingDataFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAAGAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Settings\SiteSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SettingsManager.SuiteSettingDataFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAIAAAAAAAAAAAAAAACAAQAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Settings\SuiteSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SettingsManager.UserSettingDataFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="23.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAACAAQAAAAAAAAAAAgAAAAAAAA=</HashCode>
+      <FileName>Settings\UserSettings.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RevitSupport.RvtCommand" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAABAAAQAACAAAAAAAAAAAAAAAABCAAJEAFg=</HashCode>
+      <FileName>.RevitSupport\RvtCommand.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ShStudy.ShEval.ColData" Collapsed="true">
+    <Position X="26.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAIAAAAAAAAAAAAAAAAAAIAAAAAAAAAAhQAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ColData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ScValues&lt;TKey&gt;" Collapsed="true">
+    <Position X="21.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAQAAAAABA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ScValues.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ShDebugMessages" Collapsed="true">
+    <Position X="25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIIAAAAAAQIAAMBEAAAEWCEQAAEAIEAAgCAQAABAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShDebugMessages.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ShFieldDisplayData" Collapsed="true">
+    <Position X="21.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAABIABIAAAABAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShFieldDisplayData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ShowLibrary" Collapsed="true">
+    <Position X="23.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAAAACBAIAAABHAACAAASAAABEBCAAkAAAIBAAQ=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShowLibrary.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ShShowProcedures01" Collapsed="true">
+    <Position X="26.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AJAAADAAAAAAAAiAAAAAlIAAAAAAAAAQAACIIAIAAAg=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShShowProcedures01.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShEval.ShTestProcedures01" Collapsed="true">
+    <Position X="30.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAgIEIAAAAAAQEAAEAAAAqAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShTestProcedures01.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShExStorage.ExId" Collapsed="true">
+    <Position X="19.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAoBAAAIAAIAcAAQAhAABBAJIIAADIAgFAAAMAgA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShExStorage.ExStorageLibraryC" Collapsed="true">
+    <Position X="21.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShExStorage\ExStorageLibraryC.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShExStorage.ExStorageLibraryC1&lt;TTbl, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLockKey, TLockFlds&gt;" Collapsed="true">
+    <Position X="23.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAIBARAAAYAAAACEBQAJUCCAEAAQBSAABAAoSAJBEAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShExStorage\ExStorageLibraryC1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScDataLock1" Collapsed="true">
+    <Position X="11.75" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAEAAAAAAAAAAAAAAIAAAAAAAAAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScDataLock1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScDataRow1">
+    <Position X="14.5" Y="17.5" Width="4" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAEAAAAAAAAAAAAAAIAAAAAAAAAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScDataRow1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScDataSheet1" Collapsed="true">
+    <Position X="10" Y="17.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAEAAAAAAAAAAEAAAIAEAAAAAAAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScDataTable1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScFieldDefData1&lt;TKey&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKEAAAABAAAAAGAAAAAAAAgAAAAIBA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScFieldDefData1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScFieldDefMeta1&lt;TKey&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="18" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKEAAAABAAAAACACAAAAAAAAAAAIBA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScFieldDefMeta1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScSupport1.ShExConst" Collapsed="true">
+    <Position X="26.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAACCEAIAAAAAAAAABAABAAAAAACAAAAAQ=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScFieldSupport1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields1.ScSupport1.ScInfoMeta1" Collapsed="true">
+    <Position X="19.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQCAAAAAAAAAACAAAAAEAAEERSAAACAoAAAoACAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScInfoMeta1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.DynaValue" Collapsed="true">
+    <Position X="18" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAgAAAAAAIAAgMgIAABEAAAAAAUBAhARAwAAgACAg=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\DynaValue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.ShScSupport1.ShExConst" Collapsed="true">
+    <Position X="28.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAQAAAAAAEAAAAAgAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\ShScSupport1\ScFieldSupport.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShExStorageN.GenericTests&lt;TT, TL, TR, TShtKey, TShtFlds, TRowKey, TRowFlds, TRow, TLokKey, TLokFlds&gt;" Collapsed="true">
+    <Position X="21.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShExStorageN\GenericTests.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShStudy.ShExStorageN.GenericTest1" Collapsed="true">
+    <Position X="19.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShExStorageN\GenericTests.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExSchemaLibR&lt;TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="30.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RAABAAAAAYAFAACEISAJQSCAiCESACIAJChAQAIJEAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExSchemaLibR.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExStorageLibR" Collapsed="true">
+    <Position X="18" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgALQQBAAAEEABgEACAIIBAAAAAYAUQQAABAABKUSEA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExStorageLibR.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExStorManagerR&lt;TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds&gt;" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAYIAAEEwAQAAEEIACIAAACgABQAioAUgAAAAKACAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExStorManagerR.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="RevitLibrary.RevitAddinsUtil" Collapsed="true">
+    <Position X="26.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAAACCAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShRevitUtil\RevitAddins.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RevitLibrary.RevitAddIns" Collapsed="true">
+    <Position X="23.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShRevitUtil\RevitAddins.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RevitLibrary.RevitAddInsAddIn" Collapsed="true">
+    <Position X="25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAABAwAAiAAAAgIAAAIQAAAiAAIAAAQAACAAIACA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShRevitUtil\RevitAddins.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorage.AppRibbon" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="21.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YEAQEAYgAMBABIkgAAUAAQAABAAAAAAAAEACAAgEARg=</HashCode>
+      <FileName>AppRibbon.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ExStorage.Properties.Resources" Collapsed="true">
+    <Position X="21.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAgAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorage.TestProcedures.ShowsProcedures01" Collapsed="true">
+    <Position X="25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAgAAIAAQADAAAAAAAQEAAAAAAAAAAAIIAAA=</HashCode>
+      <FileName>TestProcedures\ShowsProcedures01.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorage.TestProcedures.TestProcedures01" Collapsed="true">
+    <Position X="21.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABACAgAgAAEAQABAAMQBAABAIAAAAQEAAAAACAIAEAA=</HashCode>
+      <FileName>TestProcedures\TestProcedures01.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorage.Windows.MainWindow" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="26.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACkAAAAgCIBBQAAEoIAAkiIAgCQAACIkhAAoBgIKBIA=</HashCode>
+      <FileName>Windows\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="ExStorage.Windows.MainWindowModel" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAQEAAAQAIFAAS0JDJAUAACihBYAg+AABIMIisAAEA=</HashCode>
+      <FileName>Windows\MainWindowModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SharedApp.Windows.ShResources.ShStrings" Collapsed="true">
+    <Position X="28.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAgAQAAAAAAAAAACAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.AWindow" Collapsed="true">
+    <Position X="25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIIAAgAAAAIAAIJEAAAEWCgQAAEAIGAAgCBAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\AWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.CsScrollBarAp" Collapsed="true">
+    <Position X="30.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQJAAIRARggAQAQMCKwBCCwEAACQDIxWRCSYEQEAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\CsScrollBarAp.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.CsScrollViewerAp" Collapsed="true">
+    <Position X="18" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gBUEFIgAAQAiSECCWAQCgQGAIAgBYCAIJAAkgBAAEig=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\CsScrollViewerAp.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.DivideConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="28.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\ValueConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.AddConverter" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="19.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\ValueConverters.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SharedApp.Windows.ShSupport.VisualStatesAttached" Collapsed="true">
+    <Position X="25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAIAIAIAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\SharedApp\Windows\ShSupport\VisualStatesAttached.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScSheet&lt;TShtKey, TShtFlds, TRowKey, TRowFlds, TRow&gt;" Collapsed="true">
+    <Position X="10" Y="16" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScRow&lt;TKey, TField&gt;">
+    <Position X="15" Y="15.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScFields&lt;TKey, TField&gt;">
+    <Position X="10.5" Y="11.25" Width="4" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAgAAAEgAEAAAABAAAAAAAAAACAAAAAAAAwAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="UtilityLibrary.IFileName" Collapsed="true">
+    <Position X="19.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAhAAEAAAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SettingsManager.IDataFile" Collapsed="true">
+    <Position X="18" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAAAAACAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldBase1&lt;TFldId&gt;" Collapsed="true">
+    <Position X="14.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKAAAAABAAAAACAAAAAAAAAAAAAIBA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldData1&lt;TFldId&gt;" Collapsed="true">
+    <Position X="13.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldMeta1&lt;TFldId&gt;" Collapsed="true">
+    <Position X="15.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.ICelSchTable2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="0.5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAIAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.ICelSchRow2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="2.75" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAQAAAAAAAAAAAEAAAAAAAgkAkAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.ICelSchLock2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="5" Y="13.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScTable2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="0.5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScRow2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="2.75" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScLock2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="5" Y="12.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShSchBase2&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="2.75" Y="10.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YAAAAAAAAAAAAAQEAAAAAAAAAAAAAAAAAQAAAAAAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShSchBase&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="2.75" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAgAAAAgAAAAAABAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShStudy.IWin" Collapsed="true">
+    <Position X="25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\IWin.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScRows1&lt;TRowKey, TRowFld, TRow&gt;" Collapsed="true">
+    <Position X="23.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldsBase1&lt;TKey, TField&gt;" Collapsed="true">
+    <Position X="21.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAgAAAAgAEAAAABAAAAAAAAAAAAAAAAAAAwAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="SettingsManager.SettingMgrStatus" Collapsed="true">
+    <Position X="28.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAABBgAAAAAACAAAAAAgAAEAAAAARAAAAAACAE=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="SettingsManager.SettingFileType" Collapsed="true">
+    <Position X="26.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAYQAAAAAAAEAIAIBAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShStudy.ShEval.JustifyHoriz" Collapsed="true">
+    <Position X="25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAgAAAAAAAAAAAAAAAAAgAAAAAAAAIAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShowLibrary.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShStudy.ShEval.JustifyVertical" Collapsed="true">
+    <Position X="26.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEIAAAAABAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShStudy\ShEval\ShowLibrary.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShExStorage.ExStoreRtnCode" Collapsed="true">
+    <Position X="19.75" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AYAqQAACAAAAAQAQAAAAAADAAAgAAEAAAAAIAJAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExStoreRtnCode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShExStorage.ExStoreStartRtnCodes" Collapsed="true">
+    <Position X="23.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAEAAAAIAIAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExStoreRtnCode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShExStorage.ExStoreSelectDsRtnCodes" Collapsed="true">
+    <Position X="21.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAEAAAEAAAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExStoreRtnCode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShExStorage.ExStorDsLockStatus" Collapsed="true">
+    <Position X="18" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAABAQAAAAgAAE=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExStoreRtnCode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageC.ShSchemaFields1.ScSupport1.SchemaFieldKey" Collapsed="true">
+    <Position X="19.75" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAoAAAAAQAAAAAAAACAAAEAAAAAAAAAgAAAQAAQAAAQ=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScFieldSupport1.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageC.ShSchemaFields1.ScSupport1.SchemaSheetKey" Collapsed="true">
+    <Position X="25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgEAAAEACAEAAAAAAAAAAAAAAQAAABIAAAAAgAE=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScFieldSupport1.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageC.ShSchemaFields1.ScSupport1.SchemaRowKey" Collapsed="true">
+    <Position X="23.25" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAgAQABACAAABAAAAEAABAgAAQAgAAAAJAAAAAACA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScFieldSupport1.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageC.ShSchemaFields1.ScSupport1.SchemaLockKey" Collapsed="true">
+    <Position X="21.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AoABAAEACAAAAAAFAAAAAAAAAAAAAAAIEQAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields1\ScSupport1\ScFieldSupport1.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShSchemaFields.ShScSupport1.SchemaFieldDisplayLevel" Collapsed="true">
+    <Position X="18" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAgAAAAIAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\ShScSupport1\ScFieldSupport.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShSchemaFields.ShScSupport1.CellUpdateRules" Collapsed="true">
+    <Position X="28.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAIAAIAAAAAgAAAQA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\ShScSupport1\ScFieldSupport.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ShExStorageN.ShSchemaFields.ShScSupport1.ScFieldColumns" Collapsed="true">
+    <Position X="30.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAIAAAAIAAAAAAABAAAAACACAhAAAAgAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\ShScSupport1\ScFieldSupport.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="SettingsManager.RstData" Collapsed="true">
+    <Position X="18" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

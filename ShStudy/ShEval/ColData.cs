@@ -1,6 +1,4 @@
 ﻿#region + Using Directives
-using ShExStorageN.ShSchemaFields;
-
 using System;
 using System.Collections.Generic;
 using ShExStorageN.ShSchemaFields.ShScSupport;

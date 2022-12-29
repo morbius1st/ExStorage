@@ -10,21 +10,38 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\IShDebugMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugSupport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExId1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\IExId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsC\ScFieldsRow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsC\ScFieldsLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsC\ScFieldsTable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsN\IScField.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsN\ScFieldDef.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsN\ShScFields.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScFields.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IScField.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScRowBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScRowData2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScCellFields2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataRow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDef.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldsRow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScFieldsBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\AShScData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\AShScFields.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\IScField.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScRowBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScRowData2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScCellFields2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScDataRow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScFieldDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ScFieldsRow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields1\ShScFieldsBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\AShScInfoBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\IScDataTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\IScDataWorkBook.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\IShScFieldBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\IShScInfoBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScDataLock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScDataRow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScDataTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScMetaLock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScMetaRow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScMetaTable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScSupport\ScInfoMeta.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ShScFieldDefData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ShScFieldDefMeta.cs" />
   </ItemGroup>
 </Project>

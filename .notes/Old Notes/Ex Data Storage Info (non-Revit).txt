@@ -1,0 +1,11 @@
+﻿
+re: project : ShExStorageN
+
+For the record...
+
+note that this shared project does NOT have revit specific usage - 
+This can be used by projects that do not reference revit libraries
+
+Specifically, this project is intended to provided shared components that
+are used by both Revit specific and non-Revit specific projects
+

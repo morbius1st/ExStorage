@@ -8,35 +8,56 @@ keep in mind:
 * a revit file can be opened by more than one user on different machines
 * the ex storage information could be access by two users at the same time - unlikely but possible
 
-Exid has the unique schema name preface.
-{vendor id}_{DB title (cleaned)}
+Exid has the unique schema name PREFACE.
+	ExsId = {company name}_{DB title (cleaned)}
 
-two schema levels + locks
+APP_SUFFIX = "_cells"
 
 
+entities are stored into a DataStorage
+	> named: 
+		ExsId_APP_SUFFIX_sheet_ds  (ex: cyberstudio_cells_sheet_ds)
 
-Application method
+schema's are stored into an entity
+	> named: (not named)
+
+schema types
+
+Application method:
 Per Revit Database
 
-^ (1) table data stores
+^ sheet
+	> (1) per model
 	> named:
-		pro.cyberstudio_{revit DB title (cleaned)}_table
-	> holds multiple rows as sub-schema
+		does not have its own name - uses table's name
+	> holds (1) table
+	> holds (0+) rows
+
+
+^ table
+	> can be a part of a sheet
+	> can be independant (Lock for example or a separate table)
+	> named:
+		when part of a sheet:
+			ExsId_APP_SUFFIX_sheet_sch  (ex: cyberstudio_cells_sheet_sch)
+		when a lock
+			ExsId_APP_SUFFIX_lok_sch  (ex: cyberstudio_cells_lok_sch)
+		when independant
+			not configured (future)
 	> identifies basic information
 		* description, version, model name, model path, developer, creation date
 	* holds basic management information
-	* needs to hold a list of found rows
 	* must have a unique name but one that can be re-created from just opening the database
 
 
-^ each row (is a sub-schema to table)
+^ each row (is a sub-schema to sheet)
 	> named:
-		pro.cyberstudio_{revit DB title (cleaned) }_rows.family
+		ExsId_APP_SUFFIX_row_sch_{fam name (cleaned)}  (ex: cyberstudio_cells_lok_sch_family1)
 	> holds data for a single row
 		* basic information and
 		* excel path, worksheet, row family, sequence, etc.
 	> will also hold the data for each row family instance
-	* this will be a sub-schema of the table schema
+	* this will be a sub-schema of the sheet schema
 	* holds the information for a specific excel worksheet & family
 	* is the starting point to read / process all of the associated family
 	* needs to have a list of all of the associated family
@@ -47,17 +68,72 @@ Per Revit Database
 
 
 
-TKey      = SchemaTableKey | SchemaRowKey
+TKey      = SchemaSheetKey | SchemaRowKey | SchemaLockKey
+
+TShtKey   = SchemaSheetKey
 TRowKey   = SchemaRowKey
-TTblKey   = SchemaTableKey
+TLokKey   = SchemaLockKey
 
-TData     = ShScFieldDefData<TRowKey> | ShScFieldDefData<TTblKey>
-TRdata    = ShScFieldDefData<TRowKey>
-TTdata    = ShScFieldDefData<TTblKey>
+TFlds     = ScFieldDefData1<TShtKey> | ScFieldDefData1<TRowKey> | ScFieldDefData1<TLokKey>
 
-row or table
+TShtFlds  = ScFieldDefData1<TShtKey>
+TRowFlds  = ScFieldDefData1<TRowKey>
+TLokFlds  = ScFieldDefData1<TRowKey>
+
+TSht      = ScDataSheet1
+TRow      = ScDataRow1
+TLok      = ScDataLock1
+
+
+row or sheet
 >AShScInfoBase<TKey, TData>
 	^
 	+-> IShScInfoBase<Tkey, Tdata> 
+
+
+
+element hirearchy:
+
+"properties" used to define a field
+
+
+"field" defines one part of a table entry or row entry or lock entry
+	-> interface : IShScFieldBase1  (ShExStorageN.ShSchemaFields)
+			> Dictionary<TKey, TField> Fields
+		+-> concrete  : ScFieldDefData1  (ShExStorageC.ShSchemaFields)
+		+-> concrete  : ScFieldDefMeta1  (ShExStorageC.ShSchemaFields)
+
+
+"sheet" or "row" or "lock" is a collection if fields that describes the element
+	-> interface : IShScFieldsBase1  (base)  (ShExStorageN.ShSchemaFields)
+		+-> concrete : ScDataRow1  (ShExStorageC or R.ShSchemaFields1)
+		+-> concrete : ScDataLock1  (ShExStorageC or R.ShSchemaFields1)
+
+		+-> interface : IShScFieldSheet (for a sheet)
+			+-> concrete : ScDataSheet1  (ShExStorageC.ShSchemaFields1)
+				+ rows collection
+					+-> interface : IShScRows1 (for a row) (ShExStorageN.ShSchemaFields)
+
+
+
+future concept
+
+sheet
+	holds 
+		table (base info)
+			+ sheet specific additional information
+		rows
+			row
+
+Lock
+	holds
+		table (base info)
+			+ lock specific additional information
+
+chart
+	holds
+		table (base info)
+			+ chart specific additional informatio
+
 
 

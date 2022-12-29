@@ -1,9 +1,9 @@
 ﻿#region using
 
 using static ShExStorageN.ShSchemaFields.ScFieldColumns;
-using static ShExStorageC.ShSchemaFields.SchemaLockKey;
-using static ShExStorageC.ShSchemaFields.SchemaTableKey;
-using static ShExStorageC.ShSchemaFields.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields1.SchemaLockKey;
+using static ShExStorageC.ShSchemaFields1.SchemaSheetKey;
+using static ShExStorageC.ShSchemaFields1.SchemaRowKey;
 using static ShExStorageN.ShSchemaFields.SchemaFieldDisplayLevel;
 
 
