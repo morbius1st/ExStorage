@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 
 #endregion
@@ -116,6 +116,11 @@ namespace ExStoreTest.Windows
 		private void Btn_Delete_OnClick(object sender, RoutedEventArgs e)
 		{
 			mwm.DeleteSheet();
+		}
+		
+		private void Btn_Test1_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwm.Test1();
 		}
 	}
 }

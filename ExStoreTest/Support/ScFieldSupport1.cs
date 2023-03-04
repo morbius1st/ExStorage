@@ -1,11 +1,11 @@
 ﻿#region + Using Directives
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaFieldKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaFieldKey;
 #endregion
 
 // user name: jeffs
 // created:   10/15/2022 10:41:41 AM
 
-namespace ShExStorageC.ShSchemaFields.ScSupport
+namespace ShExStorageC.ShSchemaFields.ShScSupport
 {
 	public static class ShExConst
 	{

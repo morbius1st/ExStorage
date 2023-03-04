@@ -74,7 +74,7 @@
 					/>
 
 			<Button x:Name="BtnExp02"
-					Content="Sheet+Row Data (02)"
+					Content="Make Sheet+Row Data"
 					DockPanel.Dock="Top"
 					Height="{StaticResource BtnHeight}"
 					Width="{StaticResource BtnWidth}"
@@ -82,15 +82,17 @@
 					FontSize="10"
 					Click="BtnExp02_OnClick"
 					/>
+					<!-- Click="BtnExp02_OnClick" -->
 
 			<Button x:Name="BtnExp02b"
-					Content="Sheet Data (02b)"
+					Content="Sheet Clone (02b)"
 					DockPanel.Dock="Top"
 					Height="{StaticResource BtnHeight}"
 					Width="{StaticResource BtnWidth}"
 					VerticalAlignment="Top"
 					Click="BtnExp02b_OnClick"
 					/>
+					<!-- Click="BtnExp02b_OnClick" -->
 
 			<Button x:Name="BtnExp05"
 					Content="Lock Data (05)"
@@ -107,8 +109,8 @@
 					Height="{StaticResource BtnHeight}"
 					Width="{StaticResource BtnWidth}"
 					VerticalAlignment="Top"
-					Click="BtnExp04_OnClick"
 					/>
+					<!-- Click="BtnExp04_OnClick" -->
 
 			<Button x:Name="BtnExp06"
 					Content="Init Data (06)"
@@ -127,6 +129,16 @@
 					VerticalAlignment="Top"
 					Click="BtnExp07_OnClick"
 					/>
+
+			
+			<Button x:Name="BtnExp08"
+					Content="Class Keys Tests"
+					DockPanel.Dock="Top"
+					Height="{StaticResource BtnHeight}"
+					Width="{StaticResource BtnWidth}"
+					VerticalAlignment="Top"
+					Click="BtnExp08_OnClick"
+			/>
 
 
 

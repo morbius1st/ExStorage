@@ -15,10 +15,10 @@ using System.Windows.Input;
 using ExStorage.Windows;
 using JetBrains.Annotations;
 using ShExStorageC.ShExStorage;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using static ShExStorageN.ShExStorage.ExStoreRtnCode;
 using ShExStorageN.ShExStorage;
-using ShStudy.ShEval;
+using ShStudyN.ShEval;
 
 #endregion
 
@@ -37,7 +37,6 @@ namespace ShExStorageR.ShExStorage
 
 		private Dictionary<string, Guid> subSchema;
 
-		public ShDebugMessages M { get; set; }
 
 		private ExStoreRtnCode rtnCode;
 
@@ -65,6 +64,8 @@ namespace ShExStorageR.ShExStorage
 
 		public List<DataStorage> AllDs { get; set; }
 
+		public ShDebugMessages M { get; set; }
+
 		public ExStoreRtnCode ReturnCode
 		{
 			get => rtnCode;
@@ -85,6 +86,7 @@ namespace ShExStorageR.ShExStorage
 		/// and returns the last rtnCode is the supplied rtnCode<br/>
 		/// is XRC_VOID (preset default)
 		/// /// </summary>
+		[DebuggerStepThrough]
 		private ExStoreRtnCode SetRtnCodeE(ExStoreRtnCode rtnCode  = XRC_VOID)
 		{
 			if (rtnCode == XRC_VOID)
@@ -105,6 +107,7 @@ namespace ShExStorageR.ShExStorage
 		/// however, if no rtnCode is supplied, this compares the last<br/>
 		/// rtnCode with the default (XRC_GOOD) or the supplied testCode
 		/// </summary>
+		[DebuggerStepThrough]
 		private bool SetRtnCodeB(ExStoreRtnCode rtnCode = XRC_VOID, ExStoreRtnCode testCode = XRC_GOOD)
 		{
 			if (rtnCode != XRC_VOID)
@@ -118,6 +121,10 @@ namespace ShExStorageR.ShExStorage
 	#endregion
 
 	#endregion
+
+		//***************
+		// the below needs to be primitive routines
+		//***************
 
 
 	#region event processing
@@ -175,9 +182,41 @@ namespace ShExStorageR.ShExStorage
 			return SetRtnCodeE(rtnCode);
 		}
 
+		// primitive version - assumes that this is within a transaction and that the lock, if needed, exists
+		public ExStoreRtnCode DelSheet(ShtExId shtExid)
+		{
+			ExStoreRtnCode rtnCode = XRC_GOOD;
+
+			DataStorage ds;
+			Schema sl;
+			Entity e;
+
+			rtnCode = FindEntity(shtExid, false, out ds, out e);
+
+			if (rtnCode != XRC_GOOD)
+			{
+				return SetRtnCodeE(rtnCode);
+			}
+
+			List<Entity> subEntities = getSubEntities(e);
+			subEntities.Add(e);
+
+			for (var i = subEntities.Count - 1; i >= 0; i--)
+			{
+				// remove all schema & entities (this has a bug)
+				shtExid.Doc.EraseSchemaAndAllEntities(subEntities[i].Schema);
+			}
+
+			DelDs(ds);
+
+			return rtnCode;
+		}
+
+
 	#endregion
 
 	#region lock
+
 
 		/// <summary>
 		/// determine if the lock exists and return<br/>
@@ -225,6 +264,7 @@ namespace ShExStorageR.ShExStorage
 			return SetRtnCodeE(rtnCode);
 		}
 
+
 	#endregion
 
 	#region general public
@@ -239,6 +279,8 @@ namespace ShExStorageR.ShExStorage
 		public ExStoreRtnCode FindElements(AExId exid, bool matchUserName, 
 			out DataStorage ds, out Schema s, out Entity e )
 		{
+			M.WriteLineStatus($"find elements| match name{matchUserName}| username| {AExId.ReadUserName}");
+
 			e = null;
 
 			ExStoreRtnCode rtnCodeA = XRC_GOOD;
@@ -249,11 +291,17 @@ namespace ShExStorageR.ShExStorage
 
 			rtnCodeB = FindSchema(exid, matchUserName, out s);
 
+			M.WriteLineStatus($"find ds return code (true)| {rtnCodeA}");
+			M.WriteLineStatus($"find schema return code (true)| {rtnCodeB}");
+
+
 			if (rtnCodeA != XRC_GOOD) { return SetRtnCodeE(rtnCodeA); }
 
 			if (rtnCodeB != XRC_GOOD) { return SetRtnCodeE(rtnCodeB); }
 
 			rtnCodeB = GetDsEntity(ds, s, out e);
+
+			M.WriteLineStatus($"find entity return code (true)| {rtnCodeB}");
 
 			return SetRtnCodeE(rtnCodeB);
 		}
@@ -263,6 +311,9 @@ namespace ShExStorageR.ShExStorage
 		/// </summary>
 		public ExStoreRtnCode FindSchema(AExId exid, bool matchUserName, out Schema schema)
 		{
+			M.WriteLineStatus($"findsc| matchusrname| {matchUserName}");
+			M.WriteLineStatus($"findsc| sch name| {exid.SchemaName}");
+
 			schema = null;
 
 			ExStoreRtnCode rtnCode = XRC_GOOD;
@@ -277,6 +328,8 @@ namespace ShExStorageR.ShExStorage
 
 				foreach (Schema s in schemas)
 				{
+					M.WriteLineStatus($"findsc| sc name| {s.SchemaName}");
+
 					if ((matchUserName && exid.SchNameMatches(s.SchemaName)) ||
 						(!matchUserName && (exid.ReadSchNameMatches(s.SchemaName)))
 						)
@@ -303,6 +356,10 @@ namespace ShExStorageR.ShExStorage
 		/// </summary>
 		public ExStoreRtnCode FindDs(AExId exid, bool matchUserName, out DataStorage ds)
 		{
+			M.WriteLineStatus($"findds| matchusrname| {matchUserName}");
+			M.WriteLineStatus($"findds| ds name| {exid.DsName}");
+
+
 			ds = null;
 			ExStoreRtnCode result = XRC_DS_NOT_FOUND;
 
@@ -313,6 +370,8 @@ namespace ShExStorageR.ShExStorage
 			{
 				foreach (Element el in dataStorages)
 				{
+					M.WriteLineStatus($"findds| test| {(matchUserName && exid.DsNameMatches(el.Name)) || (!matchUserName && exid.ReadDsNameMatches(el.Name))}");
+
 					if ((matchUserName && exid.DsNameMatches(el.Name)) ||
 						(!matchUserName && (exid.ReadDsNameMatches(el.Name)))
 						)
@@ -362,8 +421,6 @@ namespace ShExStorageR.ShExStorage
 			return SetRtnCodeE(rtnCode);
 		}
 
-
-
 		/// <summary>
 		/// get the ds group of elements and return bool whether each exists
 		/// </summary>
@@ -391,7 +448,6 @@ namespace ShExStorageR.ShExStorage
 			return FindDs(exid, true, out ds) == XRC_GOOD;
 		}
 
-
 		/// <summary>
 		/// create the datastorage object with name from an IExId<br/>
 		/// this must occur within a transaction<br/>
@@ -404,7 +460,7 @@ namespace ShExStorageR.ShExStorage
 		{
 			ExStoreRtnCode result;
 
-			M.WriteLine($"making Ds for {exid.DsName}");
+			M.WriteLineStatus($"create Ds for {exid.DsName}");
 
 			try
 			{
@@ -412,8 +468,9 @@ namespace ShExStorageR.ShExStorage
 				ds.Name = exid.DsName;
 				result = XRC_GOOD;
 			}
-			catch
+			catch (Exception e)
 			{
+				M.WriteLineStatus($"Exception| {e.Message}");
 				result = XRC_FAIL;
 				ds = null;
 			}
@@ -543,86 +600,16 @@ namespace ShExStorageR.ShExStorage
 		{
 			return $"this is {nameof(ShExStorageLibR)}";
 		}
-
-	#endregion
-
-
-		// /// <summary>
-		// /// check if the sheet entity exists<br/>
-		// /// true = found / false = not found
-		// /// </summary>
-		// /// <param name="exid"></param>
-		// /// <returns></returns>
-		// public bool DoesSheetEntityExist(IExId exid)
-		// {
-		// 	Entity e;
-		// 	DataStorage ds;
 		//
-		// 	ExStoreRtnCode rtnCode = FindEntity(
-		// 		exid.ExsIdSheetDsName,
-		// 		exid.ExsIdSheetSchemaName,
-		// 		out ds, out e);
-		//
-		// 	return rtnCode == XRC_GOOD;
-		// }
-
-
-		// /// <summary>
-		// /// Determine if the sheet schema exists
-		// /// </summary>
-		// /// <param name="exid">The Ex Storage Identifier</param>
-		// /// <returns>True if exists, false otherwise</returns>
-		// public bool DoesSheetSchemaExist(IExId exid)
+		// public ShExStorManagerR<object, object, object, object, object, object, object, object, object> ShExStorManagerR
 		// {
-		// 	Schema schema;
-		//
-		// 	return FindSchema(exid.ExsIdSheetSchemaName, out schema) == XRC_GOOD;
+		// 	get => default;
+		// 	set
+		// 	{
+		// 	}
 		// }
 
+		#endregion
 
-		// public void DelEntity(DataStorage ds, Schema s)
-		// {
-		// 	ds.DeleteEntity(s);
-		// }
-
-
-		// /// <summary>
-		// /// Get all Schema's in memory (this crosses document boundaries)<br/>
-		// /// IList is saved in DataStorageAdmin -> AllSchemas
-		// /// </summary>
-		// /// <returns>ExStoreRtnCode</returns>
-		// public ExStoreRtnCode GetAllSchema(out IList<Schema> schemas)
-		// {
-		// 	schemas = Schema.ListSchemas();
-		//
-		// 	return schemas.Count > 0 ? XRC_GOOD : XRC_SCHEMA_NOT_FOUND;
-		// }
-
-
-		// /// <summary>
-		// /// get all schemas from the entity
-		// /// </summary>
-		// /// <param name="Ds"></param>
-		// /// <param name="guids"></param>
-		// /// <returns></returns>
-		// public bool GetAllDsGuids(DataStorage Ds, out IList<Guid> guids)
-		// {
-		// 	guids = Ds.GetEntitySchemaGuids();
-		//
-		// 	return guids != null;
-		// }
-
-
-		// /// <summary>
-		// /// find a schema using a Guid or return null
-		// /// </summary>
-		// /// <param name="guid"></param>
-		// /// <param name="s"></param>
-		// /// <returns></returns>
-		// public bool FindSchema(Guid guid, out Schema s)
-		// {
-		// 	s = Schema.Lookup(guid);
-		// 	return s != null;
-		// }
 	}
 }

@@ -10,12 +10,13 @@ using System.Threading.Tasks;
 // user name: jeffs
 // created:   10/11/2022 9:19:44 PM
 
-namespace ShStudy
+namespace ShStudyN
 {
 	public interface IWin
 	{
 		string MessageBoxText { get; set; }
 		string StatusBoxText { get; set; }
+		string CodeMapText { get; set; }
 
 	}
 }

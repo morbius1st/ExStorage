@@ -24,6 +24,8 @@
     <WarningLevel>4</WarningLevel>
     <StartAction>Program</StartAction>
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'RelExs2021|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -115,6 +117,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestProcedures\ShowsProcedures01.cs" />
     <Compile Include="TestProcedures\TestProcedures01.cs" />
+    <Compile Include="Windows\MainModel.cs" />
     <Compile Include="Windows\MainWindowModel.cs" />
     <Compile Include="Windows\StaticInfo.cs" />
     <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs">
@@ -177,7 +180,7 @@
     <Content Include="Other\ExStorage.addin" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="ClassDiagram2.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\ShExStorageR\ShExStorageR.projitems" Label="Shared" />

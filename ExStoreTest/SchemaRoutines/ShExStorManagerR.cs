@@ -12,10 +12,11 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStoreTest.Support;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using static ShExStorageN.ShExStorage.ExStoreRtnCode;
 using ShExStorageN.ShSchemaFields;
+using ShExStorageR.ShExStorage;
 
 #endregion
 
@@ -320,10 +321,10 @@ namespace ShExStorageR.ShExStorage
 			// LockSchema = null;
 		}
 
-		private bool IsLocked()
-		{
-			return StorLibR.DoesLockEntityExist(exid);
-		}
+		// private bool IsLocked()
+		// {
+		// 	return StorLibR.DoesLockEntityExist(exid);
+		// }
 
 	#endregion
 	}

@@ -1,0 +1,928 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExStorage</name>
+    </assembly>
+    <members>
+        <member name="M:SharedApp.Windows.ShSupport.AWindow.WriteDebugMsg(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Adds a formatted message to the app msg text box and<br/>
+            to the debug window.  Does not include a new line<br/>
+            use Show() to have the message shown<br/>
+            msgA = Message title (for app and debug)<br/>
+            msgB = Message text (for app)<br/>
+            msgD = Message text (for debug)<br/>
+            loc  = Code location (optional)<br/>
+            </summary>
+            <param name="msgA">Message title (for app and debug)</param>
+            <param name="msgB">Message text (for app)</param>
+            <param name="msgD">Message text (for debug)</param>
+            <param name="loc">Code location (optional)</param>
+            <param name="colWidth">Width for the title column (app only) (optional)</param>
+        </member>
+        <member name="M:SharedApp.Windows.ShSupport.AWindow.WriteDebugMsgLine(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Adds a formatted message to the app msg text box and<br/>
+            to the debug window.  Include a new line<br/>
+            use Show() to have the message shown<br/>
+            msgA = Message title (for app and debug)<br/>
+            msgB = Message text (for app)<br/>
+            msgD = Message text (for debug)<br/>
+            loc  = Code location (optional)<br/>
+            </summary>
+            <param name="msgA">Message title (for app and debug)</param>
+            <param name="msgB">Message text (for app)</param>
+            <param name="msgD">Message text (for debug)</param>
+            <param name="loc">Code location (optional)</param>
+            <param name="colWidth">Width for the title column (app only) (optional)</param>
+        </member>
+        <member name="T:SharedApp.Windows.ShResources.ShStrings">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:SharedApp.Windows.ShResources.ShStrings.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:SharedApp.Windows.ShResources.ShStrings.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:SharedApp.Windows.ShResources.ShStrings.Test">
+            <summary>
+              Looks up a localized string similar to This is a shared test 01.
+            </summary>
+        </member>
+        <member name="P:SharedApp.Windows.ShResources.ShStrings.WhoAmI">
+            <summary>
+              Looks up a localized string similar to SharedRes File.
+            </summary>
+        </member>
+        <member name="T:ExStorage.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ExStorage.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ExStorage.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:ExStorage.Properties.Resources.WhoAmI">
+            <summary>
+              Looks up a localized string similar to Local to ExStorage.
+            </summary>
+        </member>
+        <member name="M:ExStorage.Windows.MainWindowModel.WriteSheet(ShExStorageN.ShExStorage.ShtExId,ShExStorageN.ShExStorage.LokExId,ShExStorageC.ShSchemaFields.ScDataSheet)">
+            <summary>
+            write the sheet data to the model<br/>
+            return <br/>
+            true if it worked<br/>
+            false if not (
+            </summary>
+            <param name="shtd"></param>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:ExStorage.Windows.MainWindowModel.DeleteSheet" -->
+        <member name="T:ExStorage.Windows.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:ExStorage.Windows.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.RootFolderPath">
+            <summary>
+            the FOLDER PATH to the root folder for the referenced setting file
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.SubFolders">
+            <summary>
+            The sub-folders, below the root folder, used to create the<br/>
+            complete folder path
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.SettingFolderPath">
+            <summary>
+            the FOLDER PATH string for the referenced setting file
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.SettingFilePath">
+            <summary>
+            The FILE PATH string for the referenced setting file
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.RootFolderPathIsValid">
+            <summary>
+            indicates if the ROOT PATH for the referenced setting file is valid
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.SettingFolderPathIsValid">
+            <summary>
+            indicates if the SETTING PATH for the referenced setting file is valid
+            </summary>
+        </member>
+        <member name="P:SettingsManager.PathAndFileBase.SettingFileExists">
+            <summary>
+            Indicates if the referenced setting FILE exists
+            </summary>
+        </member>
+        <member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImage(System.String,System.String)">
+            <summary>
+            Load an image from embeded resource  [use GetBitmapImageResource instead]
+            </summary>
+            <param name="imageName">String name of the image</param>
+            <param name="namespacePrefix">String Image Namespace</param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImageResource(System.String)">
+            <summary>
+            get a BitmapImage from an assembly's resource cache (not from the embeded resource cache)
+            </summary>
+            <param name="imagePath">The path to the image including a preceding slash<br/>e.g. /folder/imagename.png</param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.CsExtensions.IsVoid(System.String)">
+            <summary>
+            true if string is null or whitespace false otherwise
+            </summary>
+        </member>
+        <member name="T:UtilityLibrary.CsUtilities">
+            <summary>
+            Utilities - list of functions<br/>
+            nl        - system new line<br/>
+            UserName  - the user's login name<br/>
+            MachineName - the name of the machine<br/>
+            CompanyName - the name of the user's company (if any)<br/>
+            AssemblyName - the name of the assembly<br/>
+            AssemblyVersion - the version of the assembly<br/>
+            AssemblyDirectory - the directory of the assembly<br/>
+            CreateSubFolders - based a root path, create sub-folders based on an array<br/>
+            SubFolder - based on a root path, create a sub-folder path<br/>
+            ValidateStringChars - search the test string for "invalid" characters<br/>
+            ValidateChar - determine if the char is in a list of invalid char's<br/>
+            RandomString - create a random string of a defined length (do I need this?)<br/>
+            Extn: IndexOf(T Array) - get the index of an element in a generic array<br/>
+            <br/>
+            INVALID_FILE_NAME_CHARACTERS - array of char that are not allowed in a file name<br/>
+            INVALID_FILE_NAME_STRING  - string of characters that are not allowed in a file name
+            </summary>
+        </member>
+        <member name="M:UtilityLibrary.MessageUtilities.logMsgDbLn2(System.String,System.Int32[],System.String[])">
+            <summary>
+            lists the prompt followed by the description / message pairs
+            the message is adjusted to be the width provided
+            do not provide a width for the last message
+            </summary>
+            <param name="msg1">The preface message</param>
+            <param name="width">the width to use for each message parameter</param>
+            <param name="msgs">a list of description / message pairs</param>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.Invalid">
+            <summary>
+            a FilePath that is not valid (IsValid == false)
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.CurrentDirectory">
+            <summary>
+            the current directory
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FullFilePath">
+            <summary>
+            The full path and the file name
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FolderPath">
+            <summary>
+            The path without the filename and extension
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FileName">
+            <summary>
+            The whole file name (name + extension) when applicable<br/>
+            Null otherwise
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FileNameNoExt">
+            <summary>
+            File name sans extension
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.Extension">
+            <summary>
+            File extension, with separator, sans file name
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FileExtensionNoSep">
+            <summary>
+            File extension, without separator, sans file name
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.DriveVolume">
+            <summary>
+            The drive volume letter (i.e. C)
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.DrivePath">
+            <summary>
+            The drive volume with a drive suffix (i.e. C:)
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.DriveRoot">
+            <summary>
+            The drive identifier with a slash suffix (i.e. C:\)
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UncFullFilePath">
+            <summary>
+            The path without the filename and extension and using unc if exists
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UncFolderPath">
+            <summary>
+            The path without the filename and extension and using unc if exists
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UncRoot">
+            <summary>
+            The full path using the UNC equivalent when applies
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UncVolume">
+            <summary>
+            The UNC Volume identifier
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UncShare">
+            <summary>
+            The UNC path without the UNC volume
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.FileNameObject">
+            <summary>
+            The filename object
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.Depth">
+            <summary>
+            The number of folders deep counting the volume as a depth
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.Length">
+            <summary>
+            Number of characters in the Full Path<br/>
+            Affected by GetUNC
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePath`1.UseUnc">
+            <summary>
+            cause information returned to provide the UncShare
+            rather than the GetDrivePath
+            </summary>
+        </member>
+        <member name="M:UtilityLibrary.FilePath`1.ChangeFileName(System.String,System.String)">
+            <summary>
+            Change the name and extension of the file<br/>
+            if empty string is provided, keep the existing component, if both are empty string, do nothing.<br/>
+            if null is provided, remove that component (make it null).
+            </summary>
+            <param name="fileNameNoExt"></param>
+            <param name="ext"></param>
+        </member>
+        <member name="P:UtilityLibrary.FilePathInfo`1.FileName">
+            <summary>
+            the whole name of the file - File Name + extension
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePathInfo`1.FileNameNoExt">
+            <summary>
+            the name of the file - no extension
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePathInfo`1.Extension">
+            <summary>
+            the file's extension with the file separator
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.FilePathInfo`1.ExtensionNoSep">
+            <summary>
+            the file's extension with the file separator
+            </summary>
+        </member>
+        <member name="M:UtilityLibrary.FilePathInfo`1.splitFolderAndFile(System.String,System.String@,System.String@)">
+            <summary>
+            extracts the filename and file extension from a partial path string
+            do not use this on just a folder path - returned information will
+            not be correct
+            </summary>
+            <param name="foldersAndFile"></param>
+            <returns>the original string with the fileneme and file extension removed</returns>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:UtilityLibrary.FilePathInfo`1.parseFileAndExtension(System.String,System.Boolean)" -->
+        <member name="M:UtilityLibrary.FilePathUtil.Exists(System.String,System.Boolean@,System.Boolean@)">
+            <summary>
+            determine if the path points of an
+            actual file or folder
+            </summary>
+            <param name="path">String of the folder or file determine if it exists</param>
+            <param name="isFolderPath">out bool - true if the path references a folder</param>
+            <param name="isFilePath">out bool - true if the path references a file</param>
+            <returns>true if path points to an actual file or folder</returns>
+        </member>
+        <member name="M:UtilityLibrary.FilePathUtil.AssembleFolderPath(System.Boolean,System.String[])">
+            <summary>
+            assemble a list of folder names into a folderpath with separators <br/>
+            between each folder name (of course)<br/>
+            the preface separator is optional based on 'addPreface'
+            </summary>
+            <param name="folderList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.FilePathUtil.AssembleFilePathS(System.String,System.String,System.String[])">
+            <summary>
+            Assembly the path parts into a single path string
+            </summary>
+            <param name="fileNameNoExt"></param>
+            <param name="extensionNoSep"></param>
+            <param name="folderList"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.FilePathUtil.CleanPath``1(System.String)">
+            <summary>
+            clean the string that represents a path -
+            replace slashes with back slashes
+            keep preface and suffix spaces
+            </summary>
+            <param name="path">the file path to clean</param>
+            <returns></returns>
+        </member>
+        <member name="P:UtilityLibrary.IFileName.FileName">
+            <summary>
+            The complete file name including the<br/>
+            separation character
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.IFileName.FileNameNoExt">
+            <summary>
+            The file's name without the file extension<br/>
+            and without the separation character
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.IFileName.ExtensionNoSep">
+            <summary>
+            The file's extension wihtout the separation character
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.IFileName.IsValid">
+            <summary>
+            indicates that either or both FileNameNoExt<br/>
+            and ExtensionNoSep are not null / has a value
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.AFileName.FileNameNoExt">
+            <summary>
+            The file name without the extension or separator
+            </summary>
+        </member>
+        <member name="P:UtilityLibrary.AFileName.ExtensionNoSep">
+            <summary>
+            The file's extension with no separator
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.SetRtnCodeE(ShExStorageN.ShExStorage.ExStoreRtnCode)">
+            <summary>
+            set the class return code 'rtnCode' and returns the supplied<br/>
+            rtnCode if supplied rtnCode is not XRC_VOID<br/>
+            and returns the last rtnCode is the supplied rtnCode<br/>
+            is XRC_VOID (preset default)
+            /// </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.SetRtnCodeB(ShExStorageN.ShExStorage.ExStoreRtnCode,ShExStorageN.ShExStorage.ExStoreRtnCode)">
+            <summary>
+            set the class return code 'rtnCode' and return<br/>
+            true if rtnCode matches the testCode (which is XRC_GOOD by default)<br/>
+            that is, by default, if the rtnCode is good, this returns true<br/>
+            else, this returns false<br/>
+            however, if no rtnCode is supplied, this compares the last<br/>
+            rtnCode with the default (XRC_GOOD) or the supplied testCode
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DelSheetDs(ShExStorageN.ShExStorage.ShtExId)">
+            <summary>
+            Delete a DataStorage by its Exid
+            </summary>
+            <param name="name">name of DataStorage to delete</param>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DelDs(Autodesk.Revit.DB.ExtensibleStorage.DataStorage)">
+            <summary>
+            Delete a DataStorage by its ElementId
+            </summary>
+            <param name="exid"></param>
+            <param name="ds"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesLockExist(ShExStorageN.ShExStorage.LokExId,System.String@)">
+            <summary>
+            determine if the lock exists and return<br/>
+            return the lock owner if it exists
+            </summary>
+            <returns>the lock owner if the lock exists, null otherwise</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.CanDeleteLock(ShExStorageN.ShExStorage.LokExId)">
+            <summary>
+            determine if the lock can be deleted<br/>
+            that is, I am the lock owner
+            </summary>
+            <returns>
+            XRC_GOOD if yes<br/>
+            XRC_LOCK_NOT_EXIST if no<br/>
+            </returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindElements(ShExStorageN.ShExStorage.AExId,System.Boolean,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@,Autodesk.Revit.DB.ExtensibleStorage.Schema@,Autodesk.Revit.DB.ExtensibleStorage.Entity@)">
+            <summary>
+            Find all associated elements - ds, schema, entity - if possible<br/>
+            1st, find the ds - return XRC_GOODn or XRC_DS_NOT_FOUND<br/>
+            2nd, find the schema - return XRC_GOOD or XRC_SCHEMA_NOT_FOUND<br/>
+            3rd, find the entity (straight Revit - no return code)<br/>
+            return XRC_GOOD if all found
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindSchema(ShExStorageN.ShExStorage.AExId,System.Boolean,Autodesk.Revit.DB.ExtensibleStorage.Schema@)">
+            <summary>
+            Find a schema based on its name
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindDs(ShExStorageN.ShExStorage.AExId,System.Boolean,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@)">
+            <summary>
+            Get a DataStorage by any name / <br/>
+            XRC_GOOD if found <br/>
+            XRC_FAIL if not
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindEntity(ShExStorageN.ShExStorage.AExId,System.Boolean,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@,Autodesk.Revit.DB.ExtensibleStorage.Entity@)">
+            <summary>
+            find the sheet entity based on the Exid<br/>
+            XRC_GOOD = retrived<br/>
+            XRC_ENTITY_NOT_FOUND = not found<br/>
+            returns the Entity when found
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoElementsExist(ShExStorageN.ShExStorage.AExId,System.Boolean@,System.Boolean@,System.Boolean@)">
+            <summary>
+            get the ds group of elements and return bool whether each exists
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesDsExist(ShExStorageN.ShExStorage.AExId)">
+            <summary>
+            Determine if the Ds with the name provided exists
+            </summary>
+            <returns>True if exists, false otherwise</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.CreateDataStorage(ShExStorageN.ShExStorage.AExId,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@)">
+            <summary>
+            create the datastorage object with name from an IExId<br/>
+            this must occur within a transaction<br/>
+            XRC_GOOD = new ds created<br/>
+            XRC_FAIL = no ds created
+            </summary>
+            <param name="exid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetAllDs">
+            <summary>
+            Get all DataStorage's
+            </summary>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetDsEntity(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Schema,Autodesk.Revit.DB.ExtensibleStorage.Entity@)">
+            <summary>
+            get the Entity stored in the DataStorage
+            </summary>
+            <param name="ds"></param>
+            <param name="sc"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.getSubEntities(Autodesk.Revit.DB.ExtensibleStorage.Entity)">
+            <summary>
+            get the list of sub-entities from a DS entity, if any
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetEntityDataAsString(Autodesk.Revit.DB.ExtensibleStorage.Entity,Autodesk.Revit.DB.ExtensibleStorage.Field)">
+            <summary>
+            Get the raw value stored in the entity for the<br/>
+            schema field 
+            </summary>
+            <param name="e">The entity with the date</param>
+            <param name="f">The field for which to get the data</param>
+            <returns>The raw value as a string</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.getDataStoreElements">
+            <summary>
+            collect all datastore elements
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.SetRtnCodeE(ShExStorageN.ShExStorage.ExStoreRtnCode)">
+            <summary>
+            set the class return code 'rtnCode' and returns the supplied<br/>
+            rtnCode if supplied rtnCode is not XRC_VOID<br/>
+            and returns the last rtnCode is the supplied rtnCode<br/>
+            is XRC_VOID (preset default)
+            /// </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.SetRtnCodeB(ShExStorageN.ShExStorage.ExStoreRtnCode,ShExStorageN.ShExStorage.ExStoreRtnCode)">
+            <summary>
+            set the class return code 'rtnCode' and return<br/>
+            true if rtnCode matches the testCode (which is XRC_GOOD by default)<br/>
+            that is, by default, if the rtnCode is good, this returns true<br/>
+            else, this returns false<br/>
+            however, if no rtnCode is supplied, this compares the last<br/>
+            rtnCode with the default (XRC_GOOD) or the supplied testCode
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.DoesSheetLockExist(ShExStorageN.ShExStorage.LokExId)">
+            <summary>
+            determine if a sheet lock exists<br/>
+            true == exists |  false == does not exist
+            </summary>
+            <param name="lokExid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.DeleteSheet(ShExStorageN.ShExStorage.ShtExId,ShExStorageN.ShExStorage.LokExId)">
+            <summary>
+            delete the schema's associated to the datastorage element<br/>
+            this also deletes the associated entity<br/>
+            Last, the datastorage element is deleted<br/>
+            return<br/>
+            XRC_GOOD | worked
+            sub-method rtnCode ?
+            XRC_FAIL | transaction popped an exception
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.ReadSheet(ShExStorageN.ShExStorage.ShtExId,`0@)">
+            <summary>
+            read the sheet data into a pre-initialized object<br/>
+            expectation is to do this once at the begining
+            </summary>
+            <param name="initSheet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.WriteSheet(ShExStorageN.ShExStorage.ShtExId,ShExStorageN.ShExStorage.LokExId,`0)">
+            <summary>
+            try to save the data to the DB <br/>
+            fail if <br/>
+            XRC_FAIL | sheetPrior is null || exid is null<br/>
+            XRC_DS_EXISTS | ds exists<br/>
+            XRC_LOCK_EXISTS | is locked
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.WriteLock(ShExStorageN.ShExStorage.LokExId,`2)">
+            <summary>
+            write a lock for the subject provided
+            </summary>
+            <param name="lokExid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.ReadLock(ShExStorageN.ShExStorage.LokExId,System.Boolean,`2@)">
+            <summary>
+            Read and return the lock data
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.GetLockOwnerFromName(ShExStorageN.ShExStorage.LokExId,System.String@)">
+            <summary>
+            get the name of the lock owner and<br/>
+            return true if a lock exists
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.ReadLockOwner(ShExStorageN.ShExStorage.LokExId,System.String@)">
+            <summary>
+            return the owner name string
+            </summary>
+            <param name="exid"></param>
+            <param name="owner"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.DeleteLock(ShExStorageN.ShExStorage.LokExId)">
+            <summary>
+            delete the lock
+            </summary>
+            <param name="exid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.CanDeleteLock(ShExStorageN.ShExStorage.LokExId,`2@)">
+            <summary>
+            determine if a lock exists and can be deleted (user name matches)<br/>
+            return<br/>
+            true if it can be deleted (found and has the same user name)<br/>
+            false if it cannot delete (not found or has a different user name)
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExSchemaLibR`9.WriteSheet(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,`0)">
+            <summary>
+            save the sheet data and any row data to the model<br/>
+            this routine must occur within a transaction<br/>
+            return:<br/>
+            XRC_GOOD = worked / saved<br/>
+            XRC_FAIL = did not work (could not create a datastorage element
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExSchemaLibR`9.ReadData``2(Autodesk.Revit.DB.ExtensibleStorage.Entity,ShExStorageN.ShSchemaFields.AShScFields{``0,``1})">
+            <summary>
+            read the data stored in the entity
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExSchemaLibR`9.readRowData(Autodesk.Revit.DB.ExtensibleStorage.Entity,`0)">
+            <summary>
+            read the data stored in each sub-entity
+            </summary>
+        </member>
+        <member name="P:RevitLibrary.RevitAddIns.AddIn">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Name">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Text">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Description">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Assembly">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.FullClassName">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.ClientId">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.VendorId">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.VendorDescription">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Type">
+            <remarks/>
+        </member>
+        <member name="T:ShExStorageN.ShExStorage.LokExId">
+            <summary>
+            holds the information for a lock<br/>
+            name is {Exid}_{suffix}_{id}
+            example cyberstudio_modeltitle_cells_lok_ds + id suffix
+            </summary>
+        </member>
+        <member name="T:ShExStorageN.ShExStorage.AExId">
+            <summary>
+            creates / holds the Extended Storage Id - unique for the document<br/>
+            Exid -> VendorId + '_' + DocName<br/>
+            DocName is "processed" to remove invalid characters<br/>
+            provides the data storage names and schema names<br/>
+            most info is static / but the help names are not static<br/>
+            this allows unique versions of sheet or lock instances
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShExStorage.AExId.#cctor">
+            <summary>
+            static ctor
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.ExidName">
+            <summary>
+            a name assigned to this copy - this
+            is not used for identification
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.DsName">
+            <summary>
+            The sheet ex storage id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.SchemaName">
+            <summary>
+            The sheet ex schema id (same as sheet id)
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShExStorage.AExId.RowSchemaName(System.String)">
+            <summary>
+            the schema name for table row
+            </summary>
+            <param name="famName"></param>
+        </member>
+        <member name="M:ShExStorageN.ShExStorage.AExId.setDocument(System.String)">
+            <summary>
+            assign the document name (revit model title).
+            </summary>
+            <param name="documentName"></param>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.Document">
+            <summary>
+            get the associated Document
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.Exid">
+            <summary>
+            the Extended Storage Id -> VendorId + '_' + DocName
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.VendorId">
+            <summary>
+            the vendor id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.CompanyId">
+            <summary>
+            the company id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.DocumentName">
+            <summary>
+            The raw document name - may have unaccepsheet characters and spaces
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.AExId.DocNameClean">
+            <summary>
+            the "cleaned" document name - only has [0-9a-zA-Z]
+            </summary>
+        </member>
+        <member name="T:ShExStorageN.ShSchemaFields.AShScFields`2">
+            <summary>
+            basic abstract class for either sheet or rows<br/>
+            has the basic collection of fields<br/>
+            includes some pre-defined routines<br/>
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TField"></typeparam>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:ShExStorageN.ShSchemaFields.AShScSheet`6" -->
+        <member name="T:ShExStorageN.ShSchemaFields.DynaValue">
+            <summary>
+            store a value as one of these data types:<br/>
+            string, int, double, enum, Guid
+            </summary>
+        </member>
+        <member name="F:ShExStorageN.ShSchemaFields.DynaValue.dynValue">
+            <summary>
+            get the raw value stored
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.LastValueReturnedIsValid">
+            <summary>
+            flag weather that the last GetValue() did<br/>
+            provide the actual value.  doing this rather<br/>
+            than throw an exception
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.TypeIs">
+            <summary>
+            get the data type
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.GetValueAs``1">
+            <summary>
+            get the value based on the type parameter
+            </summary>
+            <typeparam name="TD">Data type to provide<br/>
+            possible: string, int, double, enum
+            </typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsString">
+            <summary>
+            get the value as a string
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsString">
+            <summary>
+            determine if the value is a string
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsInt">
+            <summary>
+            get the value as n int
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsInt">
+            <summary>
+            determine if the value is an int
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsDouble">
+            <summary>
+            get the value as a double
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsDouble">
+            <summary>
+            determine if the value is a double
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsBool">
+            <summary>
+            get the value as a bool
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsEnum">
+            <summary>
+            determine if the value is a bool
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsGuid">
+            <summary>
+            return the value as a Guid if it is a Guid
+            </summary>
+        </member>
+        <member name="T:ShExStorageC.ShExStorage.ExStorageLibraryC1`9">
+            <summary>
+            this has data storage test routines only
+            </summary>
+        </member>
+        <member name="T:ShExStorageC.ShSchemaFields.ScDataRow">
+            <summary>
+            a single row which contains the row fields
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScData.MakeInitialDataSheet1(ShExStorageN.ShExStorage.ShtExId)">
+            <summary>
+            make the initial generic data set of sheet data
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScData.MakeInitialDataRow1(ShExStorageC.ShSchemaFields.ScDataSheet)">
+            <summary>
+            make the generic data set of row data
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScInfoMeta.ConfigData``1(System.Collections.Generic.Dictionary{``0,ShExStorageC.ShSchemaFields.ScFieldDefData{``0}},System.Collections.Generic.Dictionary{``0,ShExStorageC.ShSchemaFields.ScFieldDefMeta{``0}})">
+            <summary>
+            add all of the meta fields to a data field using default information
+            </summary>
+        </member>
+        <member name="F:ShExStorageC.ShSchemaFields.ShScSupport.ScInfoMeta.metaFieldsSheet">
+            <summary>
+            contains the meta information for each table property as well as the default information for the table property
+            </summary>
+        </member>
+        <member name="T:ShStudyN.ShEval.ScValues`1">
+            <summary>
+            translates the information in the data sheets into a format used to display
+            the information using the show library
+            </summary>
+            <typeparam name="TKey"></typeparam>
+        </member>
+        <member name="M:ShStudyN.ShEval.ShDebugMessages.WriteDebugMsg(System.String,System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Adds a formatted message to the app msg text box and<br/>
+            to the debug window.  Does not include a new line<br/>
+            use Show() to have the message shown<br/>
+            msgA = Message title (for app and debug)<br/>
+            msgB = Message text (for app)<br/>
+            msgD = Message text (for debug)<br/>
+            loc  = Code location (optional)<br/>
+            </summary>
+            <param name="msgA">Message title (for app and debug)</param>
+            <param name="msgB">Message text (for app)</param>
+            <param name="msgD">Message text (for debug)</param>
+            <param name="loc">Code location (optional)</param>
+            <param name="colWidth">Width for the title column (app only) (optional)</param>
+        </member>
+        <member name="M:ShStudyN.ShEval.ShDebugMessages.WriteDebugMsgLine(System.String,System.String,System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Adds a formatted message to the app msg text box and<br/>
+            to the debug window.  Include a new line<br/>
+            use Show() to have the message shown<br/>
+            msgA = Message title (for app and debug)<br/>
+            msgB = Message text (for app)<br/>
+            msgD = Message text (for debug)<br/>
+            loc  = Code location (optional)<br/>
+            </summary>
+            <param name="msgA">Message title (for app and debug)</param>
+            <param name="msgB">Message text (for app)</param>
+            <param name="msgC"></param>
+            <param name="msgD">Message text (for debug)</param>
+            <param name="loc">Code location (optional)</param>
+            <param name="colWidth">Width for the title column (app only) (optional)</param>
+        </member>
+    </members>
+</doc>

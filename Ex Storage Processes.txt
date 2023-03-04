@@ -1,0 +1,95 @@
+
+
+
+ShExStorManagerR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>.
+
+CanDeleteLock(ShExStorageN.ShExStorage.LokExId, TLok)
+DeleteLock(ShExStorageN.ShExStorage.LokExId) 
+DeleteLockP(ShExStorageN.ShExStorage.LokExId) 
+DeleteSheet(ShExStorageN.ShExStorage.ShtExId, ShExStorageN.ShExStorage.LokExId) 
+DoesSheetLockExist(ShExStorageN.ShExStorage.LokExId) 
+doTheyExist(ShExStorageN.ShExStorage.ShtExId, ShExStorageN.ShExStorage.LokExId, ShExStorageN.ShExStorage.LokExId) Object.Equals(object) Object.Equals(object, object) Object.GetHashCode() 
+getLockElementStatus(ShExStorageN.ShExStorage.LokExId) 
+GetLockOwnerFromName(ShExStorageN.ShExStorage.LokExId, string) 
+getLockTempElementStatus(ShExStorageN.ShExStorage.LokExId) 
+getSheetStatus(ShExStorageN.ShExStorage.ShtExId) Object.GetType() Object.MemberwiseClone() 
+OnPropertyChanged(string) 
+ReadLock(ShExStorageN.ShExStorage.LokExId, bool, TLok) 
+ReadLock(ShExStorageN.ShExStorage.LokExId, TLok, bool, Autodesk.Revit.DB.ExtensibleStorage.DataStorage, Autodesk.Revit.DB.ExtensibleStorage.Schema, Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+ReadLockOwner(ShExStorageN.ShExStorage.LokExId, string) 
+ReadSheet(ShExStorageN.ShExStorage.ShtExId, TSht) 
+ReadTable<TTbl, TKey, TField>(Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+ReadTable<TTbl, TKey, TField>(ShExStorageN.ShExStorage.AExId, TTbl) Object.ReferenceEquals(object, object) 
+SetDebugMsg(ShStudyN.ShEval.ShDebugMessages) 
+SetRtnCodeB(ShExStorageN.ShExStorage.ExStoreRtnCode, ShExStorageN.ShExStorage.ExStoreRtnCode) 
+SetRtnCodeE(ShExStorageN.ShExStorage.ExStoreRtnCode) 
+
+ShExStorManagerR() 
+TestWhatExists(ShExStorageN.ShExStorage.ShtExId, ShExStorageN.ShExStorage.LokExId, ShExStorageN.ShExStorage.LokExId) 
+ToString() 
+UpdateSheet(ShExStorageN.ShExStorage.ShtExId, TSht, string) 
+WriteLock(ShExStorageN.ShExStorage.LokExId, TLok) 
+WriteSheet(ShExStorageN.ShExStorage.ShtExId, ShExStorageN.ShExStorage.LokExId, TSht)
+
+
+
+
+
+
+ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>
+
+addAllRowSchemaFields() 
+addAllSubSchemaFields(Autodesk.Revit.DB.ExtensibleStorage.SchemaBuilder) 
+addRowSchema(ShExStorageN.ShSchemaFields.AShScRow<TRowKey, TRowFlds>) 
+addSchemaFields<TKey, TFields>(Autodesk.Revit.DB.ExtensibleStorage.SchemaBuilder, ShExStorageN.ShSchemaFields.AShScFields<TKey, TFields>) 
+addSubSchemaField(Autodesk.Revit.DB.ExtensibleStorage.SchemaBuilder, TRow) 
+config() 
+configSchemaParams(Autodesk.Revit.DB.ExtensibleStorage.SchemaBuilder, string, string, string) 
+createLockSchema() 
+createSheetSchema() Object.Equals(object) Object.Equals(object, object) Object.GetHashCode() Object.GetType() 
+MakeInitLock() 
+MakeInitSheet() 
+makeRowSchema(ShExStorageN.ShSchemaFields.AShScRow<TRowKey, TRowFlds>) 
+makeSheetPartialSchema<TK, TF>(ShExStorageN.ShSchemaFields.AShScFields<TK, TF>) Object.MemberwiseClone() 
+OnPropertyChanged(string) 
+ReadData<TKey, TFlds>(Autodesk.Revit.DB.ExtensibleStorage.Entity, ShExStorageN.ShSchemaFields.AShScFields<TKey, TFlds>) 
+ReadLock(Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+readRowData(Autodesk.Revit.DB.ExtensibleStorage.Entity, TSht) 
+ReadSheet(Autodesk.Revit.DB.ExtensibleStorage.Entity) Object.ReferenceEquals(object, object) 
+saveSheet() 
+ShExSchemaLibR() 
+ToString() 
+writeData<TKey, TFld>(Autodesk.Revit.DB.ExtensibleStorage.Entity, Autodesk.Revit.DB.ExtensibleStorage.Schema, ShExStorageN.ShSchemaFields.AShScFields<TKey, TFld>) 
+writeField<TKey, TFld>(Autodesk.Revit.DB.ExtensibleStorage.Entity, Autodesk.Revit.DB.ExtensibleStorage.Schema, TFld) 
+writeLock() 
+WriteLock(Autodesk.Revit.DB.ExtensibleStorage.DataStorage, TLok) 
+WriteLock(ShExStorageN.ShExStorage.LokExId, TLok) 
+writeLockData() 
+writeRow(Autodesk.Revit.DB.ExtensibleStorage.Entity, Autodesk.Revit.DB.ExtensibleStorage.Schema, TRow) 
+writeRows(Autodesk.Revit.DB.ExtensibleStorage.Entity, Autodesk.Revit.DB.ExtensibleStorage.Schema, System.Collections.Generic.Dictionary<string, TRow>) 
+WriteSheet(Autodesk.Revit.DB.ExtensibleStorage.DataStorage, TSht) 
+writeSheetData()
+
+
+ShExStorageLibR
+
+CanDeleteLock(ShExStorageN.ShExStorage.LokExId) 
+CreateDataStorage(ShExStorageN.ShExStorage.AExId, Autodesk.Revit.DB.ExtensibleStorage.DataStorage) 
+DelDs(Autodesk.Revit.DB.ExtensibleStorage.DataStorage) 
+DelSheet(ShExStorageN.ShExStorage.ShtExId) 
+DelSheetDs(ShExStorageN.ShExStorage.ShtExId) 
+DoElementsExist(ShExStorageN.ShExStorage.AExId, bool, bool, bool) 
+DoesDsExist(ShExStorageN.ShExStorage.AExId) 
+DoesLockExist(ShExStorageN.ShExStorage.LokExId, string) Object.Equals(object) Object.Equals(object, object) 
+FindDs(ShExStorageN.ShExStorage.AExId, bool, Autodesk.Revit.DB.ExtensibleStorage.DataStorage) 
+FindElements(ShExStorageN.ShExStorage.AExId, bool, Autodesk.Revit.DB.ExtensibleStorage.DataStorage, Autodesk.Revit.DB.ExtensibleStorage.Schema, Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+FindEntity(ShExStorageN.ShExStorage.AExId, bool, Autodesk.Revit.DB.ExtensibleStorage.DataStorage, Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+FindSchema(ShExStorageN.ShExStorage.AExId, bool, Autodesk.Revit.DB.ExtensibleStorage.Schema) 
+GetAllDs() 
+getDataStoreElements() 
+GetDsEntity(Autodesk.Revit.DB.ExtensibleStorage.DataStorage, Autodesk.Revit.DB.ExtensibleStorage.Schema, Autodesk.Revit.DB.ExtensibleStorage.Entity) 
+GetEntityDataAsString(Autodesk.Revit.DB.ExtensibleStorage.Entity, Autodesk.Revit.DB.ExtensibleStorage.Field) Object.GetHashCode() 
+getSubEntities(Autodesk.Revit.DB.ExtensibleStorage.Entity) Object.GetType() Object.MemberwiseClone() 
+OnPropertyChanged(string) Object.ReferenceEquals(object, object) 
+SetRtnCodeB(ShExStorageN.ShExStorage.ExStoreRtnCode, ShExStorageN.ShExStorage.ExStoreRtnCode) 
+SetRtnCodeE(ShExStorageN.ShExStorage.ExStoreRtnCode)

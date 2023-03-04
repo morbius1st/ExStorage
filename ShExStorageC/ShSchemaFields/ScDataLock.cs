@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Autodesk.Revit.DB.ExtensibleStorage;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 
 
@@ -19,12 +19,14 @@ using ShExStorageN.ShExStorage;
 
 namespace ShExStorageC.ShSchemaFields
 {
+	// this is project specific
 	public class ScDataLock : AShScLock<SchemaLockKey, ScFieldDefData<SchemaLockKey>>
 	{
+
 		protected override void init()
 		{
 			// configure the initial field information
-			ScInfoMeta.ConfigData1(Fields, ScInfoMeta.FieldsLock);
+			ScInfoMeta.ConfigData(Fields, ScInfoMeta.MetaFieldsLock);
 		}
 
 		public override void Configure(LokExId lokExid)
@@ -36,25 +38,26 @@ namespace ShExStorageC.ShSchemaFields
 			Fields[SchemaLockKey.LK0_GUID].SetValue = Guid.NewGuid();
 		}
 
-		public override string SchemaKey => Fields[SchemaLockKey.LK0_KEY].GetValueAs<string>();
-		public override string SchemaVersion => Fields[SchemaLockKey.LK0_VERSION].GetValueAs<string>();
-		public override string UserName => Fields[SchemaLockKey.LK0_USER_NAME].GetValueAs<string>();
+		public override T GetValue<T>(int key)
+		{
+			return Fields[(SchemaLockKey) key].GetValueAs<T>();
+		}
 
-		public override string SchemaName => Fields[SchemaLockKey.LK0_SCHEMA_NAME].GetValueAs<string>();
-		public override string SchemaDesc => Fields[SchemaLockKey.LK0_DESCRIPTION].GetValueAs<string>();
-		public override Guid SchemaGuid => Fields[SchemaLockKey.LK0_GUID].DyValue.AsGuid();
-
-		public override string ModelName => Fields[SchemaLockKey.LK2_MODEL_NAME].GetValueAs<string>();
-		public override string ModelPath => Fields[SchemaLockKey.LK2_MODEL_PATH].GetValueAs<string>();
-		public override string MachineName => Fields[SchemaLockKey.LK2_MACHINE_NAME].GetValueAs<string>();
-
-		public override string Date => Fields[SchemaLockKey.LK1_CREATE_DATE].GetValueAs<string>();
+		public override T GetValue<T>(SchemaLockKey key)
+		{
+			return Fields[key].GetValueAs<T>();
+		}
 
 		public override void ParseEnum(Type t, string enumName) { }
 
 		public bool UserNameMatches(string testName)
 		{
 			return testName.Equals(UserName);
+		}
+
+		public override void SetValue(int key, dynamic value)
+		{
+			SetValue((SchemaLockKey) key, value);
 		}
 	}
 }

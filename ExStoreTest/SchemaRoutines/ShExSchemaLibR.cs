@@ -9,7 +9,7 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStoreTest.Support;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
 using ShExStorageN.ShSchemaFields.ShScSupport;

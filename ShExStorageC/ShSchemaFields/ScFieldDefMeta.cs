@@ -12,7 +12,7 @@ using ShExStorageN.ShSchemaFields.ShScSupport;
 
 namespace ShExStorageC.ShSchemaFields
 {
-	public class ScFieldDefMeta<TKey> : IShScFieldMeta1<TKey>
+	public class ScFieldDefMeta<TKey> : IShScFieldMeta<TKey>
 		where TKey : Enum
 	{
 
@@ -59,7 +59,7 @@ namespace ShExStorageC.ShSchemaFields
 			}
 		}
 
-		public IShScFieldBase1<TKey> Clone()
+		public IShScFieldBase<TKey> Clone()
 		{
 			return new ScFieldDefMeta<TKey>(
 				FieldKey, FieldName, FieldDesc, new DynaValue(DyValue.Value),

@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using RevitSupport;
 using ShExStorageC.ShExStorage;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaSheetKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaLockKey;
 using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
 
 #endregion
@@ -22,7 +22,7 @@ using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
 // user name: jeffs
 // created:   10/16/2022 8:46:34 AM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public class ShTestProcedures01
 	{
@@ -63,22 +63,20 @@ namespace ShStudy.ShEval
 			string fauxSeq = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()).Substring(0,2);
 		
 			// row data initially created.  finish with bogus information
-			rowd.Fields[RK0_SCHEMA_NAME].SetValue = $"row_schema_{fauxFamName}";
-
-			rowd.Fields[RK2_CELL_FAMILY_NAME].SetValue = fauxFamName;
-			rowd.Fields[RK2_XL_FILE_PATH].SetValue = fauxWksPath;
-			rowd.Fields[RK2_XL_WORKSHEET_NAME].SetValue = fauxWksName;
-
-			rowd.Fields[RK2_SEQUENCE].SetValue = fauxSeq;
-			rowd.Fields[RK2_SKIP].SetValue = false;
-			rowd.Fields[RK2_UPDATE_RULE].SetValue = UR_UPON_REQUEST;
+			rowd.SetValue(RK0_SCHEMA_NAME      , $"row_schema_{fauxFamName}");
+			rowd.SetValue(RK2_CELL_FAMILY_NAME , fauxFamName);
+			rowd.SetValue(RK2_XL_FILE_PATH     , fauxWksPath);
+			rowd.SetValue(RK2_XL_WORKSHEET_NAME, fauxWksName);
+			rowd.SetValue(RK2_SEQUENCE         , fauxSeq);
+			rowd.SetValue(RK2_SKIP             , false);
+			rowd.SetValue(RK2_UPDATE_RULE      , UR_UPON_REQUEST);
 
 		}
 
-		public string makeRowSchemaName(string rootName)
-		{
-			return $"row_schema_{rootName}";
-		}
+		// public string makeRowSchemaName(string rootName)
+		// {
+		// 	return $"row_schema_{rootName}";
+		// }
 
 
 

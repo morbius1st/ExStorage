@@ -7,16 +7,20 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using ExStoreDev.Windows.Support;
 using RevitSupport;
 using ShExStorageC.ShExStorage;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using ShStudy.ShEval;
+using ShExStorageN.ShSchemaFields.ShScSupport;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaSheetKey;
+using ShStudyN.ShEval;
 
+using static ExStoreDev.Windows.MainWindowModel;
+using static UtilityLibrary.CsUtilities;
 #endregion
 
 // username: jeffs
@@ -40,7 +44,7 @@ namespace ExStoreDev.Windows
 
 		private ShFieldDisplayData shFd;
 
-		private ExStorageLibraryC xlC;
+		// private ExStorageLibraryC xlC;
 
 
 		private
@@ -55,6 +59,9 @@ namespace ExStoreDev.Windows
 			SchemaLockKey,
 			ScFieldDefData<SchemaLockKey>
 			> elc1;
+
+
+		private Tests t3;
 
 	#endregion
 
@@ -72,9 +79,8 @@ namespace ExStoreDev.Windows
 			tp01 = new ShTestProcedures01(w, M);
 			sp01 = new ShShowProcedures01(M);
 
-			// elc = new ExStorageLibraryC(M);
+			t3 = new Tests(M);
 
-			xlC = new ExStorageLibraryC();
 
 			elc1 = new ExStorageLibraryC1<
 				ScDataSheet,
@@ -115,20 +121,22 @@ namespace ExStoreDev.Windows
 			vw[1].Filter = item =>
 			{
 				KeyValuePair<string, ScDataRow> kvp = (KeyValuePair<string, ScDataRow>) item ;
-				M.WriteDebugMsgLine($"filtering| ", kvp.Value.Fields[RK0_SCHEMA_NAME].DyValue.AsString());
-				return kvp.Value.Fields[RK0_SCHEMA_NAME].DyValue.AsString().Contains("0");
+				M.WriteDebugMsgLine($"filtering| ", kvp.Value.SchemaName);
+
+				
+				return kvp.Value.SchemaName.Contains("0");
 			};
 
 			int a = 1;
 		}
 
 
-		public void TestBegin(ShtExId exid, ScDataSheet shtd)
-		{
-			ShowExid(exid);
-
-			shtd = TestMakeDataSheetInitial(exid);
-		}
+		// public void TestBegin(ShtExId exid, ScDataSheet shtd)
+		// {
+		// 	ShowExid(exid);
+		//
+		// 	shtd = TestMakeDataSheetInitial(exid);
+		// }
 
 	#endregion
 
@@ -154,12 +162,17 @@ namespace ExStoreDev.Windows
 	#endregion
 
 
-	#region keep methods
+	#region methods
+
+		public void TestClone()
+		{
+
+		}
 
 		public void ShowExid2()
 		{
 			M.MarginUp();
-			sp01.ShowExid(new ShtExId("Name"));
+			sp01.ShowExid(new ShtExId("Name", ShtExId.ROOT));
 			M.MarginDn();
 		}
 
@@ -188,27 +201,24 @@ namespace ExStoreDev.Windows
 		{
 			M.WriteLine("test make SHEET data - initial");
 
-			// ScDataSheet1 shtd = ScInfoMeta1.MakeInitialDataSheet1(exid);
-
-			ScDataSheet shtd = xlC.MakeInitSheet(exid);
-
-			// ScDataSheet1 shtd = new ScDataSheet1();
+			ScDataSheet shtd = ScData.MakeInitialDataSheet1(exid);
+			shtd.HasData = true;
 
 			return shtd;
 		}
-
-		public ScDataSheet TestMakeDataSheetEmpty()
-		{
-			M.WriteLine("test make SHEET data - initial");
-
-			// ScDataSheet1 shtd = ScInfoMeta1.MakeInitialDataSheet1(exid);
-
-			ScDataSheet shtd = xlC.MakeEmptySheet();
-
-			// ScDataSheet1 shtd = new ScDataSheet1();
-
-			return shtd;
-		}
+		//
+		// public ScDataSheet TestMakeDataSheetEmpty()
+		// {
+		// 	M.WriteLine("test make SHEET data - initial");
+		//
+		// 	// ScDataSheet1 shtd = ScInfoMeta1.MakeInitialDataSheet1(exid);
+		//
+		// 	ScDataSheet shtd = xlC.MakeEmptySheet();
+		//
+		// 	// ScDataSheet1 shtd = new ScDataSheet1();
+		//
+		// 	return shtd;
+		// }
 
 		public void TestMakeDataRow3(ShtExId exid, ScDataSheet shtd)
 		{
@@ -234,19 +244,19 @@ namespace ExStoreDev.Windows
 			return ScData.MakeInitialDataRow1(shtd);
 		}
 
-		public ScDataLock TestMakeDataLock(LokExId exid)
-		{
-			M.WriteLine("\ntest make LOCK data\n");
-
-			ScDataLock lokd = ScData.MakeInitialDataLock1(exid);
-
-			return lokd;
-		}
+		// public ScDataLock2 TestMakeDataLock(LokExId exid)
+		// {
+		// 	M.WriteLine("\ntest make LOCK data\n");
+		//
+		// 	// ScDataLock2 lokd = ScData.MakeInitialDataLock1(exid);
+		//
+		// 	return lokd;
+		// }
 
 		public void ShowSheetData(ScDataSheet shtd)
 		{
 			M.MarginUp();
-			// sp01.ShowSheetData(shtd);
+
 			sp01.ShowSheetDataGeneric(shtd);
 
 			M.NewLine();
@@ -260,10 +270,18 @@ namespace ExStoreDev.Windows
 		public void ShowLockData(ScDataLock lokd)
 		{
 			M.MarginUp();
-			// sp01.ShowSheetData(shtd);
+
 			sp01.ShowLockDataGeneric(lokd);
 			M.MarginDn();
 		}
+
+		// public void ShowLockData(ScDataLock2 lokd)
+		// {
+		// 	M.MarginUp();
+		//
+		// 	// sp01.ShowLockDataGeneric(lokd);
+		// 	M.MarginDn();
+		// }
 
 		public ScDataRow CreateFauxRow(ScDataRow row)
 		{
@@ -271,6 +289,50 @@ namespace ExStoreDev.Windows
 
 			return row;
 		}
+
+		public bool TestClone(ScDataSheet shtd)
+		{
+			// TestMakeNewSheet();
+
+			if (shtd == null || !shtd.HasData) return false;
+
+			shtd.SetValue(SK0_DESCRIPTION, "this is a new description");
+
+			ListSheetData(shtd);
+
+			return false;
+
+			ScDataSheet copy = (ScDataSheet) shtd.Clone();
+
+			ShowSheetData(shtd);
+
+			return true;
+
+		}
+
+		public void TestCloneModifyData(ScDataSheet shtd)
+		{
+			shtd.SetValue(SK0_SCHEMA_NAME, "asdf");
+
+		}
+
+		public void TestMakeNewSheet()
+		{
+			ScDataSheet shtd = new ScDataSheet();
+
+			ShowSheetData(shtd);
+
+		}
+
+
+		public void ListSheetData(ScDataSheet shtd)
+		{
+			foreach (KeyValuePair<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>> kvp in shtd)
+			{
+				M.WriteLine($"key| {kvp.Key.ToString()}", $"{kvp.Value.FieldName} :: {kvp.Value.DyValue.Value}");
+			}
+		}
+
 
 	#endregion
 
@@ -312,21 +374,31 @@ namespace ExStoreDev.Windows
 				();
 		}
 
-
 		public void MakeSheetDataGeneric<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> ()
-			where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TRow>, new()
+			where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TSht, TRow>, new()
 			where TRow : AShScRow<TRowKey, TRowFlds>, new()
-			where TLok : AShScFields<TLokKey, TLokFlds>, new()
+			where TLok : AShScLock<TLokKey, TLokFlds>, new()
 			where TShtKey : Enum
-			where TShtFlds : IShScFieldData1<TShtKey>, new()
+			where TShtFlds : ScFieldDefData<TShtKey>, new()
 			where TRowKey : Enum
-			where TRowFlds : IShScFieldData1<TRowKey>, new()
+			where TRowFlds : ScFieldDefData<TRowKey>, new()
 			where TLokKey : Enum
-			where TLokFlds : IShScFieldData1<TLokKey>, new()
+			where TLokFlds : ScFieldDefData<TLokKey>, new()
 		{
 			TSht sht = new TSht();
 			TRow row = new TRow();
 			TLok lok = new TLok();
 		}
+
+		public void KeysTests()
+		{
+			// t3.test1();
+			t3.test2();
+		}
+
+
+
 	}
+
+
 }

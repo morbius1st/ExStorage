@@ -3,6 +3,7 @@ using ShExStorageC.ShSchemaFields;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShSchemaFields;
 using ShExStorageN.ShSchemaFields.ShScSupport;
 // using ShExStorageC.ShSchemaData;
@@ -13,7 +14,7 @@ using static ShExStorageN.ShSchemaFields.ShScSupport.ScFieldColumns;
 // user name: jeffs
 // created:   10/22/2022 9:00:09 AM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	/// <summary>
 	/// translates the information in the data sheets into a format used to display
@@ -52,17 +53,17 @@ namespace ShStudy.ShEval
 			}
 		}
 
-
+		// create a list of values to display
 		public void setDataValues<Tdata>(Dictionary<TKey, Tdata> fieldList)
-			where Tdata :  IShScFieldData1<TKey>, new()
+			where Tdata :  IShScFieldData<TKey>, new()
 		{
 			ScDataValues = new Dictionary<TKey, Dictionary<ScFieldColumns, string>>();
 
 			foreach (KeyValuePair<TKey, Tdata> kvp in fieldList)
 			{
-				IShScFieldData1<TKey> lf = kvp.Value;
+				IShScFieldData<TKey> lf = kvp.Value;
 
-				IShScFieldMeta1<TKey> fld = lf.Meta1Field;
+				IShScFieldMeta<TKey> fld = lf.MetaField;
 
 				Dictionary<ScFieldColumns, string> f = new Dictionary<ScFieldColumns, string>();
 
@@ -72,37 +73,6 @@ namespace ShStudy.ShEval
 				f.Add(SFC_VALUE_STR, lf.DyValue.GetValueAs<string>());
 				f.Add(SFC_VALUE_TYPE, lf.DyValue.TypeIs?.Name);
 				f.Add(SFC_REVIT_TYPE, lf.DyValue.GetRevitSpecIdCustom().TypeId);
-				f.Add(SFC_FIELD, $"{lf.Meta1Field.FieldName} ({lf.Meta1Field.FieldKey})");
-
-				// derived
-				f.Add(SFC_NAME,	fld.FieldName);
-				f.Add(SFC_DESC, fld.FieldDesc);
-
-				ScDataValues.Add(lf.FieldKey, f);
-			}
-		}
-
-
-
-/*
-		public void setDataValues(Dictionary<TKey, ScFieldDefData1<TKey>> fieldList)
-		{
-			ScDataValues = new Dictionary<TKey, Dictionary<ScFieldColumns, string>>();
-
-			foreach (KeyValuePair<TKey, ScFieldDefData1<TKey>> kvp in fieldList)
-			{
-				ScFieldDefData1<TKey> lf = kvp.Value;
-
-				ScFieldDefMeta1<TKey> fld = lf.MetaField;
-
-				Dictionary<ScFieldColumns, string> f = new Dictionary<ScFieldColumns, string>();
-
-				// native
-				f.Add(SFC_KEY, lf.FieldKey.ToString());
-				f.Add(SFC_VALUE, lf.DyValue.Value?.ToString());
-				f.Add(SFC_VALUE_STR, lf.DyValue.ConvertValueTo<string>());
-				f.Add(SFC_VALUE_TYPE, lf.DyValue.TypeIs?.Name);
-				f.Add(SFC_REVIT_TYPE, lf.DyValue.GetRevitSpecIdCustom().TypeId);
 				f.Add(SFC_FIELD, $"{lf.MetaField.FieldName} ({lf.MetaField.FieldKey})");
 
 				// derived
@@ -113,23 +83,24 @@ namespace ShStudy.ShEval
 			}
 		}
 
-		public void setDataValues<Tdata>(Dictionary<TKey, Tdata> fieldList)
-		where Tdata :  ScFieldDefData1<TKey>, new()
+		// create a list of values to display
+		public void setDataValues<Tdata>(AShScFields<TKey, Tdata> fieldList)
+			where Tdata :  IShScFieldData<TKey>, new()
 		{
 			ScDataValues = new Dictionary<TKey, Dictionary<ScFieldColumns, string>>();
 
 			foreach (KeyValuePair<TKey, Tdata> kvp in fieldList)
 			{
-				ScFieldDefData1<TKey> lf = kvp.Value;
+				IShScFieldData<TKey> lf = kvp.Value;
 
-				ScFieldDefMeta1<TKey> fld = lf.MetaField;
+				IShScFieldMeta<TKey> fld = lf.MetaField;
 
 				Dictionary<ScFieldColumns, string> f = new Dictionary<ScFieldColumns, string>();
 
 				// native
 				f.Add(SFC_KEY, lf.FieldKey.ToString());
 				f.Add(SFC_VALUE, lf.DyValue.Value?.ToString());
-				f.Add(SFC_VALUE_STR, lf.DyValue.ConvertValueTo<string>());
+				f.Add(SFC_VALUE_STR, lf.DyValue.GetValueAs<string>());
 				f.Add(SFC_VALUE_TYPE, lf.DyValue.TypeIs?.Name);
 				f.Add(SFC_REVIT_TYPE, lf.DyValue.GetRevitSpecIdCustom().TypeId);
 				f.Add(SFC_FIELD, $"{lf.MetaField.FieldName} ({lf.MetaField.FieldKey})");
@@ -141,7 +112,45 @@ namespace ShStudy.ShEval
 				ScDataValues.Add(lf.FieldKey, f);
 			}
 		}
-*/
+
+
+		// // create a list of values to display
+		// public void setDataValues2<Tdata>(AShScFields<TKey, Tdata> shf)
+		// 	where Tdata :  IShScFieldData<TKey>, new()
+		// {
+		// 	ScDataValues = new Dictionary<TKey, Dictionary<ScFieldColumns, string>>();
+		//
+		//
+		// 	foreach (Tdata td in shf)
+		// 	{
+		// 		IShScFieldData<TKey> lf = td;
+		// 		IShScFieldMeta<TKey> fld = td.MetaField;
+		// 	// }
+		// 	//
+		// 	// foreach (KeyValuePair<TKey, Tdata> kvp in fieldList)
+		// 	// {
+		// 	// 	IShScFieldData<TKey> lf = kvp.Value;
+		// 	//
+		// 	// 	IShScFieldMeta<TKey> fld = lf.MetaField;
+		//
+		// 		Dictionary<ScFieldColumns, string> f = new Dictionary<ScFieldColumns, string>();
+		//
+		// 		// native
+		// 		f.Add(SFC_KEY, lf.FieldKey.ToString());
+		// 		f.Add(SFC_VALUE, lf.DyValue.Value?.ToString());
+		// 		f.Add(SFC_VALUE_STR, lf.DyValue.GetValueAs<string>());
+		// 		f.Add(SFC_VALUE_TYPE, lf.DyValue.TypeIs?.Name);
+		// 		f.Add(SFC_REVIT_TYPE, lf.DyValue.GetRevitSpecIdCustom().TypeId);
+		// 		f.Add(SFC_FIELD, $"{lf.MetaField.FieldName} ({lf.MetaField.FieldKey})");
+		//
+		// 		// derived
+		// 		f.Add(SFC_NAME,	fld.FieldName);
+		// 		f.Add(SFC_DESC, fld.FieldDesc);
+		//
+		// 		ScDataValues.Add(lf.FieldKey, f);
+		// 	}
+		// }
+
 	}
 
 }

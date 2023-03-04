@@ -11,10 +11,13 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStoreRtnCode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScFields.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScLock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScRow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\AShScSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\DynaValue.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldsBase2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScSupport\ScFieldSupport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldBase1.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldsBase1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ShScSupport\ShScFieldConstN.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\IShScFieldsBase.cs" />
   </ItemGroup>
 </Project>

@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Xml.Serialization;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageC.ShSchemaFields;
-using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConst;
+using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConstN;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaLockKey;
 using System.Windows.Input;
 using ShExStorageN.ShSchemaFields.ShScSupport;
 
@@ -21,13 +21,14 @@ using ShExStorageN.ShSchemaFields.ShScSupport;
 // user name: jeffs
 // created:   10/16/2022 8:46:15 AM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public class ShShowProcedures01
 	{
 		private ShDebugMessages M { get; set; }
 
 		private ShowLibrary sl;
+		// private ShowLibrary2 sl2;
 		private ShFieldDisplayData shFd;
 
 		public ShShowProcedures01(ShDebugMessages msgs)
@@ -35,6 +36,7 @@ namespace ShStudy.ShEval
 			M = msgs;
 
 			sl = new ShowLibrary(msgs);
+			// sl2 = new ShowLibrary2(msgs);
 			shFd = new ShFieldDisplayData();
 		}
 
@@ -157,7 +159,7 @@ namespace ShStudy.ShEval
 			M.WriteLine("\nLOCK fields\n");
 
 			ScValues<SchemaLockKey> values = new ScValues<SchemaLockKey>();
-			values.setFieldsValues(ScInfoMeta.FieldsLock);
+			values.setFieldsValues(ScInfoMeta.MetaFieldsLock);
 
 			ShowFieldsHeader();
 
@@ -174,7 +176,7 @@ namespace ShStudy.ShEval
 			M.WriteLine("\nSHEET fields\n");
 
 			ScValues<SchemaSheetKey> values = new ScValues<SchemaSheetKey>();
-			values.setFieldsValues(ScInfoMeta.FieldsSheet);
+			values.setFieldsValues(ScInfoMeta.MetaFieldsSheet);
 
 			ShowFieldsHeader();
 
@@ -191,7 +193,7 @@ namespace ShStudy.ShEval
 			M.WriteLine("\nRow fields\n");
 
 			ScValues<SchemaRowKey> values = new ScValues<SchemaRowKey>();
-			values.setFieldsValues(ScInfoMeta.FieldsRow);
+			values.setFieldsValues(ScInfoMeta.MetaFieldsRow);
 
 			ShowFieldsHeader();
 
@@ -223,13 +225,14 @@ namespace ShStudy.ShEval
 		}
 
 		public void ShowSheetFieldsGeneric<TShtKey, TShtFld, TRowKey,
-			TRowFld, TRow>(
+			TRowFld, TSht, TRow>(
 			AShScSheet<TShtKey, TShtFld, TRowKey,
-				TRowFld, TRow> shtd)
+				TRowFld, TSht, TRow> shtd)
 			where TShtKey : Enum
-			where TShtFld : IShScFieldData1<TShtKey>, new()
+			where TShtFld : ScFieldDefData<TShtKey>, new()
 			where TRowKey : Enum
-			where TRowFld : IShScFieldData1<TRowKey>, new()
+			where TRowFld : ScFieldDefData<TRowKey>, new()
+			where TSht : AShScSheet<TShtKey, TShtFld, TRowKey, TRowFld, TSht, TRow>, new()
 			where TRow : AShScRow<TRowKey, TRowFld>, new()
 		{
 			M.WriteLine("\nSHEET fields\n");
@@ -279,7 +282,7 @@ namespace ShStudy.ShEval
 		private void showField<TRowKey, TRowFld>
 			(AShScFields<TRowKey, TRowFld> data, Enum fieldKey)
 			where TRowKey : Enum
-			where TRowFld : IShScFieldData1<TRowKey>, new()
+			where TRowFld : IShScFieldData<TRowKey>, new()
 		{
 			TRowFld f1 = data.GetField(fieldKey);
 			string s1= f1.FieldName;
@@ -289,14 +292,15 @@ namespace ShStudy.ShEval
 		}
 
 		public void ShowSheetDataGeneric<TShtKey, TShtFlds, TRowKey,
-			TRowFlds, TRow>(
+			TRowFlds, TSht, TRow>(
 			AShScSheet<TShtKey, TShtFlds, TRowKey,
-				TRowFlds, TRow> shtd
+				TRowFlds, TSht, TRow> shtd
 			)
 			where TShtKey : Enum
 			where TRowKey : Enum
-			where TShtFlds : IShScFieldData1<TShtKey>, new()
-			where TRowFlds : IShScFieldData1<TRowKey>, new()
+			where TShtFlds : ScFieldDefData<TShtKey>, new()
+			where TRowFlds : ScFieldDefData<TRowKey>, new()
+			where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TSht, TRow>, new()
 			where TRow : AShScRow<TRowKey, TRowFlds>, new()
 		{
 			if (shtd == null )
@@ -308,7 +312,7 @@ namespace ShStudy.ShEval
 
 			M.WriteLine($"for sheet| {shtd.SchemaName}");
 			
-			ShowSheetDataGeneric(shtd.Fields);
+			ShowSheetDataGeneric2(shtd);
 
 			if (shtd.Rows.Count > 0)
 			{
@@ -316,7 +320,7 @@ namespace ShStudy.ShEval
 				{
 					M.WriteLine($"\n\nfor row| {kvp.Value.SchemaName}");
 
-					ShowRowDataGeneric(kvp.Value.Fields);
+					ShowRowDataGeneric(kvp.Value);
 				}
 			}
 			else
@@ -325,13 +329,17 @@ namespace ShStudy.ShEval
 			}
 		}
 
+
+
 		//
 		// data information
 		//
-		public void ShowSheetDataGeneric<TShtKey, TShtFlds>
-			(Dictionary<TShtKey, TShtFlds> fields)
+
+
+		public void ShowSheetDataGeneric2<TShtKey, TShtFlds>
+			(AShScFields<TShtKey, TShtFlds> fields)
 			where TShtKey : Enum
-			where TShtFlds : IShScFieldData1<TShtKey>, new()
+			where TShtFlds : ScFieldDefData<TShtKey>, new()
 
 		{
 			ScValues<TShtKey> values = new ScValues<TShtKey>();
@@ -350,9 +358,9 @@ namespace ShStudy.ShEval
 		}
 
 		public void ShowRowDataGeneric<TRowKey, TRowFlds>
-			(Dictionary<TRowKey, TRowFlds> fields)
+			(AShScFields<TRowKey, TRowFlds> fields)
 			where TRowKey : Enum
-			where TRowFlds : IShScFieldData1<TRowKey>, new()
+			where TRowFlds : ScFieldDefData<TRowKey>, new()
 
 		{
 			ScValues<TRowKey> values = new ScValues<TRowKey>();
@@ -373,7 +381,7 @@ namespace ShStudy.ShEval
 		public void ShowLockDataGeneric<TLokKey, 
 			TLokFlds>(AShScFields<TLokKey, TLokFlds> lok)
 			where TLokKey : Enum
-			where TLokFlds : IShScFieldData1<TLokKey>, new()
+			where TLokFlds : ScFieldDefData<TLokKey>, new()
 		{
 			M.WriteLineStatus("show lock data| begin");
 
@@ -383,16 +391,15 @@ namespace ShStudy.ShEval
 				return;
 			}
 
-			showLockDataGeneric(lok.Fields);
+			showLockDataGeneric(lok);
 
 			M.WriteLineStatus("show lock data| complete");
 		}
 
-
 		private void showLockDataGeneric<TLockKey, TLockFlds>
 			(Dictionary<TLockKey, TLockFlds> fields)
 			where TLockKey : Enum
-			where TLockFlds : IShScFieldData1<TLockKey>, new()
+			where TLockFlds : ScFieldDefData<TLockKey>, new()
 
 		{
 			ScValues<TLockKey> values = new ScValues<TLockKey>();
@@ -413,63 +420,30 @@ namespace ShStudy.ShEval
 	#endregion
 
 
-		/*
+		
+		private void showLockDataGeneric<TLockKey, TLockFlds>
+			(AShScFields<TLockKey, TLockFlds> fields)
+			where TLockKey : Enum
+			where TLockFlds : ScFieldDefData<TLockKey>, new()
 
-		public void ShowSheetData(ScDataSheet1 shtd)
 		{
-			M.WriteLine("\nSHEET data\n");
+			ScValues<TLockKey> values = new ScValues<TLockKey>();
+			values.setDataValues(fields);
 
-			ScValues<SchemaSheetKey> values = new ScValues<SchemaSheetKey>();
-			values.setDataValues(shtd.Fields);
-
-			M.MarginUp();
-
-			ShowDataHeader();
-
-			sl.WriteRows(
-				shFd.ScDataColOrder,
-				shFd.ScFieldsColDefinitions,
-				shFd.SchemaSheetKeyOrder,
-				values.ScDataValues,
-				10, JustifyVertical.TOP, false, false);
-
-			M.MarginDn();
-		}
-
-		public void ShowLockData(ScDataLock1 lokd)
-		{
 			M.WriteLine("\nLOCK data\n");
 
-			ScValues<SchemaLockKey> values = new ScValues<SchemaLockKey>();
-			// values.setDataValues(lokd.Fields);
-
-			ShowDataHeader();
+			ShowDataHeader(shFd.ScDataColOrderLight);
 
 			sl.WriteRows(
-				shFd.ScDataColOrder,
+				shFd.ScDataColOrderLight,
 				shFd.ScFieldsColDefinitions,
-				shFd.SchemaLockKeyOrder,
+				shFd.SchemaLockKeyOrder as List<TLockKey>,
 				values.ScDataValues,
 				10, JustifyVertical.TOP, false, false);
 		}
 
-		public void ShowRowData(ScDataRow1 rowd)
-		{
-			M.WriteLine("\nROW data\n");
 
-			ScValues<SchemaRowKey> values = new ScValues<SchemaRowKey>();
-			// values.setDataValues(rowd.Fields);
 
-			ShowDataHeader();
 
-			sl.WriteRows(
-				shFd.ScDataColOrder,
-				shFd.ScFieldsColDefinitions,
-				shFd.SchemaRowKeyOrder,
-				values.ScDataValues,
-				10, JustifyVertical.TOP, false, false);
-		}
-
-		*/
 	}
 }

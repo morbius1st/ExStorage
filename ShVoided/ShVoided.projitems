@@ -10,7 +10,30 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\IShDebugMessages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ScValues2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShDebugSupport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShFieldDisplayData2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShEval\ShowLibrary2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScDataLock2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScDataRow2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScDataSheet2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScFieldDefData2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScFieldDefMeta2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\AScInfoMeta2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScData2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScInfoMetaLok2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScInfoMetaRow2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScInfoMetaSht2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScLokKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScRowKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\ScShtKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\AShScLock2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\AShScRow2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\AShScSheet2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\IShScFieldBase2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\IShScFieldsBase2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageR\ShExStorage\ShExSchemaLibR2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorageR\ShExStorage\ShExStorManagerR2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExId1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\IExId.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSCFieldsC\ScFieldsRow.cs" />
@@ -43,5 +66,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ScSupport\ScInfoMeta.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ShScFieldDefData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields2\ShScFieldDefMeta.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShStudyN\ShEval\ShShowProcedures01_2.cs" />
   </ItemGroup>
 </Project>

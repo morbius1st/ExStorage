@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using ShExStorageN.ShSchemaFields.ShScSupport;
-using static ShStudy.ShEval.ShFieldDisplayData;
+using static ShStudyN.ShEval.ShFieldDisplayData;
+
 #endregion
 
 // user name: jeffs
 // created:   10/11/2022 9:28:39 PM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public class ColData
 	{

@@ -51,7 +51,19 @@
 					Content="Delete"
 					Width="120"
 					Click="Btn_Delete_OnClick" />
+
+			<Button
+					x:Name="Btn_Test1"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Test1"
+					Width="120"
+					Click="Btn_Test1_OnClick" />
+
+
 			</StackPanel>
+
 
 		<Button
 				x:Name="Btn_Exit"

@@ -13,7 +13,7 @@ using System.Runtime.Remoting.Messaging;
 
 using UtilityLibrary;
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public class ShDebugMessages
 	{
@@ -86,7 +86,7 @@ namespace ShStudy.ShEval
 			writeMsg("\n", msgBox);
 		}
 
-		// [DebuggerStepThrough]
+		[DebuggerStepThrough]
 		public void Write(string msg1, int msgBox=0)
 		{
 			writeMsg(msg1, msgBox);
@@ -131,6 +131,16 @@ namespace ShStudy.ShEval
 			writeMsg(msg + "\n", 1);
 		}
 
+		
+		[DebuggerStepThrough]
+		public void WriteLineCodeMap(string msg1 = "", [CallerMemberName] string membName = "")
+		{
+			string m1 = msg1.IsVoid() ? "" : $" | {msg1}";
+			string msg = $"{membName,-40} {m1}";
+
+			writeMsg(msg + "\n", 2);
+		}
+
 		[DebuggerStepThrough]
 		public void WriteLineSpaced(string msg1, string msg2 = "", string spacer = " ", int msgBox=0)
 		{
@@ -141,10 +151,9 @@ namespace ShStudy.ShEval
 		[DebuggerStepThrough]
 		public void WriteLineSteps(string msg1, string msg2 = "", string spacer = " ", int msgBox=0)
 		{
-			return;
 			writeMsg(msg1, msg2 + "\n", msgBox, spacer);
+			return;
 		}
-
 
 		/// <summary>
 		/// Adds a formatted message to the app msg text box and<br/>
@@ -193,16 +202,20 @@ namespace ShStudy.ShEval
 
 	#region private methods
 		
-		// [DebuggerStepThrough]
-		private void writeMsg(string msg, int msgBox)
+		[DebuggerStepThrough]
+		public void writeMsg(string msg, int msgBox)
 		{
 			if (msgBox == 0)
 			{
 				Messages.MessageBoxText += msg;
 			}
-			else
+			else if (msgBox == 1)
 			{
 				Messages.StatusBoxText = msg + Messages.StatusBoxText;
+			}
+			else
+			{
+				Messages.CodeMapText = msg + Messages.CodeMapText;
 			}
 			
 		}
@@ -220,13 +233,11 @@ namespace ShStudy.ShEval
 			}
 		}
 
-		
 		[DebuggerStepThrough]
 		private void writeMsg(string msg1, string msg2, int msgBox)
 		{
 			writeMsg(fmtMsg(msg1, msg2), msgBox);
 		}
-
 
 		[DebuggerStepThrough]
 		private void writeMsg(string msg1, string msg2, int msgBox, string spacer = " ")
@@ -246,10 +257,6 @@ namespace ShStudy.ShEval
 			writeMsg(margin(spacer) + fmtMsg(msg1, msg2, colWidth), msgBox);
 		}
 
-
-
-
-		
 		[DebuggerStepThrough]
 		private string margin(string spacer)
 		{

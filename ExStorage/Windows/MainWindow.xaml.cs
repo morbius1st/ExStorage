@@ -9,14 +9,14 @@ using SharedApp.Windows.ShSupport;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ShExStorageN.ShExStorage;
-using ShStudy.ShEval;
+using ShStudyN.ShEval;
 // using EnvDTE;
 using RevitSupport;
 using SettingsManager;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShSchemaFields;
-using ShStudy;
+using ShStudyN;
 using SettingsManager;
 using Document = Autodesk.Revit.DB.Document;
 
@@ -40,6 +40,7 @@ namespace ExStorage.Windows
 		public static ShDebugMessages M { get; private set; }
 		private string messageBoxText;
 		private string statusBoxText;
+		private string codeMapText;
 
 		private MainWindowModel mwModel;
 
@@ -88,6 +89,16 @@ namespace ExStorage.Windows
 			}
 		}
 
+		public string CodeMapText
+		{
+			get => codeMapText;
+			set
+			{
+				codeMapText = value;
+				OnPropertyChanged();
+			}
+		}
+
 		// public ExId Exid
 		// {
 		// 	get => exid;
@@ -112,8 +123,9 @@ namespace ExStorage.Windows
 
 		public void UpdateProperty(string property)
 		{
+			// M.WriteLineCodeMap();
+			
 			OnPropertyChanged(property);
-
 		}
 
 	#endregion
@@ -122,6 +134,7 @@ namespace ExStorage.Windows
 
 		private void config()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("before init mainwinmodel");
 
 			AExId.Config(RvtCommand.RvtDoc);
@@ -132,10 +145,13 @@ namespace ExStorage.Windows
 			StaticInfo.MainWinModel = mwModel;
 
 			getUserSettings();
+
+			ScDataRow r = null;
 		}
 
 		private void getUserSettings()
 		{
+			M.WriteLineCodeMap();
 			UserSettings.Admin.Read();
 
 			UserSettings.Data.UserSettingsValue += 1;
@@ -161,6 +177,7 @@ namespace ExStorage.Windows
 
 		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("begin mainwin loaded");
 
 			mwModel.ShowSheet1();
@@ -172,12 +189,14 @@ namespace ExStorage.Windows
 
 		private void BtnExit_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			this.DialogResult = true;
 			this.Close();
 		}
 
 		private void BtnClear_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("clear messages button");
 			M.MsgClr();
 		}
@@ -208,24 +227,28 @@ namespace ExStorage.Windows
 
 		private void BtnShowExid_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show Exid button");
 			mwModel.ShowExid(ShtExid);
 		}
 
 		private void BtnShowSheet1_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show sheet button");
 			mwModel.ShowSheet1();
 		}
 
 		private void BtnShowLockA_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show lock A button");
 			mwModel.ShowLockA();
 		}
 
 		private void BtnShowLockB_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show lock B button");
 			mwModel.ShowLockB();
 		}
@@ -236,24 +259,25 @@ namespace ExStorage.Windows
 
 		private void BtnReadTables_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("init sheet button");
 
 			mwModel.GetTables();
 		}
 
-
 		private void BtnWhatExists10_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			mwModel.doTheyExist();
 		}
-		
 
 		// sheet
 
-
 		private void BtnMakeMakeSheetDataA_OnClick(object sender, RoutedEventArgs e)
 		{
-			M.WriteLineStatus("make data button");
+			M.WriteLineCodeMap();
+			M.writeMsg("*** make sheet button ***\n", 1);
+			M.WriteLineStatus("button: make data");
 
 			mwModel.MakeSheetData();
 
@@ -262,6 +286,9 @@ namespace ExStorage.Windows
 
 		private void BtnWriteSheet9_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+			M.writeMsg("*** write sheet button ***\n", 1);
+
 			M.WriteLineStatus("write sheet button");
 
 			M.WriteLine("\n*** begin process| WRITE SHEET | ***\n");
@@ -289,6 +316,7 @@ namespace ExStorage.Windows
 
 		private void BtnReadSheet9b_OnClick(object sender, RoutedEventArgs a)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLine("\n*** begin process| READ SHEET | ***\n");
 
 			bool result = mwModel.TestReadSheetCurrent();
@@ -308,29 +336,68 @@ namespace ExStorage.Windows
 
 		private void BtnDeleteSheet12_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			mwModel.DeleteSheet();
 		}
 
-		// private void BtnInitDataB_OnClick(object sender, RoutedEventArgs e)
-		// {
-		// 	M.WriteLineStatus("init sheet button");
-		//
-		// 	mwModel.InitSheet();
-		// }
+		private static int newNameCount = 1;
 
+		private void BtnUpdateSheet_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineCodeMap();
+			M.writeMsg("*** update sheet button ***\n", 1);
 
+			M.WriteLineStatus("write sheet button");
+			if (mwModel.SheetDataCurrent == null ||
+				!mwModel.SheetDataCurrent.HasData)
+			{
+				M.WriteLine("FAILED: No Data");
+				return;
+			}
+
+			ScDataSheet tempShtd = (ScDataSheet) mwModel.SheetDataCurrent.Clone();
+
+			tempShtd.SetValue(SchemaSheetKey.SK2_MODEL_NAME, 
+				$"this is the new name of the model - {newNameCount++}.rvt");
+			
+			M.WriteLine("before update sheet| orig model name|", mwModel.SheetDataCurrent.ModelName);
+
+			M.WriteLine("before update sheet| temp model name|", tempShtd.ModelName);
+
+			bool result = mwModel.UpdateSheetTest(tempShtd);
+
+			if (result)
+			{
+				M.WriteLine("after update sheet| orig model name|", mwModel.SheetDataCurrent.ModelName);
+
+				M.WriteLine("WORKED"); 
+			}
+			else
+			{
+				M.WriteLine("FAILED");
+			}
+
+		}
+
+		// locks general
+		private void BtnLockExist_OnClick(object sender, RoutedEventArgs e)
+		{
+			M.WriteLineCodeMap();
+			M.WriteLineStatus("lock exist button");
+
+			mwModel.DoesLockExist();
+
+			M.WriteLineStatus("lock exist complete");
+
+		}
 
 		// lock A
 
-		// private void BtnMakeLockAdata_OnClick(object sender, RoutedEventArgs e)
-		// {
-		// 	M.WriteLineStatus("make data lock A button");
-		// 	
-		// 	mwModel.CreateLockData();
-		// }
-
 		private void BtnCreateLockA_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+			M.writeMsg("*** create lock A button ***\n", 1);
+
 			M.WriteLineStatus("write lock A button");
 			
 			bool result = mwModel.CreateLockCurrent();
@@ -348,6 +415,7 @@ namespace ExStorage.Windows
 
 		private void BtnReadLockA_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("read lock A button");
 			ScDataLock lokd;
 			mwModel.ReadLockCurrent(out lokd);
@@ -355,6 +423,7 @@ namespace ExStorage.Windows
 
 		private void BtnGetLockAOwner_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("get lock A owner Id button");
 
 			string owner;
@@ -369,6 +438,11 @@ namespace ExStorage.Windows
 
 		private void BtnDelLockA_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+
+
+			M.writeMsg("*** del lock A button ***\n", 1);
+
 			M.WriteLineStatus("del lock A button");
 
 			bool result = mwModel.DeleteLockCurrent();
@@ -383,10 +457,22 @@ namespace ExStorage.Windows
 
 		}
 
+		/*
+		// private void BtnMakeLockAdata_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("make data lock A button");
+		// 	
+		// 	mwModel.CreateLockData();
+		// }*/
+
+
 		// lock B
 
 		private void BtnMakeLockBdata_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+
+
 			M.WriteLineStatus("make data lock B button");
 			
 			mwModel.CreateLockBData();
@@ -396,6 +482,9 @@ namespace ExStorage.Windows
 
 		private void BtnCreateLockB_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+
+
 			M.WriteLineStatus("write lock B button");
 
 			bool result = mwModel.CreateLockB();
@@ -414,6 +503,8 @@ namespace ExStorage.Windows
 
 		private void BtnReadLockB_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+
 			M.WriteLineStatus("read lock B button");
 			ScDataLock lokd;
 			mwModel.ReadLockB(out lokd);
@@ -422,6 +513,8 @@ namespace ExStorage.Windows
 
 		private void BtnGetLockBOwner_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
+
 			M.WriteLineStatus("get lock B owner Id button");
 
 			string owner;
@@ -437,6 +530,7 @@ namespace ExStorage.Windows
 
 		private void BtnDelLockBjeffs_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("del lock B jeffs button");
 
 			bool result = mwModel.DeleteLockBjeffs();
@@ -453,6 +547,7 @@ namespace ExStorage.Windows
 
 		private void BtnDelLockBjohns_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("del lock B johns button");
 
 			bool result = mwModel.DeleteLockBjohns();
@@ -471,6 +566,7 @@ namespace ExStorage.Windows
 
 		private void BtnCanDelLock_OnClick(object sender, RoutedEventArgs e)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("can del lock button");
 
 			string username = UtilityLibrary.CsUtilities.UserName;
@@ -505,14 +601,9 @@ namespace ExStorage.Windows
 		}
 
 
+		#endregion
 
-	#endregion
-
-
-	#region old / not used
-
-
-
+		#region old / not used
 
 		// private void BtnMakeLockDataA_OnClick(object sender, RoutedEventArgs e)
 		// {
@@ -601,9 +692,78 @@ namespace ExStorage.Windows
 		// 	// }
 		// }
 
-	#endregion
+		#endregion
 
 
+
+		// // sheet 2
+		//
+		// private void BtnShowSheet2_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("show sheet button");
+		// 	mwModel.ShowSheet2();
+		// }
+		//
+		//
+		// private void BtnMakeMakeSheetDataA2_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("make data button");
+		//
+		// 	mwModel.MakeSheetData2();
+		//
+		// 	M.WriteLine("make sheet data - WORKED");
+		// }
+		//
+		// private void BtnWriteSheet92_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLineStatus("write sheet button");
+		//
+		// 	M.WriteLine("\n*** begin process| WRITE SHEET | ***\n");
+		//
+		// 	// M.WriteLineStatus("make sheet data");
+		// 	//
+		// 	// mwModel.MakeSheetData();
+		//
+		// 	M.WriteLineStatus("before write sheet");
+		//
+		// 	// bool result = mwModel.WriteSheet(shtd);
+		// 	bool result = mwModel.TestWriteSheetCurrent2();
+		//
+		// 	M.WriteLineStatus($"after write sheet| status| {result}");
+		//
+		// 	if (result)
+		// 	{
+		// 		M.WriteLine("\n*** WRITE SHEET worked ***\n");
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine($"\n*** WRITE SHEET failed ***\n");
+		// 	}
+		// }
+		//
+		// private void BtnReadSheet9b2_OnClick(object sender, RoutedEventArgs a)
+		// {
+		// 	M.WriteLine("\n*** begin process| READ SHEET | ***\n");
+		//
+		// 	bool result = mwModel.TestReadSheetCurrent2();
+		//
+		// 	if (result)
+		// 	{
+		// 		M.WriteLine("\n*** READ SHEET worked ***\n");
+		// 		// mwModel.ShowSheetData(mwModel.smR.Sheet);
+		// 		mwModel.ShowSheet12();
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine($"\n*** READ SHEET failed ***");
+		// 		M.WriteLine($"*** Add some data first maybe? ***\n");
+		// 	}
+		// }
+		//
+		// private void BtnDeleteSheet122_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	mwModel.DeleteSheet2();
+		// }
 
 	}
 }

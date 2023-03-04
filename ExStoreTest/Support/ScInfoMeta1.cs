@@ -11,9 +11,9 @@ using System.Windows;
 using static ShExStorageN.ShSchemaFields.ShScSupport.SchemaFieldDisplayLevel;
 using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
 using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConst;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaSheetKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaLockKey;
 using Autodesk.Revit.DB;
 using ShExStorageN.ShSchemaFields;
 using System.Windows.Input;
@@ -27,7 +27,7 @@ using ShExStorageN.ShExStorage;
 // user name: jeffs
 // created:   10/24/2022 7:20:59 PM
 
-namespace ShExStorageC.ShSchemaFields.ScSupport
+namespace ShExStorageC.ShSchemaFields.ShScSupport
 {
 	public static class ScInfoMeta1
 	{

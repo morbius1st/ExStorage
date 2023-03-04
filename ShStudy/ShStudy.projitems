@@ -20,6 +20,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorageN\GenericTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)ShExStorageC\ShSchemaFields\ScSupport\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ShExStorageN\ShSchemaFields\" />
+    <Folder Include="$(MSBuildThisFileDirectory)ShExStorageR\ShExStorage\" />
     <Folder Include="$(MSBuildThisFileDirectory)ShSchemaFields\" />
   </ItemGroup>
 </Project>

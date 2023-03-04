@@ -2,23 +2,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Autodesk.Revit.DB;
-using RevitSupport;
-using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConst;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
-
-
 using Autodesk.Revit.DB.ExtensibleStorage;
-using ShExStorageC.ShExStorage;
-using ShStudy;
-using ShStudy.ShEval;
+using ShExStorageC.ShSchemaFields;
+using ShStudyN.ShEval;
 
 #endregion
 
@@ -32,15 +21,15 @@ namespace ShExStorageC.ShExStorage
 	/// this has data storage test routines only
 	/// </summary>
 	public class ExStorageLibraryC1<TTbl, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLockKey, TLockFlds>
-		where TTbl : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TRow>, new()
+		where TTbl : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TTbl, TRow>, new()
 		where TLok : AShScFields<TLockKey, TLockFlds>, new()
 		where TShtKey : Enum
-		where TShtFlds : IShScFieldData1<TShtKey>, new()
+		where TShtFlds : ScFieldDefData<TShtKey>, new()
 		where TRowKey : Enum
-		where TRowFlds : IShScFieldData1<TRowKey>, new()
+		where TRowFlds : ScFieldDefData<TRowKey>, new()
 		where TRow : AShScRow<TRowKey, TRowFlds>, new()
 		where TLockKey : Enum
-		where TLockFlds : IShScFieldData1<TLockKey>, new()
+		where TLockFlds : ScFieldDefData<TLockKey>, new()
 	{
 	#region private fields
 
@@ -277,7 +266,7 @@ namespace ShExStorageC.ShExStorage
 // B2
 		private SchemaBuilder makePartialSchema<T1, T2>(AShScFields<T1, T2> f)
 			where T1 : Enum
-			where T2 : IShScFieldData1<T1>, new()
+			where T2 : IShScFieldData<T1>, new()
 		{
 			M.WriteLineSteps("step: B2|", ">>> start | make the sheet portion of the schema");
 			M.MarginUp();
@@ -290,7 +279,10 @@ namespace ShExStorageC.ShExStorage
 			configSchemaParams(ref sb,  f.SchemaName, f.SchemaDesc, AExId.VendorId);
 
 			// D1
-			addSchemaFields(ref sb, f.Fields);
+			addSchemaFields(ref sb, f);
+
+			AShScFields<T1, T2> a = f;
+
 
 			M.MarginDn();
 			M.WriteLineSteps("step: B2|", ">>> end | make the sheet portion of the schema");
@@ -306,12 +298,29 @@ namespace ShExStorageC.ShExStorage
 			M.WriteLineSteps("step: C1|", $"configure the schema| {currSchema}");
 		}
 
+
+
+		private void addSchemaFields<TKey, TFields>(ref SchemaBuilder sb, AShScFields<TKey, TFields> fields)
+			where TKey : Enum
+			where TFields : IShScFieldData<TKey>, new()
+		{
+			M.WriteLineSteps("step: D1|", $"create each schema fields| {currSchema}");
+
+
+			foreach (KeyValuePair<TKey, TFields> kvp in fields)
+			{
+				FieldBuilder fb = sb.AddSimpleField(kvp.Value.FieldName, kvp.Value.DyValue.RevitTypeIs);
+				// fb.SetDocumentation(kvp.Value.FieldDesc);
+			}
+		}
+
+
 // D1
 		// create a schema field for each field
-		private void addSchemaFields<TKey, TFields>
+		private void addSchemaFields2<TKey, TFields>
 			(ref SchemaBuilder sb, Dictionary<TKey, TFields> fields)
 			where TKey : Enum
-			where TFields : IShScFieldData1<TKey>, new()
+			where TFields : IShScFieldData<TKey>, new()
 		{
 			M.WriteLineSteps("step: D1|", $"create each schema fields| {currSchema}");
 
@@ -399,7 +408,7 @@ namespace ShExStorageC.ShExStorage
 			configSchemaParams(ref sb, row.SchemaName, row.SchemaDesc, AExId.VendorId);
 
 			// D
-			addSchemaFields(ref sb, row.Fields);
+			addSchemaFields(ref sb, row);
 
 			M.MarginDn();
 			M.WriteLineSteps("step: K1|", ">>> end | create, configure, and make row fields");
@@ -432,12 +441,12 @@ namespace ShExStorageC.ShExStorage
 		// write the actual value for each field into the entity
 		private void writeData<TKey, TFlds>(Entity e, Schema s, AShScFields<TKey, TFlds> data)
 			where TKey : Enum
-			where TFlds : IShScFieldData1<TKey>, new()
+			where TFlds : IShScFieldData<TKey>, new()
 		{
 			M.WriteLineSteps("step: WD|", "write each field");
 			M.MarginUp();
 
-			foreach (KeyValuePair<TKey, TFlds> kvp in data.Fields)
+			foreach (KeyValuePair<TKey, TFlds> kvp in data)
 			{
 				writeField<TKey, TFlds>(e, s, kvp.Value);
 			}
@@ -448,7 +457,7 @@ namespace ShExStorageC.ShExStorage
 // WF
 		private void writeField<TKey, TFlds>(Entity e, Schema s, TFlds field)
 			where TKey : Enum
-			where TFlds : IShScFieldData1<TKey>, new()
+			where TFlds : IShScFieldData<TKey>, new()
 		{
 			Field f = s.GetField(field.FieldName);
 

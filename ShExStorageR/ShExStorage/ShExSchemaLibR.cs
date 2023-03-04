@@ -11,11 +11,14 @@ using Autodesk.Revit.DB.ExtensibleStorage;
 using Autodesk.Revit.UI;
 using JetBrains.Annotations;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
 using ShExStorageN.ShSchemaFields.ShScSupport;
-using ShStudy.ShEval;
+using static ShExStorageC.ShSchemaFields.ShScSupport.ShExConstC;
+using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConstN;
+using static ShExStorageN.ShExStorage.ExStoreRtnCode;
+using ShStudyN.ShEval;
 
 #endregion
 
@@ -29,15 +32,15 @@ using ShStudy.ShEval;
 namespace ShExStorageR.ShExStorage
 {
 	public class ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> : INotifyPropertyChanged
-		where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TRow>, new()
+		where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TSht, TRow>, new()
 		where TRow : AShScRow<TRowKey, TRowFlds>, new()
 		where TLok : AShScLock<TLokKey, TLokFlds>, new()
 		where TShtKey : Enum
-		where TShtFlds : IShScFieldData1<TShtKey>, new()
+		where TShtFlds : ScFieldDefData<TShtKey>, new()
 		where TRowKey : Enum
-		where TRowFlds : IShScFieldData1<TRowKey>, new()
+		where TRowFlds : ScFieldDefData<TRowKey>, new()
 		where TLokKey : Enum
-		where TLokFlds : IShScFieldData1<TLokKey>, new()
+		where TLokFlds : ScFieldDefData<TLokKey>, new()
 	{
 	#region base methods and fields
 
@@ -50,22 +53,39 @@ namespace ShExStorageR.ShExStorage
 		private TLok lokd;
 		private Entity lokEntity;
 		private Schema lokSchema;
+		private ShDebugMessages m;
 
-		// private ExId exid;
 
+		public ShExStorageLibR StorLibR { get; set; }
 		public ShExStorManagerR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>  smR { get; set; }
 
 	#endregion
 
 	#region ctor
 
-		public ShExSchemaLibR() { }
+		public ShExSchemaLibR()
+		{
+			config();
+		}
+
+		public void config()
+		{
+			StorLibR = new ShExStorageLibR();
+		}
 
 	#endregion
 
 	#region public properties
 
-		public ShDebugMessages M { get; set; }
+		public ShDebugMessages M
+		{
+			get => m;
+			set
+			{
+				m = value;
+				StorLibR.M = value;
+			}
+		}
 
 /*
 		public DataStorage ShtDs
@@ -251,8 +271,31 @@ namespace ShExStorageR.ShExStorage
 
 	#region primary methods
 
+		public ExStoreRtnCode WriteLock(LokExId lokExid, TLok lokd)
+		{
+			m.WriteLineStatus($"** write lock");
+
+			if (lokd == null )
+			{
+				m.WriteLineStatus($"write lock| FAIL| data is null");
+				return XRC_FAIL;
+			}
+
+			ExStoreRtnCode rtnCode;
+
+			DataStorage ds;
+
+			rtnCode = StorLibR.CreateDataStorage(lokExid, out ds);
+
+			m.WriteLineStatus($"create ds status| {rtnCode}");
+
+			if (rtnCode != XRC_GOOD) return XRC_FAIL;
+
+			return WriteLock(ds, lokd);
+		}
+
 		// 00
-		public ExStoreRtnCode WriteLock(DataStorage ds, TLok lokd)
+		private ExStoreRtnCode WriteLock(DataStorage ds, TLok lokd)
 		{
 			M.WriteLineSteps("step: 01|", ">>> start | transaction| save lock");
 
@@ -262,31 +305,13 @@ namespace ShExStorageR.ShExStorage
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_GOOD;
 
 			this.lokd = lokd;
-			// this.exid = exid;
+
 			lokEntity = null;
 
 			// step A1
 			writeLock();
 
 			ds.SetEntity(lokEntity);
-
-			// using (Transaction T = new Transaction(exid.Document, "Save Cells Lock Data"))
-			// {
-			// 	T.Start();
-			// 	{
-			//
-			// 	}
-			//
-			// 	if (lokEntity == null)
-			// 	{
-			// 		T.RollBack();
-			// 	}
-			// 	else
-			// 	{
-			// 		ds.SetEntity(lokEntity);
-			// 		T.Commit();
-			// 	}
-			// }
 
 			return lokEntity != null ? rtnCode : ExStoreRtnCode.XRC_ENTITY_NOT_FOUND;
 		}
@@ -455,7 +480,7 @@ namespace ShExStorageR.ShExStorage
 // B2
 		private SchemaBuilder makeSheetPartialSchema<TK, TF>(AShScFields<TK, TF> flds)
 			where TK : Enum
-			where TF : IShScFieldData1<TK>, new()
+			where TF : IShScFieldData<TK>, new()
 		{
 			M.WriteLineSteps("step: B2|", ">>> start | make the sheet portion of the schema");
 
@@ -465,7 +490,7 @@ namespace ShExStorageR.ShExStorage
 			configSchemaParams(sb, flds.SchemaName, flds.SchemaDesc, AExId.VendorId);
 
 			// D1
-			addSchemaFields(sb, flds.Fields);
+			addSchemaFields(sb, flds);
 
 			return sb;
 		}
@@ -488,9 +513,9 @@ namespace ShExStorageR.ShExStorage
 
 // D1
 		private void addSchemaFields<TKey, TFields>
-			(SchemaBuilder sb, Dictionary<TKey, TFields> fields)
+			(SchemaBuilder sb, AShScFields<TKey, TFields> fields)
 			where TKey : Enum
-			where TFields : IShScFieldData1<TKey>, new()
+			where TFields : IShScFieldData<TKey>, new()
 		{
 			M.WriteLineSteps("step: D1|", $"create each schema fields");
 			foreach (KeyValuePair<TKey, TFields> kvp in fields)
@@ -563,7 +588,7 @@ namespace ShExStorageR.ShExStorage
 			configSchemaParams(sb, row.SchemaName, row.SchemaDesc, AExId.VendorId);
 
 			// D1
-			addSchemaFields(sb, row.Fields);
+			addSchemaFields(sb, row);
 
 			return sb.Finish();
 		}
@@ -585,11 +610,11 @@ namespace ShExStorageR.ShExStorage
 // WD
 		private void writeData<TKey, TFld>(Entity e, Schema s, AShScFields<TKey, TFld> data)
 			where TKey : Enum
-			where TFld : IShScFieldData1<TKey>, new()
+			where TFld : IShScFieldData<TKey>, new()
 		{
 			M.WriteLineSteps("step: WD|", "write each field's data");
 
-			foreach (KeyValuePair<TKey, TFld> kvp in data.Fields)
+			foreach (KeyValuePair<TKey, TFld> kvp in data)
 			{
 				writeField<TKey, TFld>(e, s, kvp.Value);
 			}
@@ -598,7 +623,7 @@ namespace ShExStorageR.ShExStorage
 // WF
 		private void writeField<TKey, TFld>(Entity e, Schema s, TFld field)
 			where TKey : Enum
-			where TFld : IShScFieldData1<TKey>, new()
+			where TFld : IShScFieldData<TKey>, new()
 		{
 			Field f = s.GetField(field.FieldName);
 
@@ -649,6 +674,8 @@ namespace ShExStorageR.ShExStorage
 
 			readRowData(e, shtd);
 
+			shtd.HasData = true;
+
 			return shtd;
 		}
 
@@ -668,30 +695,62 @@ namespace ShExStorageR.ShExStorage
 		/// </summary>
 		public void ReadData<TKey, TFlds>(Entity e, AShScFields<TKey, TFlds> data)
 			where TKey : Enum
-			where TFlds :  IShScFieldData1<TKey>, new()
+			where TFlds :  IShScFieldData<TKey>, new()
 		{
-			foreach (KeyValuePair<TKey, TFlds> kvp in data.Fields)
+			foreach (KeyValuePair<TKey, TFlds> kvp in data)
 			{
+				int idx = 0;
+
 				Type t = kvp.Value.DyValue.TypeIs;
 
-				if (t == typeof(string))
+				try
 				{
-					kvp.Value.SetValue = e.Get<string>(kvp.Value.FieldName);
-				}
-				else if (t == typeof(bool))
-				{
-					kvp.Value.SetValue = e.Get<bool>(kvp.Value.FieldName);
-				}
-				else if (t == typeof(Guid))
-				{
-					kvp.Value.SetValue = e.Get<Guid>(kvp.Value.FieldName);
-				}
-				else if (t.BaseType == typeof(Enum))
-				{
-					if (kvp.Value.FieldName.Equals(ScInfoMeta.KEY_FIELD_NAME)) continue;
+					if (t == typeof(string))
+					{
+						idx = 1;
+						kvp.Value.SetValue = e.Get<string>(kvp.Value.FieldName);
+					}
+					else if (t == typeof(bool))
+					{
+						idx = 2;
+						kvp.Value.SetValue = e.Get<bool>(kvp.Value.FieldName);
+					}
+					else if (t == typeof(Guid))
+					{
+						idx = 3;
+						kvp.Value.SetValue = e.Get<Guid>(kvp.Value.FieldName);
+					}
+					else if (t.BaseType == typeof(Enum))
+					{
+						if (kvp.Value.FieldName.Equals(KEY_FIELD_NAME)) continue;
 
-					string eName = e.Get<string>(kvp.Value.FieldName);
-					data.ParseEnum(t, eName);
+						string eName = e.Get<string>(kvp.Value.FieldName);
+						data.ParseEnum(t, eName);
+					}
+				}
+				catch 
+				{
+					switch (idx)
+					{
+					case 1:
+						{
+							kvp.Value.SetValue = K_NOT_DEFINED;
+							break;
+						}
+
+					case 2:
+						{
+							kvp.Value.SetValue = false;
+							break;
+						}
+
+					case 3:
+						{
+							kvp.Value.SetValue = Guid.Empty;
+							break;
+						}
+
+					}
 				}
 			}
 		}
@@ -717,8 +776,9 @@ namespace ShExStorageR.ShExStorage
 			}
 		}
 
-	#endregion
+		#endregion
 
-	#endregion
+		#endregion
+
 	}
 }

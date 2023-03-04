@@ -1,33 +1,22 @@
 ﻿#region using
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Documents;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.ExtensibleStorage;
+using Autodesk.Revit.DB.Electrical;
 using ExStorage.TestProcedures;
 using JetBrains.Annotations;
 using SettingsManager;
-using SharedApp.Windows.ShSupport;
-using ShExStorageC.ShExStorage;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using static ShExStorageN.ShExStorage.ExStoreRtnCode;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using ShExStorageR.ShExStorage;
-using ShStudy.ShEval;
-using TestProcedures01 = ExStorage.TestProcedures.TestProcedures01;
-using Autodesk.Revit.UI;
 using ShExStorageN.ShSchemaFields.ShScSupport;
+using ShExStorageR.ShExStorage;
+using ShStudyN.ShEval;
+using TestProcedures01 = ExStorage.TestProcedures.TestProcedures01;
 
 #endregion
 
@@ -43,14 +32,14 @@ namespace ExStorage.Windows
 
 		private ShFieldDisplayData shFd;
 		private ShowLibrary sl;
-		private ShDebugMessages M { get; set; }
+		private ShDebugMessages M;
+
 
 		private ExStoreRtnCode rtnCode;
 
 		private TestProcedures01 tp01;
 		private ShowsProcedures01 sp01;
 		private ShShowProcedures01 shsp01;
-
 
 		public ShExStorManagerR<
 			ScDataSheet,
@@ -63,6 +52,24 @@ namespace ExStorage.Windows
 			SchemaLockKey,
 			ScFieldDefData<SchemaLockKey>
 			> smR { get; private set; }
+
+		private MainModel mm;
+
+
+		// public ShExStorManagerR2<
+		// 	ScDataSheet2,
+		// 	ScDataRow2,
+		// 	ScDataLock2,
+		// 	sKey,
+		// 	ScFieldDefData2<sKey>,
+		// 	rKey,
+		// 	ScFieldDefData2<rKey>,
+		// 	lKey,
+		// 	ScFieldDefData2<lKey>
+		// 	> smR2 { get; private set; }
+
+
+
 
 		// fixed values
 		private readonly ShtExId sheetExidCurrent;
@@ -95,11 +102,7 @@ namespace ExStorage.Windows
 		private LokExId lockExidBJohn;
 
 
-		// private bool sheetDsFound;
-		// private DataStorage sheetDs;
-		//
-		// private DataStorage lockDs;
-		// private DataStorage lockTempDs;
+		// private ScDataSheet2 sheetDataCurrent2;
 
 
 	#endregion
@@ -139,6 +142,7 @@ namespace ExStorage.Windows
 
 		public ExStoreRtnCode ReturnCode
 		{
+
 			get => rtnCode;
 			set
 			{
@@ -152,6 +156,7 @@ namespace ExStorage.Windows
 
 		public ShtExId SheetExidCurrent
 		{
+
 			get => sheetExidCurrent;
 
 			// private set
@@ -162,6 +167,7 @@ namespace ExStorage.Windows
 		}
 		public LokExId LockExidCurrent
 		{
+
 			get => lockExidCurrent;
 			
 			// set
@@ -174,6 +180,7 @@ namespace ExStorage.Windows
 
 		public ScDataLock LockDataCurrent
 		{
+
 			get => lockDataCurrent;
 			
 			// set
@@ -189,9 +196,11 @@ namespace ExStorage.Windows
 
 		public ScDataSheet SheetDataCurrent
 		{
+
 			get => sheetDataCurrent;
 			private set
 			{
+
 				sheetDataCurrent = value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(HasSheet));
@@ -200,9 +209,11 @@ namespace ExStorage.Windows
 
 		public ScDataSheet SheetDataEditing
 		{
+
 			get => sheetDataEditing;
 			private set
 			{
+
 				sheetDataEditing = value;
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(HasSheetForEdit));
@@ -211,9 +222,11 @@ namespace ExStorage.Windows
 
 		public ScDataSheet SheetDataTemp
 		{
+
 			get => sheetDataTemp;
 			private set
 			{
+
 				if (Equals(value, sheetDataTemp)) return;
 				sheetDataTemp = value;
 				OnPropertyChanged();
@@ -225,6 +238,7 @@ namespace ExStorage.Windows
 
 		public ScDataLock LockDataTemp
 		{
+
 			get => lockDataTemp;
 			
 			set
@@ -238,6 +252,7 @@ namespace ExStorage.Windows
 
 		public ScDataLock LockBDataJohn
 		{
+
 			get => lockDataBJohn;
 			
 			set
@@ -257,6 +272,7 @@ namespace ExStorage.Windows
 
 		public LokExId LockExidATemp
 		{
+
 			get => lockExidTemp;
 			
 			set
@@ -296,6 +312,7 @@ namespace ExStorage.Windows
 
 		public override string ToString()
 		{
+
 			return $"this is {nameof(MainWindowModel)}";
 		}
 
@@ -303,10 +320,9 @@ namespace ExStorage.Windows
 
 	#region private methods
 
-		private void config(ShDebugMessages msgs, ShtExId exid)
+		private void initDebug(ShDebugMessages msgs)
 		{
-			M.WriteLineStatus("at start");
-
+			M.WriteLineCodeMap();
 			sp01 = new ShowsProcedures01();
 			tp01 = new TestProcedures01();
 
@@ -319,6 +335,16 @@ namespace ExStorage.Windows
 
 			lockExidBJohn = new LokExId("Lock B john", LokExId.PRIME);
 			lockExidBJohn.SetOverrideUserName("johns", LokExId.PRIME);
+
+
+		}
+
+		private void config(ShDebugMessages msgs, ShtExId exid)
+		{
+			M.WriteLineCodeMap();
+			initDebug(msgs);
+
+			M.WriteLineStatus("at start");
 
 			smR = ShExStorManagerR<
 				ScDataSheet,
@@ -342,9 +368,9 @@ namespace ExStorage.Windows
 			StaticInfo.UpdateMainWinProperty(nameof(StaticInfo.MainWin.MwModel));
 
 			// read the current data or initialize sheet
-			if (!ReadSheet(sheetExidCurrent, out sheetDataCurrent))
+			if (ReadSheet(sheetExidCurrent, out sheetDataCurrent))
 			{
-				sheetDataCurrent = null;
+				M.WriteLineStatus("existing sheet read");
 			}
 		}
 
@@ -354,6 +380,7 @@ namespace ExStorage.Windows
 		[DebuggerStepThrough]
 		private void OnPropertyChanged([CallerMemberName] string memberName = "")
 		{
+
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
 
@@ -376,6 +403,7 @@ namespace ExStorage.Windows
 
 		private void SetSheet(ScDataSheet sht)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("set sheet");
 
 			sheetDataPrior = sheetDataCurrent;
@@ -384,8 +412,10 @@ namespace ExStorage.Windows
 			// SheetLoaded = true;
 		}
 
+
 		private void RemoveSheet()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("delete sheet");
 
 			sheetDataPrior = sheetDataCurrent;
@@ -396,11 +426,21 @@ namespace ExStorage.Windows
 
 		// sheet
 
+		public bool UpdateSheet(ScDataSheet shtd, out string owner)
+		{
+			M.WriteLineCodeMap();
+
+			return SetRtnCodeB(smR.UpdateSheet(SheetExidCurrent, shtd, out owner));
+		}
+
 		public void MakeSheetData()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("init sheet data");
 
 			ScDataSheet shtd = ScData.MakeInitialDataSheet1(SheetExidCurrent);
+
+			shtd.HasData = true;
 
 			TestMakeDataRow3(SheetExidCurrent, shtd);
 
@@ -409,6 +449,7 @@ namespace ExStorage.Windows
 
 		private ScDataRow CreateFauxRow(ShtExId exid, ScDataRow row)
 		{
+			M.WriteLineCodeMap();
 			tp01.MakeFauxRow(exid, row);
 
 			return row;
@@ -416,6 +457,7 @@ namespace ExStorage.Windows
 
 		public void TestMakeDataRow3(ShtExId exid, ScDataSheet shtd)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("init row data");
 
 			// M.WriteLine("test make ROW data x3");
@@ -437,6 +479,7 @@ namespace ExStorage.Windows
 
 		public ScDataSheet InitSheet(ShtExId exid)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("initialize sheet");
 		
 			return ScData.MakeInitialDataSheet1(exid);
@@ -444,6 +487,7 @@ namespace ExStorage.Windows
 
 		public bool ReadSheet(ShtExId shtExid, out ScDataSheet shtd)
 		{
+			M.WriteLineCodeMap();
 			if (!SetRtnCodeB(smR.ReadSheet(shtExid, out shtd)))
 			{
 				shtd = null;
@@ -451,7 +495,6 @@ namespace ExStorage.Windows
 
 			return SetRtnCodeB();
 		}
-
 
 		/// <summary>
 		/// read the sheet data - this is done at the start<br/>
@@ -471,7 +514,12 @@ namespace ExStorage.Windows
 		/// <param name="shtd"></param>
 		public bool WriteSheet(ShtExId shtExid, LokExId lokExid, ScDataSheet shtd)
 		{
-			if (shtd == null) return false;
+			M.WriteLineCodeMap();
+			if (shtd == null)
+			{
+				M.WriteLineStatus("sheet data is null");
+				return false;
+			}
 		
 			return smR.WriteSheet(shtExid,	lokExid, shtd);
 		}
@@ -481,6 +529,7 @@ namespace ExStorage.Windows
 		/// </summary>
 		public void DeleteSheet()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLine("sheet delete");
 
 			bool result = smR.DeleteSheet(SheetExidCurrent, lockExidCurrent);
@@ -496,24 +545,26 @@ namespace ExStorage.Windows
 			}
 		}
 
-		public void DoesSheetLockExist()
+		public bool DoesSheetLockExist()
 		{
-			smR.DoesSheetLockExist(lockExidCurrent);
+			M.WriteLineCodeMap();
+			return smR.DoesSheetLockExist(lockExidCurrent);
 		}
 
 		public bool GetUserNameLock(LokExId exid, out string owner)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("get lock current owner Id");
 
 			return smR.GetLockOwnerFromName(exid, out owner);
 		}
 
 
-
 		// lock
 
 		public void CreateLockData(LokExId lokExid, out ScDataLock lokd)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("lock set");
 
 			lokd = new ScDataLock();
@@ -522,6 +573,7 @@ namespace ExStorage.Windows
 
 		private void createFixedLockData(out ScDataLock lokd)
 		{
+			M.WriteLineCodeMap();
 			CreateLockData(lockExidCurrent, out lokd);
 		}
 
@@ -529,6 +581,7 @@ namespace ExStorage.Windows
 
 		public bool CreateLockCurrent()
 		{
+			M.WriteLineCodeMap();
 			bool result;
 			M.WriteLineStatus("start write lock Current");
 
@@ -550,6 +603,7 @@ namespace ExStorage.Windows
 
 		public bool ReadLockCurrent(out ScDataLock lokd)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus($"read lock Current | lockcurrent set to null");
 			// lockDataCurrent = null;
 
@@ -572,6 +626,7 @@ namespace ExStorage.Windows
 
 		public bool GetUserNameLockCurrent(out string owner)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("get lock current owner Id");
 
 			return smR.GetLockOwnerFromName(lockExidCurrent, out owner);
@@ -590,6 +645,7 @@ namespace ExStorage.Windows
 
 		public bool CanDeleteLockCurrent()
 		{
+			M.WriteLineCodeMap();
 			ScDataLock lokd;
 
 			bool result = smR.CanDeleteLock(lockExidCurrent, out lokd);
@@ -604,10 +660,14 @@ namespace ExStorage.Windows
 
 		public bool DeleteLockCurrent()
 		{
-			ExStoreRtnCode rtnCode =
-				smR.DeleteLock(lockExidCurrent);
+			M.WriteLineCodeMap();
 
-			if (rtnCode != XRC_GOOD) return false;
+			
+			if (!smR.DeleteLock(lockExidCurrent))
+			{
+				M.WriteLineStatus($"X return code| {smR.ReturnCode}");
+				return false;
+			}
 
 			doTheyExist();
 
@@ -618,6 +678,7 @@ namespace ExStorage.Windows
 
 		public void CreateLockBData()
 		{
+			M.WriteLineCodeMap();
 			ScDataLock lokd;
 
 			CreateLockData(lockExidBJohn, out lokd);
@@ -629,6 +690,7 @@ namespace ExStorage.Windows
 
 		public bool CreateLockB()
 		{
+			M.WriteLineCodeMap();
 			bool result;
 			M.WriteLineStatus("start write lock B");
 
@@ -713,6 +775,7 @@ namespace ExStorage.Windows
 
 		public bool ReadLockB(out ScDataLock lokd)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus($"read lock B | lockTemp set to null");
 			lockDataBJohn = null;
 
@@ -735,6 +798,7 @@ namespace ExStorage.Windows
 
 		public bool GetUserNameLockB(out string owner)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("get lock B owner Id");
 
 			rtnCode = smR.ReadLockOwner(lockExidCurrent, out owner);
@@ -751,6 +815,7 @@ namespace ExStorage.Windows
 
 		public bool CanDeleteLockB()
 		{
+			M.WriteLineCodeMap();
 			ScDataLock lokd;
 
 			bool result = smR.CanDeleteLock(lockExidBJohn, out lokd);
@@ -765,10 +830,8 @@ namespace ExStorage.Windows
 
 		public bool DeleteLockBjeffs()
 		{
-			ExStoreRtnCode rtnCode =
-				smR.DeleteLock(lockExidCurrent);
-
-			if (rtnCode != XRC_GOOD) return false;
+			M.WriteLineCodeMap();
+			if (!smR.DeleteLock(lockExidCurrent)) return false;
 
 			doTheyExist();
 
@@ -777,10 +840,8 @@ namespace ExStorage.Windows
 
 		public bool DeleteLockBjohns()
 		{
-			ExStoreRtnCode rtnCode =
-				smR.DeleteLock(lockExidBJohn);
-
-			if (rtnCode != XRC_GOOD) return false;
+			M.WriteLineCodeMap();
+			if (!smR.DeleteLock(lockExidBJohn)) return false;
 
 			doTheyExist();
 
@@ -794,6 +855,7 @@ namespace ExStorage.Windows
 
 		public void GetTables()
 		{
+			M.WriteLineCodeMap();
 			ScDataSheet sheetA;
 			ScDataLock lockA;
 			ScDataLock lockJeff;
@@ -859,6 +921,7 @@ namespace ExStorage.Windows
 		// show
 		public void ShowExid(AExId exid)
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show exid");
 
 			sp01.ShowEid(exid);
@@ -866,13 +929,17 @@ namespace ExStorage.Windows
 
 		public void ShowSheet1()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show sheet");
 
 			shsp01.ShowSheetDataGeneric(SheetDataCurrent);
 		}
 
+
+
 		public void ShowLockA()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show lock A");
 
 			shsp01.ShowLockDataGeneric(LockDataCurrent);
@@ -880,9 +947,10 @@ namespace ExStorage.Windows
 
 		public void ShowLockB()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("show lock B");
 
-			shsp01.ShowLockDataGeneric(LockDataTemp);
+			shsp01.ShowLockDataGeneric(LockBDataJohn);
 		}
 
 	#endregion
@@ -891,107 +959,73 @@ namespace ExStorage.Windows
 
 		// tests
 
+		public void DoesLockExist()
+		{
+			M.WriteLineCodeMap();
+			bool result;
+
+			result = DoesSheetLockExist();
+
+			if (result)
+			{
+				M.WriteLine("lock FOUND");
+			}
+			else
+			{
+				M.WriteLine("lock NOT FOUND");
+			}
+
+			string name;
+
+			result = GetUserNameLock(lockExidCurrent, out name);
+
+			if (name != null)
+			{
+				M.WriteLine($"name FOUND| {name}");
+			}
+			else
+			{
+				M.WriteLine("name NOT FOUND");
+			}
+		}
+
 		public void doTheyExist()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLine("\nChecking if sheet ds and sheet schema exist");
 
 			smR.doTheyExist(sheetExidCurrent, lockExidCurrent, lockExidBJohn);
 		}
 
-		// does it exist?
+		// test - create modified data to 
+		// test the update method - this uses the
+		// tempEditing sheet
+		// process 
+		// A clone the current data into sheetDataEditing
+		// B modify sheetDataEditing
+		public void modifyDataBegin()
+		{
+			M.WriteLineCodeMap();
+			// sheetDataEditing = sheetDataCurrent.CloneFields();
+		}
 
-		// public bool SheetDsFound { get; private set; }
-		//
-		// public bool SheetEntityFound { get; private set; }
-		// public bool SheetSchemaFound { get; private set; }
-		//
-		// public bool LockADsFound { get; private set; }
-		// public bool LockASchemaFound { get; private set; }
-		// public bool LockAEntityFound { get; private set; }
-		//
-		// public bool LockBDsFound { get; private set; }
-		// public bool LockBSchemaFound { get; private set; }
-		// public bool LockBEntityFound { get; private set; }
+		// once modification process complete
+		// process the tempediting data
+		// if it worked, clone back into current
+		// if it failed, set to null
+		public void modifyDataEnd()
+		{
+			M.WriteLineCodeMap();
 
-
-		// 	TestWhatExists();
-		//
-		// 	M.WriteLine("sheet ds found           |", $"{SheetDsFound} | name| {SheetExidCurrent.DsName}");
-		// 	M.WriteLine("sheet entity found       |", $"{SheetEntityFound}");
-		// 	M.WriteLine("sheet schema found       |", $"{SheetSchemaFound} | name| {SheetExidCurrent.SchemaName}");
-		//
-		// 	M.WriteLine("lock A jeff Ds found     |", $"{LockADsFound} | name| {lockExidCurrent.DsName}");
-		// 	M.WriteLine("lock A jeff entity found |", $"{LockAEntityFound}");
-		// 	M.WriteLine("lock A jeff schema found |", $"{LockASchemaFound}");
-		//
-		// 	M.WriteLine("lock B john Ds found     |", $"{LockBDsFound} | name| {lockExidBJohn.DsName}");
-		// 	M.WriteLine("lock B john entity found |", $"{LockBEntityFound}");
-		// 	M.WriteLine("lock B john schema found |", $"{LockBSchemaFound}");
-
-
-		// public void TestWhatExists()
-		// {
-		// 	M.WriteLineStatus("begin whatexists");
-		//
-		// 	// a full load
-		// 	// (1) ds which will hold
-		// 	// (1) sheet entity / sheet schema
-		// 	// (1) lock entity / lock schema
-		// 	// (0) or more row entities / schemas
-		//
-		// 	getSheetStatus();
-		// 	getLockElementStatus();
-		// 	getLockTempElementStatus();
-		// }
-		//
-		// private void getSheetStatus()
-		// {
-		// 	bool ds;
-		// 	bool s;
-		// 	bool e;
-		//
-		// 	smR.StorLibR.DoElementsExist(
-		// 		lockExidCurrent, out ds, out s, out e);
-		//
-		// 	SheetDsFound     = ds;
-		// 	SheetSchemaFound = s;
-		// 	SheetEntityFound = e;
-		// }
-		//
-		// private void getLockElementStatus()
-		// {
-		// 	bool ds;
-		// 	bool s;
-		// 	bool e;
-		//
-		// 	smR.StorLibR.DoElementsExist(
-		// 		lockExidCurrent, out ds, out s, out e);
-		//
-		// 	LockADsFound     = ds;
-		// 	LockASchemaFound = s;
-		// 	LockAEntityFound = e;
-		// }
-		//
-		// private void getLockTempElementStatus()
-		// {
-		// 	bool ds;
-		// 	bool s;
-		// 	bool e;
-		//
-		// 	smR.StorLibR.DoElementsExist(
-		// 		lockExidBJohn, out ds, out s, out e);
-		//
-		// 	LockBDsFound     = ds;
-		// 	LockBSchemaFound = s;
-		// 	LockBEntityFound = e;
-		// }
+		}
 
 	#endregion
 
-	#region final tests
+	#region more tests
 
 		public bool TestWriteSheetCurrent()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("start write sheet");
 
 			bool result;
@@ -1009,6 +1043,7 @@ namespace ExStorage.Windows
 
 		public bool TestReadSheetCurrent()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("start read sheet");
 
 			ScDataSheet shtd;
@@ -1027,10 +1062,9 @@ namespace ExStorage.Windows
 			return result;
 		}
 
-
-		
 		public bool TestWriteSheetEditing()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("start write sheet");
 
 			bool result;
@@ -1048,6 +1082,7 @@ namespace ExStorage.Windows
 
 		public bool TestReadSheetEditing()
 		{
+			M.WriteLineCodeMap();
 			M.WriteLineStatus("start read sheet");
 
 			ScDataSheet shtd;
@@ -1060,9 +1095,46 @@ namespace ExStorage.Windows
 
 			return result;
 		}
+		
+		
+		public bool UpdateSheetTest(ScDataSheet shtd)
+		{
+			M.WriteLineCodeMap();
+			M.WriteLineStatus("begin| Update sheet");
+
+			string owner;
+
+			bool result =  UpdateSheet(shtd, out owner);
+
+			M.WriteLineStatus($"Update| status| {result}| return code| {ReturnCode}| owner| {owner}");
+
+			return SetRtnCodeB();;
+		}
 
 
-	#endregion
+
+
+
+
+
+		// public ShExStorManagerR<object, object, object, object, object, object, object, object, object> ShExStorManagerR
+		// {
+		// 	get => default;
+		// 	set
+		// 	{
+		// 	}
+		// }
+
+		// public ShtExId ShtExId
+		// {
+		// 	get => default;
+		// 	set
+		// 	{
+		// 	}
+		// }
+
+
+		#endregion
 
 		// *** voided ***
 
@@ -1078,7 +1150,7 @@ namespace ExStorage.Windows
 
 
 
-				//
+		//
 		// public void GetAllDs1()
 		// {
 		// 	tp01.TestGetAllDs1(smR.StorLibR);
@@ -1196,7 +1268,7 @@ namespace ExStorage.Windows
 
 
 
-		
+
 
 		// // get the lock A owner name
 		// // if we get a result, then the lock already exists
@@ -1252,7 +1324,7 @@ namespace ExStorage.Windows
 		// return result;
 
 
-		
+
 		// lock A
 
 		// public bool CreateLockAData()
@@ -1272,6 +1344,170 @@ namespace ExStorage.Windows
 		// 	M.WriteLineStatus($"create lock data | {result}");
 		//
 		// 	return result;
+		// }
+
+
+				// // sheet 2
+		//
+		// public void ShowSheet12()
+		// {
+		// 	M.WriteLineStatus("show sheet");
+		//
+		// 	shsp01.ShowSheetDataGeneric(SheetDataCurrent);
+		// }
+		//
+		//
+		// private void SetSheet2(ScDataSheet2 shtd2)
+		// {
+		// 	M.WriteLineStatus("set sheet");
+		//
+		// 	// sheetDataPrior = sheetDataCurrent;
+		//
+		// 	SheetDataCurrent2 = shtd2;
+		// 	// SheetLoaded = true;
+		// }
+		//
+		// public void MakeSheetData2()
+		// {
+		// 	M.WriteLineStatus("init sheet data");
+		//
+		// 	ScDataSheet2 shtd2 = ScData2.MakeInitialDataSheet2(SheetExidCurrent);
+		//
+		// 	TestMakeDataRow32(SheetExidCurrent, shtd2);
+		//
+		// 	SetSheet2(shtd2);
+		// }
+		//
+		// private ScDataRow2 CreateFauxRow2(ShtExId exid, ScDataRow2 row)
+		// {
+		// 	// tp01.MakeFauxRow(exid, row);
+		// 	tp01.MakeFauxRow2(exid, row);
+		//
+		// 	return row;
+		// }
+		//
+		// public void TestMakeDataRow32(ShtExId exid, ScDataSheet2 shtd2)
+		// {
+		// 	M.WriteLineStatus("init row data");
+		//
+		// 	// M.WriteLine("test make ROW data x3");
+		// 	ScDataRow2 rowd;
+		//
+		// 	rowd = CreateFauxRow2(exid, ScData2.MakeInitialDataRow2(shtd2));
+		// 	shtd2.AddRow(rowd);
+		//
+		// 	rowd = CreateFauxRow2(exid, ScData2.MakeInitialDataRow2(shtd2));
+		// 	shtd2.AddRow(rowd);
+		//
+		// 	rowd = CreateFauxRow2(exid, ScData2.MakeInitialDataRow2(shtd2));
+		// 	shtd2.AddRow(rowd);
+		//
+		// 	// UserSettings.Data.UserSettingsValue += 1;
+		// 	//
+		// 	// UserSettings.Admin.Write();
+		// }
+		//
+		//
+		// public bool TestWriteSheetCurrent2()
+		// {
+		// 	M.WriteLineStatus("start write sheet");
+		//
+		// 	bool result;
+		//
+		// 	result = WriteSheet2(sheetExidCurrent, lockExidCurrent, sheetDataCurrent2);
+		//
+		// 	M.WriteLineStatus($"write sheet status| {result} | code| {smR.ReturnCode}");
+		//
+		// 	// doTheyExist();
+		//
+		// 	StaticInfo.UpdateMainWinProperty(nameof(StaticInfo.MainWin.MwModel));
+		//
+		// 	return result;
+		// }
+		//
+		// public bool TestReadSheetCurrent2()
+		// {
+		// 	M.WriteLineStatus("start read sheet");
+		//
+		// 	ScDataSheet2 shtd2;
+		//
+		// 	bool result = ReadSheet2(SheetExidCurrent, out shtd2);
+		//
+		// 	SheetDataCurrent2 = shtd2;
+		//
+		// 	M.WriteLineStatus($"read sheet status| {result} | code| {smR.ReturnCode}");
+		//
+		// 	if (!result)
+		// 	{
+		// 		RemoveSheet2();
+		// 	}
+		//
+		// 	return result;
+		// }
+		//
+		//
+		// public bool ReadSheet2(ShtExId shtExid, out ScDataSheet2 shtd2)
+		// {
+		// 	if (!SetRtnCodeB(smR2.ReadSheet(shtExid, out shtd2)))
+		// 	{
+		// 		shtd2 = null;
+		// 	}
+		//
+		// 	return SetRtnCodeB();
+		// }
+		//
+		//
+		//
+		// /// <summary>
+		// /// write the sheet data to the model<br/>
+		// /// return <br/>
+		// /// true if it worked<br/>
+		// /// false if not (
+		// /// </summary>
+		// /// <param name="shtd"></param>
+		// public bool WriteSheet2(ShtExId shtExid, LokExId lokExid, ScDataSheet2 shtd2)
+		// {
+		// 	if (shtd2 == null) return false;
+		//
+		// 	return smR2.WriteSheet(shtExid,	lokExid, shtd2);
+		// }
+		//
+		// /// <summary>
+		// /// remove the current sheet - ds & schemas
+		// /// </summary>
+		// public void DeleteSheet2()
+		// {
+		// 	M.WriteLine("sheet delete");
+		//
+		// 	bool result = smR2.DeleteSheet(SheetExidCurrent, lockExidCurrent);
+		//
+		// 	if (result)
+		// 	{
+		// 		M.WriteLine("sheet deleted - WORKED");
+		// 		RemoveSheet2();
+		// 	}
+		// 	else
+		// 	{
+		// 		M.WriteLine("sheet delete - FAILED");
+		// 	}
+		// }
+		//
+		// private void RemoveSheet2()
+		// {
+		// 	M.WriteLineStatus("delete sheet");
+		//
+		// 	sheetDataPrior = sheetDataCurrent;
+		//
+		// 	SheetDataCurrent = null;
+		//
+		// }
+
+
+		// public void ShowSheet2()
+		// {
+		// 	M.WriteLineStatus("show sheet");
+		//
+		// 	shsp01.ShowSheetDataGeneric2(SheetDataCurrent2);
 		// }
 	}
 }

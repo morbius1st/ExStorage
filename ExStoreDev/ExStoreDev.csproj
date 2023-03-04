@@ -72,6 +72,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Windows\MainWindowModel.cs" />
+    <Compile Include="Windows\Support\Tests.cs" />
+    <Compile Include="Windows\Support\TestsKey1.cs" />
+    <Compile Include="Windows\Support\TestsKey2.cs" />
     <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs">
       <Link>.Linked\CsUtilitiesMedia.cs</Link>
     </Compile>
@@ -137,7 +140,6 @@
     <Folder Include="ExSchema\" />
     <Folder Include="ExStorage\" />
     <Folder Include="Windows\ResourceFiles\ImageResources\" />
-    <Folder Include="Windows\Support\" />
   </ItemGroup>
   <Import Project="..\ShExStorageN\ShExStorageN.projitems" Label="Shared" />
   <Import Project="..\ShStudy\ShStudy.projitems" Label="Shared" />

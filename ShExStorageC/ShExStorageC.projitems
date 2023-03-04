@@ -9,16 +9,15 @@
     <Import_RootNamespace>ShExStorageC</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageLibraryC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ExStorageLibraryC1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataLock.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataRow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScDataSheet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDefData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldConverters.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScInfoMeta.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldSupport.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDefData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScSupport\ScFieldConstC.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShSchemaFields\ScFieldDefMeta.cs" />
   </ItemGroup>
 </Project>

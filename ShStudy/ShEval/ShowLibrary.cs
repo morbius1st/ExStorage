@@ -7,8 +7,8 @@ using System.Text;
 using System.Windows.Documents;
 using System.Windows.Input;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
-using ShStudy.ShEval;
+using ShExStorageC.ShSchemaFields.ShScSupport;
+using ShStudyN.ShEval;
 using UtilityLibrary;
 
 #endregion
@@ -16,7 +16,7 @@ using UtilityLibrary;
 // user name: jeffs
 // created:   10/11/2022 7:31:50 PM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public enum JustifyHoriz
 	{
@@ -69,42 +69,6 @@ namespace ShStudy.ShEval
 			M = msgs;
 		}
 
-
-		/*
-		// private IWin W;
-
-		// public string textMsg01 { get; set; }
-		
-
-
-		public void Write(string msg)
-		{
-			W.MessageBoxText += msg;
-		}
-
-
-		public void WriteLine(string msg)
-		{
-			W.MessageBoxText += msg;
-			WriteNewLine();
-		}
-
-		public void WriteNewLine()
-		{
-			W.MessageBoxText += "\n";
-		}
-
-		public void MessageClr()
-		{
-			W.MessageBoxText = "";
-		}
-
-		private void writeMsg1<T1>(  T1 msg1, int colWidth, string whenNull1, string divString)
-		{
-			Write(fmtMsg(msg1, "", whenNull1, null, divString, colWidth));
-		}
-		*/
-
 	#region main methods
 		
 
@@ -132,27 +96,6 @@ namespace ShStudy.ShEval
 					lastColAlign);
 			}
 		}
-
-
-		// public void WriteRows<TKey, TField>(
-		// 	List<TField> order,
-		// 	Dictionary<TField, ColData> colDefinitions,
-		// 	Dictionary<TKey, Dictionary<TField, string>> rowsInfo,
-		// 	int maxLines,
-		// 	JustifyVertical jv,
-		// 	bool isHeader, bool lastColAlign) where TField : Enum where TKey : Enum
-		// {
-		// 	foreach (KeyValuePair<TKey, Dictionary<TField, string>> kvp in rowsInfo)
-		// 	{
-		// 		WriteRow<TField>(order,
-		// 			colDefinitions,
-		// 			kvp.Value,
-		// 			maxLines,
-		// 			jv,
-		// 			isHeader,
-		// 			lastColAlign);
-		// 	}
-		// }
 
 		
 		public void WriteRow<TE>( List<TE> order,

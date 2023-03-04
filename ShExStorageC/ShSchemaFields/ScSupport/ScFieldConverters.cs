@@ -13,27 +13,27 @@ using ShExStorageN.ShSchemaFields;
 // user name: jeffs
 // created:   12/4/2022 7:28:42 PM
 
-namespace ShExStorageC.ShSchemaFields.ScSupport
+namespace ShExStorageC.ShSchemaFields.ShScSupport
 {
 
-	public class KeyToFieldValueConverter : IValueConverter
-	{
-		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			if (!(value is Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>>)) { return null; }
-			if (!(parameter is SchemaSheetKey)) { return null; }
-
-			Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>> val = (Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>>) value;
-			SchemaSheetKey key = (SchemaSheetKey) parameter;
-
-			return val[key];
-		}
-
-		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-		{
-			return null;
-		}
-	}
+	// public class KeyToFieldValueConverter : IValueConverter
+	// {
+	// 	public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+	// 	{
+	// 		if (!(value is Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>>)) { return null; }
+	// 		if (!(parameter is SchemaSheetKey)) { return null; }
+	//
+	// 		Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>> val = (Dictionary<SchemaSheetKey, ScFieldDefData<SchemaSheetKey>>) value;
+	// 		SchemaSheetKey key = (SchemaSheetKey) parameter;
+	//
+	// 		return val[key];
+	// 	}
+	//
+	// 	public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+	// 	{
+	// 		return null;
+	// 	}
+	// }
 /*
 	public class PassThruConverter : IValueConverter
 	{

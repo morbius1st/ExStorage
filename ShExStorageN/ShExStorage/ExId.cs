@@ -1,12 +1,12 @@
 ﻿#region + Using Directives
 
 using System;
-using System.Net.PeerToPeer;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using Autodesk.Revit.DB;
 using RevitLibrary;
+using ShExStorageR.ShExStorage;
 using UtilityLibrary;
 
 #endregion
@@ -48,10 +48,10 @@ namespace ShExStorageN.ShExStorage
 
 		private void setNames(SheetId shtId)
 		{
-			baseName = $"{Exid}_{SHEET_BASE_SUFFIX}";
-			dsBaseName = $"{baseName}{SHEET_DS_SUFFIX}{NAME_MARKER}{shtId.Value}";
+			exidBaseName = $"{Exid}_{SHEET_BASE_SUFFIX}";
+			dsBaseName = $"{exidBaseName}{SHEET_DS_SUFFIX}{NAME_MARKER}{shtId.Value}";
 			dsName = $"{dsBaseName}";
-			schBaseName = $"{baseName}{SHEET_SCHEMA_SUFFIX}{NAME_MARKER}{shtId.Value}";
+			schBaseName = $"{exidBaseName}{SHEET_SCHEMA_SUFFIX}{NAME_MARKER}{shtId.Value}";
 			schName = $"{schBaseName}";
 		}
 
@@ -69,36 +69,13 @@ namespace ShExStorageN.ShExStorage
 			return $"this is {nameof(ShtExId)}| DsName| {DsName}";
 		}
 
-		// public override bool ReadDsNameMatches(string testName)
-		// {
-		// 	ParseReadName(testName);
-		//
-		// 	return ReadBaseSubjectName?.Equals(dsBaseName) ?? false;
-		// }
-		//
-		// public override bool ReadSchNameMatches(string testName)
-		// {
-		// 	ParseReadName(testName);
-		//
-		// 	return ReadBaseSubjectName?.Equals(schBaseName) ?? false;
-		// }
-		//
-		// private void ParseReadName(string testName)
-		// {
-		// 	ReadBaseName = null;
-		// 	ReadBaseSubjectName = null;
-		// 	ReadSubject = null;
-		//
-		// 	int pos1 = testName.IndexOf(NAME_MARKER);
-		// 	if (pos1 == -1) { return; }
-		//
-		// 	int pos2 = pos1 + NAME_MARKER.Length;
-		//
-		// 	ReadBaseName = testName.Substring(0, pos1);
-		// 	ReadBaseSubjectName = testName;
-		// 	ReadSubject = testName.Substring(pos2);
-		// }
-
+		public SheetId SheetId
+		{
+			get => default;
+			set
+			{
+			}
+		}
 	}
 
 
@@ -127,12 +104,18 @@ namespace ShExStorageN.ShExStorage
 			setNames(lokId);
 		}
 
+		public LokExId(ShtExId shtExid, LockId lokId) : base(shtExid.ExidName)
+		{
+			setNames(lokId);
+			;
+		}
+
 		private void setNames(LockId lokId)
 		{
-			baseName = $"{Exid}_{LOCK_BASE_SUFFIX}";
-			dsBaseName = $"{baseName}{LOCK_DS_SUFFIX}{NAME_MARKER}{lokId.Value}";
+			exidBaseName = $"{Exid}_{LOCK_BASE_SUFFIX}";
+			dsBaseName = $"{exidBaseName}{LOCK_DS_SUFFIX}{NAME_MARKER}{lokId.Value}";
 			dsName = $"{dsBaseName}_{UserName}";
-			schBaseName = $"{baseName}{LOCK_SCHEMA_SUFFIX}{NAME_MARKER}{lokId.Value}";
+			schBaseName = $"{exidBaseName}{LOCK_SCHEMA_SUFFIX}{NAME_MARKER}{lokId.Value}";
 			schName = $"{schBaseName}_{UserName}";
 		}
 
@@ -150,44 +133,13 @@ namespace ShExStorageN.ShExStorage
 			return $"this is {nameof(LokExId)}| DsName| {DsName}";
 		}
 
-		// public override bool ReadDsNameMatches(string testName)
-		// {
-		// 	ParseReadName(testName);
-		//
-		// 	return ReadBaseSubjectName?.Equals(dsBaseName) ?? false;
-		// }
-		//
-		// public override bool ReadSchNameMatches(string testName)
-		// {
-		// 	ParseReadName(testName);
-		//
-		// 	return ReadBaseSubjectName?.Equals(schBaseName) ?? false;
-		// }
-		//
-		// private void ParseReadName(string testName)
-		// {
-		// 	ReadBaseName = null;
-		// 	ReadBaseSubjectName = null;
-		// 	ReadSubject = null;
-		// 	ReadUserName = null;
-		// 	
-		// 	int pos1 = testName.IndexOf(NAME_MARKER);
-		// 	if (pos1 == -1) { return; }
-		//
-		// 	int pos2 = pos1 + NAME_MARKER.Length;
-		//
-		// 	int pos3 = testName.IndexOf("_", pos2);
-		// 	pos3 = pos3 == -1 ? testName.Length : pos3;
-		//
-		// 	ReadBaseName = testName.Substring(0, pos1);
-		// 	ReadBaseSubjectName = testName.Substring(0, pos3);
-		// 	ReadSubject = testName.Substring(pos2, pos3-pos2);
-		//
-		// 	if (pos3 == testName.Length) { return; }
-		//
-		// 	ReadUserName = testName.Substring(pos3+1);
-		// }
-
+		public LockId LockId
+		{
+			get => default;
+			set
+			{
+			}
+		}
 	}
 
 
@@ -221,12 +173,21 @@ namespace ShExStorageN.ShExStorage
 
 		protected int nextSheetNumber;
 
-		protected string exidName;
-		protected string baseName;
-		protected string dsBaseName;
-		protected string dsName;
-		protected string schName;
-		protected string schBaseName;
+		public string exidName;
+		public string exidBaseName;
+		public string dsBaseName;
+		public string dsName;
+		public string schName;
+		public string schBaseName;
+
+		public string tstBaseName;
+		public string tstAppName;
+		public string tstDsName;
+		public string tstSchShtName;
+		public string tstSchRowBaseName;
+		public string tstSchRowName;
+		public string tstSchLokName;
+
 
 		protected static char nextLockCharL = 'A'; // A to Z
 		protected static char nextLockCharR = 'a'; // a to z then A to Z
@@ -238,6 +199,8 @@ namespace ShExStorageN.ShExStorage
 		public AExId(string exidName)
 		{
 			this.exidName = exidName;
+
+			config2();
 		}
 
 		/// <summary>
@@ -263,6 +226,32 @@ namespace ShExStorageN.ShExStorage
 
 				Exid = companyId + "_" + DocNameClean;
 			}
+
+
+		}
+
+		string div1 = "_";
+		string div2 = "-";
+
+		string id1a = "ds";
+		string id1b = "sch";
+
+		string id2a = "sht";
+		string id2b = "row";
+		string id2c = "lok";
+
+		private void config2()
+		{
+
+			tstAppName = Heading.AppName;
+			tstBaseName = $"{tstAppName}{div1}{DocNameClean}";
+
+			tstDsName = $"{tstBaseName}{div1}{id1a}";
+			tstSchShtName = $"{tstBaseName}{div1}{id1b}{div1}{id2a}";
+			tstSchRowBaseName = $"{tstBaseName}{div1}{id1b}{div1}{id2b}";
+			tstSchLokName = $"{tstBaseName}{div1}{id1b}{div1}{id2c}";
+
+			RowSchemaName("Faux Name");
 		}
 
 	#endregion
@@ -297,6 +286,7 @@ namespace ShExStorageN.ShExStorage
 		/// <param name="famName"></param>
 		public string RowSchemaName(string famName)
 		{
+			tstSchRowName=$"{tstSchRowBaseName}{div1}{CleanName(famName)}";
 			return $"{Exid}_{ROW_SCHEMA_SUFFIX}_{CleanName(famName)}";
 		}
 
@@ -367,37 +357,7 @@ namespace ShExStorageN.ShExStorage
 		}
 		
 	#endregion
-
-
-		// public void OverrideDsName(string dsName)
-		// {
-		// 	this.dsName = dsName;
-		// }
-		//
-		// public void OverrideSchName(string schName)
-		// {
-		// 	this.schName = schName;
-		// }
-		//
-		// protected void incrementCharPair()
-		// {
-		// 	if (nextLockCharR == 'z' || nextLockCharR == 'Z')
-		// 	{
-		// 		nextLockCharR = (char) (nextLockCharR - 26);
-		//
-		// 		if (nextLockCharL == 'Z')
-		// 		{
-		// 			nextLockCharL = '@';
-		// 			nextLockCharR = '@';
-		// 		}
-		// 		++nextLockCharL;
-		// 	}
-		// 	++nextLockCharR;
-		//
-		// }
-
-
-
+		
 	#region static members
 
 		/// <summary>

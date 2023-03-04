@@ -10,12 +10,14 @@ using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStorage.Windows;
 using RevitSupport;
 using SettingsManager;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
 using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
 using ShExStorageC.ShSchemaFields;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
+using ShExStorageN.ShSchemaFields.ShScSupport;
 using ShExStorageR.ShExStorage;
-using ShStudy.ShEval;
+using ShStudyN.ShEval;
 
 namespace ExStorage.TestProcedures
 {
@@ -340,16 +342,40 @@ namespace ExStorage.TestProcedures
 			string fauxSeq = $"x1";
 
 			// row data initially created.  finish with bogus information
-			rowd.Fields[RK0_SCHEMA_NAME].SetValue = exid.RowSchemaName(fauxFamName);
-
-			rowd.Fields[RK2_CELL_FAMILY_NAME].SetValue = fauxFamName;
-			rowd.Fields[RK2_XL_FILE_PATH].SetValue = fauxWksPath;
-			rowd.Fields[RK2_XL_WORKSHEET_NAME].SetValue = "ExcelFileName.xls";
-
-			rowd.Fields[RK2_SEQUENCE].SetValue = "A1";
-			rowd.Fields[RK2_SKIP].SetValue = false;
-			rowd.Fields[RK2_UPDATE_RULE].SetValue = UR_UPON_REQUEST;
+			rowd.SetValue(RK0_SCHEMA_NAME, exid.RowSchemaName(fauxFamName));
+			rowd.SetValue(RK2_CELL_FAMILY_NAME , fauxFamName);
+			rowd.SetValue(RK2_XL_FILE_PATH     , fauxWksPath);
+			rowd.SetValue(RK2_XL_WORKSHEET_NAME, "ExcelFileName.xls");
+			rowd.SetValue(RK2_SEQUENCE         , "A1");
+			rowd.SetValue(RK2_SKIP             , false);
+			rowd.SetValue(RK2_UPDATE_RULE      , UR_UPON_REQUEST);
 		}
+
+
+		// public void MakeFauxRow2(ShtExId exid, ScDataRow2 rowd)
+		// {
+		// 	famIdx = UserSettings.Data.UserSettingsValue;
+		//
+		// 	M.WriteLineStatus($"faux row data| fam idx| {famIdx}");
+		//
+		// 	if (fauxRowIdx > 2) fauxRowIdx = 0;
+		// 	// string fauxIdx = (fauxRowIdx++ * 11).ToString("000");
+		// 	string fauxWksPath = Path.GetTempPath();
+		// 	// string fauxWksName = $"{fauxIdx}_{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}";
+		// 	// string fauxFamName = $"{fauxIdx}_{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}";
+		// 	string fauxFamName = FauxFamNames[famIdx][fauxRowIdx++];
+		// 	string fauxSeq = $"x1";
+		//
+		// 	// row data initially created.  finish with bogus information
+		// 	rowd.Fields[(rKey) ShExNTblKeys.TK_SCHEMA_NAME].SetValue = exid.RowSchemaName(fauxFamName);
+		// 	rowd.Fields[ScRowKeys.RK_CELL_FAMILY_NAME].SetValue = fauxFamName;
+		// 	rowd.Fields[ScRowKeys.RK_XL_FILE_PATH].SetValue = fauxWksPath;
+		// 	rowd.Fields[ScRowKeys.RK_XL_WORKSHEET_NAME].SetValue = "ExcelFileName.xls";
+		// 	rowd.Fields[ScRowKeys.RK_SEQUENCE].SetValue = "A1";
+		// 	rowd.Fields[ScRowKeys.RK_SKIP].SetValue = false;
+		// 	rowd.Fields[ScRowKeys.RK_UPDATE_RULE].SetValue = UR_UPON_REQUEST;
+		// }
+
 
 	#endregion
 	}

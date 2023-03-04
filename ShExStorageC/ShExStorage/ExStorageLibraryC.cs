@@ -8,7 +8,7 @@ using ShExStorageC.ShSchemaFields;
 using ShExStorageC.ShSchemaFields.ScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageN.ShSchemaFields;
-using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConst;
+using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConstN;
 using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
 using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
 using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
@@ -27,24 +27,24 @@ namespace ShExStorageC.ShExStorage
 {
 
 
-	public class ExStorageLibraryC
-	{
-
-		public ScDataSheet MakeEmptySheet()
-		{
-			return new ScDataSheet();
-		}
-
-		public ScDataSheet MakeInitSheet(ShtExId exid)
-		{
-			return ScData.MakeInitialDataSheet1(exid);
-		}
-
-		public ScDataLock MakeInitLock(LokExId exid)
-		{
-			return ScData.MakeInitialDataLock1(exid);
-		}
-
-	}
+	// public class ExStorageLibraryC
+	// {
+	//
+	// 	public ScDataSheet MakeEmptySheet()
+	// 	{
+	// 		return new ScDataSheet();
+	// 	}
+	//
+	// 	public ScDataSheet MakeInitSheet(ShtExId exid)
+	// 	{
+	// 		return ScData.MakeInitialDataSheet1(exid);
+	// 	}
+	//
+	// 	public ScDataLock MakeInitLock(LokExId exid)
+	// 	{
+	// 		return ScData.MakeInitialDataLock1(exid);
+	// 	}
+	//
+	// }
 
 }

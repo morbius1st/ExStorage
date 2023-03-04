@@ -10,12 +10,12 @@
 		xmlns:resLocal="clr-namespace:ExStorage.Properties"
 		xmlns:resShared="clr-namespace:SharedApp.Windows.ShResources"
 		xmlns:supportShared="clr-namespace:SharedApp.Windows.ShSupport"
-		xmlns:shExStC="clr-namespace:ShExStorageC.ShSchemaFields.ScSupport"
+		xmlns:shExStC="clr-namespace:ShExStorageC.ShSchemaFields.ShScSupport"
 		xmlns:shExScC="clr-namespace:ShExStorageC.ShSchemaFields"
 		xmlns:shExStN="clr-namespace:ShExStorageN.ShExStorage"
 		Title="Main Window"
 		Height="1050"
-		Width="2000"
+		Width="2400"
 		DataContext="{Binding RelativeSource={RelativeSource Self}}"
 		mc:Ignorable="d"
 		Background="{DynamicResource Normal.Window.Background}"
@@ -48,7 +48,7 @@
 			<SolidColorBrush x:Key="TbxBorder" Color="{StaticResource True.Blue.300}" />
 
 			<!-- <shExStC:PassThruConverter x:Key="PassThru" /> -->
-			<shExStC:KeyToFieldValueConverter x:Key="KeyToField" />
+			<!-- <shExStC:KeyToFieldValueConverter x:Key="KeyToField" /> -->
 			<!-- <shExStC:KeyToFieldValueConverter x:Key="KeyToValue" /> -->
 			<!-- <shExStC:KeyToFieldNameConverter x:Key="KeyToFieldName" /> -->
 
@@ -145,6 +145,7 @@
 			<ColumnDefinition Width="380" />
 			<ColumnDefinition Width="350" />
 			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="400"/>
 			<ColumnDefinition Width="116" />
 			<ColumnDefinition Width="116" />
 		</Grid.ColumnDefinitions>
@@ -181,8 +182,8 @@
 					Margin="0,0,5,15"
 					HorizontalAlignment="Stretch"
 					Background="Transparent"
-					DataContext="{Binding MwModel.SheetDataCurrent.Fields}"
-					ItemsSource="{Binding Values}"
+					DataContext="{Binding MwModel.SheetDataCurrent}"
+					ItemsSource="{Binding}"
 					d:ItemsSource="{d:SampleData}"
 					HorizontalContentAlignment="Stretch"
 					>
@@ -197,12 +198,12 @@
 									DockPanel.Dock="Left"
 									Width="110"
 									Foreground="White"
-									Text="{Binding Path=Meta1Field.FieldName}"
+									Text="{Binding Path=Value.FieldName}"
 									/>
-
+							<!-- Text="{Binding Path=Meta1Field.FieldName}" -->
 							<TextBox
 									DockPanel.Dock="Right"
-									Text="{Binding Path=Value}"
+									Text="{Binding Path=Value.Value, Mode=OneWay}"
 									/>
 
 						</DockPanel>
@@ -218,8 +219,8 @@
 					Grid.Row="1"
 					HorizontalAlignment="Stretch"
 					Background="Transparent"
-					DataContext="{Binding MwModel.SheetDataCurrent.Rows}"
-					ItemsSource="{Binding Values}"
+					DataContext="{Binding MwModel.SheetDataCurrent}"
+					ItemsSource="{Binding Rows.Values}"
 					d:ItemsSource="{d:SampleData ItemCount=6}"
 					HorizontalContentAlignment="Stretch"
 					ScrollViewer.VerticalScrollBarVisibility="Visible"
@@ -236,8 +237,10 @@
 									/>
 
 							<ListBox
-									DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackPanel}}, Path=DataContext}"
-									ItemsSource="{Binding Path=Fields}"
+									DataContext="{Binding 
+									RelativeSource={RelativeSource 
+									AncestorType={x:Type StackPanel}}, Path=DataContext}"
+									ItemsSource="{Binding}"
 									Background="Blue"
 									HorizontalContentAlignment="Stretch"
 									>
@@ -335,7 +338,7 @@
 
 			<Grid DockPanel.Dock="Top">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="140" />
+					<ColumnDefinition Width="160" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 
@@ -497,6 +500,25 @@
 												Text="{Binding HasSheet, FallbackValue='&lt;not found&gt;'}" />
 									</StackPanel>
 
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="has data|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataCurrent.HasData, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+
 									<StackPanel
 											DockPanel.Dock="Top"
 											Orientation="Horizontal">
@@ -606,6 +628,24 @@
 										<TextBlock
 												HorizontalAlignment="Stretch"
 												Text="{Binding HasSheetForEdit, FallbackValue='&lt;not found&gt;'}" />
+									</StackPanel>
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
+												Text="has data|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataEditing.HasData, FallbackValue='&lt;not found&gt;'}" />
+
 									</StackPanel>
 
 									<StackPanel
@@ -728,6 +768,25 @@
 												HorizontalAlignment="Left"
 												Text="Sheet|" />
 										<TextBlock
+												Text="has data|"
+												Style="{StaticResource tblk.title01}" />
+
+										<TextBlock
+												HorizontalAlignment="Stretch"
+												Text="{Binding SheetDataTemp.HasData, FallbackValue='&lt;not found&gt;'}" />
+
+									</StackPanel>
+
+
+									<StackPanel
+											DockPanel.Dock="Top"
+											Orientation="Horizontal">
+										<TextBlock
+												Width="{StaticResource TitleWidth02a}"
+												Margin="5,0,0,0"
+												HorizontalAlignment="Left"
+												Text="Sheet|" />
+										<TextBlock
 												Text="user Name|"
 												Style="{StaticResource tblk.title01}" />
 
@@ -774,7 +833,7 @@
 											Margin="36,-14,0,3"
 											Padding="5,0,5,0"
 											HorizontalAlignment="left"
-											Text="Lock Current"
+											Text="Lock Current Data Only"
 											Foreground="White" />
 
 									<StackPanel
@@ -885,7 +944,7 @@
 											Margin="36,-14,0,3"
 											Padding="5,0,5,0"
 											HorizontalAlignment="left"
-											Text="Lock Temp"
+											Text="Lock Temp Data Only"
 											Foreground="White" />
 
 									<StackPanel
@@ -996,7 +1055,7 @@
 											Margin="36,-14,0,3"
 											Padding="5,0,5,0"
 											HorizontalAlignment="left"
-											Text="Lock B"
+											Text="Lock B Data Only"
 											Foreground="White" />
 
 									<StackPanel
@@ -1090,8 +1149,8 @@
 
 							</Border>
 
-							</DockPanel>
-						</ScrollViewer>
+						</DockPanel>
+					</ScrollViewer>
 
 
 				</DockPanel>
@@ -1225,6 +1284,8 @@
 
 			</TextBox>
 		</Border>
+
+
 		<Border
 				Grid.Column="2"
 				Grid.Row="1"
@@ -1288,6 +1349,68 @@
 		</Border>
 
 
+		<Border
+				Grid.Column="3"
+				Grid.Row="1"
+				Grid.RowSpan="2"
+				BorderBrush="{StaticResource TbxBorder}"
+				BorderThickness="1"
+				Margin="1"
+				>
+			<TextBox
+					Margin="0,0,2,0"
+					FontFamily="Consolas"
+					Background="Transparent"
+					Foreground="White"
+					BorderThickness="0"
+					Text="{Binding CodeMapText, Mode=OneWay}"
+					VerticalScrollBarVisibility="Visible"
+					HorizontalScrollBarVisibility="Visible"
+					>
+
+				<TextBox.Resources>
+
+					<Style TargetType="{x:Type ScrollViewer}">
+						<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.ScrollBarWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.TrackWidth" Value="4" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconGirth" Value="8" />
+						<Setter Property="supportShared:CsScrollBarAp.RepeatButtonIconLength" Value="10" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderThickness" Value="1,0,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.VertBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderThickness" Value="0,1,0,0" />
+						<Setter Property="supportShared:CsScrollBarAp.HorizBorderColor">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRectBkgBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Gray.150}" />
+							</Setter.Value>
+						</Setter>
+
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrThickness" Value="1,1,0,0" />
+						<Setter Property="supportShared:CsScrollViewerAp.CornerRect1BdrBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Blue.350}" />
+							</Setter.Value>
+						</Setter>
+
+					</Style>
+
+				</TextBox.Resources>
+
+			</TextBox>
+		</Border>
+
+
 		<StackPanel
 				Grid.Column="2"
 				Grid.Row="3"
@@ -1312,7 +1435,7 @@
 		</StackPanel>
 
 		<Border
-				Grid.Column="3"
+				Grid.Column="4"
 				Grid.Row="0"
 				Grid.RowSpan="2"
 				Style="{StaticResource BdrStkPnl}"
@@ -1341,6 +1464,13 @@
 						Style="{StaticResource BtnOps}"
 						Click="BtnShowSheet1_OnClick"
 						/>
+
+				<!-- -->
+				<!-- <Button x:Name="BtnShowSheet2" -->
+				<!-- 		Content="Show Sheet 2" -->
+				<!-- 		Style="{StaticResource BtnOps}" -->
+				<!-- 		Click="BtnShowSheet2_OnClick" -->
+				<!-- 		/> -->
 
 
 				<Button x:Name="BtnShowLockA"
@@ -1393,7 +1523,7 @@
 		</Border>
 
 		<Border
-				Grid.Column="4"
+				Grid.Column="5"
 				Grid.Row="0"
 				Grid.RowSpan="2"
 				Style="{StaticResource BdrStkPnl}"
@@ -1482,12 +1612,17 @@
 				<!--  Click="BtnInitDataB_OnClick"  -->
 				<!--  />  -->
 
+				<!--  <Button x:Name="BtnTest11"  -->
+				<!--  Content="11) init data"  -->
+				<!--  Style="{StaticResource BtnOps}"  -->
+				<!--  Click="BtnInit11_OnClick"  -->
+				<!--  />  -->
+
 				<Button x:Name="BtnTest10"
 						Content="10) What Exists?"
 						Style="{StaticResource BtnOps}"
 						Click="BtnWhatExists10_OnClick"
 						/>
-
 
 				<Button x:Name="BtnTest13"
 						Content="13) Read Tables"
@@ -1496,11 +1631,70 @@
 						/>
 
 
-				<!--  <Button x:Name="BtnTest11"  -->
-				<!--  Content="11) init data"  -->
-				<!--  Style="{StaticResource BtnOps}"  -->
-				<!--  Click="BtnInit11_OnClick"  -->
-				<!--  />  -->
+				<Button x:Name="BtnTest20"
+						Content="20) Update"
+						Style="{StaticResource BtnOps}"
+						Click="BtnUpdateSheet_OnClick"
+						/>
+
+
+
+
+				<Border
+						Height="10"
+						HorizontalAlignment="Stretch"
+						Margin="0,8,0,0"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+				>
+				</Border>
+				<Border
+						Margin="0,-1,0,0"
+						BorderThickness="1,1.5,0,0"
+						BorderBrush="White"
+						CornerRadius="0,0,0,0"
+				>
+					<Border
+							Margin="-1,-1,0,0"
+							BorderThickness="1,1,0,0"
+							BorderBrush="White"
+							CornerRadius="4,0,0,0"
+					>
+
+						<StackPanel>
+
+							<TextBlock
+									Background="{DynamicResource Normal.Window.Background}"
+									Margin="0,-13,0,-2"
+									Padding="5,0,5,0"
+									HorizontalAlignment="Center"
+									Text="Aux Tests"
+									Foreground="White"
+							/>
+
+
+							<Button x:Name="BtnTestL10"
+									Content="Get User Name A"
+									Style="{StaticResource BtnOps}"
+									Click="BtnGetLockAOwner_OnClick"
+							/>
+
+							<Button x:Name="BtnTestL12"
+									Content="Get User Name B"
+									Style="{StaticResource BtnOps}"
+									Click="BtnGetLockBOwner_OnClick"
+							/>
+
+							<Button x:Name="BtnTestL11"
+									Content="Can Delete"
+									Style="{StaticResource BtnOps}"
+									Click="BtnCanDelLock_OnClick"
+							/>
+						</StackPanel>
+
+					</Border>
+				</Border>
 
 
 				<Border
@@ -1513,8 +1707,6 @@
 							Text="Sheet"
 							/>
 				</Border>
-
-
 
 				<Border
 						Margin="0,10,0,1"
@@ -1565,6 +1757,67 @@
 
 
 
+				<!-- -->
+				<!-- <Border -->
+				<!-- 		Margin="0,7,0,0" -->
+				<!-- 		Style="{StaticResource BdrTxBlkHdrTnBLine}" -->
+				<!-- 		> -->
+				<!-- 	<TextBlock -->
+				<!-- 			Foreground="White" -->
+				<!-- 			TextAlignment="Center" -->
+				<!-- 			Text="Sheet 2" -->
+				<!-- 			/> -->
+				<!-- </Border> -->
+				<!-- -->
+				<!-- <Border -->
+				<!-- 		Margin="0,10,0,1" -->
+				<!-- 		BorderThickness="1,10,0,0" -->
+				<!-- 		BorderBrush="White" -->
+				<!-- 		CornerRadius="10,0,0,0" -->
+				<!-- 		> -->
+				<!-- 	<StackPanel> -->
+				<!-- 		<TextBlock -->
+				<!-- 				Background="{DynamicResource Normal.Window.Background}" -->
+				<!-- 				Margin="0,-14,0,3" -->
+				<!-- 				Padding="5,0,5,0" -->
+				<!-- 				HorizontalAlignment="Center" -->
+				<!-- 				Text="Sheet Basic" -->
+				<!-- 				Foreground="White" -->
+				<!-- 				/> -->
+				<!-- -->
+				<!-- 		<Button  -->
+				<!-- 				Content="Make Data" -->
+				<!-- 				Style="{StaticResource BtnOps}" -->
+				<!-- 				Click="BtnMakeMakeSheetDataA2_OnClick" -->
+				<!-- 				/> -->
+				<!-- -->
+				<!-- -->
+				<!-- 		<Button  -->
+				<!-- 				Content="Write" -->
+				<!-- 				Style="{StaticResource BtnOps}" -->
+				<!-- 				Click="BtnWriteSheet92_OnClick" -->
+				<!-- 				/> -->
+				<!-- -->
+				<!-- 		<Button  -->
+				<!-- 				Content="Read" -->
+				<!-- 				Style="{StaticResource BtnOps}" -->
+				<!-- 				Click="BtnReadSheet9b2_OnClick" -->
+				<!-- 				/> -->
+				<!-- -->
+				<!-- 		<Button  -->
+				<!-- 				Content="Delete" -->
+				<!-- 				Style="{StaticResource BtnOps}" -->
+				<!-- 				Click="BtnDeleteSheet122_OnClick" -->
+				<!-- 				/> -->
+				<!-- -->
+				<!-- 	</StackPanel> -->
+				<!-- -->
+				<!-- </Border> -->
+				<!-- -->
+
+
+
+
 
 				<Border
 						Margin="0,7,0,0"
@@ -1576,6 +1829,34 @@
 							Text="Lock"
 							/>
 				</Border>
+
+
+				<Border
+						Margin="0,10,0,1"
+						BorderThickness="1,10,0,0"
+						BorderBrush="White"
+						CornerRadius="10,0,0,0"
+						>
+					<StackPanel>
+						<TextBlock
+								Background="{DynamicResource Normal.Window.Background}"
+								Margin="0,-14,0,3"
+								Padding="5,0,5,0"
+								HorizontalAlignment="Center"
+								Text="Lock General"
+								Foreground="White"
+								/>
+
+						<Button 
+								Content="Any Sheet Lock?"
+								Style="{StaticResource BtnOps}"
+								Click="BtnLockExist_OnClick"
+								/>
+
+					</StackPanel>
+
+				</Border>
+
 
 				<Border
 						Margin="0,10,0,1"
@@ -1599,7 +1880,7 @@
 								Content="Make Data (fixed)"
 								Style="{StaticResource BtnOps}"
 								/>
-								<!-- Click="BtnMakeLockAdata_OnClick" -->
+						<!-- Click="BtnMakeLockAdata_OnClick" -->
 
 						<Button x:Name="BtnTestL5"
 								Content="Write"
@@ -1621,6 +1902,8 @@
 					</StackPanel>
 
 				</Border>
+
+
 
 				<Border
 						Margin="0,10,0,1"
@@ -1754,61 +2037,6 @@
 				<!--    -->
 				<!-- </StackPanel> -->
 
-				<Border
-						Height="10"
-						HorizontalAlignment="Stretch"
-						Margin="0,8,0,0"
-						BorderThickness="1,10,0,0"
-						BorderBrush="White"
-						CornerRadius="10,0,0,0"
-						>
-				</Border>
-				<Border
-						Margin="0,-1,0,0"
-						BorderThickness="1,1.5,0,0"
-						BorderBrush="White"
-						CornerRadius="0,0,0,0"
-						>
-					<Border
-							Margin="-1,-1,0,0"
-							BorderThickness="1,1,0,0"
-							BorderBrush="White"
-							CornerRadius="4,0,0,0"
-							>
-
-						<StackPanel>
-
-							<TextBlock
-									Background="{DynamicResource Normal.Window.Background}"
-									Margin="0,-13,0,-2"
-									Padding="5,0,5,0"
-									HorizontalAlignment="Center"
-									Text="Aux Tests"
-									Foreground="White"
-									/>
-
-
-							<Button x:Name="BtnTestL10"
-									Content="Get User Name A"
-									Style="{StaticResource BtnOps}"
-									Click="BtnGetLockAOwner_OnClick"
-									/>
-
-							<Button x:Name="BtnTestL12"
-									Content="Get User Name B"
-									Style="{StaticResource BtnOps}"
-									Click="BtnGetLockBOwner_OnClick"
-									/>
-
-							<Button x:Name="BtnTestL11"
-									Content="Can Delete"
-									Style="{StaticResource BtnOps}"
-									Click="BtnCanDelLock_OnClick"
-									/>
-						</StackPanel>
-
-					</Border>
-				</Border>
 			</StackPanel>
 
 		</Border>

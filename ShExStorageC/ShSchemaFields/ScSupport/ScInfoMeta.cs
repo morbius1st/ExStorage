@@ -2,69 +2,55 @@
 
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 using static ShExStorageN.ShSchemaFields.ShScSupport.SchemaFieldDisplayLevel;
 using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
-using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConst;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
-using Autodesk.Revit.DB;
+using static ShExStorageN.ShSchemaFields.ShScSupport.ShExConstN;
+using static ShExStorageC.ShSchemaFields.ShScSupport.ShExConstC;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaSheetKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaLockKey;
 using ShExStorageN.ShSchemaFields;
-using System.Windows.Input;
-using RevitSupport;
-using ShExStorageC.ShExStorage;
-using ShExStorageC.ShSchemaFields;
-using ShStudy;
-using ShStudy.ShEval;
+
 
 #endregion
 
 // user name: jeffs
 // created:   10/24/2022 7:20:59 PM
 
-namespace ShExStorageC.ShSchemaFields.ScSupport
+namespace ShExStorageC.ShSchemaFields.ShScSupport
 {
 	public static class ScInfoMeta
 	{
 		static ScInfoMeta() { }
 
-		public const string KEY_FIELD_NAME = "Key";
 
-		public const string MODEL_PATH = @"C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\.RevitFiles";
-		public const string MODEL_NAME = @"HasDataStorage.rvt";
-		public const string SF_SCHEMA_DESC = "Cells Sheet DataStorage";
-		public const string SF_SCHEMA_NAME = "CellsSheetSchema";
-		public const string CF_SCHEMA_DESC = "Cells Row DS";
-		public const string LF_SCHEMA_DESC = "Cells lock DS";
 
 
 		/// <summary>
 		/// add all of the meta fields to a data field using default information
 		/// </summary>
 		public static void 
-			ConfigData1<TKey>(Dictionary<TKey, ScFieldDefData<TKey>> fields,
-		Dictionary<TKey, ScFieldDefMeta<TKey>> meta)
+			ConfigData<TKey>(Dictionary<TKey, ScFieldDefData<TKey>> fields, Dictionary<TKey, ScFieldDefMeta<TKey>> meta)
 			where TKey : Enum
 		{
 			foreach (KeyValuePair<TKey,  ScFieldDefMeta<TKey>> kvp in meta)
 			{
+
+				// add the key, the default value, and a reference to the meta info.
 				fields.Add(kvp.Key,
 					new ScFieldDefData<TKey>(kvp.Value.FieldKey, new DynaValue(kvp.Value.DyValue.Value), kvp.Value));
 			}
 		}
 
-		public static Dictionary<SchemaSheetKey, ScFieldDefMeta<SchemaSheetKey>> FieldsSheet => fieldsSheet;
-		public static Dictionary<SchemaRowKey, ScFieldDefMeta<SchemaRowKey>> FieldsRow => fieldsRow;
-		public static Dictionary<SchemaLockKey, ScFieldDefMeta<SchemaLockKey>> FieldsLock => fieldsLock;
+		public static Dictionary<SchemaSheetKey, ScFieldDefMeta<SchemaSheetKey>> MetaFieldsSheet => metaFieldsSheet;
+		public static Dictionary<SchemaRowKey, ScFieldDefMeta<SchemaRowKey>> MetaFieldsRow => metaFieldsRow;
+		public static Dictionary<SchemaLockKey, ScFieldDefMeta<SchemaLockKey>> MetaFieldsLock => metaFieldsLock;
 
-
-		private static Dictionary<SchemaSheetKey, ScFieldDefMeta<SchemaSheetKey>> fieldsSheet =
+		/// <summary>
+		/// contains the meta information for each table property as well as the default information for the table property
+		/// </summary>
+		private static Dictionary<SchemaSheetKey, ScFieldDefMeta<SchemaSheetKey>> metaFieldsSheet =
 			new Dictionary<SchemaSheetKey, ScFieldDefMeta<SchemaSheetKey>>
 			{
 			// @formatter:off
@@ -80,7 +66,7 @@ namespace ShExStorageC.ShSchemaFields.ScSupport
 			{SK2_DEVELOPER,        new ScFieldDefMeta<SchemaSheetKey> (SK2_DEVELOPER    , "Developer"  , "Name of Developer"            ,new DynaValue(UtilityLibrary.CsUtilities.CompanyName)       , DL_MEDIUM)},
 
 			// these are pre-set by the creation of the object & when the object is modified
-			{SK0_USER_NAME,        new ScFieldDefMeta<SchemaSheetKey> (SK0_USER_NAME    , "UserName"   , "User Name of Sheet Modifier"  ,new DynaValue(UtilityLibrary.CsUtilities.UserName)          , DL_ADVANCED)},
+			{SK0_USER_NAME,        new ScFieldDefMeta<SchemaSheetKey> (SK0_USER_NAME    , "ModifierName" , "Name of Sheet Modifier (or Creator)"  ,new DynaValue(UtilityLibrary.CsUtilities.UserName), DL_ADVANCED)},
 			{SK1_MODIFY_DATE,      new ScFieldDefMeta<SchemaSheetKey> (SK1_MODIFY_DATE  , "ModifyDate" , "Date Modified (or Created)"   ,new DynaValue(DateTime.UtcNow.ToString())                   , DL_MEDIUM)},
 
 			// these are variable depending on the database
@@ -90,7 +76,7 @@ namespace ShExStorageC.ShSchemaFields.ScSupport
 			};
 
 
-		private static Dictionary<SchemaRowKey, ScFieldDefMeta<SchemaRowKey>> fieldsRow =
+		private static Dictionary<SchemaRowKey, ScFieldDefMeta<SchemaRowKey>> metaFieldsRow =
 			new Dictionary<SchemaRowKey, ScFieldDefMeta<SchemaRowKey>>
 			{
 			// @formatter:off
@@ -105,7 +91,7 @@ namespace ShExStorageC.ShSchemaFields.ScSupport
 	
 	
 			// these are pre-set by the creation of the object & when the object is modified
-			{RK0_USER_NAME  ,      new ScFieldDefMeta<SchemaRowKey> (RK0_USER_NAME        , "UserName"      , "User Name of Row Creator"  , new DynaValue(UtilityLibrary.CsUtilities.UserName)      , DL_ADVANCED)},
+			{RK0_USER_NAME  ,      new ScFieldDefMeta<SchemaRowKey> (RK0_USER_NAME        , "ModifierName"  , "Name of Row Modifier (or Creator)"  , new DynaValue(UtilityLibrary.CsUtilities.UserName)      , DL_ADVANCED)},
 			{RK1_MODIFY_DATE,      new ScFieldDefMeta<SchemaRowKey> (RK1_MODIFY_DATE      , "ModifyDate"    , "Date Modified (or Created)" , new DynaValue(DateTime.UtcNow.ToString())              , DL_MEDIUM)},
 	
 	
@@ -118,12 +104,11 @@ namespace ShExStorageC.ShSchemaFields.ScSupport
 			{RK2_XL_FILE_PATH     ,new ScFieldDefMeta<SchemaRowKey> (RK2_XL_FILE_PATH     , "XlFilePath"    , "File Path to the Excel File", new DynaValue(K_NOT_DEFINED)                           , DL_BASIC)},
 			{RK2_XL_WORKSHEET_NAME,new ScFieldDefMeta<SchemaRowKey> (RK2_XL_WORKSHEET_NAME, "Xlworksheet"   , "Name of the Excel Worksheet", new DynaValue(K_NOT_DEFINED)                           , DL_BASIC)},
 			{RK0_GUID             ,new ScFieldDefMeta<SchemaRowKey> (RK0_GUID             , "GUID"          , "Row GUID"                  , new DynaValue(Guid.Empty)								 , DL_DEBUG)},
-			// Add(/*SO_ALL  ,*/   new ScFieldDef<SchemaRowKey> (RK_VALUE            , "Value"         , "Value"                      , new DynaValue(0.0)                                            , DL_ADVANCED)},
 
-				// @formatter:on
+			// @formatter:on
 			};
 
-		private static Dictionary<SchemaLockKey, ScFieldDefMeta<SchemaLockKey>> fieldsLock =
+		private static Dictionary<SchemaLockKey, ScFieldDefMeta<SchemaLockKey>> metaFieldsLock =
 			new Dictionary<SchemaLockKey, ScFieldDefMeta<SchemaLockKey>>
 			{
 			// @formatter:off
@@ -138,17 +123,16 @@ namespace ShExStorageC.ShSchemaFields.ScSupport
 
 			// adjusted to require configuration when a lock object is created
 			// {LK0_OWNER_ID   ,     new ScFieldDefMeta1<SchemaLockKey> (LK0_OWNER_ID          , "UserName"      , "User Name of Lock Creator"  , new DynaValue(UtilityLibrary.CsUtilities.UserName)     , DL_ADVANCED)},
-			{LK0_USER_NAME   ,     new ScFieldDefMeta<SchemaLockKey> (LK0_USER_NAME          , "UserName"      , "User Name of Lock Creator"  , new DynaValue(K_NOT_DEFINED)                           , DL_ADVANCED)},
+			{LK0_USER_NAME   ,     new ScFieldDefMeta<SchemaLockKey> (LK0_USER_NAME        , "UserName"      , "User Name of Lock Owner"  , new DynaValue(K_NOT_DEFINED)                           , DL_ADVANCED)},
 
 			{LK1_CREATE_DATE ,     new ScFieldDefMeta<SchemaLockKey> (LK1_CREATE_DATE      , "CreateDate"    , "Date Created"               , new DynaValue(DateTime.UtcNow.ToString())              , DL_MEDIUM)},
-			{LK2_MACHINE_NAME,     new ScFieldDefMeta<SchemaLockKey> (LK2_MACHINE_NAME     , "MachineName"   , "Machine Name of Lock Creator", new DynaValue(UtilityLibrary.CsUtilities.MachineName) , DL_ADVANCED)},
+			{LK2_MACHINE_NAME,     new ScFieldDefMeta<SchemaLockKey> (LK2_MACHINE_NAME     , "MachineName"   , "Machine Name of Lock Owner", new DynaValue(UtilityLibrary.CsUtilities.MachineName) , DL_ADVANCED)},
 	
 	
 			// these are variable depending on the database
 			{LK0_GUID,             new ScFieldDefMeta<SchemaLockKey> (LK0_GUID             , "GUID"          , "Lock GUID"                  , new DynaValue(Guid.Empty)                           , DL_DEBUG)},
-			// Add(/*SO_ALL  ,*/   new ScFieldDef<SchemaLockKey> (LK_VALUE            , "Value"         , "Value"                      , new DynaValue(0.0)                                            , DL_BASIC));
-
-				// @formatter:on
+			
+			// @formatter:on
 			};
 	}
 }

@@ -7,10 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using RevitSupport;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
-using ShStudy.ShEval;
-using ShStudy;
+using ShStudyN.ShEval;
+using ShStudyN;
 using System.Windows.Documents;
 using ShExStorageN.ShSchemaFields;
 
@@ -36,8 +36,10 @@ namespace ExStoreDev.Windows
 		// private ScFields sf;
 		// private ScData sd;
 
-		
+
 		private ScDataSheet shtd;
+		private ScDataSheet shtdCopy;
+
 		private ScDataRow rowd;
 		private ScDataLock lokd;
 
@@ -94,10 +96,7 @@ namespace ExStoreDev.Windows
 		public string StatusBoxText
 		{
 			get => message;
-			set
-			{
-				MessageBoxText = value;
-			}
+			set { MessageBoxText = value; }
 		}
 
 	#endregion
@@ -125,9 +124,11 @@ namespace ExStoreDev.Windows
 
 			shtd = new ScDataSheet();
 
-			shtExid = new ShtExId("Sheet ExId 01");
+			AExId.Config(RvtCommand.RvtDoc);
 
-			lokExid = new LokExId("Lock ExId 01");
+			shtExid = new ShtExId("Sheet ExId 01", ShtExId.ROOT);
+
+			lokExid = new LokExId("Lock ExId 01", LokExId.PRIME);
 		}
 
 	#endregion
@@ -176,7 +177,7 @@ namespace ExStoreDev.Windows
 			M.WriteLineAligned("\nexid| before");
 			mwModel.ShowExid(shtExid);
 
-			shtExid = new ShtExId("Sheet ExId 01");
+			shtExid = new ShtExId("Sheet ExId 01", ShtExId.ROOT);
 
 			M.WriteLineAligned("\nexid| after");
 			mwModel.ShowExid(shtExid);
@@ -188,10 +189,9 @@ namespace ExStoreDev.Windows
 			mwModel.TestFieldsLock();
 			mwModel.TestFieldsRow();
 			mwModel.TestFieldsSheet();
-
 		}
 
-		// test sheet data
+		// // test sheet data
 		private void BtnExp02_OnClick(object sender, RoutedEventArgs e)
 		{
 			shtd = mwModel.TestMakeDataSheetInitial(shtExid);
@@ -199,49 +199,54 @@ namespace ExStoreDev.Windows
 			mwModel.TestMakeDataRow3(shtExid, shtd);
 
 			mwModel.ShowSheetData(shtd);
-
 		}
 
-		// test sheet data
+		// test clone
 		private void BtnExp02b_OnClick(object sender, RoutedEventArgs e)
 		{
-			shtd = mwModel.TestMakeDataSheetEmpty();
-
-			mwModel.ShowSheetData(shtd);
-
-			shtd = mwModel.TestMakeDataSheetInitial(shtExid);
-
-			mwModel.ShowSheetData(shtd);
-
+			mwModel.TestClone(shtd);
 		}
+
+
+		//
+		// // test sheet data
+		// private void BtnExp02b_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	shtd = mwModel.TestMakeDataSheetEmpty();
+		//
+		// 	mwModel.ShowSheetData(shtd);
+		//
+		// 	shtd = mwModel.TestMakeDataSheetInitial(shtExid);
+		//
+		// 	mwModel.ShowSheetData(shtd);
+		//
+		// }
 
 		// test lock data
 		private void BtnExp05_OnClick(object sender, RoutedEventArgs e)
 		{
-			// shtd = mwModel.TestMakeDataSheetInitial(exid);
-			lokd = mwModel.TestMakeDataLock(lokExid);
+			// ScDataLock2 lokd2 = mwModel.TestMakeDataLock(lokExid);
 
 			mwModel.ShowLockData(lokd);
-
 		}
 
 
 		// test begin
-		private void BtnExp04_OnClick(object sender, RoutedEventArgs e)
-		{
-			M.WriteLine("\n*** begin create schema ***\n");
-
-			shtd = mwModel.TestMakeDataSheetInitial(shtExid);
-
-			mwModel.TestMakeDataRow3(shtExid, shtd);
-
-			mwModel.ShowSheetData(shtd);
-
-			M.WriteLine("\ndata made\n");
-
-			mwModel.CreateSheet(shtExid, shtd);
-
-		}
+		// private void BtnExp04_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	M.WriteLine("\n*** begin create schema ***\n");
+		//
+		// 	shtd = mwModel.TestMakeDataSheetInitial(shtExid);
+		//
+		// 	mwModel.TestMakeDataRow3(shtExid, shtd);
+		//
+		// 	mwModel.ShowSheetData(shtd);
+		//
+		// 	M.WriteLine("\ndata made\n");
+		//
+		// 	mwModel.CreateSheet(shtExid, shtd);
+		//
+		// }
 
 		// test sheet data
 		private void BtnExp06_OnClick(object sender, RoutedEventArgs e)
@@ -253,7 +258,6 @@ namespace ExStoreDev.Windows
 			// lokd = new ScDataLock1();
 			//
 			// mwModel.ShowSheetData(shtd);
-
 		}
 
 		protected char nextLockCharL = 'A'; // A to Z
@@ -262,12 +266,11 @@ namespace ExStoreDev.Windows
 
 		private void BtnExp07_OnClick(object sender, RoutedEventArgs e)
 		{
-			for (int i = 0; i < 26*32; i++)
+			for (int i = 0; i < 26 * 32; i++)
 			{
 				M.Write($"{nextLockCharL}{nextLockCharR};  ");
 
 				incrementCharPair();
-
 			}
 		}
 
@@ -289,8 +292,12 @@ namespace ExStoreDev.Windows
 			}
 
 			++nextLockCharR;
-
 		}
 
+		private void BtnExp08_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwModel.KeysTests();
+			// mwModel.KeysTests();
+		}
 	}
 }

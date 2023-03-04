@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ExStorage.Windows.MainWindowModel">
+    <Position X="5.75" Y="1.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AFAOAEAADAQPAxQGPgt3kYlWiAM4QAkCJAMMNAJYAFA=</HashCode>
+      <FileName>Windows\MainWindowModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ShtExId" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScDataSheet">
+    <Position X="23.75" Y="17" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAEAAEBAAAAAAAAAkAAAIBEQAAAAgAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields\ScDataSheet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScSheet&lt;TShtKey, TShtFlds, TRowKey, TRowFlds, TRow&gt;">
+    <Position X="26.75" Y="17" Width="2" />
+    <InheritanceLine Type="ShExStorageN.ShSchemaFields.AShScFields&lt;TKey, TField&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="29.75" Y="20.188" />
+        <Point X="27.75" Y="20.188" />
+        <Point X="27.75" Y="18.824" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.64" />
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScFields&lt;TKey, TField&gt;">
+    <Position X="29.75" Y="19.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAgAAAEgAEBAAABAAAAAgAAAADAQAAAAgAwAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScDataRow">
+    <Position X="21" Y="17" Width="2.25" />
+    <InheritanceLine Type="ShExStorageN.ShSchemaFields.AShScRow&lt;TKey, TField&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="26.75" Y="21.938" />
+        <Point X="22.125" Y="21.938" />
+        <Point X="22.125" Y="20.931" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAEAAEBAAAAAAAAAgAAAIBAQAAAAgAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields\ScDataRow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScRow&lt;TKey, TField&gt;">
+    <Position X="26.75" Y="21" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScDataLock">
+    <Position X="17.75" Y="17" Width="2.5" />
+    <InheritanceLine Type="ShExStorageN.ShSchemaFields.AShScLock&lt;TKey, TField&gt;" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="26.75" Y="24.25" />
+        <Point X="19" Y="24.25" />
+        <Point X="19" Y="21.353" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAQAEAAEBABAAAAAAAgAAAIBAQAAQAgAQAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageC\ShSchemaFields\ScDataLock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScLock&lt;TKey, TField&gt;">
+    <Position X="26.75" Y="23" Width="2.25" />
+    <InheritanceLine Type="ShExStorageN.ShSchemaFields.AShScFields&lt;TKey, TField&gt;" FixedToPoint="true">
+      <Path>
+        <Point X="29.75" Y="24.312" />
+        <Point X="29" Y="24.312" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAAAAAAABAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorage.Windows.MainWindow">
+    <Position X="1.5" Y="1.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>ACgCSQAgAAABkAAkIIAAhhMQgCZIAAAAICABAAMEAAg=</HashCode>
+      <FileName>Windows\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="MainWindowModel" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExStorManagerR&lt;TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds&gt;">
+    <Position X="30.5" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAKDAAAgAwAAEAUIgngAARAggLYAAgARlAkAgKAAEQ=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExStorManagerR.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ShExSchemaLibR" />
+      <Property Name="ShExStorageLibR" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExStorageLibR">
+    <Position X="34.25" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAADQAAAAAAEAAQEIgkBACAAgAIAgUYQEAAAABIEQEA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExStorageLibR.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageR.ShExStorage.ShExSchemaLibR&lt;TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds&gt;">
+    <Position X="37.25" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAAIEAAAAYAFAAAEISAJQCCAiCAQAAoABCkIQAIJEEA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExSchemaLibR.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ShExStorManagerR" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageN.ShExStorage.ShtExId">
+    <Position X="12.25" Y="1.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAAAAGAAAAAAAAAAAAAAAAAQAgAAAAgAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="SheetId" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ShExStorageN.ShExStorage.LokExId">
+    <Position X="12.5" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAUAAABAABAAAAAAAAAAQACAAAAgAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="LockId" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ShExStorageN.ShExStorage.AExId">
+    <Position X="9.5" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AJCAgoFgAiIAEQoEEATAAgIDDAIAAiDDIQoF0AEISgQ=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="ShExStorageN.ShExStorage.SheetId">
+    <Position X="15.25" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="ShExStorageN.ShExStorage.LockId">
+    <Position X="15" Y="5.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShExStorage\ExId.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScRows1&lt;TRowKey, TRowFld, TRow&gt;">
+    <Position X="30.25" Y="16.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldsBase1&lt;TKey, TField&gt;">
+    <Position X="32.25" Y="19.25" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAgAAAAgAEBAAABAAAAAgAAAABAQAAAAgAwAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldBase1&lt;TKey&gt;">
+    <Position X="38.75" Y="10.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKAAAAABAAAAACAAAAAAAAAAAAAIBA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldData1&lt;TKey&gt;">
+    <Position X="40.25" Y="14" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="ShExStorageN.ShSchemaFields.IShScFieldMeta1&lt;TKey&gt;">
+    <Position X="37.5" Y="14" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageN\ShSchemaFields\IShScFieldBase1.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

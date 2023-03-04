@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using Autodesk.Revit.DB.ExtensibleStorage;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShSchemaFields.ShScSupport;
 
 #endregion
@@ -22,36 +23,21 @@ namespace ShExStorageC.ShSchemaFields
 	/// </summary>
 	public class ScDataRow : AShScRow<SchemaRowKey, ScFieldDefData<SchemaRowKey>>
 	{
-		public ScDataRow()
-		{
-			// init();
-		}
 
 		protected override void init()
 		{
-			ScInfoMeta.ConfigData1(Fields, ScInfoMeta.FieldsRow);
+			ScInfoMeta.ConfigData(Fields, ScInfoMeta.MetaFieldsRow);
 		}
 
-	#region from fieldsbase1
+		public override T GetValue<T>(int key)
+		{
+			return Fields[(SchemaRowKey) key].GetValueAs<T>();
+		}
 
-		public override string SchemaKey => Fields[SchemaRowKey.RK0_KEY].GetValueAs<string>();
-		public override string SchemaVersion => Fields[SchemaRowKey.RK0_VERSION].GetValueAs<string>();
-		public override string UserName => Fields[SchemaRowKey.RK0_USER_NAME].GetValueAs<string>();
-
-		public override string SchemaName => Fields[SchemaRowKey.RK0_SCHEMA_NAME].GetValueAs<string>();
-		public override string SchemaDesc => Fields[SchemaRowKey.RK0_DESCRIPTION].GetValueAs<string>();
-		public override Guid SchemaGuid => Fields[SchemaRowKey.RK0_GUID].DyValue.AsGuid();
-
-		public override string ModelName => Fields[SchemaRowKey.RK2_MODEL_NAME].GetValueAs<string>();
-		public override string ModelPath => Fields[SchemaRowKey.RK2_MODEL_PATH].GetValueAs<string>();
-
-		public override string Date => Fields[SchemaRowKey.RK1_MODIFY_DATE].GetValueAs<string>();
-
-
-
-
-
-	#endregion
+		public override T GetValue<T>(SchemaRowKey key)
+		{
+			return Fields[key].GetValueAs<T>();
+		}
 
 		public override void ParseEnum(Type t, string enumName)
 		{
@@ -68,21 +54,24 @@ namespace ShExStorageC.ShSchemaFields
 					Fields[SchemaRowKey.RK2_UPDATE_RULE].SetValue = CellUpdateRules.UR_NEVER;
 				}
 			}
-
-			// if (t == typeof(SchemaRowKey))
-			// {
-			// 	SchemaRowKey k;
-			// 	bool result = Enum.TryParse(enumName, out k);
-			// 	if (result)
-			// 	{
-			// 		Fields[k].SetValue = k;
-			// 	}
-			// 	else
-			// 	{
-			// 		Fields[k].SetValue = SchemaRowKey.RK0_INVALID;
-			// 	}
-			// }
 		}
 
+		// protected override AShScRow<SchemaRowKey, ScFieldDefData<SchemaRowKey>> NewForClone()
+		// {
+		// 	return new ScDataRow();
+		// }
+
+		public override void SetValue(int key, dynamic value)
+		{
+			SetValue((SchemaRowKey) key, value);
+
+			SetValue(SchemaRowKey.RK1_MODIFY_DATE, DateTime.Now);
+			SetValue(SchemaRowKey.RK0_USER_NAME, UtilityLibrary.CsUtilities.UserName);
+		}
+
+		protected override AShScRow<SchemaRowKey, ScFieldDefData<SchemaRowKey>> NewForClone()
+		{
+			return new ScDataRow();
+		}
 	}
 }

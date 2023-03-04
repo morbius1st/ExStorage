@@ -12,7 +12,7 @@ using ExStorage.Windows;
 using SharedApp.Windows.ShSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageR.ShExStorage;
-using ShStudy.ShEval;
+using ShStudyN.ShEval;
 
 namespace ExStorage.TestProcedures
 {
@@ -31,18 +31,69 @@ namespace ExStorage.TestProcedures
 
 	#region general data show
 
+
 		public void ShowEid(AExId exid)
 		{
 			M.NewLine();
-			M.WriteDebugMsgLine("getting       | ", "data storage id");
+			M.WriteDebugMsgLine($"getting      | ", "data storage id");
+			M.WriteDebugMsgLine($"UserName     | ", $"{exid.UserName}");
 			M.WriteDebugMsgLine($"ExId         | ", $"{AExId.Exid}");
-			M.WriteDebugMsgLine($"ExId ds name | ", $"{exid.DsName}");
-			M.WriteDebugMsgLine($"ExId sch name| ", $"{exid.SchemaName}");
-			M.WriteDebugMsgLine($"ExId row     | ", $"{exid.RowSchemaName("faux name")}");
+			M.WriteDebugMsgLine($"ExidName     | ", $"{exid.ExidName}");
+			M.WriteDebugMsgLine($"Doc title    | ", $"{exid.Doc.Title}");
 			M.WriteDebugMsgLine($"DocumentName | ", $"{AExId.DocumentName}");
-			M.WriteDebugMsgLine($"DocName      | ", $"{AExId.DocNameClean}");
+			M.WriteDebugMsgLine($"DocNameClean | ", $"{AExId.DocNameClean}");
 			M.WriteDebugMsgLine($"VendorId     | ", $"{AExId.VendorId}");
 			M.WriteDebugMsgLine($"CompanyId    | ", $"{AExId.CompanyId}");
+			M.WriteDebugMsgLine($"ReadBaseName | ", $"{AExId.ReadBaseName}");
+			M.WriteDebugMsgLine($"ReadUserName | ", $"{AExId.ReadUserName}");
+			M.WriteDebugMsgLine($"ReadSubjName | ", $"{AExId.ReadBaseSubjectName}");
+			M.NewLine();
+			M.WriteDebugMsgLine($"ds name      | ", $"{exid.DsName}");
+			M.WriteDebugMsgLine($"ds sch name  | ", $"{exid.SchemaName}");
+			M.WriteDebugMsgLine($"sch row      | ", $"{exid.RowSchemaName("faux name")}");
+			M.WriteDebugMsgLine($"basename     | ", $"{exid.exidBaseName}");
+			M.WriteDebugMsgLine($"ds basename  | ", $"{exid.dsBaseName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.schBaseName}");
+
+			M.NewLine();
+
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstAppName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstBaseName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstDsName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstSchShtName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstSchRowName}");
+			M.WriteDebugMsgLine($"sch basename | ", $"{exid.tstSchLokName}");
+
+			M.NewLine();
+
+			if (exid is ShtExId)
+			{
+				ShtExId se = exid as ShtExId;
+
+				if (se == null)
+				{
+					M.WriteDebugMsgLine("Could not convert", "to ShtExit");
+				}
+				else
+				{
+					M.WriteDebugMsgLine("SheetId      | ", $"{se.SheetId}");
+				}
+			} 
+
+			if (exid is LokExId)
+			{
+				LokExId le = exid as LokExId;
+
+				if (le == null)
+				{
+					M.WriteDebugMsgLine("Could not convert", "to LokExId");
+				}
+				else
+				{
+					M.WriteDebugMsgLine("LockId       | ", $"{le.LockId}");
+				}
+			}
+
 			M.NewLine();
 		}
 

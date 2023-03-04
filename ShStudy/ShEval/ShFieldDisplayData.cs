@@ -3,20 +3,20 @@
 using System;
 using System.Collections.Generic;
 using static ShExStorageN.ShSchemaFields.ShScSupport.ScFieldColumns;
-using static ShStudy.ShEval.JustifyHoriz;
-using static ShStudy.ShEval.ColData;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using static ShStudyN.ShEval.JustifyHoriz;
+using static ShStudyN.ShEval.ColData;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShSchemaFields.ShScSupport;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaLockKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaSheetKey;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaLockKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaSheetKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
 
 #endregion
 
 // user name: jeffs
 // created:   10/15/2022 7:58:54 AM
 
-namespace ShStudy.ShEval
+namespace ShStudyN.ShEval
 {
 	public class ShFieldDisplayData
 	{
@@ -40,12 +40,12 @@ namespace ShStudy.ShEval
 		public readonly Dictionary<ScFieldColumns, ColData>
 			ScFieldsColDefinitions =
 				Mz(
-					Tz(SFC_KEY            , ScRecordHeaderTitles[SFC_KEY          ], CENTER, 24),
+					Tz(SFC_KEY            , ScRecordHeaderTitles[SFC_KEY          ], CENTER, 21),
 					Tz(SFC_NAME           , ScRecordHeaderTitles[SFC_NAME         ], CENTER, 14),
-					Tz(SFC_DESC           , ScRecordHeaderTitles[SFC_DESC         ], CENTER, 30),
+					Tz(SFC_DESC           , ScRecordHeaderTitles[SFC_DESC         ], CENTER, 27),
 					Tz(SFC_VALUE          , ScRecordHeaderTitles[SFC_VALUE        ], CENTER, 30),
 					Tz(SFC_VALUE_STR      , ScRecordHeaderTitles[SFC_VALUE_STR    ], CENTER, 30),
-					Tz(SFC_VALUE_TYPE     , ScRecordHeaderTitles[SFC_VALUE_TYPE   ], CENTER, 16),
+					Tz(SFC_VALUE_TYPE     , ScRecordHeaderTitles[SFC_VALUE_TYPE   ], CENTER, 13),
 					Tz(SFC_REVIT_TYPE     , ScRecordHeaderTitles[SFC_REVIT_TYPE   ], CENTER, 32),
 					Tz(SFC_FIELD          , ScRecordHeaderTitles[SFC_FIELD        ], CENTER, 30),
 					Tz(SFC_DISPLAY_LEVEL  , ScRecordHeaderTitles[SFC_DISPLAY_LEVEL], CENTER, 16)
@@ -70,7 +70,7 @@ namespace ShStudy.ShEval
 				SFC_NAME ,
 				SFC_DESC ,
 				// SFC_FIELD ,
-				SFC_REVIT_TYPE,
+				// SFC_REVIT_TYPE,
 				SFC_VALUE_TYPE,
 				SFC_VALUE
 			};

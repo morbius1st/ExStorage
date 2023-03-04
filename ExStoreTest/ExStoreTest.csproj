@@ -37,6 +37,15 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DbgExt2021|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DbgExt2021\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -75,6 +84,9 @@
     <Compile Include="SchemaRoutines\ShExSchemaLibR.cs" />
     <Compile Include="SchemaRoutines\ShExStorageLibR.cs" />
     <Compile Include="SchemaRoutines\ShExStorManagerR.cs" />
+    <Compile Include="Support\ScTest1\ScTest1.cs" />
+    <Compile Include="Support\ScTest1\ShScConst.cs" />
+    <Compile Include="Support\ScTest1\ShScMeta1.cs" />
     <Compile Include="Windows\MainWindowModel.cs" />
     <Page Include="Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

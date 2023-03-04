@@ -7,11 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStoreTest.Support;
+using ExStoreTest.Support.ScTest1;
 using ShExStorageC.ShSchemaFields;
-using ShExStorageC.ShSchemaFields.ScSupport;
+using ShExStorageC.ShSchemaFields.ShScSupport;
 using ShExStorageN.ShExStorage;
 using ShExStorageR.ShExStorage;
-using static ShExStorageC.ShSchemaFields.ScSupport.SchemaRowKey;
+using static ShExStorageC.ShSchemaFields.ShScSupport.SchemaRowKey;
 using static ShExStorageN.ShSchemaFields.ShScSupport.CellUpdateRules;
 #endregion
 
@@ -56,6 +57,13 @@ namespace ExStoreTest.Windows
 			smR.SchemaLibR.smR = smR;
 
 			smR.Sheet = ScInfoMeta1.MakeInitialDataSheet1(exid);
+		}
+
+		public void Test1()
+		{
+			ScTest1 t1 = new ScTest1();
+
+			t1.testA();
 		}
 
 		
