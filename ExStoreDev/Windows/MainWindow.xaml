@@ -139,6 +139,15 @@
 					VerticalAlignment="Top"
 					Click="BtnExp08_OnClick"
 			/>
+			
+			<Button x:Name="BtnExp09"
+					Content="Unique Id Test"
+					DockPanel.Dock="Top"
+					Height="{StaticResource BtnHeight}"
+					Width="{StaticResource BtnWidth}"
+					VerticalAlignment="Top"
+					Click="BtnExp09_OnClick"
+			/>
 
 
 

@@ -31,6 +31,7 @@ using ShStudyN.ShEval;
 
 namespace ShExStorageR.ShExStorage
 {
+	/*
 	public class ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> : INotifyPropertyChanged
 		where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TSht, TRow>, new()
 		where TRow : AShScRow<TRowKey, TRowFlds>, new()
@@ -42,6 +43,21 @@ namespace ShExStorageR.ShExStorage
 		where TLokKey : Enum
 		where TLokFlds : ScFieldDefData<TLokKey>, new()
 	{
+
+	#region events
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[NotifyPropertyChangedInvocator]
+		[DebuggerStepThrough]
+		private void OnPropertyChanged([CallerMemberName] string memberName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+		}
+
+	#endregion
+
+
 	#region base methods and fields
 
 	#region private fields
@@ -87,82 +103,82 @@ namespace ShExStorageR.ShExStorage
 			}
 		}
 
-/*
-		public DataStorage ShtDs
-		{
-			[DebuggerStepThrough]
-			get => shtDs;
-			[DebuggerStepThrough]
-			set
-			{
-				if (Equals(value, shtDs)) return;
-				shtDs = value;
-				OnPropertyChanged();
-			}
-		}
+		//
+		// public DataStorage ShtDs
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => shtDs;
+		// 	[DebuggerStepThrough]
+		// 	set
+		// 	{
+		// 		if (Equals(value, shtDs)) return;
+		// 		shtDs = value;
+		// 		OnPropertyChanged();
+		// 	}
+		// }
+		//
+		// public Entity ShtEntity
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => shtEntity;
+		// 	[DebuggerStepThrough]
+		// 	set
+		// 	{
+		// 		if (Equals(value, shtEntity)) return;
+		// 		shtEntity = value;
+		// 		OnPropertyChanged();
+		// 		OnPropertyChanged(nameof(Configured));
+		// 	}
+		// }
+		//
+		// public Schema ShtSchema
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => shtSchema;
+		// 	[DebuggerStepThrough]
+		// 	set
+		// 	{
+		// 		if (Equals(value, shtSchema)) return;
+		// 		shtSchema = value;
+		// 		OnPropertyChanged();
+		// 	}
+		// }
+		//
+		//
+		// public DataStorage LokDs
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => lokDs;
+		// 	[DebuggerStepThrough]
+		// 	set => lokDs = value;
+		// }
+		//
+		// public Entity LokEntity
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => lokEntity;
+		// 	[DebuggerStepThrough]
+		// 	set
+		// 	{
+		// 		if (Equals(value, lokEntity)) return;
+		// 		lokEntity = value;
+		// 		OnPropertyChanged();
+		// 	}
+		// }
+		//
+		// public Schema LokSchema
+		// {
+		// 	[DebuggerStepThrough]
+		// 	get => lokSchema;
+		// 	[DebuggerStepThrough]
+		// 	set
+		// 	{
+		// 		if (Equals(value, lokSchema)) return;
+		// 		lokSchema = value;
+		// 		OnPropertyChanged();
+		// 	}
+		// }
 
-		public Entity ShtEntity
-		{
-			[DebuggerStepThrough]
-			get => shtEntity;
-			[DebuggerStepThrough]
-			set
-			{
-				if (Equals(value, shtEntity)) return;
-				shtEntity = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(Configured));
-			}
-		}
-
-		public Schema ShtSchema
-		{
-			[DebuggerStepThrough]
-			get => shtSchema;
-			[DebuggerStepThrough]
-			set
-			{
-				if (Equals(value, shtSchema)) return;
-				shtSchema = value;
-				OnPropertyChanged();
-			}
-		}
-
-
-		public DataStorage LokDs
-		{
-			[DebuggerStepThrough]
-			get => lokDs;
-			[DebuggerStepThrough]
-			set => lokDs = value;
-		}
-
-		public Entity LokEntity
-		{
-			[DebuggerStepThrough]
-			get => lokEntity;
-			[DebuggerStepThrough]
-			set
-			{
-				if (Equals(value, lokEntity)) return;
-				lokEntity = value;
-				OnPropertyChanged();
-			}
-		}
-
-		public Schema LokSchema
-		{
-			[DebuggerStepThrough]
-			get => lokSchema;
-			[DebuggerStepThrough]
-			set
-			{
-				if (Equals(value, lokSchema)) return;
-				lokSchema = value;
-				OnPropertyChanged();
-			}
-		}
-*/
 
 
 		// private static readonly Lazy<ShExSchemaLibR<TShtKey, TShtFlds, TRowKey, TRowFlds, TRow>> instance =
@@ -252,20 +268,6 @@ namespace ShExStorageR.ShExStorage
 	#endregion
 
 	#endregion
-
-	#region events
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		[NotifyPropertyChangedInvocator]
-		[DebuggerStepThrough]
-		private void OnPropertyChanged([CallerMemberName] string memberName = "")
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-		}
-
-	#endregion
-
 
 	#region write lock
 
@@ -367,25 +369,23 @@ namespace ShExStorageR.ShExStorage
 
 	#endregion
 
-
 	#region Write Data
 
 	#region primary methods
 
-
-			// conditions
-			// 1. datastorage exists, entity exists, and schema does exists.
-			// +-> already configured - return with [XRC_DS_EXISTS]
-			// 2. datastorage does not exist (and, therefore entity does not exist, schema may or may not exist)
-			// proceed and check
-			// is thre a lock
-			// +-> yes - return with [XRC_LOCK_EXISTS]
-			// not valid conditions
-			// 3. datastorage does not exist but entity exists / schema may or may not exist - return with [XRC_ENTITY_EXISTS]
-			//		not possible - the entity is stored in the datastorage element.  if the datastorage element is cone so is the entity
-			// 4. datastorage exists, entity (and schema) do not exist - return with [XRC_ENTITY_NOT_FOUND] 
-			//		this condition is not allowed.  that is, to update, the whole data set, schema, entities, datastorage element 
-			//		gets removed and a completely new one is created
+		// conditions
+		// 1. datastorage exists, entity exists, and schema does exists.
+		// +-> already configured - return with [XRC_DS_EXISTS]
+		// 2. datastorage does not exist (and, therefore entity does not exist, schema may or may not exist)
+		// proceed and check
+		// is thre a lock
+		// +-> yes - return with [XRC_LOCK_EXISTS]
+		// not valid conditions
+		// 3. datastorage does not exist but entity exists / schema may or may not exist - return with [XRC_ENTITY_EXISTS]
+		//		not possible - the entity is stored in the datastorage element.  if the datastorage element is cone so is the entity
+		// 4. datastorage exists, entity (and schema) do not exist - return with [XRC_ENTITY_NOT_FOUND] 
+		//		this condition is not allowed.  that is, to update, the whole data set, schema, entities, datastorage element 
+		//		gets removed and a completely new one is created
 // 00
 
 		/// <summary>
@@ -661,7 +661,6 @@ namespace ShExStorageR.ShExStorage
 
 	#endregion
 
-
 	#region read data
 
 	#region Primary Methods
@@ -688,7 +687,6 @@ namespace ShExStorageR.ShExStorage
 			return lokd;
 		}
 
-		
 
 		/// <summary>
 		/// read the data stored in the entity
@@ -728,7 +726,7 @@ namespace ShExStorageR.ShExStorage
 						data.ParseEnum(t, eName);
 					}
 				}
-				catch 
+				catch
 				{
 					switch (idx)
 					{
@@ -749,7 +747,6 @@ namespace ShExStorageR.ShExStorage
 							kvp.Value.SetValue = Guid.Empty;
 							break;
 						}
-
 					}
 				}
 			}
@@ -776,9 +773,12 @@ namespace ShExStorageR.ShExStorage
 			}
 		}
 
-		#endregion
+	#endregion
 
-		#endregion
+	#endregion
+
 
 	}
+
+	*/
 }

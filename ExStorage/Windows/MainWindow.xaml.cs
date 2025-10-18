@@ -1,8 +1,10 @@
 ﻿#region using
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using Autodesk.Revit.Creation;
 using ShExStorageR.ShExStorage;
 using SharedApp.Windows.ShSupport;
@@ -765,5 +767,9 @@ namespace ExStorage.Windows
 		// 	mwModel.DeleteSheet2();
 		// }
 
+		private void MainWindow_OnKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.F1) Debug.WriteLine("got F1");
+		}
 	}
 }

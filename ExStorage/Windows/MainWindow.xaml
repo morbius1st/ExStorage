@@ -22,6 +22,7 @@
 		Foreground="White"
 		SnapsToDevicePixels="True"
 		Loaded="MainWindow_OnLoaded"
+		KeyDown="MainWindow_OnKeyDown"
 		>
 
 	<Window.Resources>

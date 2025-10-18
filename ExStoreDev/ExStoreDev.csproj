@@ -15,7 +15,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DbgExd2021|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -57,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\SettingManager\v7.5\SettingsMgr.cs">
+      <Link>.Linked\SettingsMgr.cs</Link>
+    </Compile>
     <Compile Include=".RevitSupport\RevitAddins.cs" />
     <Compile Include=".RevitSupport\RevitFaux.cs" />
     <Compile Include=".RevitSupport\RvtCommand.cs" />
@@ -92,9 +95,6 @@
     </Compile>
     <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\FilePath\V3.0\CsFilePath.cs">
       <Link>.Linked\CsFilePath.cs</Link>
-    </Compile>
-    <Compile Include="\\CRONOS\Users\jeffs\Documents\Programming\VisualStudioProjects\UtilityLibrary\UtilityLibrary\SettingManager\v7.4\SettingsMgr.cs">
-      <Link>.Linked\SettingsMgr.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

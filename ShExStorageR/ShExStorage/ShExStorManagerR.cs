@@ -26,7 +26,7 @@ using ShStudyN.ShEval;
 //
 namespace ShExStorageR.ShExStorage
 {
-	public static class Heading
+	public static class HeadingEx
 	{
 		public static string AppName { get; } = "Cells";
 		public static string AppVersion { get; } = "0_8_0_0";
@@ -72,8 +72,10 @@ namespace ShExStorageR.ShExStorage
 
 		private void config()
 		{
-			SchemaLibR = new ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>();
-			StorLibR = new ShExStorageLibR();
+			StorLib = new ShExStorLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>();
+
+			// SchemaLibR = new ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>();
+			// StorLibR = new ShExStorageLibR();
 		}
 
 		public void SetDebugMsg(ShDebugMessages m)
@@ -91,8 +93,8 @@ namespace ShExStorageR.ShExStorage
 			set
 			{
 				m = value;
-				StorLibR.M = value;
-				SchemaLibR.M = value;
+				StorLib.M = value;
+				// SchemaLibR.M = value;
 			}
 		}
 
@@ -115,10 +117,12 @@ namespace ShExStorageR.ShExStorage
 	#region public properties
 
 		// schema creation and data saving methods
-		public ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> SchemaLibR { get; set; }
+		// public ShExSchemaLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> SchemaLibR { get; set; }
+
+		public ShExStorLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> StorLib { get; set; }
 
 		// data storage methods
-		public ShExStorageLibR StorLibR { get; set; }
+		// public ShExStorageLibR StorLibR { get; set; }
 
 		// status
 
@@ -145,7 +149,7 @@ namespace ShExStorageR.ShExStorage
 			Entity e;
 			DataStorage ds;
 
-			if ((StorLibR.FindEntity(exid, true, out ds, out e) != XRC_GOOD)) return XRC_LOCK_NOT_EXIST;
+			if ((StorLib.FindEntity(exid, true, out ds, out e) != XRC_GOOD)) return XRC_LOCK_NOT_EXIST;
 
 			table = ReadTable<TTbl, TKey, TField>(e);
 
@@ -159,7 +163,7 @@ namespace ShExStorageR.ShExStorage
 		{
 			TTbl table = new TTbl();
 
-			SchemaLibR.ReadData(e, table);
+			StorLib.ReadData(e, table);
 
 			return table;
 		}
@@ -223,7 +227,7 @@ namespace ShExStorageR.ShExStorage
 
 			string userName;
 
-			return SetRtnCodeB(StorLibR.DoesLockExist(lokExid, out userName));
+			return SetRtnCodeB(StorLib.DoesLockExist(lokExid, out userName));
 		}
 
 		/// <summary>
@@ -247,21 +251,21 @@ namespace ShExStorageR.ShExStorage
 
 			string userName;
 
-			if (SetRtnCodeB(StorLibR.DoesLockExist(lokExid, out userName))) return SetRtnCodeB(XRC_LOCK_EXISTS);
+			if (SetRtnCodeB(StorLib.DoesLockExist(lokExid, out userName))) return SetRtnCodeB(XRC_LOCK_EXISTS);
 
 			ExStoreRtnCode rtnCode;
 			DataStorage ds;
 			Schema sl;
 			Entity e;
 
-			rtnCode = StorLibR.FindEntity(shtExid, false, out ds, out e);
+			rtnCode = StorLib.FindEntity(shtExid, false, out ds, out e);
 
 			if (rtnCode != XRC_GOOD)
 			{
 				return SetRtnCodeB(rtnCode);
 			}
 
-			List<Entity> subEntities = StorLibR.getSubEntities(e);
+			List<Entity> subEntities = StorLib.getSubEntities(e);
 			subEntities.Add(e);
 
 			using (Transaction T = new Transaction(AExId.Document, "Remove Cells Data"))
@@ -278,7 +282,7 @@ namespace ShExStorageR.ShExStorage
 					}
 
 					// remove the ds
-					StorLibR.DelDs(ds);
+					StorLib.DelDs(ds);
 
 					T.Commit();
 					rtnCode = XRC_GOOD;
@@ -312,13 +316,13 @@ namespace ShExStorageR.ShExStorage
 			DataStorage ds;
 			Entity e;
 
-			if (!SetRtnCodeB(StorLibR.FindEntity(exid, true, out ds, out e)))
+			if (!SetRtnCodeB(StorLib.FindEntity(exid, true, out ds, out e)))
 			{
 				M.WriteLineStatus($"rtn false | {rtnCode}");
 				return ReturnCode;
 			}
 
-			shtd = SchemaLibR.ReadSheet(e);
+			shtd = StorLib.ReadSheet(e);
 
 			M.WriteLineStatus("done & exit");
 
@@ -340,9 +344,9 @@ namespace ShExStorageR.ShExStorage
 
 			if (shtd == null || shtExid == null) return SetRtnCodeB(XRC_FAIL);
 
-			if (StorLibR.DoesDsExist(shtExid)) return SetRtnCodeB(XRC_DS_EXISTS);
+			if (StorLib.DoesDsExist(shtExid)) return SetRtnCodeB(XRC_DS_EXISTS);
 
-			if (SetRtnCodeB(StorLibR.DoesLockExist(lokExid, out userName))) return SetRtnCodeB(XRC_LOCK_EXISTS);
+			if (SetRtnCodeB(StorLib.DoesLockExist(lokExid, out userName))) return SetRtnCodeB(XRC_LOCK_EXISTS);
 
 			using (Transaction T = new Transaction(AExId.Document, "Cells| Write Sheet"))
 			{
@@ -350,7 +354,7 @@ namespace ShExStorageR.ShExStorage
 
 				DataStorage ds;
 
-				SetRtnCodeB(StorLibR.CreateDataStorage(shtExid, out ds));
+				SetRtnCodeB(StorLib.CreateDataStorage(shtExid, out ds));
 
 				if (SetRtnCodeB())
 				{
@@ -358,7 +362,7 @@ namespace ShExStorageR.ShExStorage
 
 					M.WriteLineStatus("write sheet");
 
-					if (SetRtnCodeB(SchemaLibR.WriteSheet(ds, shtd)))
+					if (SetRtnCodeB(StorLib.WriteSheet(ds, shtd)))
 					{
 						M.WriteLineStatus($"sheet written| status| {ReturnCode}");
 						T.Commit();
@@ -455,7 +459,7 @@ namespace ShExStorageR.ShExStorage
 			{
 				T.Start();
 
-				if (!SetRtnCodeB(SchemaLibR.WriteLock(lokExid, lokd)))
+				if (!SetRtnCodeB(StorLib.WriteLock(lokExid, lokd)))
 				{
 					M.WriteLineStatus($"write lock storage | code| {ReturnCode}");
 					T.RollBack();
@@ -479,15 +483,14 @@ namespace ShExStorageR.ShExStorage
 			Entity e;
 			DataStorage ds;
 
-			if ((StorLibR.FindEntity(lokExid, matchUserName, out ds, out e) != XRC_GOOD)) return XRC_LOCK_NOT_EXIST;
+			if ((StorLib.FindEntity(lokExid, matchUserName, out ds, out e) != XRC_GOOD)) return XRC_LOCK_NOT_EXIST;
 
-			lokd = SchemaLibR.ReadLock(e);
+			lokd = StorLib.ReadLock(e);
 
 			return XRC_GOOD;
 		}
 
-		public ExStoreRtnCode ReadLock(LokExId lokExid, out TLok lokd,
-			bool matchUserName, out DataStorage ds, out Schema s, out Entity e)
+		public ExStoreRtnCode ReadLock(LokExId lokExid, out TLok lokd, bool matchUserName, out DataStorage ds, out Schema s, out Entity e)
 		{
 			M.WriteLineCodeMap();
 			lokd = null;
@@ -495,13 +498,13 @@ namespace ShExStorageR.ShExStorage
 			s = null;
 			e = null;
 
-			StorLibR.FindElements(lokExid, matchUserName, out ds, out s, out e);
+			StorLib.FindElements(lokExid, matchUserName, out ds, out s, out e);
 
-			m.WriteLineStatus($"find element return code| {StorLibR.ReturnCode}");
+			m.WriteLineStatus($"find element return code| {StorLib.ReturnCode}");
 
 			if (e == null || !e.IsValidObject) return SetRtnCodeE(XRC_LOCK_NOT_EXIST);
 
-			lokd = SchemaLibR.ReadLock(e);
+			lokd = StorLib.ReadLock(e);
 
 			return XRC_GOOD;
 		}
@@ -514,7 +517,7 @@ namespace ShExStorageR.ShExStorage
 		{
 			
 			M.WriteLineCodeMap();
-			return SetRtnCodeB(StorLibR.DoesLockExist(exid, out userName));
+			return SetRtnCodeB(StorLib.DoesLockExist(exid, out userName));
 		}
 
 		/// <summary>
@@ -707,6 +710,7 @@ namespace ShExStorageR.ShExStorage
 			
 			M.WriteLineCodeMap();
 			M.WriteLine("\nChecking if sheet ds and sheet schema exist");
+			M.WriteLineStatus("do they existt");
 
 			TestWhatExists(shtExid, lokExid, lokBExid);
 
@@ -728,6 +732,7 @@ namespace ShExStorageR.ShExStorage
 			
 			M.WriteLineCodeMap();
 			M.WriteLineStatus("begin whatexists");
+			M.WriteLineStatus("test what exists");
 
 			// a full load
 			// (1) ds which will hold
@@ -742,13 +747,13 @@ namespace ShExStorageR.ShExStorage
 
 		private void getSheetStatus(ShtExId shtExid)
 		{
-			
+			M.WriteLineStatus("get sheet status");
 			M.WriteLineCodeMap();
 			bool ds;
 			bool s;
 			bool e;
 
-			StorLibR.DoElementsExist(
+			StorLib.DoElementsExist(
 				shtExid, out ds, out s, out e);
 
 			SheetDsFound     = ds;
@@ -758,13 +763,13 @@ namespace ShExStorageR.ShExStorage
 
 		private void getLockElementStatus(LokExId lokExid)
 		{
-			
+			M.WriteLineStatus("get lock element status");
 			M.WriteLineCodeMap();
 			bool ds;
 			bool s;
 			bool e;
 
-			StorLibR.DoElementsExist(
+			StorLib.DoElementsExist(
 				lokExid, out ds, out s, out e);
 
 			LockADsFound     = ds;
@@ -774,13 +779,13 @@ namespace ShExStorageR.ShExStorage
 
 		private void getLockTempElementStatus(LokExId lokBExid)
 		{
-			
+			M.WriteLineStatus("get lock temp status");
 			M.WriteLineCodeMap();
 			bool ds;
 			bool s;
 			bool e;
 
-			StorLibR.DoElementsExist(
+			StorLib.DoElementsExist(
 				lokBExid, out ds, out s, out e);
 
 			LockBDsFound     = ds;
@@ -841,7 +846,7 @@ namespace ShExStorageR.ShExStorage
 					m.WriteLineStatus($"write lock| ds name| {lokExid.DsName}");
 
 					// D	write the lock
-					if (SetRtnCodeB(SchemaLibR.WriteLock(lokExid, lokd)))
+					if (SetRtnCodeB(StorLib.WriteLock(lokExid, lokd)))
 					{
 
 						// TLok tl;
@@ -855,20 +860,20 @@ namespace ShExStorageR.ShExStorage
 						
 						m.WriteLineStatus("step D.2 - del sheet");
 						// delete the existing sheet or not - does not matter
-						StorLibR.DelSheet(shtExid);
-						m.WriteLineStatus($"step D.2 - del sheet| status| {StorLibR.ReturnCode}");
+						StorLib.DelSheet(shtExid);
+						m.WriteLineStatus($"step D.2 - del sheet| status| {StorLib.ReturnCode}");
 
 						DataStorage ds;
 
 						m.WriteLineStatus("step D.3 - create ds");
 
-						if (SetRtnCodeB(StorLibR.CreateDataStorage(shtExid, out ds)))
+						if (SetRtnCodeB(StorLib.CreateDataStorage(shtExid, out ds)))
 						{
 
 							m.WriteLineStatus("step E write sheet");
 							// ds made, proceed
 							//E
-							if (SetRtnCodeB(SchemaLibR.WriteSheet(ds, shtd)))
+							if (SetRtnCodeB(StorLib.WriteSheet(ds, shtd)))
 							{
 								// writing the sheet worked
 								m.WriteLineStatus("step F - delete lock");

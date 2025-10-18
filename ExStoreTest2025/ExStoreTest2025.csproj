@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- <TargetFramework>netstandard2.1</TargetFramework> -->
+		<TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>Library</OutputType>
+    <UseWPF>true</UseWPF>
+    <!-- <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets> -->
+    <StartAction>Program</StartAction>
+    <!-- <Configurations>DbgExd2021;DbgExs2021;DbgExs2023;DbgExt2021;DbgExT2024;Debug;Release;RelExs2021</Configurations> -->
+    <Configurations>Debug;Release;DbgExT2526</Configurations>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ExStoreTest2025\xmldoc.xml</DocumentationFile>
+  </PropertyGroup>
+	
+	<PropertyGroup>
+		<AddinDirectory>$(AppData)\Autodesk\Revit\Addins\2026</AddinDirectory>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="RevitAPI">
+			<HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="RevitAPIUI">
+			<HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="echo work dir $(AddinDirectory)&#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\other\*.addin&quot;  &quot;$(AddinDirectory)&quot; &#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\$(OutputPath)*.dll&quot;  &quot;$(AddinDirectory)&quot;  " />
+	</Target>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\information16.png" />
+    <EmbeddedResource Include="Assets\information32.png" />
+  </ItemGroup>
+
+  <!-- <ItemGroup> -->
+  <!--   <Compile Update="Properties\Resources.Designer.cs"> -->
+  <!--     <DesignTime>True</DesignTime> -->
+  <!--     <AutoGen>True</AutoGen> -->
+  <!--     <DependentUpon>Resources.resx</DependentUpon> -->
+  <!--   </Compile> -->
+  <!--   <Compile Update="Properties\Settings.Designer.cs"> -->
+  <!--     <DesignTimeSharedInput>True</DesignTimeSharedInput> -->
+  <!--     <AutoGen>True</AutoGen> -->
+  <!--     <DependentUpon>Settings.settings</DependentUpon> -->
+  <!--   </Compile> -->
+  <!-- </ItemGroup> -->
+  <!-- <ItemGroup> -->
+  <!--   <EmbeddedResource Update="Properties\Resources.resx"> -->
+  <!--     <Generator>ResXFileCodeGenerator</Generator> -->
+  <!--     <LastGenOutput>Resources.Designer.cs</LastGenOutput> -->
+  <!--   </EmbeddedResource> -->
+  <!-- </ItemGroup> -->
+  <!-- <ItemGroup> -->
+  <!--   <None Update="Properties\Settings.settings"> -->
+  <!--     <Generator>SettingsSingleFileGenerator</Generator> -->
+  <!--     <LastGenOutput>Settings.Designer.cs</LastGenOutput> -->
+  <!--   </None> -->
+  <!-- </ItemGroup> -->
+  <Target Name="AfterClean">
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2021\ExStoreTest2025.addin" />
+    <Delete Files="$(AppData)\Autodesk\REVIT\Addins\2021\ExStoreTest2025.dll" />
+  </Target>
+</Project>

@@ -1,0 +1,71 @@
+﻿descriptions of the schema and the fields in the schema
+
+
+
+
+Fields, etc.
+* defines the fields of a schema
+
+type 1 data list (one schema for all?)
+
+> (voided) primary schema (name: CsCells_Primary_{model ID code}_20250101A)
+		: name suffix is date + revision letter
+	* purpose: used to validate the system.  that is, make sure 
+		that the original model is being used.
+	* process auto run (if / when activated) (on db open event)
+		: uses a array list of "rows" to process
+	* model ID code: random 6 character code. 
+		: specific for this model. used in the names of all schemas
+	* components
+		> [AD], [SD]
+			+ [MD]
+
+
+> sheet schema (name: CsCells_Sheet_{model ID code}_20250101A)
+> (voided) sub-schema (rows) (name: CsCells_Row_{model ID code}_20250101A)
+		: name suffix is date + revision letter
+	* components
+		> [AD], [SD]
+			+ [ED], [OD], array list { [RD] }
+
+
+
+
+* schema components
+
+	* [AD] admin data
+		* description
+		* created date
+		* created by
+		* deleted (as in deleted but not purged from memory)
+		* modified date
+		* modified by
+		* model ID code
+		* last sheet DS ID
+
+	* [SD] schema data
+		* schema version
+		* GUID
+
+	* [MD] model data
+		* name of model
+		* (void) model (file) creation date+time
+
+
+	* [AR] auto run data
+		* array list of "rows" to process
+
+	* [ED] excel data
+		* excel file path
+		* sheet name
+			
+	* [OD] operation data
+		* active / inactive
+		* sequence code
+		* update rule: on demand / on db open (if possible) but only if given permission
+		* skip updating
+
+	* [RD] revit data
+		* linked family name
+		or
+		* linked family name + type name

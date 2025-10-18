@@ -396,7 +396,59 @@ namespace ExStoreDev.Windows
 			t3.test2();
 		}
 
+		public void MakeIdTest()
+		{
+			string result;
+			string seed = "AAAA";
 
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+
+			seed = "AA99";
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+
+			seed = "9999";
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+
+			seed = "ZZZ9";
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+
+			seed = "999Z";
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+
+			seed = "00Z9";
+			result = makeIdTest(seed);
+			M.WriteLine($"new id from {seed}", result);
+		}
+
+		private string makeIdTest(string start)
+		{
+			char[] c = start.ToCharArray();
+
+			for (int i = c.Length - 1; i >= 0; i--)
+			{
+				if (c[i] == 'Z')
+				{
+					c[i] = '0';
+					break;
+				}
+
+				if (c[i] == '9')
+				{
+					c[i] = 'A';
+					continue;
+				}
+
+				c[i]++;
+				break;
+			}
+
+			return new string(c);
+		}
 
 	}
 

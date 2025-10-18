@@ -18,13 +18,13 @@ namespace SettingsManager
 	public class MachSettingDataFile : IDataFile
 	{
 		[IgnoreDataMember]
-		public string DataFileVersion => "mach 7.4m";
+		public string DataFileVersion {get; set; } = "mach 7.4m";
 
 		[IgnoreDataMember]
-		public string DataFileDescription => "mach setting file for SettingsManager v7.4";
+		public string DataFileDescription {get; set; } = "mach setting file for SettingsManager v7.4";
 
 		[IgnoreDataMember]
-		public string DataFileNotes => "mach / any notes go here";
+		public string DataFileNotes {get; set; } = "mach / any notes go here";
 
 		[DataMember(Order = 1)]
 		public int MachSettingsValue { get; set; } = 7;

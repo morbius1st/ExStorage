@@ -1,0 +1,157 @@
+﻿
+model code creation / usage / storage
+	* stored in workbook as "model code"
+	* created whe workbook created
+	* used when workbook created
+	* used when sheet created
+	* fixed, does not change
+
+Id code creation / usage / storage
+	* stored in workbook as "last id"
+	* created when sheet is created + must update workbook
+	* used when sheet is being created
+	* updated with each sheet creation
+
+
+sheet data creation process
+	[NOPE]
+	* option 1: create an empty object when the workbook is created 
+		* sheet schema and a sheet DS / Entity created with default info
+			* sheet schema & name placed into workbook
+			* sheet schema name saved with workbook save
+		* real "next id" determined
+			* real "last id" updated and saved with workbook save
+		* sheet DS / Entity need to be updated when "real" info determined
+			* so must remember that this DS / Entity has default info
+		* basic process
+			* schema name in workbook
+			* if first:
+				* get sheet schema
+				* get DS / get Entity
+			* if not first:
+				* follow "process after first"
+			* update data in entity
+
+	[SELECTED] 
+	* option 2: create when the actual data is determined
+		* similar process to the creation of every sheet after the first
+		* real sheet schema name determined with workbook creation
+			* saved with workbook save
+			* sheet schema NOT created when workbook created
+		* sheet schema and sheet DS / Entity created with actual data
+			* must remember that the sheet schema is only created with the first sheet
+			* sheet schema placed into workbook
+		* sheet DS / Entity stored with actual data
+		* actual sheet id code determined at creation
+			* workbook "last id" saved with default value - but correct for creating the next id
+			* in memory "last id" must be updated
+		* basic process
+			* schema name in workbook
+			* if first: 
+				* create schema using saved name
+				* follow "process after first"
+			* if not first: 
+				* follow "process after first"
+			* update data in entity
+	
+	* process after first
+		* get sheet schema
+		* determine DS name
+			* get "next id" update "last id"
+		* create DS, Create Entity
+		* continue
+
+
+
+process to add sheet data
+
+	* does WorkBook exist
+	* each sheet saved into its own data storage object - this will prevent overwriting data by accident
+	* must plan on multiple sheets - need to store this in workbook as a dictionary
+	
+	* create the sheet object
+		* create names for DS
+		* store in the workbook
+
+	* must occur within a transaction
+		* create the DS object
+
+
+
+
+
+
+process: add data workbook
+
+	* does the DS / Schema exist? yes => exit
+
+	* must occur within a transaction
+
+		* create the data storage element => (DS) {hold as global}
+			> within a try / catch
+				> create a DS and add to the Document
+				> set the DS name
+				> return good
+
+		* create the schema using schemaBuilder
+			> start schema builder (SB)
+			> configure SB (add basic info / access levels, name, etc.)
+			> add fields to SB / set documentation
+			> SB finish() => returns a schema (S) (hold as global {workbook / sheet}schema)
+			> create an entity (E) based on schema => {hold as workbook / sheet}entity
+			> (E) and (S), set the actual values in the (E)
+
+		* save (E) to (DS)
+
+	* transaction, commit
+
+* same as the above but simplified
+	* create the DS
+	* create schema and entity
+		* create schema
+		* create entity using schema
+	* store workbook data into entity
+	* store entity into DS
+
+
+
+
+
+
+
+
+* does the DS / Schema exist?
+	// to start, only got partial DS name and full schema name
+	// to get anything, must find a matching schema
+		> if does not exist, must create new
+	* got schema
+	* find all ds that have the correct prefix
+	* using the schema, verify if any of the ds reference the current model
+
+
+routines & properties
+* "exid"
+	* name of model
+	* is exstor system active for this model (base name, model name) => true, yes / false, no
+	* system active, config objects & properties
+	* system not active, clear objects & properties
+	* property: enum, system active & fully configured / system active & not-fully configured / system not active
+	* properties: names / objects
+
+* manager
+	* create ExStor(name[from exid])
+
+* DS
+	> does DS exist (name[from exid]) => true, yes / false, no
+	> create DS (name) => true, created / false, cannot create
+		* does DS exist ()
+
+* Schema
+	> create schema (name [from exid]) => ScemaBuilder (into global)
+		* loop through all fields => add field()
+		* create entity / return entity
+	* add schema  parameters
+	> add schema fields ()
+	> add schema field () per type / simple / list / map
+
+

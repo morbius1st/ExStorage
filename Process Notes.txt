@@ -1,4 +1,31 @@
 
+the intent of all of this is to make a "template" that can be added to a project 
+in order to provide data storage abilities
+
+so, information needs to be divided between a theroritical app and the shared code
+
+
+data storage locations
+
+in-app:
+MainWindow (mw) = main window code + UI
+MainWinModel (mwm) = the app's control logic
+ExStorMgr (eMgr) = the app specific data storage data and routines (non-static class but is a singleton)
+	> none of the code is in a transaction - transaction provided by MainWinModel (or other).
+	> ** ADJUST TO INCLUDE A CODE / NAME TO ALLOW MULTIPLE VERSIONS OF THE DATA STORAGE PER APP
+	-> will need data storage class that holds the actual information and can be
+
+
+
+
+shared (all of the code is NOT in a transaction - transaction provided by app)
+** ADJUST TO INCLUDE A CODE / NAME TO ALLOW MULTIPLE VERSIONS OF THE DATA STORAGE PER APP
+ShExStorMgr (sMgr) = the routines to do the work + status routines + primative routines
+ShExStorLib (sLib) = the library routines
+
+
+
+
 needed routines
 
 modify / needed procedures
@@ -20,11 +47,19 @@ need to adjust so that the writing process can be given a ds
 
 
 
+
+
+
+
+
+
+
 app process  - only from the standpoint of ex storage data
 
 start aapp
+	-> in mainwinmodel, when initialized
 	-> determine if data exists
-		-> yes: read existing data
+		-> yes: read existing data -> mwm.eMgr
 
 /* the below is canceled - 
 // no reason to read lock unless 
@@ -36,6 +71,17 @@ start aapp
 			-> flag
 	-> done
 */
+
+
+
+
+
+
+
+
+
+
+
 
 
 new condtion - create data

@@ -124,7 +124,8 @@ namespace ShStudyN.ShEval
 		{
 			string location = $"{Path.GetFileNameWithoutExtension(membPath),-25} :: {membName}";
 
-			string msg = $"> {location,-60} | {msg1, -60} | [ {priorLocation} ]";
+			// string msg = $"> {location,-60} | {msg1, -60} | [ {priorLocation} ]";
+			string msg = $"> {location,-60} | {msg1, -60}";
 
 			priorLocation = location;
 

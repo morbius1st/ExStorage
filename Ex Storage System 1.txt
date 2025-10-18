@@ -1,0 +1,80 @@
+
+
+* adjust to use a ExStorageSystem class (or adjust manager class)
+	> static / global
+	> holds the data elements
+		> schema definitions
+		> data storage element(s)
+		> entity(s)
+		> fields (definitions)
+	> has the routines to manage the extensible storage system
+
+schema list
+	> system schema (new, need to create)
+		> basic information
+		> list of sheets (name + GUID) (allows multiple sheets)
+	> sheet (revised - no sub-schema?) (need to adjust and remove duplicate data)
+		> basic information
+		> map of rows
+			> row is a key + 
+				> excel file
+				> worksheet name
+				> array of family names to which the row applies
+
+
+
+
+in Revit, families will get their data from a "cells" row
+	> family will need to determine which data it needs (from a row it is provided / linked to)
+	> stored will be the
+
+definitions
+sheet (ScDataSheet1) is a data structures with field information
+	> fields (dictoonary) (fields for sheet schema)
+	> rows (dictionary) (list of sub schema)
+		> fields (dictoonary) (fields for sub schema)
+
+schema is the definition of the fields saved in an entity
+entity is the object that holds the data and is saved in an element (e.g. data storage element)
+data storage is the revit element that holds one or more entities
+
+
+
+ExStorageSystem class info
+> routines
+	> create schema
+	> delete schema
+	> save schema
+	> get schema (by prefix)
+	> exists? schema (by prefix)
+	> validate? schema
+	> ok to edit?
+	> lookup (by guid)
+
+	> create entity
+	> delete entity
+	> save entity
+	> get entity (by prefix)
+	> exists? entity (by prefix)
+	> validate? entity
+
+
+	> create data storage
+	> delete data storage
+	> store data storage
+	> get data storage (by prefix)
+	> exists? data storage (by prefix)
+	> validate? data storage
+
+	> transfer data from entity to entity
+	> replace schema
+	> replace datastorage
+
+	> write sheet data (complete set including sub-schema)
+	> write sub-schema data (complete set)
+	> write sheet field (by key)
+	> write sub-schema field (by key)
+	> read sheet data (by key - using sheet - not sub-schema)
+	> read sub-schema data (by key)
+	> read sheet field (by key)
+	> read sub-schema field (by key)

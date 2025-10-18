@@ -18,13 +18,13 @@ namespace SettingsManager
 	public class SiteSettingDataFile : IDataFile
 	{
 		[IgnoreDataMember]
-		public string DataFileVersion => "site 7.4si";
+		public string DataFileVersion {get; set; } = "site 7.4si";
 
 		[IgnoreDataMember]
-		public string DataFileDescription => "site setting file for SettingsManager v7.4";
+		public string DataFileDescription {get; set; } = "site setting file for SettingsManager v7.4";
 
 		[IgnoreDataMember]
-		public string DataFileNotes => "site / any notes go here";
+		public string DataFileNotes {get; set; } = "site / any notes go here";
 
 		[DataMember(Order = 1)]
 		public int SiteSettingsValue { get; set; } = 7;

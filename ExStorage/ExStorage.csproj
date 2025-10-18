@@ -37,6 +37,15 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(ProgramW6432)\Autodesk\Revit 2021\Revit.exe</StartProgram>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DbgExs2023\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;USER_SETTINGS, APP_SETTINGS, SUITE_SETTINGS, MACH_SETTINGS, SITE_SETTINGS</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations, Version=4242.42.42.42, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <HintPath>..\packages\JetBrains.Annotations.2022.3.1\lib\net20\JetBrains.Annotations.dll</HintPath>
@@ -65,15 +74,18 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="RevitAPI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPI.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
-      <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\Revit 2023\RevitAPIUI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsDebugMessages.cs">
+      <Link>.Linked\CsDebugMessages.cs</Link>
+    </Compile>
     <Compile Include="..\SharedApp\Windows\ShSupport\AWindow.cs">
       <Link>Windows\SharedSupport\AWindow.cs</Link>
     </Compile>
@@ -180,7 +192,9 @@
     <Content Include="Other\ExStorage.addin" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="ClassDiagram2.cd" />
+    <None Include="CodeFlow.dgml" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\ShExStorageR\ShExStorageR.projitems" Label="Shared" />
@@ -190,8 +204,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>echo build configuration: $(ConfigurationName)
-if exist "$(AppData)\Autodesk\REVIT\Addins\2021" copy "$(ProjectDir)other\*.addin" "$(AppData)\Autodesk\REVIT\Addins\2021"
-if exist "$(AppData)\Autodesk\REVIT\Addins\2021" copy "$(ProjectDir)$(OutputPath)*.dll" "$(AppData)\Autodesk\REVIT\Addins\2021"</PostBuildEvent>
+if exist "$(AppData)\Autodesk\REVIT\Addins\2023" copy "$(ProjectDir)other\*.addin" "$(AppData)\Autodesk\REVIT\Addins\2023"
+if exist "$(AppData)\Autodesk\REVIT\Addins\2023" copy "$(ProjectDir)$(OutputPath)*.dll" "$(AppData)\Autodesk\REVIT\Addins\2023"</PostBuildEvent>
   </PropertyGroup>
   <!-- 
 	To modify your build process, add your task inside one of the targets below and uncomment it.

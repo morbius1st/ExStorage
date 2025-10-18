@@ -107,6 +107,25 @@ namespace ExStoreTest.Windows
 			Message = "";
 		}
 
+		private void Btn_FindSchema_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwm.FindSchema();
+		}
+
+		private void Btn_EraseSchema_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwm.EraseSchema();
+		}
+
+		private void Btn_FindDs_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwm.FindSheetDs();
+		}
+
+		private void Btn_Erase_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwm.EraseSheetDs();
+		}
 
 		private void Btn_Write_OnClick(object sender, RoutedEventArgs e)
 		{

@@ -9,6 +9,7 @@
   <!--   <VendorId>pro.cyberstudio</VendorId> -->
   <!--   <VendorDescription>CyberStudio</VendorDescription> -->
   <!-- </AddIn> -->
+	<!-- cyberstudio -->
   <AddIn Type="Application">
     <Name>Application ExStoreTest</Name>
     <Assembly>ExStoreTest.dll</Assembly>
@@ -16,5 +17,6 @@
     <ClientId>4960f081-86d8-4a26-a417-dd439a956ecf</ClientId>
     <VendorId>pro.cyberstudio</VendorId>
     <VendorDescription>CyberStudio</VendorDescription>
+		<AddInId>6DD4EBB3-83E1-4A96-ACEF-F09620C5179B</AddInId>
   </AddIn>
 </RevitAddIns>

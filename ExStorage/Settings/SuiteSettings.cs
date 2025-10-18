@@ -18,13 +18,13 @@ namespace SettingsManager
 	public class SuiteSettingDataFile : IDataFile
 	{
 		[IgnoreDataMember]
-		public string DataFileVersion => "suite 7.4su";
+		public string DataFileVersion {get; set; } = "suite 7.4su";
 
 		[IgnoreDataMember]
-		public string DataFileDescription => "suite setting file for SettingsManager v7.4";
+		public string DataFileDescription {get; set; } = "suite setting file for SettingsManager v7.4";
 
 		[IgnoreDataMember]
-		public string DataFileNotes => "suite / any notes go here";
+		public string DataFileNotes {get; set; } = "suite / any notes go here";
 
 		[DataMember(Order = 1)]
 		public int SuiteSettingsValue { get; set; } = 7;

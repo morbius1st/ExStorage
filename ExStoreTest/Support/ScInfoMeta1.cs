@@ -40,7 +40,9 @@ namespace ShExStorageC.ShSchemaFields.ShScSupport
 		public const string SF_SCHEMA_DESC = "Cells Sheet DataStorage";
 		public const string CF_SCHEMA_DESC = "Cells Row DS";
 		public const string LF_SCHEMA_DESC = "Cells lock DS";
+		public const string APP_GUID = "6DD4EBB3-83E1-4A96-ACEF-F09620C5179B";
 
+		
 		
 		/// <summary>
 		/// make the initial generic data set of sheet data

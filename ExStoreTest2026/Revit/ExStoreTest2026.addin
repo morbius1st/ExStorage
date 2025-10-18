@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <!-- <AddIn Type="Command"> -->
+  <!--   <Text>ExStoreTest2025</Text> -->
+  <!--   <Description>Description of ExStoreTest2025</Description> -->
+  <!--   <Assembly>ExStoreTest2025.dll</Assembly> -->
+  <!--   <FullClassName>ExStoreTest2025.Command</FullClassName> -->
+  <!--   <ClientId>7c6c871e-9a9b-4f6a-ba47-b3b9355cee0c</ClientId> -->
+  <!--   <VendorId>pro.cyberstudio</VendorId> -->
+  <!--   <VendorDescription>CyberStudio</VendorDescription> -->
+  <!-- </AddIn> -->
+	<!-- cyberstudio -->
+  <AddIn Type="Application">
+    <Name>Application ExStoreTest2026</Name>
+    <Assembly>ExStoreTest2026.dll</Assembly>
+    <FullClassName>ExStoreTest2026.AppRibbon</FullClassName>
+    <ClientId>4960f081-86d8-4a26-a417-dd439a956ecf</ClientId>
+    <VendorId>pro.cyberstudio</VendorId>
+    <VendorDescription>CyberStudio</VendorDescription>
+		<!-- never change this - this is used by the app for validation -->
+		<AddInId>6DD4EBB3-83E1-4A96-ACEF-F09620C51726</AddInId>
+  </AddIn>
+</RevitAddIns>

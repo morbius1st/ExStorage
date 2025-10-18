@@ -53,6 +53,43 @@
 					Click="Btn_Delete_OnClick" />
 
 			<Button
+					x:Name="Btn_Find"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Find Ds"
+					Width="120"
+					Click="Btn_FindDs_OnClick" />
+
+			<Button
+					x:Name="Btn_Erase"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Erase Ds"
+					Width="120"
+					Click="Btn_Erase_OnClick" />
+
+			<Button
+					x:Name="Btn_FindSchema"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Find Schema"
+					Width="120"
+					Click="Btn_FindSchema_OnClick" />
+
+			<Button
+					x:Name="Btn_EraseSchema"
+					Height="26"
+					VerticalAlignment="Top"
+					Margin="5"
+					Content="Erase Schema"
+					Width="120"
+					Click="Btn_EraseSchema_OnClick" />
+
+
+			<Button
 					x:Name="Btn_Test1"
 					Height="26"
 					VerticalAlignment="Top"

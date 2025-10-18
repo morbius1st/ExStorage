@@ -1,0 +1,70 @@
+﻿
+
+controls on the operations - that is, limit which operations can
+occur based on operation state / flag
+
+controlled by two enums
+	> OpState
+	> OpUseTypes
+
+OpState - identifies the current state of the programs operation
+	> normal, started, creating, deleting, etc.
+	> saved on the XsMgr (interface)
+
+OpUseTypes - identifies whether a manager function is allowedto be used
+	depending on the current OpState
+	> normal, create, delete, etc.
+
+
+usage:
+
+OpState:
+	OS_DELETE_SHT	= -4,
+	OS_DELETE_WBK	= -2,
+	OS_NORMAL_OP	= 0,
+	OS_STARTED	    = 1,
+	OS_CREATE_WBK	= 2,
+	OS_CREATE_SHT	= 4,
+
+OpUseTypes
+	OUT_DELETE	    = -2,
+	OUT_NORMAL_OP   = 0,
+	OUT_ANY 	    = 1,
+	OUT_CREATE	    = 2,
+
+
+OpState: OS_STARTED
+	OpUseTypes allowed: OUT_CREATE, OUT_ANY
+
+OpState: OS_CREATE_WBK
+	OpUseTypes allowed: OUT_CREATE
+
+OpState: OS_CREATE_SHT
+	OpUseTypes allowed: OUT_CREATE
+
+OpState: OS_DELETE_WBK
+	OpUseTypes allowed: OUT_DELETE, OUT_ANY
+
+OpState: OS_DELETE_SHT
+	OpUseTypes allowed: OUT_DELETE, OUT_ANY
+
+OpState: OS_NORMAL_OP
+	OpUseTypes allowed: OUT_NORMAL_OP, OUT_ANY
+
+
+OpUseTypes: OUT_DELETE (-2)
+	OpStates disallowed: all ex OS_DELETE_WBK (-2), OS_DELETE_SHT (-4)
+	!= OS_DELETE_WBK && != OS_DELETE_SHT
+
+OpUseTypes: OUT_NORMAL_OP (0)
+	OpStates disallowed: all except OS_NORMAL_OP (0)
+	!= OS_NORMAL_OP
+
+OpUseTypes: OUT_ANY (1)
+	OpStates disallowed: OS_CREATE_SHT (4), OS_CREATE_WBK(2)
+	== OS_CREATE_SHT || == OS_CREATE_WBK
+
+OpUseTypes: OUT_CREATE (2)
+	OpStates disallowed: OS_CREATE_SHT (4), OS_CREATE_WBK(2), OS_NORMAL_OP(0)
+	== OS_CREATE_SHT || == OS_CREATE_WBK || == OS_NORMAL_OP
+

@@ -6,7 +6,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Documents;
 using Autodesk.Revit.DB;
 using RevitLibrary;
-using ShExStorageR.ShExStorage;
+using SettingsManager;
+
 using UtilityLibrary;
 
 #endregion
@@ -243,7 +244,7 @@ namespace ShExStorageN.ShExStorage
 		private void config2()
 		{
 
-			tstAppName = Heading.AppName;
+			tstAppName = Heading.SuiteName;
 			tstBaseName = $"{tstAppName}{div1}{DocNameClean}";
 
 			tstDsName = $"{tstBaseName}{div1}{id1a}";

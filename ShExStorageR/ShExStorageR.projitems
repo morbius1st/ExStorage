@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExStorageLibR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExStorLibR.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExStorManagerR.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShRevitUtil\RevitAddins.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShExStorage\ShExSchemaLibR.cs" />

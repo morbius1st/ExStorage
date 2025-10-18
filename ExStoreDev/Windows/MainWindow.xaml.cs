@@ -99,6 +99,12 @@ namespace ExStoreDev.Windows
 			set { MessageBoxText = value; }
 		}
 
+		public string CodeMapText
+		{
+			get => message;
+			set { MessageBoxText = value; }
+		}
+
 	#endregion
 
 	#region private properties
@@ -106,6 +112,8 @@ namespace ExStoreDev.Windows
 	#endregion
 
 	#region public methods
+
+
 
 		public void ShowMsg()
 		{
@@ -298,6 +306,11 @@ namespace ExStoreDev.Windows
 		{
 			mwModel.KeysTests();
 			// mwModel.KeysTests();
+		}
+
+		private void BtnExp09_OnClick(object sender, RoutedEventArgs e)
+		{
+			mwModel.MakeIdTest();
 		}
 	}
 }

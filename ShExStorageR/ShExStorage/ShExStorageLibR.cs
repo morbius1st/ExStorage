@@ -29,8 +29,12 @@ using ShStudyN.ShEval;
 
 namespace ShExStorageR.ShExStorage
 {
+	/*
 	public class ShExStorageLibR : INotifyPropertyChanged
 	{
+
+
+
 	#region base methods and fields
 
 	#region private fields
@@ -120,12 +124,31 @@ namespace ShExStorageR.ShExStorage
 
 	#endregion
 
+
+
+
 	#endregion
 
 		//***************
 		// the below needs to be primitive routines
 		//***************
 
+	#region system overrides
+
+		public override string ToString()
+		{
+			return $"this is {nameof(ShExStorageLibR)}";
+		}
+		//
+		// public ShExStorManagerR<object, object, object, object, object, object, object, object, object> ShExStorManagerR
+		// {
+		// 	get => default;
+		// 	set
+		// 	{
+		// 	}
+		// }
+
+		#endregion
 
 	#region event processing
 
@@ -594,22 +617,7 @@ namespace ShExStorageR.ShExStorage
 
 	#endregion
 
-	#region system overrides
-
-		public override string ToString()
-		{
-			return $"this is {nameof(ShExStorageLibR)}";
-		}
-		//
-		// public ShExStorManagerR<object, object, object, object, object, object, object, object, object> ShExStorManagerR
-		// {
-		// 	get => default;
-		// 	set
-		// 	{
-		// 	}
-		// }
-
-		#endregion
 
 	}
+	*/
 }

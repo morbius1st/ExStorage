@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ShExStorageC.ShSchemaFields.ScDataSheet1">
+    <Position X="1.75" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAEAAEAAAAAAAAAAEAAAIAEAAAAAAAQAA=</HashCode>
+      <FileName>Support\ScDataTable1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScSheet&lt;TShtKey, TShtFlds, TRowKey, TRowFlds, TRow&gt;">
+    <Position X="4.75" Y="2" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Support\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScFields&lt;TKey, TField&gt;">
+    <Position X="10.75" Y="2" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>QAIAAAAAgAAAEgAEAAAABAAAAAAAAAACAAAAAAAAwAA=</HashCode>
+      <FileName>Support\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScDataRow1">
+    <Position X="1.25" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAEAAEAAAAAAAAAAAAAAIAAAAAAAAAQAA=</HashCode>
+      <FileName>Support\ScDataRow1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageN.ShSchemaFields.AShScRow&lt;TKey, TField&gt;">
+    <Position X="5.75" Y="7.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Support\IShScFieldsBase1.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScFieldDefData1&lt;TKey&gt;">
+    <Position X="16" Y="7.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKEAAAABAAAAAGAAAAAAAAgAAAAIBA=</HashCode>
+      <FileName>Support\ScFieldDefData1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ShExStorageC.ShSchemaFields.ScFieldDefMeta1&lt;TKey&gt;">
+    <Position X="16" Y="3.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgKEAAAABAAAAACACAAAAAAAAAAAIBA=</HashCode>
+      <FileName>Support\ScFieldDefMeta1.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

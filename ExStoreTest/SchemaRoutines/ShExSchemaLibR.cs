@@ -416,6 +416,8 @@ namespace ShExStorageR.ShExStorage
 			sb.SetSchemaName(schemaName);
 			sb.SetDocumentation(schemaDesc);
 			sb.SetVendorId(vendId);
+			// sb.SetApplicationGUID(new Guid(ScInfoMeta1.APP_GUID));
+
 		}
 
 // D1

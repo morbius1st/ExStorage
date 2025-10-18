@@ -18,13 +18,13 @@ namespace SettingsManager
 	public class AppSettingDataFile : IDataFile
 	{
 		[IgnoreDataMember]
-		public string DataFileVersion => "app 7.4a";
+		public string DataFileVersion {get; set; } = "app 7.4a";
 
 		[IgnoreDataMember]
-		public string DataFileDescription => "app setting file for SettingsManager v7.4";
+		public string DataFileDescription {get; set; } = "app setting file for SettingsManager v7.4";
 
 		[IgnoreDataMember]
-		public string DataFileNotes => "app / any notes go here";
+		public string DataFileNotes {get; set; } = "app / any notes go here";
 
 		[DataMember(Order = 1)]
 		public int AppSettingsValue { get; set; } = 7;

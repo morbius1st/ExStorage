@@ -1,0 +1,1061 @@
+﻿<Window Name="MainWin"
+		x:Class="ExStoreTest2026.Windows.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:ExStoreTest2026.Windows"
+		xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		Title="MainWindow"
+		Width="1600"
+		Height="1050"
+		DataContext="{Binding ElementName=MainWin}"
+		mc:Ignorable="d"
+		Background="#222222"
+		BorderThickness="0"
+		BorderBrush="Transparent"
+		Closing="MainWin_Closing"
+		Activated="MainWin_Activated"
+		>
+	<Window.Resources>
+
+		<sys:Double x:Key="BtnWidth">140</sys:Double>
+		<sys:Double x:Key="BtnHeight">30</sys:Double>
+
+		<GridLength x:Key="griRowHeight">22</GridLength>
+
+		<Style x:Key="BtnStyleBase"
+				TargetType="Button"
+				>
+			<Setter Property="BorderBrush" Value="#EEEEEEEE" />
+			<Setter Property="Background" Value="#EEEEEEEE" />
+			<Setter Property="Margin" Value="0,2.5,0,2.5" />
+			<Setter Property="Height" Value="{StaticResource BtnHeight}" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+		</Style>
+
+		<Style x:Key="BtnStyleTop"
+				TargetType="Button"
+				BasedOn="{StaticResource BtnStyleBase}"
+				>
+			<Setter Property="Margin" Value="0,1.5,0,2.5" />
+		</Style>
+
+		<Style x:Key="BtnStyleBott"
+				TargetType="Button"
+				BasedOn="{StaticResource BtnStyleBase}"
+				>
+			<Setter Property="Margin" Value="0,2.5,0,1.5" />
+		</Style>
+
+		<Style x:Key="BtnSolo"
+				TargetType="Button"
+				BasedOn="{StaticResource BtnStyleBase}"
+				>
+			<Setter Property="Margin" Value="0,1.5,0,1.5" />
+		</Style>
+
+		<Style x:Key="Rect"
+				TargetType="Rectangle"
+				>
+			<Setter Property="Margin" Value="-2,0.5,-2,0.5" />
+			<Setter Property="Height" Value="1" />
+		</Style>
+
+		<Style x:Key="Label"
+				TargetType="Label"
+				>
+			<Setter Property="Margin" Value="0,1.5,0,2.5" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="Foreground" Value="Red" />
+			<Setter Property="Background" Value="White" />
+		</Style>
+
+		<Style x:Key="LblTitle"
+				TargetType="Label"
+				>
+			<Setter Property="Background" Value="#111111" />
+			<Setter Property="Foreground" Value="DarkGray" />
+			<Setter Property="Margin" Value="0,1.0,0,0" />
+			<Setter Property="Padding" Value="3,0,0,4" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+		</Style>
+
+		<Style x:Key="LblValue"
+				TargetType="Label"
+				BasedOn="{StaticResource LblTitle}"
+				>
+			<Setter Property="Margin" Value="2,1.0,0,0" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="Background" Value="#333333" />
+		</Style>
+
+	</Window.Resources>
+
+	<Grid Margin="5">
+
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="150" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="40" />
+		</Grid.RowDefinitions>
+
+		<Grid
+				Height="auto"
+				VerticalAlignment="Top"
+				>
+			<Grid.Resources>
+
+			</Grid.Resources>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="130" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="130" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="130" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="{StaticResource griRowHeight}" />
+				<RowDefinition Height="{StaticResource griRowHeight}" />
+				<RowDefinition Height="{StaticResource griRowHeight}" />
+				<RowDefinition Height="{StaticResource griRowHeight}" />
+				<RowDefinition Height="{StaticResource griRowHeight}" />
+			</Grid.RowDefinitions>
+
+
+			<Label
+					Content="WBK Schema Status"
+					Grid.Column="0"
+					Grid.Row="0"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<DockPanel
+					Grid.Column="1"
+					Grid.Row="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					>
+
+				<Label
+						Content="{Binding Path=WbkScResCode,
+															FallbackValue='1'}"
+						Width="30"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+						/>
+
+				<Label
+						Content="{Binding Path=WbkScResDesc,
+															FallbackValue='unassigned',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}"
+						/>
+			</DockPanel>
+
+			<Label
+					Content="WBK DataStorage Status"
+					Grid.Column="0"
+					Grid.Row="1"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<DockPanel
+					Grid.Column="1"
+					Grid.Row="1"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					>
+
+				<Label
+						Content="{Binding Path=WbkDsResCode,
+															FallbackValue='1'}"
+						Width="30"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+						/>
+
+				<Label
+						Content="{Binding Path=WbkDsResDesc,
+															FallbackValue='unassigned',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}"
+						/>
+			</DockPanel>
+
+			<Label
+					Content="SHT Schema Status"
+					Grid.Column="0"
+					Grid.Row="2"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<DockPanel
+					Grid.Column="1"
+					Grid.Row="2"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					>
+
+				<Label
+						Content="{Binding Path=ShtScResCode,
+															FallbackValue='1'}"
+						Width="30"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+						/>
+
+				<Label
+						Content="{Binding Path=ShtScResDesc,
+															FallbackValue='unassigned',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}"
+						/>
+			</DockPanel>
+
+			<Label
+					Content="SHT DataStorage Status"
+					Grid.Column="0"
+					Grid.Row="3"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<DockPanel
+					Grid.Column="1"
+					Grid.Row="3"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					>
+
+				<Label
+						Content="{Binding Path=ShtDsResCode,
+															FallbackValue='1'}"
+						Width="30"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+						/>
+
+				<Label
+						Content="{Binding Path=ShtDsResDesc,
+															FallbackValue='unassigned',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}"
+						/>
+			</DockPanel>
+
+			<Label
+					Content="Restart Status"
+					Grid.Column="2"
+					Grid.Row="0"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<DockPanel
+					Grid.Column="3"
+					Grid.Row="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					>
+
+				<Label
+						Content="{Binding Path=RestartStatus,
+															FallbackValue='false'}"
+						Width="40"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+						/>
+
+				<Label
+						Content="{Binding Path=RestartStatusDesc,
+															FallbackValue='unassigned',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}"
+						/>
+			</DockPanel>
+
+
+			<Label
+					Content="Restart Status (model)"
+					Grid.Column="4"
+					Grid.Row="0"
+					Style="{StaticResource LblTitle}"
+			/>
+
+			<DockPanel
+					Grid.Column="5"
+					Grid.Row="0"
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+			>
+
+				<Label
+						Content="{Binding Path=wm.RestartStatus,
+															FallbackValue='false'}"
+						Width="40"
+						HorizontalAlignment="Left"
+						HorizontalContentAlignment="Center"
+						Style="{StaticResource LblValue}"
+				/>
+
+				<Label
+						Content="{Binding Path=wm.RestartStatusDesc,
+															FallbackValue='unassigned (model)',
+															Mode=OneWay}"
+						Style="{StaticResource LblValue}" 
+						/>
+			</DockPanel>
+			<!-- -->
+			<!-- <Label -->
+			<!-- 		Grid.Column="5" -->
+			<!-- 		Grid.Row="1" -->
+			<!-- 		DataContext="{Binding ElementName=MainWin}" -->
+			<!-- 		Content="{Binding Path=wm, -->
+			<!-- 												FallbackValue='missing 1'}" -->
+			<!-- 		Style="{StaticResource LblValue}" -->
+			<!-- /> -->
+			<!-- -->
+			<!-- -->
+			<!-- <Label -->
+			<!-- 		Grid.Column="5" -->
+			<!-- 		Grid.Row="2" -->
+			<!-- 		DataContext="{Binding ElementName=MainWin, Path=wm}" -->
+			<!-- 		Content="{Binding Path=RestartStatusDesc, -->
+			<!-- 												FallbackValue='missing 2'}" -->
+			<!-- 		Style="{StaticResource LblValue}" -->
+			<!-- /> -->
+			<!-- -->
+			<!-- <Label -->
+			<!-- 		Grid.Column="5" -->
+			<!-- 		Grid.Row="3" -->
+			<!-- 		DataContext="{Binding ElementName=MainWin}" -->
+			<!-- 		Content="{Binding Path=wm.RestartStatusDesc, -->
+			<!-- 												FallbackValue='missing 3'}" -->
+			<!-- 		Style="{StaticResource LblValue}" -->
+			<!-- /> -->
+			<!-- -->
+			<!-- <Label -->
+			<!-- 		Grid.Column="5" -->
+			<!-- 		Grid.Row="4" -->
+			<!-- 		Content="{Binding Path=wm.RestartStatusDesc, -->
+			<!-- 												FallbackValue='missing 4'}" -->
+			<!-- 		Style="{StaticResource LblValue}" -->
+			<!-- /> -->
+
+
+			<Label
+					Content="Got WBK Schema"
+					Grid.Column="2"
+					Grid.Row="1"
+					Margin="0"
+					Style="{StaticResource LblTitle}"
+					/>
+
+			<Label
+					Content="{Binding Path=GotWbkSchema,
+														FallbackValue='undetermined',
+														Mode=OneWay}"
+					Grid.Column="3"
+					Grid.Row="1"
+					Style="{StaticResource LblValue}"
+					/>
+
+		</Grid>
+
+
+		<StackPanel
+				Grid.Column="1"
+				Grid.Row="0"
+				Grid.RowSpan="2"
+				Margin="0"
+				Orientation="Horizontal"
+				>
+
+			<Button Name="BtnTemplate"
+					Visibility="Collapsed"
+					Style="{StaticResource BtnStyleBase}"
+					>
+				<Button.Content>
+					<StackPanel Orientation="Vertical">
+						<TextBlock
+								Margin="0,-1,0,-1"
+								Padding="0"
+								VerticalAlignment="Top"
+								TextAlignment="Center"
+								Text="line 1"
+								/>
+						<TextBlock
+								Margin="0,-2,0,2"
+								Padding="0"
+								VerticalAlignment="Bottom"
+								TextAlignment="Center"
+								Text="line 2"
+								/>
+					</StackPanel>
+				</Button.Content>
+			</Button>
+
+			<StackPanel
+					Margin="5,0,0,0"
+					Width="{StaticResource BtnWidth}"
+					Orientation="Vertical"
+					>
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="Initialize"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnVerifyInit"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnInitVerify_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Margin="0,-1,0,-1"
+									Padding="0"
+									VerticalAlignment="Top"
+									TextAlignment="Center"
+									Text="Initial"
+									/>
+							<TextBlock
+									Margin="0,-2,0,2"
+									Padding="0"
+									VerticalAlignment="Bottom"
+									TextAlignment="Center"
+									Text="Verification"
+									/>
+						</StackPanel>
+					</Button.Content>
+				</Button>
+
+
+
+				<Button Name="BtnVerifyStartup"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnStartupVerify_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Margin="0,-1,0,-1"
+									Padding="0"
+									VerticalAlignment="Top"
+									TextAlignment="Center"
+									Text="Startup"
+									/>
+							<TextBlock
+									Margin="0,-2,0,2"
+									Padding="0"
+									VerticalAlignment="Bottom"
+									TextAlignment="Center"
+									Text="Verification"
+									/>
+						</StackPanel>
+					</Button.Content>
+				</Button>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+			</StackPanel>
+
+			<StackPanel
+					Margin="5,0,0,0"
+					Width="{StaticResource BtnWidth}"
+					Orientation="Vertical"
+					>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="Show"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnShowObjId"
+						Content="Show object id's"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnShowObjId_OnClick"
+				/>
+
+
+				<Button Name="BtnShowInfoOne"
+						Content="Show info 1"
+						Style="{StaticResource BtnStyleBase}"
+						Click="ShowInfoOne_OnClick"
+						/>
+
+				<Button Name="BtnShowInfoTwo"
+						Content="Show info 2"
+						Style="{StaticResource BtnStyleBase}"
+						Click="ShowInfoTwo_OnClick"
+						/>
+
+				<Button Name="BtnShowExMgr"
+						Content="Show ExMgr"
+						Style="{StaticResource BtnStyleBott}"
+						Click="ShowExMgr_OnClick"
+						/>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<!--  <Label  -->
+				<!--  Content="WorkBook"  -->
+				<!--  Style="{StaticResource Label}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnMkWkBk"  -->
+				<!--  Content="Make WorkBook"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnMakeWkBk_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--    -->
+				<!--  <Button Name="BtnMkMtWkBk"  -->
+				<!--  Content="Make Empty WorkBook"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnMakeEmptyWkBk_OnClick"  -->
+				<!--  />  -->
+
+				<Button Name="BtnShowWbk"
+						Content="Show WorkBook"
+						Style="{StaticResource BtnStyleTop}"
+						Click="BtnShowWbk_OnClick"
+						/>
+				<!--    -->
+				<!--  <Rectangle  -->
+				<!--  Fill="Red"  -->
+				<!--  Style="{StaticResource Rect}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnWriteWbk"  -->
+				<!--  Style="{StaticResource BtnTop}"  -->
+				<!--  Click="BtnMakeAndWriteWbk_OnClick"  -->
+				<!--  >  -->
+				<!-- 	<Button.Content> -->
+				<!-- 		<StackPanel Orientation="Vertical"> -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-1,0,-1"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Top"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Make And"  -->
+				<!--  />  -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-2,0,2"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Bottom"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Write WorkBook"  -->
+				<!--  />  -->
+				<!-- 		</StackPanel> -->
+				<!-- 	</Button.Content> -->
+				<!-- </Button> -->
+				<!--    -->
+				<!--  <Button Name="BtnReadWbk"  -->
+				<!--  Style="{StaticResource BtnBott}"  -->
+				<!--  Click="BtnClearAndReadbk_OnClick"  -->
+				<!--  >  -->
+				<!-- 	<Button.Content> -->
+				<!-- 		<StackPanel Orientation="Vertical"> -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-1,0,-1"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Top"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Clear And"  -->
+				<!--  />  -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-2,0,2"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Bottom"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Read WorkBook"  -->
+				<!--  />  -->
+				<!-- 		</StackPanel> -->
+				<!-- 	</Button.Content> -->
+				<!-- </Button> -->
+				<!--    -->
+				<!--  <Rectangle  -->
+				<!--  Fill="Red"  -->
+				<!--  Style="{StaticResource Rect}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Label  -->
+				<!--  Content="Sheet"  -->
+				<!--  Style="{StaticResource Label}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnMkSht"  -->
+				<!--  Content="Make Sheet"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnMakeSht_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnMkMtSht"  -->
+				<!--  Content="Make Empty Sheet"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnMakeEmptySht_OnClick"  -->
+				<!--  />  -->
+
+				<Button Name="BtnShowSht"
+						Content="Show Sheet"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnShowSht_OnClick"
+						/>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<!--  <Button Name="BtnWriteSht"  -->
+				<!--  Style="{StaticResource BtnSolo}"  -->
+				<!--  Click="BtnWriteSht_OnClick"  -->
+				<!--  >  -->
+				<!-- 	<Button.Content> -->
+				<!-- 		<StackPanel Orientation="Vertical"> -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-1,0,-1"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Top"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Make And"  -->
+				<!--  />  -->
+				<!--  <TextBlock  -->
+				<!--  Margin="0,-2,0,2"  -->
+				<!--  Padding="0"  -->
+				<!--  VerticalAlignment="Bottom"  -->
+				<!--  TextAlignment="Center"  -->
+				<!--  Text="Write Sheet"  -->
+				<!--  />  -->
+				<!-- 		</StackPanel> -->
+				<!-- 	</Button.Content> -->
+				<!-- </Button> -->
+				<!--    -->
+				<!--  <Rectangle  -->
+				<!--  Fill="Red"  -->
+				<!--  Style="{StaticResource Rect}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Label  -->
+				<!--  Content="Change"  -->
+				<!--  Style="{StaticResource Label}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnChgWbk"  -->
+				<!--  Content="Change WorkBook Field"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnChgWbk_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--    -->
+				<!--  <Button Name="BtnChgWin"  -->
+				<!--  Content="Change Win Text"  -->
+				<!--  Click="BtnChgWin_OnClick"  -->
+				<!--  Style="{StaticResource BtnBott}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Rectangle  -->
+				<!--  Fill="Red"  -->
+				<!--  Style="{StaticResource Rect}"  -->
+				<!--  />  -->
+
+				<Label
+						Content="Find"
+						Style="{StaticResource Label}"
+						/>
+
+
+				<Button Name="BtnFindWbkDs"
+						Content="Find Wbk DS"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnFindWbkDs_OnClick"
+						/>
+
+				<Button Name="BtnFindShtDs"
+						Content="Find Sht DS"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnFindShtDs_OnClick"
+						/>
+
+				<Button Name="BtnFindAllShtDs"
+						Content="Find All Sht DS"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnFindAllShtDs_OnClick"
+						/>
+
+				<Button Name="BtnFindAndShowElements"
+						Content="Find All Elements"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnFindAndShowAll_OnClick"
+						/>
+
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<!--  <Label  -->
+				<!--  Content="Delete"  -->
+				<!--  Style="{StaticResource Label}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnDeleteShtSc"  -->
+				<!--  Content="Delete Sht Schema"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnDeleteShtSc_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnDeleteShtDs"  -->
+				<!--  Content="Delete Sht DataStorage"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnDeleteShtDs_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnDeleteWbkSc"  -->
+				<!--  Content="Delete Wbk Schema"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnDeleteWbkSc_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnDeleteWbkDs"  -->
+				<!--  Content="Delete Wbk DataStorage"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnDeleteWbkDs_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+
+			</StackPanel>
+
+
+			<StackPanel
+					Margin="5,0,0,0"
+					Width="{StaticResource BtnWidth}"
+					Orientation="Vertical"
+					>
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="System"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="Btn"
+						Content="Clear And Read All"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnClearReadAndShowAll_OnClick"
+						/>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="WorkBook"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnMkWkBk"
+						Content="Make WorkBook"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnMakeWkBk_OnClick"
+						/>
+
+
+				<Button Name="BtnMkMtWkBk"
+						Content="Make Empty WorkBook"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnMakeEmptyWkBk_OnClick"
+						/>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Button Name="BtnWriteWbk"
+						Style="{StaticResource BtnStyleTop}"
+						Click="BtnMakeAndWriteWbk_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Margin="0,-1,0,-1"
+									Padding="0"
+									VerticalAlignment="Top"
+									TextAlignment="Center"
+									Text="Make And"
+									/>
+							<TextBlock
+									Margin="0,-2,0,2"
+									Padding="0"
+									VerticalAlignment="Bottom"
+									TextAlignment="Center"
+									Text="Write WorkBook"
+									/>
+						</StackPanel>
+					</Button.Content>
+				</Button>
+
+				<Button Name="BtnReadWbk"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnClearAndReadbk_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Margin="0,-1,0,-1"
+									Padding="0"
+									VerticalAlignment="Top"
+									TextAlignment="Center"
+									Text="Clear And"
+									/>
+							<TextBlock
+									Margin="0,-2,0,2"
+									Padding="0"
+									VerticalAlignment="Bottom"
+									TextAlignment="Center"
+									Text="Read WorkBook"
+									/>
+						</StackPanel>
+					</Button.Content>
+				</Button>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="Sheet"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnMkSht"
+						Content="Make Sheet"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnMakeSht_OnClick"
+						/>
+
+				<Button Name="BtnMkMtSht"
+						Content="Make Empty Sheet"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnMakeEmptySht_OnClick"
+						/>
+
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Button Name="BtnWriteSht"
+						Style="{StaticResource BtnSolo}"
+						Click="BtnWriteSht_OnClick"
+						>
+					<Button.Content>
+						<StackPanel Orientation="Vertical">
+							<TextBlock
+									Margin="0,-1,0,-1"
+									Padding="0"
+									VerticalAlignment="Top"
+									TextAlignment="Center"
+									Text="Make And"
+									/>
+							<TextBlock
+									Margin="0,-2,0,2"
+									Padding="0"
+									VerticalAlignment="Bottom"
+									TextAlignment="Center"
+									Text="Write Sheet"
+									/>
+						</StackPanel>
+					</Button.Content>
+				</Button>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="Change"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnChgWbk"
+						Content="Change WorkBook Field"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnChgWbk_OnClick"
+						/>
+
+
+				<Button Name="BtnChgWin"
+						Content="Change Win Text"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnChgWin_OnClick"
+						/>
+
+				<!--  <Rectangle  -->
+				<!--  Fill="Red"  -->
+				<!--  Style="{StaticResource Rect}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Label  -->
+				<!--  Content="Find"  -->
+				<!--  Style="{StaticResource Label}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnFindWbkDs"  -->
+				<!--  Content="Find Wbk DS"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnFindWbkDs_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnFindShtDs"  -->
+				<!--  Content="Find Sht DS"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnFindShtDs_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnFindAllShtDs"  -->
+				<!--  Content="Find All Sht DS"  -->
+				<!--  Style="{StaticResource BtnStyleBase}"  -->
+				<!--  Click="BtnFindAllShtDs_OnClick"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <Button Name="BtnFindAndReadAllShtDs"  -->
+				<!--  Content="Find + Read All Sht DS"  -->
+				<!--  Style="{StaticResource BtnBott}"  -->
+				<!--  Click="BtnFindAndReadAllShtDs_OnClick"  -->
+				<!--  />  -->
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+				<Label
+						Content="Delete"
+						Style="{StaticResource Label}"
+						/>
+
+				<Button Name="BtnDeleteShtSc"
+						Content="Delete Sht Schema"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnDeleteShtSc_OnClick"
+						/>
+
+				<Button Name="BtnDeleteShtDs"
+						Content="Delete Sht DataStorage"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnDeleteShtDs_OnClick"
+						/>
+
+				<Button Name="BtnDeleteWbkSc"
+						Content="Delete Wbk Schema"
+						Style="{StaticResource BtnStyleBase}"
+						Click="BtnDeleteWbkSc_OnClick"
+						/>
+
+				<Button Name="BtnDeleteWbkDs"
+						Content="Delete Wbk DataStorage"
+						Style="{StaticResource BtnStyleBott}"
+						Click="BtnDeleteWbkDs_OnClick"
+						/>
+
+				<Rectangle
+						Fill="Red"
+						Style="{StaticResource Rect}"
+						/>
+
+			</StackPanel>
+
+
+
+
+
+		</StackPanel>
+
+		<StackPanel
+				Grid.Column="0"
+				Grid.Row="2"
+				HorizontalAlignment="Right"
+				>
+
+			<Button Name="BtnClear"
+					Content="Clear Msg"
+					Margin="0,5,0,0"
+					Width="{StaticResource BtnWidth}"
+					Style="{StaticResource BtnStyleBase}"
+					Click="BtnClear_OnClick"
+					/>
+
+		</StackPanel>
+
+		<Button Name="BtnExit"
+				Content="Exit"
+				Grid.Column="1"
+				Grid.Row="2"
+				Margin="0,5,0,0"
+				Width="{StaticResource BtnWidth}"
+				HorizontalAlignment="Right"
+				Style="{StaticResource BtnStyleBase}"
+				Click="BtnExit_OnClick"
+				/>
+
+		<TextBox
+				Grid.Column="0"
+				Grid.Row="1"
+				FontFamily="Consolas"
+				Background="#333333"
+				Foreground="White"
+				VerticalScrollBarVisibility="Visible"
+				HorizontalScrollBarVisibility="Visible"
+				Text="{Binding ElementName=MainWin,
+											 Path=Message}"
+				/>
+
+	</Grid>
+</Window>

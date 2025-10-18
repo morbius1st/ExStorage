@@ -23,6 +23,7 @@ namespace ExStoreTest.Windows
 {
 	public class MainWindowModel
 	{
+		private ExId exid;
 
 		public ShExStorManagerR<
 			ScDataSheet1,
@@ -66,7 +67,44 @@ namespace ExStoreTest.Windows
 			t1.testA();
 		}
 
-		
+		public void FindSchema()
+		{
+			Msgs.WriteLine("\n*** begin process| SHEET SCHEMA | ***\n");
+
+			smR.FindSheetSchema();
+
+			Msgs.WriteLine("\n*** process complete | SHEET SCHEMA | ***\n");
+		}
+
+		public void EraseSchema()
+		{
+			Msgs.WriteLine("\n*** begin process| ERASE SCHEMA | ***\n");
+
+			smR.EraseSheetSchema();
+
+			Msgs.WriteLine("\n*** process complete | ERASE SCHEMA | ***\n");
+		}	
+
+		public void FindSheetDs()
+		{
+			List<DataStorage> ds;
+
+			Msgs.WriteLine("\n*** begin process| FINDING SHEET(S) | ***\n");
+
+			smR.FindSheetDs(out ds);
+
+			Msgs.WriteLine("\n*** process complete | FINDING SHEET(S) | ***\n");
+		}		
+
+		public void EraseSheetDs()
+		{
+			Msgs.WriteLine("\n*** begin process| ERASING SHEET DS | ***\n");
+
+			smR.EraseSheetDs();
+
+			Msgs.WriteLine("\n*** process complete | ERASING SHEET DS | ***\n");
+		}		
+
 		public void DeleteSheet()
 		{
 			Msgs.WriteLine("\n*** begin process| DELETE SHEET | ***\n");
@@ -115,7 +153,7 @@ namespace ExStoreTest.Windows
 			}
 		}
 
-		
+
 		private void TestMakeDataRow3(ExId exid, ScDataSheet1 shtd)
 		{
 			// M.WriteLine("test make ROW data x3");

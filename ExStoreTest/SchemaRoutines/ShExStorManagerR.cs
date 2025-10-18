@@ -8,15 +8,22 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
+
 using ExStoreTest.Support;
+
 using ShExStorageC.ShSchemaFields;
 using ShExStorageC.ShSchemaFields.ShScSupport;
+
 using ShExStorageN.ShExStorage;
-using static ShExStorageN.ShExStorage.ExStoreRtnCode;
 using ShExStorageN.ShSchemaFields;
+
 using ShExStorageR.ShExStorage;
+
+using static System.Runtime.CompilerServices.RuntimeHelpers;
+using static ShExStorageN.ShExStorage.ExStoreRtnCode;
 
 #endregion
 
@@ -196,6 +203,193 @@ namespace ShExStorageR.ShExStorage
 			return rtnCode == testCode;
 		}
 
+		public ExStoreRtnCode FindSheetSchema()
+		{
+			ExStoreRtnCode rtnCode = XRC_SCHEMA_NOT_FOUND;
+			IList<Schema> schemas;
+
+			rtnCode = StorLibR.GetAllSchema(out schemas);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Did not find schemas| rtn code is ", rtnCode.ToString());
+				SetRtnCode(rtnCode);
+				return rtnCode;
+			}
+
+			rtnCode = XRC_GOOD;
+
+			foreach (Schema sch in schemas)
+			{
+				if (sch.SchemaName.StartsWith(Exid.BaseExsIdSheetSchemaName) || 
+					sch.SchemaName.StartsWith(Exid.BaseExsIdSheetDsName) ||
+					sch.SchemaName.StartsWith(Exid.BaseExIdRowSchemaName))
+				{
+					Msgs.WriteLine("Found a schema| ", sch.SchemaName);
+				}
+			}
+
+			return rtnCode;
+		}
+
+		public ExStoreRtnCode FindSchemaByStartsWith(string startWith, out List<Schema> found)
+		{
+			ExStoreRtnCode rtnCode = XRC_SCHEMA_NOT_FOUND;
+			IList<Schema> schemas;
+			found = new List<Schema>();
+
+			rtnCode = StorLibR.GetAllSchema(out schemas);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Did not find schemas| rtn code is ", rtnCode.ToString());
+			}
+			else
+			{
+				foreach (Schema sch in schemas)
+				{
+					if (sch.SchemaName.StartsWith(startWith))
+					{
+						found.Add(sch);
+					}
+				}
+
+				Msgs.WriteLine("Found schema| count ", found.Count.ToString());
+			}
+
+			rtnCode = found.Count > 0 ? XRC_GOOD : XRC_SCHEMA_NOT_FOUND;
+			
+			SetRtnCode(rtnCode);
+
+			return rtnCode;
+		}
+
+		public ExStoreRtnCode DeleteSchema(string startWith)
+		{
+			List<Schema> found = new List<Schema>();
+
+			ElementId el;
+
+			ExStoreRtnCode rtnCode = FindSchemaByStartsWith(startWith, out found);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Nothing to delete");
+				SetRtnCode(rtnCode);
+				return rtnCode;
+			}
+			
+			using (Transaction T = new Transaction(Exid.Document, "Erase Cells Data"))
+			{
+				try
+				{
+					T.Start();
+					{
+						foreach (Schema sch in found)
+						{
+							Msgs.Write($"Erasing Schema| {sch.SchemaName}");
+							StorLibR.DelSchema(Exid, sch);
+							sch.Dispose();
+							Msgs.WriteLine(" | done");
+						}
+					}
+					T.Commit();
+				}
+				catch
+				{
+					Msgs.WriteLine(" | failed");
+					T.RollBack();
+				}
+			}
+
+			return rtnCode;
+		}
+
+		public ExStoreRtnCode EraseSheetSchema()
+		{
+			ExStoreRtnCode rtnCode;
+
+			rtnCode = DeleteSchema(exid.BaseExsIdSheetSchemaName);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Nothing to delete");
+				SetRtnCode(rtnCode);
+				return rtnCode;
+			}
+
+			rtnCode = DeleteSchema(exid.BaseExIdRowSchemaName);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Nothing to delete");
+				SetRtnCode(rtnCode);
+				return rtnCode;
+			}
+
+			Exid.Document.Application.PurgeReleasedAPIObjects();
+
+			return rtnCode;
+		}
+
+		public ExStoreRtnCode FindSheetDs(out List<DataStorage> dataStorages)
+		{
+			ExStoreRtnCode rtnCode;
+
+			dataStorages = new List<DataStorage>();
+
+			rtnCode = StorLibR.FindDataStorages(Exid, Exid.ExsIdSheetSchemaName, out dataStorages);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				Msgs.WriteLine("Did not find DataStorages| rtn code is ", rtnCode.ToString());
+				SetRtnCode(rtnCode);
+				return rtnCode;
+			}
+
+			foreach (DataStorage ds in dataStorages)
+			{
+				Msgs.WriteLine("Found a DataStorage| ",$"{ ds.Name}");
+			}
+
+			return XRC_GOOD;
+		}
+
+		public void EraseSheetDs()
+		{
+			List<DataStorage> dataStorages;
+
+			ExStoreRtnCode rtnCode = FindSheetDs(out dataStorages);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
+			{
+				SetRtnCode(rtnCode);
+				return;
+			}
+
+			using (Transaction T = new Transaction(Exid.Document, "Erase Cells Data"))
+			{
+				try
+				{
+					T.Start();
+					{
+						foreach (DataStorage ds in dataStorages)
+						{
+							Msgs.Write($"Erasing DataStorage| {ds.Name}");
+							StorLibR.DelDs(Exid, ds);
+
+							Msgs.WriteLine(" | done");
+						}
+					}
+					T.Commit();
+				}
+				catch
+				{
+					Msgs.WriteLine(" | failed");
+					T.RollBack();
+				}
+			}
+		}
 
 		public void DeleteSheet()
 		{
@@ -249,7 +443,6 @@ namespace ShExStorageR.ShExStorage
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// read the sheet data into a pre-initialized object<br/>

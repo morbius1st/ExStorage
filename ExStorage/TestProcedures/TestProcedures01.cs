@@ -176,23 +176,23 @@ namespace ExStorage.TestProcedures
 
 		// tests
 
-		public void TestGetAllDs1(ShExStorageLibR shExLib)
-		{
-			ExStoreRtnCode result;
-
-			result = shExLib.GetAllDs();
-
-			if (result != ExStoreRtnCode.XRC_GOOD)
-			{
-				M.WriteLineAligned($"GetAllDataStores returned|", result.ToString());
-				// M.ShowMsg();
-				return;
-			}
-
-			sp01.ShowAllDs1(shExLib);
-
-			// M.ShowMsg();
-		}
+		// public void TestGetAllDs1(ShExStorageLibR shExLib)
+		// {
+		// 	ExStoreRtnCode result;
+		//
+		// 	result = shExLib.GetAllDs();
+		//
+		// 	if (result != ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		M.WriteLineAligned($"GetAllDataStores returned|", result.ToString());
+		// 		// M.ShowMsg();
+		// 		return;
+		// 	}
+		//
+		// 	sp01.ShowAllDs1(shExLib);
+		//
+		// 	// M.ShowMsg();
+		// }
 
 		// public void TestFindDsByName3(ShExStorageLibR shExLib)
 		// {

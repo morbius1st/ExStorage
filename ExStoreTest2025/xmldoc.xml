@@ -1,0 +1,422 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExStoreTest2025</name>
+    </assembly>
+    <members>
+        <member name="T:ExStoreTest2025.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:ExStoreTest2025.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:ExStoreTest2025.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="T:ExStoreTest2025.Windows.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:ExStoreTest2025.Windows.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExSchemaLibR`9.WriteSheet">
+            <summary>
+            save the sheet data and any row data to the model<br/>
+            return:<br/>
+            XRC_GOOD = worked / saved<br/>
+            XRC_FAIL = did not work (could not create a datastorage element
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetAllDs">
+            <summary>
+            Get all DataStorage's
+            </summary>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindSheetDs(ShExStorageN.ShExStorage.ExId,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@)">
+            <summary>
+            Get a DataStorage by its Exid<br/>
+            XRC_GOOD if found <br/>
+            XRC_FAIL if not
+            </summary>
+            <param name="name">Name to find</param>
+            <param name="ds">Out - the DS found</param>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DelDs(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            Delete a DataStorage by its Exid
+            </summary>
+            <param name="name">name of DataStorage to delete</param>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DelDs(ShExStorageN.ShExStorage.ExId,Autodesk.Revit.DB.ExtensibleStorage.DataStorage)">
+            <summary>
+            Delete a DataStorage by its ElementId
+            </summary>
+            <param name="eid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesSheetDsExist(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            Determine if the Ds, named in the Exid, exists
+            </summary>
+            <param name="exid">ExStorage Identifier</param>
+            <returns>True if exists, false otherwise</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.CreateDataStorage(ShExStorageN.ShExStorage.ExId,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@)">
+            <summary>
+            create the datastorage object with name from an ExId<br/>
+            XRC_GOOD = new ds created<br/>
+            XRC_DS_EXISTS = existing ds found<br/>
+            XRC_FAIL = no ds found and no ds created
+            </summary>
+            <param name="exid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.getDataStoreElements">
+            <summary>
+            collect all datastore elements
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetAllSchema(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+            <summary>
+            Get all Schema's in memory (this crosses document boundaries)<br/>
+            IList is saved in DataStorageAdmin -> AllSchemas
+            </summary>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetDsSchemas(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,System.Collections.Generic.IList{System.Guid}@)">
+            <summary>
+            get all schemas from the entity
+            </summary>
+            <param name="Ds"></param>
+            <param name="guids"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindSchema(System.String,Autodesk.Revit.DB.ExtensibleStorage.Schema@)">
+            <summary>
+            Find a schema based on its Exid
+            </summary>
+            <param name="exid"></param>
+            <param name="schema"></param>
+            <returns>ExStoreRtnCode</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.FindSchema(System.Guid,Autodesk.Revit.DB.ExtensibleStorage.Schema@)">
+            <summary>
+            find a schema using a Guid or return null
+            </summary>
+            <param name="guid"></param>
+            <param name="s"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesSheetSchemaExist(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            Determine if the sheet schema exists
+            </summary>
+            <param name="exid">The Ex Storage Identifier</param>
+            <returns>True if exists, false otherwise</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesLockSchemaExist(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            Determine if the lock schema exists
+            </summary>
+            <param name="exid">The Ex Storage Identifier</param>
+            <returns>True if exists, false otherwise</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetDsEntity(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Schema,Autodesk.Revit.DB.ExtensibleStorage.Entity@)">
+            <summary>
+            get the Entity stored in the DataStorage
+            </summary>
+            <param name="ds"></param>
+            <param name="sc"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.GetEntityDataAsString(Autodesk.Revit.DB.ExtensibleStorage.Entity,Autodesk.Revit.DB.ExtensibleStorage.Field)">
+            <summary>
+            Get the raw value stored in the entity for the<br/>
+            schema field 
+            </summary>
+            <param name="e">The entity with the date</param>
+            <param name="f">The field for which to get the data</param>
+            <returns>The raw value as a string</returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorageLibR.DoesSheetEntityExist(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            check if the sheet entity exists<br/>
+            true = found / false = not found
+            </summary>
+            <param name="exid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageR.ShExStorage.ShExStorManagerR`9.ReadSheet">
+            <summary>
+            read the sheet data into a pre-initialized object<br/>
+            expectation is to do this once at the begining
+            </summary>
+            <param name="initSheet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.CsExtensions.IsVoid(System.String)">
+            <summary>
+            true if string is null or whitespace false otherwise
+            </summary>
+        </member>
+        <member name="T:UtilityLibrary.CsUtilities">
+            <summary>
+            Utilities - list of functions<br/>
+            nl        - system new line<br/>
+            UserName  - the user's login name<br/>
+            MachineName - the name of the machine<br/>
+            CompanyName - the name of the user's company (if any)<br/>
+            AssemblyName - the name of the assembly<br/>
+            AssemblyVersion - the version of the assembly<br/>
+            AssemblyDirectory - the directory of the assembly<br/>
+            CreateSubFolders - based a root path, create sub-folders based on an array<br/>
+            SubFolder - based on a root path, create a sub-folder path<br/>
+            ValidateStringChars - search the test string for "invalid" characters<br/>
+            ValidateChar - determine if the char is in a list of invalid char's<br/>
+            RandomString - create a random string of a defined length (do I need this?)<br/>
+            Extn: IndexOf(T Array) - get the index of an element in a generic array<br/>
+            <br/>
+            INVALID_FILE_NAME_CHARACTERS - array of char that are not allowed in a file name<br/>
+            INVALID_FILE_NAME_STRING  - string of characters that are not allowed in a file name
+            </summary>
+        </member>
+        <member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImage(System.String,System.String)">
+            <summary>
+            Load an image from embeded resource  [use GetBitmapImageResource instead]
+            </summary>
+            <param name="imageName">String name of the image</param>
+            <param name="namespacePrefix">String Image Namespace</param>
+            <returns></returns>
+        </member>
+        <member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImageResource(System.String)">
+            <summary>
+            get a BitmapImage from an assembly's resource cache (not from the embeded resource cache)
+            </summary>
+            <param name="imagePath">The path to the image including a preceding slash<br/>e.g. /folder/imagename.png</param>
+            <returns></returns>
+        </member>
+        <member name="T:ShExStorageN.ShSchemaFields.DynaValue">
+            <summary>
+            store a value as one of these data types:<br/>
+            string, int, double, enum, Guid
+            </summary>
+        </member>
+        <member name="F:ShExStorageN.ShSchemaFields.DynaValue.dynValue">
+            <summary>
+            get the raw value stored
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.LastValueReturnedIsValid">
+            <summary>
+            flag weather that the last GetValue() did<br/>
+            provide the actual value.  doing this rather<br/>
+            than throw an exception
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.TypeIs">
+            <summary>
+            get the data type
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.GetValueAs``1">
+            <summary>
+            get the value based on the type parameter
+            </summary>
+            <typeparam name="TD">Data type to provide<br/>
+            possible: string, int, double, enum
+            </typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsString">
+            <summary>
+            get the value as a string
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsString">
+            <summary>
+            determine if the value is a string
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsInt">
+            <summary>
+            get the value as n int
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsInt">
+            <summary>
+            determine if the value is an int
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsDouble">
+            <summary>
+            get the value as a double
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShSchemaFields.DynaValue.IsDouble">
+            <summary>
+            determine if the value is a double
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsBool">
+            <summary>
+            get the value as a bool
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsEnum">
+            <summary>
+            determine if the value is a bool
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShSchemaFields.DynaValue.AsGuid">
+            <summary>
+            return the value as a Guid if it is a Guid
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:ShExStorageN.ShSchemaFields.AShScSheet`5" -->
+        <member name="T:ShExStorageN.ShSchemaFields.AShScFields`2">
+            <summary>
+            basic abstract class for either sheet or rows<br/>
+            has the basic collection of fields<br/>
+            includes some pre-defined routines<br/>
+            </summary>
+            <typeparam name="TKey"></typeparam>
+            <typeparam name="TField"></typeparam>
+        </member>
+        <member name="T:ShExStorageN.ShExStorage.ExId">
+            <summary>
+            creates / holds the Extended Storage Id - unique for the document<br/>
+            ExsId -> VendorId + '_' + DocName<br/>
+            DocName is "processed" to remove invalid characters<br/>
+            provides the schema names<br/>
+            sheet -> ExsId +'_'+"Sheet"
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShExStorage.ExId.#ctor(System.String)">
+            <summary>
+            ctor
+            </summary>
+            <param name="documentName"></param>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.Document">
+            <summary>
+            get the associated Document
+            </summary>
+        </member>
+        <member name="M:ShExStorageN.ShExStorage.ExId.setDocument(System.String)">
+            <summary>
+            assign the document name (revit model title).
+            </summary>
+            <param name="documentName"></param>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.ExsId">
+            <summary>
+            the Extended Storage Id -> VendorId + '_' + DocName
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.ExsIdSheetDsName">
+            <summary>
+            The sheet ex storage id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.ExsIdSheetSchemaName">
+            <summary>
+            The sheet ex schema id (same as sheet id)
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.ExsIdLockSchemaName">
+            <summary>
+            The lock ex schema id (name)
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.VendorId">
+            <summary>
+            the vendor id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.CompanyId">
+            <summary>
+            the company id
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.DocumentName">
+            <summary>
+            The raw document name - may have unaccepsheet characters and spaces
+            </summary>
+        </member>
+        <member name="P:ShExStorageN.ShExStorage.ExId.DocName">
+            <summary>
+            the "cleaned" document name - only has [0-9a-zA-Z]
+            </summary>
+        </member>
+        <member name="P:RevitLibrary.RevitAddIns.AddIn">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Name">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Text">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Description">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Assembly">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.FullClassName">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.ClientId">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.VendorId">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.VendorDescription">
+            <remarks/>
+        </member>
+        <member name="P:RevitLibrary.RevitAddInsAddIn.Type">
+            <remarks/>
+        </member>
+        <member name="T:ShExStorageC.ShSchemaFields.ScDataRow1">
+            <summary>
+            a single row which contains the row fields
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScInfoMeta1.MakeInitialDataSheet1(ShExStorageN.ShExStorage.ExId)">
+            <summary>
+            make the initial generic data set of sheet data
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScInfoMeta1.MakeInitialDataRow1(ShExStorageC.ShSchemaFields.ScDataSheet1)">
+            <summary>
+            make the generic data set of row data
+            </summary>
+        </member>
+        <member name="M:ShExStorageC.ShSchemaFields.ShScSupport.ScInfoMeta1.ConfigData1``1(System.Collections.Generic.Dictionary{``0,ShExStorageC.ShSchemaFields.ScFieldDefData1{``0}},System.Collections.Generic.Dictionary{``0,ShExStorageC.ShSchemaFields.ScFieldDefMeta1{``0}})">
+            <summary>
+            add all of the meta fields to a data field using default information
+            </summary>
+        </member>
+    </members>
+</doc>

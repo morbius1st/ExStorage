@@ -1,0 +1,67 @@
+
+2025-09-22
+status
+working on re-writing the whole system based on the way that the ex storage system works
+
+using ExStoreTest2026
+
+this project - just got the creation and storage of the data to work + created an alternate
+to test re-using the schema
+
+found:
+schema can be re-used to create a new entity.  but the new entity cannot be stored in the
+original DS object as this process re-places the entity rather than adds the new entity to the
+DS object - because the same schema was used.
+
+the alternative, to re-use a schema is to store the new entity in a new DS object
+
+this will cause the creation of "many" DS objects (relatively) but, since many entities were
+going to be created, this is not a big issue to me.  however, it does mean that extra work will need
+to be done in order to find / use the entities as they will be spread out in many
+DS objects.  the option here is to read all data at the beginning and save back as needed
+
+
+
+
+
+
+
+
+The basic routines for creating / writing / reading the ex storage information works.
+
+However, due to a bug in revit, schema's do not get deleted.  
+This leads to an error as old schema get found that have been erased but do not get erased.
+
+development stopped until this gets fixed.
+
+problem show when locks get written / erased / written / erased - 
+
+notes:
+
+process:
+
+to write:
+create the data
+create the schema from the fields that define the data
+create a data storage element
+load the data storage element with the data per the schema
+store the DS element in the created entity.
+
+
+
+2025-09-14: restarted development
+the above "but" has not been "fixed" exactly.  but the extensible storage can be used.
+
+alternative system:
+1. note that schema cannot be deleted but can be replaced.
+2. therefore, schema must have a unique name and GUID.
+	> but the name must be findable.
+	> so, the name must be a constant prefix + a variable suffix (version),
+		so that it can be found by using "startswith"
+3. however, schema should not need to be replaced in general
+	> if replaced, the old data storage must also be erased and replaced.
+	> this also means that the data storage element must have a constant prefix + variable suffix (version)
+		as well as a unique GUID each time.
+4. instead, the data within the entity within the data storage element can be updated.
+
+

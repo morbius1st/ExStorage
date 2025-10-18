@@ -148,11 +148,34 @@ namespace ShExStorageR.ShExStorage
 			{
 				foreach (Element el in dataStorages)
 				{
-					if (el.Name.Equals(exid.ExsIdSheetDsName))
+					if (el.Name.StartsWith(exid.ExsIdSheetDsName))
 					{
 						ds = (DataStorage) el;
 						result = ExStoreRtnCode.XRC_GOOD;
 						break;
+					}
+				}
+			}
+	
+			return result;
+		}
+
+		public ExStoreRtnCode FindAllDsByName(ExId exid, out List<DataStorage> ds)
+		{
+			ds = new List<DataStorage>();
+			ExStoreRtnCode result = ExStoreRtnCode.XRC_FAIL;
+	
+			FilteredElementCollector dataStorages
+				= getDataStoreElements();
+	
+			if (dataStorages != null)
+			{
+				foreach (Element el in dataStorages)
+				{
+					if (el.Name.StartsWith(exid.ExsIdSheetDsName))
+					{
+						ds.Add((DataStorage) el);
+						result = ExStoreRtnCode.XRC_GOOD;
 					}
 				}
 			}
@@ -380,7 +403,7 @@ namespace ShExStorageR.ShExStorage
 		public bool DoesSheetSchemaExist(ExId exid)
 		{
 			Schema schema;
-	
+			
 			return FindSchema(exid.ExsIdSheetSchemaName, out schema) == ExStoreRtnCode.XRC_GOOD;
 		}
 	
@@ -531,7 +554,7 @@ namespace ShExStorageR.ShExStorage
 		{
 			Entity e;
 			DataStorage ds;
-	
+			
 			ExStoreRtnCode rtnCode = FindEntity(exid, exid.ExsIdSheetSchemaName, 
 				out ds, out e);
 	
@@ -571,18 +594,32 @@ namespace ShExStorageR.ShExStorage
 			Schema s;
 	
 			if (guids == null || guids.Count == 0) return rtnCode;
-	
+
 			for (var i = 0; i < guids.Count; i++)
 			{
 				result = FindSchema(guids[i], out s);
 	
-				if (s.SchemaName.Equals(name))
+				// if (s.SchemaName.Equals(name))
+				if (s.SchemaName.StartsWith(name))
 				{
 					rtnCode = GetDsEntity(ds, s, out e);
 					break;
 				}
 			}
 	
+			return rtnCode;
+		}
+
+		public ExStoreRtnCode FindDataStorages(ExId exid, string name, out List<DataStorage> ds)
+		{
+			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_GOOD;
+
+			ds = new List<DataStorage>();
+
+			rtnCode = FindAllDsByName(exid, out ds);
+
+			if (rtnCode != ExStoreRtnCode.XRC_GOOD) return ExStoreRtnCode.XRC_ENTITY_NOT_FOUND;
+
 			return rtnCode;
 		}
 	

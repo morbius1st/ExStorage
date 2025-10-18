@@ -360,8 +360,8 @@ namespace ExStorage.Windows
 			M.WriteLineStatus("before config smR");
 
 			smR.SetDebugMsg(msgs);
-			smR.StorLibR.smR = smR;
-			smR.SchemaLibR.smR = smR;
+			smR.StorLib.smR = smR;
+			// smR.SchemaLibR.smR = smR;
 
 			M.WriteLineStatus("after config smr");
 
@@ -662,6 +662,8 @@ namespace ExStorage.Windows
 		{
 			M.WriteLineCodeMap();
 
+			M.WriteLineStatus("del lock current");
+
 			
 			if (!smR.DeleteLock(lockExidCurrent))
 			{
@@ -669,7 +671,9 @@ namespace ExStorage.Windows
 				return false;
 			}
 
-			doTheyExist();
+			M.WriteLineStatus("del lock worked");
+
+			// doTheyExist();
 
 			return true;
 		}
@@ -993,6 +997,7 @@ namespace ExStorage.Windows
 		{
 			M.WriteLineCodeMap();
 			M.WriteLine("\nChecking if sheet ds and sheet schema exist");
+			M.WriteLineStatus("checking - do they exist");
 
 			smR.doTheyExist(sheetExidCurrent, lockExidCurrent, lockExidBJohn);
 		}

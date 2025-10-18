@@ -10,7 +10,9 @@ using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using ExStorage.Windows;
 using SharedApp.Windows.ShSupport;
+using ShExStorageC.ShSchemaFields;
 using ShExStorageN.ShExStorage;
+using ShExStorageN.ShSchemaFields;
 using ShExStorageR.ShExStorage;
 using ShStudyN.ShEval;
 
@@ -97,7 +99,18 @@ namespace ExStorage.TestProcedures
 			M.NewLine();
 		}
 
-		public void ShowAllDs1(ShExStorageLibR shExLib)
+		public void ShowAllDs1<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds> 
+			(ShExStorLibR<TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds>  shExLib)
+			where TSht : AShScSheet<TShtKey, TShtFlds, TRowKey, TRowFlds, TSht, TRow>, new()
+			where TRow : AShScRow<TRowKey, TRowFlds>, new()
+			where TLok : AShScLock<TLokKey, TLokFlds>, new()
+			where TShtKey : Enum
+			where TShtFlds : ScFieldDefData<TShtKey>, new()
+			where TRowKey : Enum
+			where TRowFlds : ScFieldDefData<TRowKey>, new()
+			where TLokKey : Enum
+			where TLokFlds : ScFieldDefData<TLokKey>, new()
+
 		{
 			M.NewLine();
 
@@ -205,10 +218,10 @@ namespace ExStorage.TestProcedures
 				string c = f.ContainerType.ToString();
 				string d = f.KeyType?.ToString() ?? "null";
 				string e = f.ValueType.ToString();
-				string g = f.UnitType.ToString();
+				// string g = f.UnitType.ToString();
 				string h = f.GetSpecTypeId().ToString();
 
-				M.WriteLineAligned($"field {i}| name|", $"{b}| doc| {a}| cType| {c}| kType| {d}| vType| {e}| uType| {g}| specType {h}");
+				M.WriteLineAligned($"field {i}| name|", $"{b}| doc| {a}| cType| {c}| kType| {d}| vType| {e}| specType {h}");
 
 				if (f.ValueType == typeof(Entity))
 				{
@@ -306,37 +319,37 @@ namespace ExStorage.TestProcedures
 			// M.ShowMsg();
 		}
 
-		public void ShowEntityData6(ShExStorageLibR shExLib,	Entity e, Schema sc)
-		{
-			M.WriteLineAligned("fields and values for|", $"{sc.SchemaName}");
-
-			foreach (Field f in sc.ListFields())
-			{
-				try
-				{
-					if (f.ValueType == typeof(Entity))
-					{
-						Schema scx = f.SubSchema;
-						Entity et = e.Get<Entity>(f);
-
-						M.NewLine();
-						M.MarginUp();
-						ShowEntityData6(shExLib, et, scx);
-						M.NewLine();
-						M.MarginDn();
-					}
-					else
-					{
-						string s = shExLib.GetEntityDataAsString(e, f);
-						M.WriteLineAligned($"value for| {f.FieldName}", $"{s}");
-					}
-				}
-				catch
-				{
-					M.WriteLineAligned($"value for| {f.FieldName}", "error");
-				}
-			}
-		}
+		// public void ShowEntityData6(ShExStorageLibR shExLib,	Entity e, Schema sc)
+		// {
+		// 	M.WriteLineAligned("fields and values for|", $"{sc.SchemaName}");
+		//
+		// 	foreach (Field f in sc.ListFields())
+		// 	{
+		// 		try
+		// 		{
+		// 			if (f.ValueType == typeof(Entity))
+		// 			{
+		// 				Schema scx = f.SubSchema;
+		// 				Entity et = e.Get<Entity>(f);
+		//
+		// 				M.NewLine();
+		// 				M.MarginUp();
+		// 				ShowEntityData6(shExLib, et, scx);
+		// 				M.NewLine();
+		// 				M.MarginDn();
+		// 			}
+		// 			else
+		// 			{
+		// 				string s = shExLib.GetEntityDataAsString(e, f);
+		// 				M.WriteLineAligned($"value for| {f.FieldName}", $"{s}");
+		// 			}
+		// 		}
+		// 		catch
+		// 		{
+		// 			M.WriteLineAligned($"value for| {f.FieldName}", "error");
+		// 		}
+		// 	}
+		// }
 
 	#endregion
 	}

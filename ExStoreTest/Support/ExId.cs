@@ -92,6 +92,11 @@ namespace ShExStorageN.ShExStorage
 
 		}
 
+		private string nowString()
+		{
+			return DateTime.Now.ToString("yyyyMMdd_HHmm");
+		}
+
 		/// <summary>
 		/// get the associated Document
 		/// </summary>
@@ -118,7 +123,10 @@ namespace ShExStorageN.ShExStorage
 			{
 				DocName = CleanDocName(documentName);
 
-				ExsId = companyId + "_" + DocName;
+				// todo fix
+				// ExsId = companyId + "_" + DocName;
+				// ExsId = companyId + "_" + "ExStorageTest23";
+				ExsId = companyId; // + "_" + DocName;
 			}
 		}
 
@@ -130,17 +138,25 @@ namespace ShExStorageN.ShExStorage
 		/// <summary>
 		/// The sheet ex storage id
 		/// </summary>
-		public string ExsIdSheetDsName => ExsId + "_" + SHEET_DS_SUFFIX;
+		public string ExsIdSheetDsName => ExsId + "_" + SHEET_DS_SUFFIX ; // + nowString();
+		public string BaseExsIdSheetDsName => ExsId + "_" + SHEET_DS_SUFFIX;
 
 		/// <summary>
 		/// The sheet ex schema id (same as sheet id)
 		/// </summary>
-		public string ExsIdSheetSchemaName => ExsId + "_" + SHEET_SCHEMA_SUFFIX;
+		public string ExsIdSheetSchemaName => ExsId + "_" + SHEET_SCHEMA_SUFFIX ; // + nowString();
+		public string BaseExsIdSheetSchemaName => ExsId + "_" + SHEET_SCHEMA_SUFFIX;
+
+		public string ExIdRowSchemaName(string famName)
+		{
+			return $"{ExsId}_{ROW_SCHEMA_SUFFIX}_{CleanName(famName)}";
+		}
+		public string BaseExIdRowSchemaName => $"{ExsId}_{ROW_SCHEMA_SUFFIX}";
 
 		/// <summary>
 		/// The lock ex schema id (name)
 		/// </summary>
-		public string ExsIdLockSchemaName => ExsId + "_" + LOCK_SCHEMA_SUFFIX;
+		public string ExsIdLockSchemaName => ExsId + "_" + LOCK_SCHEMA_SUFFIX ; // + nowString();
 
 		/// <summary>
 		/// the vendor id
@@ -166,10 +182,7 @@ namespace ShExStorageN.ShExStorage
 		public bool GotCompanyId => !companyId.IsVoid();
 		public bool GotVendorId => !vendorId.IsVoid();
 
-		public string ExIdRowSchemaName(string famName)
-		{
-			return $"{ExsId}_{ROW_SCHEMA_SUFFIX}_{CleanName(famName)}";
-		}
+
 
 		// public string ExIdLockName(int index = 0)
 		// {

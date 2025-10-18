@@ -1,0 +1,7 @@
+
+
+secret name:
+CODESEE_ARCH_DIAG_API_TOKEN
+
+api token
+CodeSee:2:10343:l4815FZU6X0vEB/J/U+oarirwEDL8pwpbc+6t6w+6yY=

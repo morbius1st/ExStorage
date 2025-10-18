@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ShExStorageR.ShExStorage.ShExStorLibR&lt;TSht, TRow, TLok, TShtKey, TShtFlds, TRowKey, TRowFlds, TLokKey, TLokFlds&gt;" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAALUAAAAaAFAAQEIykJQCCAiCIQgQ4QFigIQBINUEA=</HashCode>
+      <FileName>C:\Users\jeffs\Documents\Programming\VisualStudioProjects\RevitProjects\ExStorage\ShExStorageR\ShExStorage\ShExStorLibR.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>
