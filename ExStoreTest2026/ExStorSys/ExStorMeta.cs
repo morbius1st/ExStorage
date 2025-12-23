@@ -12,6 +12,12 @@ using RevitLibrary;
 using UtilityLibrary;
 
 using static ExStorSys.ExStorConst;
+using static ExStorSys.ExSysStatus;
+using static ExStorSys.ValidateSchema;
+using static ExStorSys.ValidateDataStorage;
+using static ExStorSys.LaunchCode;
+using static ExStorSys.RunningStatus;
+using static ExStorSys.Numbers;
 
 
 // user name: jeffs
@@ -19,53 +25,254 @@ using static ExStorSys.ExStorConst;
 
 namespace ExStorSys
 {
-	public enum SettingId
+	public enum Numbers
 	{
-		// live
-		SI_GOT_WBK_SCHEMA,
-		// temp
-		SI_GOT_TMP_WBK_SCHEMA,
-		SI_GOT_TMP_SHT_SCHEMA,
-		SI_GOT_TMP_WBK_DS,
-		SI_GOT_TMP_SHT_DS,
-		SI_GOT_TMP_WBK_DS_LIST,
-		SI_GOT_TMP_SHT_DS_LIST,
-		SI_GOT_TMP_WBK_SCHEMA_LIST,
-		SI_GOT_TMP_SHT_SCHEMA_LIST,
+		N_NEG_IC = -99,
+		N_DB = -10,
+
+		N_NEG_TWO = -2,
+		N_NEG_ONE = -1,
+
+		N_ZERO		= 0,
+		N_ONE		= 1,
+		N_TWO		= 2,
+		N_THREE		= 3, 
+		N_FOUR		= 4,
+		N_FIVE		= 5,
+		N_SIX		= 6,
+		N_SEVEN		= 7,
+		N_EIGHT		= 8,
+		N_NINE		= 9,
+
+		N_TWENTY    = 20,
+		N_GOOD      = 30,
+
+		// N_ONEOHONE = 101,
+		// N_ONEOHTWO = 102,
+		// N_ONEOHFOUR = 104,
 	}
 
-	// public enum OpState 
-	// {
-	// 	OS_DELETE_SHT	= -4,
-	// 	OS_DELETE_WBK	= -2,
-	// 	OS_NORMAL_OP	= 0,
-	// 	OS_STARTED	    = 1,
-	// 	OS_CREATE_WBK	= 2,
-	// 	OS_CREATE_SHT	= 4,
-	// }
-	//
-	// public enum OpUseTypes
-	// {
-	// 	OUT_DELETE	    = -2,
-	// 	OUT_INFO	    = -1,
-	// 	OUT_NORMAL_OP   = 0,
-	// 	OUT_ANY		    = 1,
-	// 	OUT_CREATE		= 2,
-	// }
 
-	public enum ExoCreationStatus
+	public enum RunningStatus
 	{
-		// < 0 do not use, must be replaced
-		CS_CAN_DESTROY = -100,	// flagged to be deleted / may not need / use this
-		CS_INVALID = -1,	// something is not correct (e.g., model name changed) or is a returned invalid object
-		// == 0 && < 5 is incomplete / can be replaced
-		CS_EMPTY = 1,		// created but with "empty" / basic information (init state)
-		// >= 5, cannot replace - must delete first
-		CS_CREATED = 5,		// created, has data, but DS or E missing
-		CS_INIT = 6,		// created and has DS or E but not both
-		CS_GOOD = 8,		// has data and DS and E
-		CS_MODIFIED = 9,	// data revised but not written
+		RN_DEBUG				= -10,
+		RN_NA					= 0,
+		RN_DEACTIVATE			, 
+		RN_CANNOT_RUN_FAIL		,
+		RN_CANNOT_RUN_RESTART	,
+		RN_NOT_RUNNING			,
+		RN_READY_NOT_RUNNING	,
+		RN_RUNNING_NEED_SHT		,
+		RN_RUNNING_NORMAL		,
+	}
 
+	
+	public enum LaunchCode
+	{
+		LC_DEBUG			= -10,
+		LC_DEFAULT			= 0,
+		LC_NA				= 1,
+		LC_STARTED			= 2,
+		LC_PROG_GOOD			, // progress - good so far
+		LC_PROG_FAIL			, // progress - failed
+		LC_DONE_RESTART			,
+		LC_DONE_RNR				,
+		LC_DONE_HOLD			,
+		LC_DONE_UPGRADE			,
+		LC_DONE_CREATE			,
+		LC_DONE_MISSING			,
+		LC_DONE_INVALID			,
+		LC_DONE_BAD_VER			,
+		LC_DONE_INVALID_BAD_VER	,
+		// LC_DONE_MOD_CODE		,
+		LC_DONE_GOOD		    ,
+		LC_DONE_FAIL		    ,
+	}
+
+
+	public enum ExSysStatus
+	{
+		ES_SHT_DELETED				= -6,
+		ES_WBK_DELETED				= -5,
+		ES_RESTART_REQD				= -3,		
+		ES_NOT_GOOD  				= -2,		
+
+		// < 0 system has issues
+		ES_DEFAULT					=  0,
+		ES_NA						=  1,
+		ES_STARTED					=  2,
+		// > 0 system is normal and progressing to READY
+		// codes 20 to 39 (max) = launch / verify / resolve
+
+		ES_VRFY					   = 30,
+		ES_VRFY_INIT_FAIL			,
+		ES_VRFY_INIT_GOOD			,
+		ES_VRFY_RSLV_FAIL			,
+		ES_VRFY_RSLV_GOOD			,
+
+		ES_VRFY_DONE_HOLD_SC		,
+		ES_VRFY_DONE_HOLD_WBK		,
+		ES_VRFY_DONE_HOLD_SHT		,
+		ES_VRFY_DONE_HOLD_ACT		,
+
+		ES_VRFY_DONE_FAIL			,
+		ES_VRFY_DONE_RESTART		,
+		ES_VRFY_DONE_RECONFIG		,
+		ES_VRFY_DONE_ACT_OFF		,
+		ES_VRFY_DONE_ACT_IGNORE		,
+		ES_VRFY_DONE_MISSING		,
+		ES_VRFY_DONE_MOD_NAME		,
+		ES_VRFY_DONE_INVALID		,
+		ES_VRFY_DONE_BAD_VER			,
+		ES_VRFY_DONE_INVALID_OR_BAD_VER	,
+		ES_VRFY_DONE_GOOD			,
+
+		ES_WBK_SCHEMA_CREATED	    = 50,
+		ES_SHT_SCHEMA_CREATED		,
+		ES_WBK_STARTED			    ,
+		ES_SHT_STARTED			    ,
+		ES_WBK_CREATED			    ,
+		ES_SHT_CREATED			    ,
+		// >= ES_START_DONE_GOOD                  , system running normal
+		ES_START_DONE_GOOD			,
+		ES_START_DONE_DEACTIVATE	,
+		ES_START_DONE_FAIL			,
+		ES_START_DONE_EXIT			,
+
+	}
+
+	/* property system */
+
+	/* property classes */
+	public enum PropertyOwner  // that is, who generated the property event - not always the owner class
+	{
+		PO_GEN  = 0, 
+		PO_XSYS    ,
+		PO_XMGR    ,
+		PO_STMGR   ,
+		PO_XDATA   ,
+		PO_EXO     ,
+		PO_LMGR    ,
+	}
+
+	/* property identifiers */
+	public enum PropertyId
+	{
+		// general / multi-category
+		PI_GEN_RUNNING_STAT	,
+		PI_GEN_RESTART	    ,
+		PI_GEN_LAUNCHCODE   ,
+
+		// system status
+		PI_XSYS_STATUS		,
+
+		// verification 
+		PI_VFY_WBK_SC		= 5,
+		PI_VFY_WBK_DS		,
+		PI_VFY_SHT_SC		,
+		PI_VFY_SHT_DS		,
+
+		// exstormgr
+		// PI_XMGR_XSYS_RUN	,
+
+		// exstordata
+		PI_XDATA_WBK        ,
+		PI_XDATA_WBK_SC     ,
+		PI_XDATA_WBK_DS     ,
+		PI_XDATA_SHT        ,
+		PI_XDATA_SHT_SC     ,
+		PI_XDATA_SHT_DS     ,
+
+		// launch manager
+		// PI_LMGR_LCODE		,
+		// PI_LMGR_RESOLV       ,
+	}
+
+	/* startup verification */
+
+	public enum ValidateSchema
+	{
+		VSC_DEBUG				= N_DB,        //
+		VSC_VRFY_UNTESTED		= N_NEG_TWO ,  //
+		VSC_NA					= N_NEG_ONE ,  //
+		VSC_DEFAULT				= N_ZERO ,	   //
+		VSC_GOOD				= N_GOOD ,	   //
+		VSC_MISSING				= N_ONE,	   //  1
+		VSC_WRONG_COUNT			= N_TWO,	   //  2
+		VSC_INVALID				= N_THREE,     //  3
+		                                       // 
+		VSC_WRONG_VER			= N_SIX,       //  6
+
+		// invalid & wrong ver can occur at the same time in any combination
+		// combinations invalid, wrong ver, both
+
+		// voided
+		// VSC_INVALID_OR_WRONG_VER = N_ONEOHFOUR,
+		// VSC_OUT_OF_DATE			= N_ONEOHFOUR, - same as wrong version
+	}
+
+	public enum ValidateDataStorage
+	{
+		VDS_DEBUG				= N_DB,        //
+		VDS_VRFY_UNTESTED		= N_NEG_TWO ,  //
+		VDS_NA					= N_NEG_ONE ,  //
+		VDS_DEFAULT				= N_ZERO ,	   //
+		VDS_GOOD				= N_GOOD ,	   //
+		VDS_MISSING				= N_ONE,	   //  1
+		VDS_WRONG_COUNT			= N_TWO,	   //  2
+		VDS_INVALID				= N_THREE,     //  3
+											   //
+		VDS_WRONG_VER			= N_SIX,       //  6
+											   //
+		VDS_ACT_OFF            	= N_SEVEN,	   //  7
+		VDS_ACT_IGNORE         	= N_EIGHT,	   //  8
+		VDS_WRONG_MODEL_NAME	= N_NINE,	   //  9
+		
+		VDS_MULTIPLE			= N_TWENTY     // 99 
+
+		// voided
+		// VDS_INVALID_N_WRONG_VER	= N_ONEOHFOUR,
+		// VDS_WRONG_MODEL_CODE	= N_SIX,
+		// VDS_NOT_BAD			,	// VOID
+	}
+
+
+
+
+	/* various enums */
+
+
+	public enum FieldEditLevel
+	{
+		DL_DEBUG			= -1,
+		DL_BASIC			= 0,
+		DL_MEDIUM			= 1,
+		DL_ADVANCED			= 2
+	}
+
+	public enum ItemUsage
+	{
+		IU_SCHEMA,
+		IU_DATASTORAGE,
+		IU_S_AND_DS,
+		IU_WBK,
+		IU_SHT
+	}
+		
+
+
+
+	/* enums saved into a DS / Entity via a schema
+	 * privide a default value in the cost class below
+	 */
+
+	public enum ActivateStatus
+	{
+		AS_NA		= N_NEG_ONE,
+		AS_DEFAULT	= N_ZERO,
+		AS_ACTIVE	,		// system is active for this model
+		AS_INACTIVE	,	// system has been put on hold for this model
+		AS_IGNORE		// ignore this model - do not add to this model
 	}
 
 	public enum SheetOpStatus
@@ -85,37 +292,68 @@ namespace ExStorSys
 		UR_COUNT        = 3
 	}
 
-	public enum FieldEditLevel
-	{
-		DL_DEBUG			= -1,
-		DL_BASIC			= 0,
-		DL_MEDIUM			= 1,
-		DL_ADVANCED			= 2
-	}
-
-	public enum FieldUsage
-	{
-		FU_SCHEMA,
-		FU_DATASTORAGE,
-		FU_S_AND_DS,
-	}
-
-
 	// key information
 
 	public static class ExStorConst
 	{
+		public const string APP_NAME = "ExStorage System";
+		/* static default enum values that are saved into a DS / entity via a schema */
+
+		public const UpdateRules DEFAULT_UPDATE_RULE = UpdateRules.UR_NEVER;
+		public const ActivateStatus DEFAULT_ACTIVATE_STATUS = ActivateStatus.AS_INACTIVE;
+		public const SheetOpStatus DEFAULT_SHEET_OP_STATUS = SheetOpStatus.SS_GOOD;
+
+
 		public static readonly string[,]  NAME_REPL_STRING =  new [,] {{ ".", "_"} } ;
 		public static readonly string[]  DOC_NAME_REPL_STRING =  [ @"[^0-9a-zA-Z]", ""]  ;
 
 		static ExStorConst()
 		{
 			CompanyId = CsStringUtil.CleanString(CsUtilities.CompanyName, NAME_REPL_STRING) ?? "";
-			VendorId = CsStringUtil.CleanString(RevitAddinsUtil.GetVendorId(), NAME_REPL_STRING) ?? "";
-			AppId = RevitAddinsUtil.GetAppId().ToLower();
+			VendorId = CsStringUtil.CleanString((RevitAddinsUtil.GetVendorId() ?? "missing"), NAME_REPL_STRING) ?? "";
+			AppId = (RevitAddinsUtil.GetAppId() ?? "missing").ToLower();
 		}
 
-		// field type constants
+		/* methods */
+
+		// /// <summary>
+		// /// the model code is a unique value that is associated with a specific model but<br/>
+		// /// does not identify a specific model.  that is, this code cannot be used to find a specific <br/>
+		// /// model by itself.  it can only be used to validate objects with this code all belong to a<br/>
+		// /// specific model
+		// /// </summary>
+		// public static string CreateModelCode()
+		// {
+		// 	return DateTime.Now.ToString("yyMMdd_HHmmss");
+		// }
+
+		public static string CreateNextIdCode(string last)
+		{
+			char[] c = last.ToCharArray();
+
+			for (int i = 3; i >= 0; i--)
+			{
+				if (c[i] == 'Z')
+				{
+					c[i] = '0';
+					break;
+				}
+				
+				if (c[i] == '9')
+				{
+					c[i] = 'A';
+					continue;
+				}
+
+				c[i]++;
+				break;
+			}
+
+			return new string(c);
+		}
+
+		/* field type constants */
+
 		public const string K_NOT_DEFINED_TYPE = "";
 		public const string K_NOT_DEFINED_STR = "<not defined>";
 
@@ -151,6 +389,7 @@ namespace ExStorSys
 		// todo replace this with an source from the external app
 
 		public static readonly int ID_CODE_LENGTH = EXS_SHT_FIRST_ID_CODE.Length;
+		// public static readonly int MODEL_CODE_LENGTH = "250101_000000".Length;
 
 		public const string APP_CODE = "CsCells";
 		public const string EXS_SCHEMA_NAME_CODE = "Schema";
@@ -158,9 +397,15 @@ namespace ExStorSys
 		// public const string EXS_WKB_ID = "9999"; // last possible value
 		public const string EXS_SHT_FIRST_ID_CODE = "AAAA"; // first possible value
 
-		public const string EXS_VERSION = "v1_00";
+		public const string EXS_VERSION_WBK = "v1_00";
+		public const string EXS_VERSION_SHT = "v1_00";
 
 		public const string EXS_SHT_NAME_CODE = "SHT";
+
+		/* const schema GUIDs */
+		
+		public static readonly Guid WbkSchemaGuid = new Guid("A35D2205-CFFA-4EE0-ACED-DECADE20250A" );
+		public static readonly Guid ShtSchemaGuid = new Guid("A35D2205-CFFA-4EE0-ACED-DECADE20250B" );
 
 		// const names
 		// workbook schema name == WbkSchemaName          == CsCells_WBK_Schema_v1_00
@@ -171,16 +416,15 @@ namespace ExStorSys
 		// general workbook search name == EXS_WBK_NAME_SEARCH == CsCells_WBK_
 		// general sheet search name    == EXS_SHT_NAME_SEARCH == CsCells_SHT_
 
-				
 		/// <summary>
 		/// always: CsCells_Wbk_Schema_v1_00
 		/// </summary>
-		public static string WbkSchemaName => $"{ExStorConst.EXS_WBK_DS_NAME_PREFIX}{ExStorConst.EXS_SCHEMA_NAME_CODE}_{ExStorConst.EXS_VERSION}";
+		public static string WbkSchemaName => $"{ExStorConst.EXS_WBK_DS_NAME_PREFIX}{ExStorConst.EXS_SCHEMA_NAME_CODE}_{ExStorConst.EXS_VERSION_WBK}";
 
 		/// <summary>
 		/// always: CsCells_Sht_Schema_v1_00
 		/// </summary>
-		public static string ShtSchemaName => $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorConst.EXS_SCHEMA_NAME_CODE}_{ExStorConst.EXS_VERSION}";
+		public static string ShtSchemaName => $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorConst.EXS_SCHEMA_NAME_CODE}_{ExStorConst.EXS_VERSION_SHT}";
 
 		// workbook name prefix - also the "base" name used for searching
 		/// <summary>
@@ -206,6 +450,163 @@ namespace ExStorSys
 		/// </summary>
 		public const string EXS_SHT_DS_NAME_PREFIX_FIRST = $"{APP_CODE}_{EXS_SHT_NAME_CODE}_{EXS_SHT_FIRST_ID_CODE}";
 
+		/* ex stor status const */
+
+		public static Dictionary<RunningStatus, string> RunningStatusDesc = new ()
+		{
+			{ RN_DEBUG				, "debug status"},
+			{ RN_NA					, "n/a"},
+			{ RN_DEACTIVATE	        , "system deactivated for this model"},
+			{ RN_CANNOT_RUN_FAIL	, "Failure, cannot run"},
+			{ RN_CANNOT_RUN_RESTART	, "Restart Required, cannot run"},
+			{ RN_NOT_RUNNING		, "system NOT running"},
+			{ RN_READY_NOT_RUNNING	, "ready but not running"},
+			{ RN_RUNNING_NEED_SHT   , "system running normal but needs sheets"},
+			{ RN_RUNNING_NORMAL	    , "system running normally"},
+		};
+
+		/* ExSysStatus - alternate status system
+		 * > struct with (3) levels
+		 * Level 1 - overall status = inactive / starting (booting) / initializing / active
+		 * level 2 - intermediate status = launch / initializing | launch | verifying
+		 * level 3 - low level status = good / bad / working
+		 *
+		 * or
+		 *
+		 * just adjust the current system to have each status point to be
+		 * multilevel - e.g.
+		 * ES_LN_START, ES_LN_VFRG, ES_LN_VFRG_BAD,
+		 * ES_LN_VFRG_GOOD (and segrate by value e.g. all ES_LN = 20 to 29)
+		 *
+		 * or
+		 *
+		 * hybrid
+		 *
+		 * have (2) levels - primary and sub
+		 * have the primary level register as primary and all other status
+		 * assignments are saved as secondary so they can report back to the primary
+		 *
+		 */
+
+		public static Dictionary<ExSysStatus, string> ExStorStatDesc = new()
+		{
+			{ES_DEFAULT             , "Default value, UnSet"}                       ,
+			{ES_NA                  , "Not applicable / UnSet"}                     ,
+			{ES_STARTED             , "Started & Configured"}                       ,
+			
+			/* verify */
+
+			{ES_VRFY_INIT_GOOD		, "Verify, Init Good"}                          ,
+			{ES_VRFY_INIT_FAIL		, "Verify, Init Fail"}                          ,
+			
+			{ES_VRFY_RSLV_GOOD		, "Verify, Resolve Good"}                       ,
+			{ES_VRFY_RSLV_FAIL		, "Verify, Resolve Fail"}                       ,
+			
+			{ES_VRFY_DONE_HOLD_SC	, "Verify Done, setup, schema up"}              , // start from scratch
+			{ES_VRFY_DONE_HOLD_WBK	, "Verify Done, setup, workbook datastorage up"}, // almost normal, just need to setup workbook & sheets
+			{ES_VRFY_DONE_HOLD_SHT	, "Verify Done, setup, sheet datastorage up"}   , // basically normal, just need to setup some sheets
+			{ES_VRFY_DONE_HOLD_ACT	, "Verify Done, hold due to activation"}        , // activation is off or ignore
+			
+			{ES_VRFY_DONE_FAIL		, "Verify Done, and Failed"}                    , // something went wrong - abort
+			{ES_VRFY_DONE_RESTART	, "Verify Done, need to restart the system"}    , // something is wrong, need to start over
+			{ES_VRFY_DONE_RECONFIG	, "Verify Done, need to re-configure the system"}, // cannot use the current system - need to clear and restart
+			{ES_VRFY_DONE_ACT_OFF	, "Verify Done, activation is off"}             ,
+			{ES_VRFY_DONE_ACT_IGNORE, "Verify Done, activation is ignore"}          ,
+			{ES_VRFY_DONE_MOD_NAME	, "Verify Done, incorrect model name"}          ,
+			{ES_VRFY_DONE_MISSING	, "Verify Done, element is missing"}            ,
+			{ES_VRFY_DONE_INVALID	, "Verify Done, element is invalid"}            ,
+			{ES_VRFY_DONE_BAD_VER		, "Verify Done, element is out of date"}        ,
+			{ES_VRFY_DONE_INVALID_OR_BAD_VER	, "Verify Done, element is invalid and has wrong version"} ,
+			{ES_VRFY_DONE_GOOD		, "Verify Done and Good, but nothing read"}     , // all went well, proceed, read data
+
+			/* initialization */
+
+			{ES_WBK_SCHEMA_CREATED  , "WorkBook Schema Created"}                    ,
+			{ES_SHT_SCHEMA_CREATED  , "Sheet Schema Created"}                       ,
+			{ES_WBK_STARTED         , "WorkBook Complete"}                          ,
+			{ES_SHT_STARTED         , "Sheet(s) Complete"}                          ,
+			{ES_WBK_CREATED         , "WorkBook Complete"}                          ,
+			{ES_SHT_CREATED         , "Sheet(s) Complete"}                          ,
+
+			/* start status */
+
+			{ES_START_DONE_GOOD     , "Start Done; Ready"}                          ,
+			{ES_START_DONE_DEACTIVATE, "Start Done; Processing Deactivated"}        ,
+			{ES_START_DONE_FAIL     , "Start Done; Failed"}                         ,
+			{ES_START_DONE_EXIT     , "Start Done; User Chose to Exit"}             ,
+
+			/* issues */
+
+			{ES_RESTART_REQD        , "Restart Required"}                           ,
+			{ES_WBK_DELETED         , "WorkBook Deleted"}                           ,
+			{ES_SHT_DELETED         , "Sheet Deleted"}                              ,
+
+			// no ... schema deleted - once either is deleted, restart is required
+		};
+
+		public static Dictionary<LaunchCode, string> LaunchCodeDesc = new ()
+		{
+			{ LC_DEBUG,				"Launch debug" },
+			{ LC_DEFAULT,			"Default value, LC not set" },
+			{ LC_NA,				"Not Applicable, Launch does not apply" },
+			{ LC_STARTED,			"Launch Progressing, Good" },
+			{ LC_PROG_GOOD,			"Launch Progressing, Fail" },
+			{ LC_PROG_FAIL,			"Launch Started" },
+			{ LC_DONE_RESTART,		"Launch done, start from scratch" },
+			{ LC_DONE_RNR,			"Launch done, schema and/or ds needs repair then restart" },
+			{ LC_DONE_HOLD,			"Launch done, on hold" },
+			{ LC_DONE_UPGRADE,		"Launch done, schema / datastore is out of date" },
+			{ LC_DONE_CREATE,		"Launch done, a datastore needs to be created" },
+			{ LC_DONE_MISSING,		"Launch done, element is missing" },
+			{ LC_DONE_INVALID,		"Launch done, element is invalid" },
+			{ LC_DONE_BAD_VER,		"Launch done, element has the wrong version" },
+			{ LC_DONE_INVALID_BAD_VER,	"Launch done, element is invalid and has the wrong version" },
+			// { LC_DONE_MOD_CODE,		"Launch done, incorrect model code" },
+			{ LC_DONE_GOOD,			"Launch done, good" },
+			{ LC_DONE_FAIL,			"Launch done, failed" },
+		
+		};
+
+		public static Dictionary<ValidateSchema, Tuple<string, string, string>> ValidateSchemaDesc = new ()
+		{
+			{VSC_DEBUG			     , new ("For Debugging"					           , "debug only"       , "db" ) }, //
+			{VSC_VRFY_UNTESTED       , new ("Validation Cannot be Performed"           , "n/a"              , "ut" ) }, //
+			{VSC_NA				     , new ("N/A value, Unset"	                       , "n/a"              , "na" ) }, // 
+			{VSC_DEFAULT		     , new ("Default value, Unset"	                   , "default"          , "df" ) }, // 
+			{VSC_GOOD			     , new ("schema good"                              , "n/a"              , "gd" ) }, //
+			{VSC_MISSING		     , new ("no schema found"                          , "Create New"       , "ms" ) }, // 
+			{VSC_WRONG_COUNT		 , new ("one+ good schema found"                   , "n/a cannot happen", "wc" ) }, // 
+			{VSC_INVALID		     , new ("schema invalid"                           , "n/a cannot happen", "iv" ) }, // 
+			{VSC_WRONG_VER	         , new ("schema has the Wrong Version"             , "need to upgrade"  , "wv" ) }, // 
+								     
+			// voided
+			// {VSC_INVALID_OR_WRONG_VER , new ("schema is invalid or has wrong version"  , "need to upgrade") },	// 
+		};
+
+		public static Dictionary<ValidateDataStorage,  Tuple<string, string, string>> ValidateDataStorageDesc = new ()
+		{
+			{VDS_DEBUG			     , new ("For Debugging"						       , "debug only"                         , "db" ) }, //
+			{VDS_VRFY_UNTESTED       , new ("Validation Cannot be Performed"           , "n/a"                                , "ut" ) }, //
+			{VDS_NA	                 , new ("N/A value, Unset"			               , "n/a"                                , "na" ) }, //
+			{VDS_DEFAULT		     , new ("Default value, Unset"				       , "default"                            , "df" ) }, // 
+			{VDS_GOOD                , new ("datastorage good"                         , "n/a"                                , "gd" ) }, //
+			{VDS_MISSING             , new ("no datastorage found"                     , "Create New"                         , "ms" ) }, //
+			{VDS_WRONG_COUNT         , new ("one+ good datastorage found"              , "Delete Until Only One Valid Remains", "wc" ) }, //
+			{VDS_INVALID             , new ("datastorage invalid"                      , "Delete Until Only One Valid Remains", "iv" ) }, //
+			{VDS_WRONG_VER			 , new ("datastorage has the Wrong Version"        , "Request to Fix"                     , "wv" ) }, //
+			{VDS_ACT_OFF             , new ("ExSystem has been deactivated"            , "Request to Fix"                     , "ao" ) }, //
+			{VDS_ACT_IGNORE          , new ("ExSystem has been disabled"               , "ignore"                             , "ai" ) }, //
+			{VDS_WRONG_MODEL_NAME    , new ("datastorage has the Wrong Model Name"     , "Request to Fix"                     , "mn" ) }, //
+			{VDS_MULTIPLE            , new ("datastorage multiple issues"              , "some, Request to Fix"               , "mu" ) }, //
+
+			// voided
+			// {VDS_WRONG_MODEL_CODE  , new ("datastorage has the Wrong Model Code"  , "Request to Fix") },	//
+			// {VDS_INVALID_N_WRONG_VER , new ("datastorage is invalid and has wrong version" , "need to upgrade") },   //
+		};
+
+		/* restart const's*/
+
+		public static string[] RestartStatDesc = ["No Restart Needed", "Restart Required", "System Not Active"];
 
 		/* validation const's*/
 
@@ -213,65 +614,6 @@ namespace ExStorSys
 		public static string[] DataClassAbbrevTc = ["Wbk", "Sht"];
 		public static string[] DataClassFull =     ["WorkBook", "Sheet"];
 		public static string[] DataContainerFull = ["Schema", "DataStorage"];
-
-
-		public static string[] ScValidateResults = [ "schema good", "no schema found", "one+ schema invalid", "more than one schema found" ];
-		public static string[] DsValidateResults = [ "datastorage good", "no datastorage found", "one+ datastorage invalid", "more than one datastorage found" ];
-
-		public static string[] ScValidateResolve =
-			["n/a", "Create new", "Delete until one valid", "Delete all except one"];
-		//   ^ good, ^ none        ^ one+ invalid,           ^ good but 1+ found
-
-		// public static string[] ScValidateResolveAndNoDsFound =
-		// 	["n/a", "Create new", "Delete all; Create new", "Delete All; Create new"];
-		// //   ^ good, ^ none        ^ one+ invalid,           ^ good but 1+ found
-
-		// assume that schema exists at this point
-		public static string[] DsWbkValidateResolve =
-			["n/a", "Create new", "Delete until one valid & matches sheet model code",  "Delete until one valid & matches sheet model code"];
-		//   ^ good, ^ none        ^ one+ invalid,                                       ^ good but 1+ found
-
-
-		public static string[] DsShtValidateResolve =
-			["n/a", "Create new", "Delete invalid & wrong model code", "Delete any with wrong model code"];
-		//   ^ good, ^ none        ^ one+ invalid,                                       ^ good but 1+ found
-
-		/// <summary>
-		/// the model code is a unique value that is associated with a specific model but<br/>
-		/// does not identify a specific model.  that is, this code cannot be used to find a specific <br/>
-		/// model by itself.  it can only be used to validate objects with this code all belong to a<br/>
-		/// specific model
-		/// </summary>
-		public static string CreateModelCode()
-		{
-			return DateTime.Now.ToString("yyMMdd_HHmmss");
-		}
-
-		public static string CreateNextIdCode(string last)
-		{
-			char[] c = last.ToCharArray();
-
-			for (int i = 3; i >= 0; i--)
-			{
-				if (c[i] == 'Z')
-				{
-					c[i] = '0';
-					break;
-				}
-				
-				if (c[i] == '9')
-				{
-					c[i] = 'A';
-					continue;
-				}
-
-				c[i]++;
-				break;
-			}
-
-			return new string(c);
-		}
-		
 	}
 
 	// ds field names
@@ -280,6 +622,7 @@ namespace ExStorSys
 		PK_DS_NAME                = K_DS_NAME,
 		PK_AD_DESC                = K_DESCRIPTION,
 		PK_AD_VENDORID            = K_VENDORID,
+		PK_AD_STATUS				,
 		// PK_AD_ADDINID             = K_ADDINID,
 
 		PK_AD_DELETED             = K_DELETED,
@@ -290,7 +633,7 @@ namespace ExStorSys
 		PK_AD_NAME_MODIFIED       = K_NAME_MODIFIED,
 
 		PK_AD_LAST_ID			  ,
-		PK_AD_MODEL_CODE          ,
+		// PK_AD_MODEL_CODE          ,
 
 		PK_SD_SCHEMA_VERSION      = K_SCHEMA_VERSION,
 		// PK_SD_WBK_SCHEMA_NAME     = K_WBK_SCHEMA_NAME,
@@ -329,6 +672,24 @@ namespace ExStorSys
 	}
 
 
-
+	
+	// public enum OpState 
+	// {
+	// 	OS_DELETE_SHT	= -4,
+	// 	OS_DELETE_WBK	= -2,
+	// 	OS_NORMAL_OP	= 0,
+	// 	OS_STARTED	    = 1,
+	// 	OS_CREATE_WBK	= 2,
+	// 	OS_CREATE_SHT	= 4,
+	// }
+	//
+	// public enum OpUseTypes
+	// {
+	// 	OUT_DELETE	    = -2,
+	// 	OUT_INFO	    = -1,
+	// 	OUT_NORMAL_OP   = 0,
+	// 	OUT_ANY		    = 1,
+	// 	OUT_CREATE		= 2,
+	// }
 
 }

@@ -37,8 +37,8 @@ namespace ExStorSys
 		{
 			RevitAddinsUtil.ReadManifest(CsUtilities.AssemblyName);
 
-			ModelName = R.RvtDoc?.Title ?? "";
-			Model_Name = CsStringUtil.RegexCleanString(R.RvtDoc?.Title ?? "", ExStorConst.DOC_NAME_REPL_STRING[0], ExStorConst.DOC_NAME_REPL_STRING[1]) ?? "";
+			// ModelName = R.RvtDoc?.Title ?? "";
+			// Model_Name = ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
 		}
 
 	#endregion
@@ -50,12 +50,12 @@ namespace ExStorSys
 		/// <summary>
 		/// Actual model name (title) (un-cleaned)
 		/// </summary>
-		public string ModelName { get; protected set;  }
+		public string ModelName => R.RvtDoc?.Title ?? "";
 
 		/// <summary>
 		/// Cleaned actual model name (title)
 		/// </summary>
-		public string Model_Name { get; protected set; }
+		public string Model_Name =>ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
 
 
 		/* ex stor names */
@@ -71,10 +71,7 @@ namespace ExStorSys
 
 	#region public methods
 
-		// public void SetModelCode()
-		// {
-		// 	modelCode = ExStorConst.CreateModelCode();
-		// }
+		/* utility */
 
 		public string? GetNextId(string lastId)
 		{
@@ -82,7 +79,6 @@ namespace ExStorSys
 
 			return nextId;
 		}
-
 
 		// in ExStorConst
 		//
@@ -114,10 +110,10 @@ namespace ExStorSys
 		/// </summary>
 		public string ShtSearchName => ExStorConst.EXS_SHT_NAME_SEARCH;
 
-		/// <summary>
-		/// includes app code + sheet name code + model code
-		/// </summary>
-		public string ShtDsSearchNameModelSpecific => $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorMgr.Instance.TempModelCode}";
+		// /// <summary>
+		// /// includes app code + sheet name code + model code
+		// /// </summary>
+		// public string ShtDsSearchNameModelSpecific => $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorMgr.Instance.xData.TempModelCode}";
 
 
 		/* schema names (constants) */
@@ -135,30 +131,30 @@ namespace ExStorSys
 		/* ds names */
 
 		/// <summary>
-		/// CsCells_Wbk_{model code}_v1_00 / example: CsCells_WBK_250101_160101_v1_00<br/>
+		/// CsCells_WBK_v1_00 / example: CsCells_WBK_v1_00<br/>
 		/// id code removed
 		/// </summary>
-		public string CreateWbkDsName(string modelCode)
+		public string CreateWbkDsName()
 		{
-			return $"{ExStorConst.EXS_WBK_NAME_SEARCH}{modelCode}_{ExStorConst.EXS_VERSION}";
+			return $"{ExStorConst.EXS_WBK_NAME_SEARCH}{ExStorConst.EXS_VERSION_WBK}";
 		}
 
-		/// <summary>
-		/// CsCells_Sht_{model code}_{ID}_v1_00 / example: CsCells_SHT_250101_16010_ABCD_v1_00<br/>
-		/// model code / id code reversed
-		/// </summary>
-		public string CreateShtDsName(string id)
-		{
-			return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorMgr.Instance.TempModelCode}_{id}_{ExStorConst.EXS_VERSION}";
-		}
+		// /// <summary>
+		// /// CsCells_Sht_{model code}_{ID}_v1_00 / example: CsCells_SHT_250101_16010_ABCD_v1_00<br/>
+		// /// model code / id code reversed
+		// /// </summary>
+		// public string CreateShtDsName(string id)
+		// {
+		// 	return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorMgr.Instance.xData.TempModelCode}_{id}_{ExStorConst.EXS_VERSION_SHT}";
+		// }
 
 		/// <summary>
 		/// CsCells_Sht_{model code}_{ID}_v1_00 / example: CsCells_Sht_250101_16010_ABCD_v1_00<br/>
 		/// model code / id code reversed now
 		/// </summary>
-		public string CreateShtDsName(string id, string modelCode)
+		public string CreateShtDsName(string id)
 		{
-			return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{modelCode}_{id}_{ExStorConst.EXS_VERSION}";
+			return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{id}_{ExStorConst.EXS_VERSION_SHT}";
 		}
 
 		/// <summary>
@@ -167,7 +163,7 @@ namespace ExStorSys
 		/// </summary>
 		public string CreateFirstShtDsName()
 		{
-			return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorConst.EXS_SHT_FIRST_ID_CODE}_{ExStorMgr.Instance.TempModelCode}_{ExStorConst.EXS_VERSION}";
+			return $"{ExStorConst.EXS_SHT_NAME_SEARCH}{ExStorConst.EXS_SHT_FIRST_ID_CODE}_{ExStorConst.EXS_VERSION_SHT}";
 		}
 
 

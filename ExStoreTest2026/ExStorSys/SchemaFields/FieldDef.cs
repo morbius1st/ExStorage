@@ -20,7 +20,7 @@ namespace ExStorSys
 	// 	public Type FieldType { get; }
 	// 	public DynaValue FieldDefValue { get; }
 	// 	public FieldEditLevel FieldEditLevel { get; }
-	// 	public FieldUsage FieldUse { get; }
+	// 	public ItemUsage FieldUse { get; }
 	// }
 
 	/// <summary>
@@ -30,8 +30,8 @@ namespace ExStorSys
 	public class FieldDef<Te> // : IFieldDef<Te>
 		where Te : Enum
 	{
-		public FieldDef(  Te fieldKey, string fieldName, string fieldDesc,
-			DynaValue? fieldDefValue, FieldUsage fieldUse, FieldEditLevel fieldEditLevel)
+		public FieldDef( Te fieldKey, string fieldName, string fieldDesc,
+			DynaValue? fieldDefValue, ItemUsage fieldUse, FieldEditLevel fieldEditLevel)
 		{
 			FieldKey = fieldKey;
 			FieldName = fieldName;
@@ -47,12 +47,13 @@ namespace ExStorSys
 		public Type FieldType => FieldDefValue?.TypeIs ?? typeof(object);
 		public DynaValue? FieldDefValue { get; }
 		public FieldEditLevel FieldEditLevel { get; }
-		public FieldUsage FieldUse { get; }
+		public ItemUsage FieldUse { get; }
 
+		public bool IsClean { get; set; } = true;
 
 		public override string ToString()
 		{
-			return $"this is {nameof(FieldDef<Te>)}";
+			return $"this is {FieldName}";
 		}
 	}
 }

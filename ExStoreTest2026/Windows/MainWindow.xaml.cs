@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ExStoreTest2026.DebugAssist;
 using ExStorSys;
 using RevitLibrary;
@@ -26,50 +16,58 @@ namespace ExStoreTest2026.Windows
 	/// </summary>
 	public partial class MainWindow : Window, INotifyPropertyChanged, IWin
 	{
-		private int objectId;
-		private int cmdId;
+		public int ObjectId;
 
-		public MainWinModel wm { get; set; }= new ();
-		
-		private string message;
+		private MainWinModelUi mui ; // = MainWinModelUi.Instance;
+		private ExStorStartMgr? stMgr;
 
 		private Window win = new Window();
 		private Window rvtWin;
 
-		private int resultWbkSc = 1;
-		private int resultWbkDs = 1;
-		private int resultShtSc = 1;
-		private int resultShtDs = 1;
+		private string message;
+
+
+		// private int resultWbkSc = 1;
+		// private int resultWbkDs = 1;
+		// private int resultShtSc = 1;
+		// private int resultShtDs = 1;
 
 		private int test = 0;
 		private bool winShown = false;
-		private bool? restartStatus;
 
-		private string gotWbkSchema;
+		// private bool? restartStatus;
+		// private string gotWbkSchema;
 
-		public MainWindow(int cmdId)
+		public MainWindow()
 		{
-			objectId = AppRibbon.ObjectIdx++;
-			this.cmdId = cmdId;
+			init();
+		}
+
+		private void init()
+		{
+			// ObjectId = AppRibbon.ObjectIdx++;
+
+			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWindow)) ?? -1;
+
+			// ui dependant objects must be connected before InitializeComponent elsewise
+			// the ui gets connected to a null object that no longer exists after it gets configured
+			mui = MainWinModelUi.Instance;
 
 			InitializeComponent();
 
 			Msgs.Mw = this;
 			R.Msg = this;
-			// wm = new MainWinModel();
-
+			
 			IntPtr ptr = R.RvtUiApp.MainWindowHandle;
 			rvtWin = RvtLibrary.WindowHandle(ptr);
 
 			rvtWin.LocationChanged += RvtWinOnLocationChanged;
-			
-			configTitleWindow();
+
+			// save this
+			// configTitleWindow();
+
 			win.Owner = rvtWin;
-
-			ExStorMgr.Instance.RestartReqdChanged += InstanceOnRestartReqdChanged;
 		}
-
-		
 
 		/* message text box */
 
@@ -88,125 +86,42 @@ namespace ExStoreTest2026.Windows
 		public void DebugMsg(string msg) => Message += msg;
 		public void WriteLine(string msg) => DebugMsgLine(msg);
 
+		/* system status */
+
+		public string ObjId {
+			get
+			{
+				ExStorMgr? ex = ExStorMgr.Instance;
+
+				string m1 = "null";
+				string m2 = "null";
+				string m3 = ExStorStartMgr.Instance == null ? "null" : "good";
+				string m4 = "null";
+				string m5 = "null";
+
+				if (ex != null)
+				{
+					m1 = ex.ObjectId.ToString();
+					m2 = ex.xData.ObjectId.ToString();
+					m4 = Mui?.ObjectId.ToString() ?? "null";
+					m5 = ExStorStartMgr.Instance?.ObjectId.ToString() ?? "null";
+				}
+
+				return $"[{ObjectId}] | xMgr [{m1}] | xData [{m2}] | mui [{m4}] | stMgr [{m3}]" ;
+			}
+	}
+
+		// three system status methods
+		// restart required - flags that a restart of revit must occur before "any" furthur
+		//		ExSys operations can be preformed
+		// ExSysStatus - flags the general state of the system
+
 		/* properties */
 
-		public int WbkScResCode
-		{
-			get => resultWbkSc;
-			set
-			{
-				if (value != resultWbkSc) return;
-				resultWbkSc = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(WbkScResDesc));
-			}
-		}
-		public string WbkScResDesc => $"WBK {ExStorConst.ScValidateResults[resultWbkSc]}";
-
-		public int WbkDsResCode
-		{
-			get => resultWbkDs;
-			set
-			{
-				if (value != resultWbkDs) return;
-				resultWbkDs = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(WbkDsResDesc));
-			}
-		}
-		public string WbkDsResDesc => $"WBK {ExStorConst.DsValidateResults[resultWbkDs]}";
-
-		public int ShtScResCode
-		{
-			get => resultShtSc;
-			set
-			{
-				if (value != resultShtSc) return;
-				resultShtSc = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(ShtScResDesc));
-			}
-		}
-		public string ShtScResDesc => $"SHT {ExStorConst.ScValidateResults[resultShtSc]}";
-
-		public int ShtDsResCode
-		{
-			get => resultShtDs;
-			set
-			{
-				if (value != resultShtDs) return;
-				resultShtDs = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(ShtDsResDesc));
-			}
-		}
-		public string ShtDsResDesc => $"SHT {ExStorConst.DsValidateResults[resultShtDs]}";
-
-
-		public string RestartStatusDesc
-		{
-			get => restartStatus.HasValue ? (restartStatus.Value ? "Restart Needed" : "Restart Not Needed") : "Not Applicable";
-		}
-
-		public bool? RestartStatus
-		{
-			get => restartStatus;
-			set
-			{
-				if (value == restartStatus) return;
-				restartStatus = value;
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(RestartStatusDesc));
-			}
-		}
-
-		public string GotWbkSchema
-		{
-			get => gotWbkSchema;
-			set
-			{
-				if (value == gotWbkSchema) return;
-				gotWbkSchema = value;
-				OnPropertyChanged();
-			}
-		}
-
-
-		private void updateStatProps()
-		{
-			OnPropertyChanged(nameof(WbkScResCode));
-			OnPropertyChanged(nameof(WbkScResDesc));
-
-			OnPropertyChanged(nameof(WbkDsResCode));
-			OnPropertyChanged(nameof(WbkDsResDesc));
-
-			OnPropertyChanged(nameof(ShtScResCode));
-			OnPropertyChanged(nameof(ShtScResDesc));
-
-			OnPropertyChanged(nameof(ShtDsResCode));
-			OnPropertyChanged(nameof(ShtDsResDesc));
-		}
+		public MainWinModel wm { get; set; } = new ();
+		public MainWinModelUi Mui => mui;
 
 		/* process events */
-
-		private void InstanceOnSettingChanged(object sender, SettingChangedEventArgs e)
-		{
-			switch (e.SettingId)
-			{
-				case SettingId.SI_GOT_WBK_SCHEMA:
-					{
-						if (e.Value.AsBool())
-						{
-							GotWbkSchema = "Yes, got Wbk schema";
-						}
-						else
-						{
-							GotWbkSchema = "Nope, don't got schema";
-						}
-						break;
-					}
-			}
-		}
 
 		private void RvtWinOnLocationChanged(object? sender, EventArgs e)
 		{
@@ -218,13 +133,6 @@ namespace ExStoreTest2026.Windows
 			}
 		}
 
-		private void InstanceOnRestartReqdChanged(object sender, bool? e)
-		{
-			RestartStatus = e;
-			OnPropertyChanged(nameof(RestartStatus));
-			OnPropertyChanged(nameof(RestartStatusDesc));
-		}
-
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[DebuggerStepThrough]
@@ -234,12 +142,115 @@ namespace ExStoreTest2026.Windows
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
 
+
+		public override string ToString()
+		{
+			return $"{nameof(MainWindow)} [{ObjectId}]";
+		}
+
 		/* process ui events */
+
+		
+		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+		{
+			// this.Visibility = Visibility.Collapsed;
+			//
+			// Msgs.SetTab2Depth(0);
+			//
+			// Msgs.CWriteLine("begin start manager");
+			//
+			// stMgr = ExStorStartMgr.Create();
+			//
+			// bool status = stMgr.Start();
+			//
+			// stMgr = null;
+			//
+			// if (!status)
+			// {
+			// 	
+			// 	this.Close();
+			//
+			// 	e.Handled = true;
+			// }
+			// else
+			// {
+			// 	this.Visibility = Visibility.Visible;
+			// 	this.Show();
+			// }
+			//
+			//
+			// Msgs.CWriteLine("end start manager");			
+		}
+
+		private void MainWin_Activated(object sender, EventArgs e)
+		{
+			OnPropertyChanged(nameof(ObjId));
+
+			Msgs.WriteLine($"window activated | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.Model_Name ?? "null"}");
+
+			wm.ShowMsgCache();
+		}
+
+		// private void MainWin_SourceInitialized(object sender, EventArgs e)
+		// {
+		// 	// Msgs.SetTab2Depth(0);
+		// 	//
+		// 	// Msgs.CWriteLine("begin start manager");
+		// 	//
+		// 	// stMgr = ExStorStartMgr.Create();
+		// 	//
+		// 	// bool status = stMgr.Start();
+		// 	//
+		// 	// stMgr = null;
+		// 	//
+		// 	// if (!status)
+		// 	// {
+		// 	// 	this.Close();
+		// 	// 	return;
+		// 	// }
+		// 	//
+		// 	// Msgs.CWriteLine("end start manager");	
+		//
+		// }
+
+		// private void MainWin_SourceInitialized(object sender, EventArgs e)
+		// {
+		// 	Msgs.SetTab2Depth(0);
+		//
+		// 	Msgs.CWriteLine("begin start manager");
+		//
+		// 	Msgs.CWriteLineMid($"ExSysStatus = {mui.ExSysStatus}");
+		//
+		// 	stMgr = ExStorStartMgr.Create();
+		//
+		// 	Msgs.CWriteLineBeg("begin start driver");
+		// 	
+		// 	ExSysStatus status = stMgr.StartDriver();
+		//
+		// 	Msgs.CWriteLineEnd("end start driver");
+		// 	
+		// 	if (status == ExSysStatus.ES_VRFY_DONE_FAIL) this.Close();
+		//
+		// 	stMgr = null;
+		//
+		// 	Msgs.CWriteLine("end start manager");
+		//
+		// }
+
 
 		private void BtnExit_OnClick(object sender, RoutedEventArgs e)
 		{
 			// this.Close();
 			this.Hide();
+			
+		}
+
+		private void BtnDebug_OnClick(object sender, RoutedEventArgs e)
+		{
+			Debug.WriteLine("** at debug **");
+
+			string a = R.RvtDoc?.Title ?? String.Empty;
+
 		}
 
 		private void BtnClear_OnClick(object sender, RoutedEventArgs e)
@@ -261,7 +272,6 @@ namespace ExStoreTest2026.Windows
 		{
 			wm.ShowExMgr();
 		}
-
 
 		private void BtnMakeWkBk_OnClick(object sender, RoutedEventArgs e)
 		{
@@ -333,12 +343,31 @@ namespace ExStoreTest2026.Windows
 			wm.FindAllSheetDs();
 		}
 
-		private void BtnClearReadAndShowAll_OnClick(object sender, RoutedEventArgs e)
+		private void BtnFindAndShowAll_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.FindAndReadAllShtDs();
+			wm.FindAndShowElements();
 		}
 
+		private void BtnShowObjId_OnClick(object sender, RoutedEventArgs e)
+		{
+			wm.ShowObjectId(ObjectId);
+		}
 
+		private void BtnClearReadAll_OnClick(object sender, RoutedEventArgs e)
+		{
+			wm.ClearAndReadAll();
+		}
+
+		private void BtnReadAndShowAll_OnClick(object sender, RoutedEventArgs e)
+		{
+			wm.ReadAllFromTemp();
+
+			Msgs.WriteLine("****  show info read from memory ****\n");
+
+			DebugRoutines.ShowWorkBookFromMemory();
+			DebugRoutines.ShowSheetsFromMemory();
+		}
+		
 		// this routine does work to create a overlay window (Msg bar) to cover the title area of a
 		// revit window.  note that this window cannot be modeless as the msg bar's size & location
 		// will not update if the main revit window size changes.  also, make sure to implement a 
@@ -359,7 +388,7 @@ namespace ExStoreTest2026.Windows
 			// Border b = CsWpfUtilities.FindElementByName<Border>(w, "MainWindow_ContentBorder", true);
 			// DockPanel dp2 = CsWpfUtilities.FindElementByName<DockPanel>(w, "TitlePanel", true);
 			// Grid gd1 = CsWpfUtilities.FindElementByName<Grid>(w, "MainWindow_ContentGrid");
- 
+
 			// IntPtr ptr1 = RvtLibrary.FindWindowEx(ptr, IntPtr.Zero, "MainWindow_Caption", "");
 			// Window w1 = RvtLibrary.WindowHandle(ptr1);
 			DockPanel dp1 = CsWpfUtilities.FindElementByName<DockPanel>(rvtWin, "MainWindow_Caption");
@@ -385,9 +414,9 @@ namespace ExStoreTest2026.Windows
 				// win.ResizeMode = ResizeMode.NoResize;
 
 				win.Top = top;
-				win.Left = left+1;
+				win.Left = left + 1;
 				win.Height = height;
-				win.Width = width-2;
+				win.Width = width - 2;
 
 				if (test++ % 2 == 0)
 				{
@@ -432,52 +461,74 @@ namespace ExStoreTest2026.Windows
 			win.Close();
 		}
 
-		private void MainWin_Activated(object sender, EventArgs e)
+		private void BtnTstWbkFalseModelName_OnClick(object sender, RoutedEventArgs e)
 		{
-			Msgs.WriteLine($"window activated | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.WorkBook?.Model_Name ?? "null"}");
-        }
-
-		private void BtnInitVerify_OnClick(object sender, RoutedEventArgs e)
-		{
-			wm.InitialVerify(out resultWbkSc, out resultWbkDs, out resultShtSc, out resultShtDs);
+			wm.WbkWithFalseModelName();
 		}
 
-		private void BtnStartupVerify_OnClick(object sender, RoutedEventArgs e)
+		// private void BtnTstShtFalseModelCode_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	wm.ShtWithFalseModelCode();
+		// }
+
+		private void BtnStartLaunchMgr_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.StartupVerify(out resultWbkSc, out resultWbkDs, out resultShtSc, out resultShtDs);
-
-			updateStatProps();
-
+			wm.StartLaunchManager();
 		}
 
+		/* startup */
 
-		private void BtnDeleteWbkDs_OnClick(object sender, RoutedEventArgs e)
+		private void BtnVerifyStartup_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.DeleteWbkDs();
-		}
-		private void BtnDeleteWbkSc_OnClick(object sender, RoutedEventArgs e)
-		{
-			wm.DeleteWbkSc();
+			wm.TestOnOpenDocLaunch();
 		}
 
-		private void BtnDeleteShtDs_OnClick(object sender, RoutedEventArgs e)
+		/* delete */
+
+		// private void BtnDeleteWbkSc_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	wm.DeleteWbkSc();
+		// }
+
+		// private void BtnDeleteShtSc_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	wm.DeleteShtSc();
+		// }
+
+		private void BtnDeleteOneSht_OnClick(object sender, RoutedEventArgs e)
+		{
+			wm.DeleteFirstShtDs();
+		}
+
+		private void BtnDeleteShts_OnClick(object sender, RoutedEventArgs e)
 		{
 			wm.DeleteShtDs();
 		}
 
-		private void BtnDeleteShtSc_OnClick(object sender, RoutedEventArgs e)
+		private void BtnDeleteWbk_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.DeleteShtSc();
+			wm.DeleteWbkDs();
 		}
 
-		private void BtnFindAndShowAll_OnClick(object sender, RoutedEventArgs e)
+		// private void BtnDeleteWbkDs_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	wm.DeleteWbkDs();
+		// }
+
+		// private void BtnDeleteShtDs_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	wm.DeleteShtDs();
+		// }
+
+		private void BtnVerifyTest_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.FindAndShowElements();
+			wm.TestVerify();
 		}
 
-		private void BtnShowObjId_OnClick(object sender, RoutedEventArgs e)
+		private void BtnTstWbkSetNotActive_OnClick(object sender, RoutedEventArgs e)
 		{
-			wm.ShowObjectId(objectId, cmdId);
+			wm.SetWbkToInactive();
 		}
+
 	}
 }

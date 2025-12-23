@@ -15,6 +15,7 @@ namespace ExStorSys
 		XRC_ENTITY_INVALID              = -22,
 		XRC_ENTITY_NOT_FOUND            = -21,
 		XRC_ENTITY_EXISTS               = -20,
+		XRC_SCHEMA_MISSING              = -18,
 		XRC_SCHEMA_WRITE_FAIL           = -17,
 		XRC_SCHEMA_NONE_FOUND           = -16,
 		XRC_SCHEMA_NOT_FOUND            = -15,

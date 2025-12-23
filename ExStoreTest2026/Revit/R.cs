@@ -7,6 +7,7 @@
 // using System.Threading.Tasks;
 // using UtilityLibrary;
 
+using System.ComponentModel;
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
@@ -27,6 +28,8 @@ namespace RevitLibrary
 		private static readonly Lazy<R> instance =
 			new Lazy<R>(() => new R());
 
+		private static Document? rvtDoc;
+
 	#endregion
 
 	#region ctor
@@ -43,9 +46,19 @@ namespace RevitLibrary
 		public static UIApplication? RvtUiApp { get; set; }
 		public static UIDocument? RvtUidoc { get; set; }
 		public static Application? RvtApp { get; set; }
-		public static Document? RvtDoc { get; set; }
+
+		public static Document? RvtDoc
+		{
+			get => rvtDoc;
+			set
+			{ 
+				rvtDoc = value;
+				FileNameChanged?.Invoke(null, new PropertyChangedEventArgs("FileName"));
+			}
+		}
 
 		public static string? FileName => RvtDoc?.Title;
+
 		public static string? FilePath => RvtDoc?.PathName;
 
 		public static int OpenDocCount => RvtApp?.Documents.Size ?? -1;
@@ -54,6 +67,10 @@ namespace RevitLibrary
 		public static bool MultipleDocsOpen => OpenDocCount > 1;
 
 	#endregion
+
+		public static event EventHandler? FileNameChanged;
+
+
 
 		public override string ToString()
 		{

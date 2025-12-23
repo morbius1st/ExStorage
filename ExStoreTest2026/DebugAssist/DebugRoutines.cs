@@ -1,32 +1,104 @@
 using System.Diagnostics;
+using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.ExtensibleStorage;
+using ExStoreTest2026.Windows;
 using ExStorSys;
 using RevitLibrary;
+using UtilityLibrary;
 using static ExStorSys.ExStorConst;
 
 
 namespace ExStoreTest2026.DebugAssist
-{
+{	
 	public static class DebugRoutines
 	{
-		public static void ShowObjectId(int cmdId, int mainWinId, 
-			int winModelId, int mgrId, int libId, int dataId, int wbkId)
+		public static void ShowObjectId()
 		{
-			Msgs.WriteLineSpaced("\n*** object id's ***\n");
+			int i;
 
-			Msgs.WriteLineSpaced($"command id", cmdId.ToString());
+			Msgs.WriteLineSpaced("\n**** object id's ***");
+
+			foreach ((string? key, List<int>? value) in ExStorStartMgr.Instance.ObjectIdList)
+			{
+				Msgs.Write($"{key,-24}");
+
+				if (value.Count > 0)
+				{
+					
+					// Msgs.Write($"\t");
+
+					for (i = 0; i < value.Count - 1; i++)
+					{
+						Msgs.Write($"{value[i]}, ");
+					}
+
+					Msgs.WriteLine($"{value[i]}");
+				}
+				else
+				{
+					Msgs.WriteLine($"none");
+				}
+			}
+		}
+
+		public static void ShowObjectId(int mainWinId, int winModelId)
+		{
+			ExStorMgr? xm = ExStorMgr.Instance;
+
+			string xlibOid  = "null 1";
+			string xmgrOid  = "null 1";
+			string xdataOid = "null 1";
+			string wbkOid   = "null 1";
+			string muiOid	= "null 1";
+			string lmgrOid  = "null 1";
+			string stmgrOid = "null 1";
+
+			if (xm != null)
+			{
+				xmgrOid	= xm.ObjectId.ToString();
+				xlibOid = xm.xLib.ObjectId.ToString();
+
+				xdataOid = xm.xData.ObjectId.ToString();
+				lmgrOid = ExStorLaunchMgr.Instance?.ObjectIdStr ?? "null 2";
+				wbkOid = xm.xData.WorkBook.ObjectId.ToString();
+				stmgrOid = ExStorStartMgr.Instance?.ObjectId.ToString() ?? "null 2";
+
+				muiOid = MainWinModelUi.Instance?.ObjectId.ToString() ?? "null 2";
+			}
+
+			Msgs.WriteLineSpaced("\n\x1b[1;31m;**** object id's ***");
+
+			Msgs.WriteLineSpaced("\n\x9b33m** static objects");
+			
+			Msgs.WriteLineSpaced("\nstatic / does not change");
+			Msgs.WriteLineSpaced($"lib id", xlibOid);
+
+			Msgs.WriteLineSpaced("\n** per model objects");
+
+			Msgs.WriteLineSpaced("\nfixed / does not change between models");
+			Msgs.WriteLineSpaced($"start mgr id", stmgrOid);
+			Msgs.WriteLineSpaced($"ex mgr id", xmgrOid);
+			Msgs.WriteLineSpaced($"data id", xdataOid);
+			Msgs.WriteLineSpaced($"wbk id", wbkOid);
+			Msgs.WriteLineSpaced($"window model ui id", muiOid);
+
+			Msgs.WriteLineSpaced("\none time only");
+			Msgs.WriteLineSpaced($"launch mgr id", lmgrOid);
+
+			Msgs.WriteLineSpaced("\n** per window objects");
+
+			Msgs.WriteLineSpaced("\nvariable / changes each window invocation");
 			Msgs.WriteLineSpaced($"window main id", mainWinId.ToString());
 			Msgs.WriteLineSpaced($"window model id", winModelId.ToString());
-			Msgs.WriteLineSpaced($"ex mgr id", mgrId.ToString());
-			Msgs.WriteLineSpaced($"lib id", libId.ToString());
-			Msgs.WriteLineSpaced($"data id", dataId.ToString());
-			Msgs.WriteLineSpaced($"wbk id", wbkId.ToString());
+
+
 		}
 
 		public static void ShowR()
 		{
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
 			Msgs.WriteLineSpaced("\n*** R constants ***\n");
 
@@ -40,7 +112,7 @@ namespace ExStoreTest2026.DebugAssist
 
 		public static void ShowConsts()
 		{
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
 			Msgs.WriteLineSpaced("\n*** storage and name constants ***\n");
 			Msgs.WriteLineSpaced($"company id", ExStorConst.CompanyId);
@@ -50,7 +122,7 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.NewLine();
 
 			Msgs.WriteLineSpaced($"app code", APP_CODE);
-			Msgs.WriteLineSpaced($"stor ver", EXS_VERSION);
+			Msgs.WriteLineSpaced($"stor ver", EXS_VERSION_WBK);
 			Msgs.NewLine();
 			Msgs.WriteLineSpaced($"schema name code", EXS_SCHEMA_NAME_CODE);
 			
@@ -67,14 +139,14 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.WriteLineSpaced($"sht first ds name", EXS_SHT_FIRST_ID_CODE);
 			Msgs.WriteLineSpaced($"sht ds name prefix first", EXS_SHT_DS_NAME_PREFIX_FIRST);
 			
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"created model code", CreateModelCode());
+			// Msgs.NewLine();
+			// Msgs.WriteLineSpaced($"created model code", CreateModelCode());
 
 		}
 
 		public static void ShowWorkBookFields()
 		{
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
 			Msgs.WriteLineSpaced("\n*** workbook fields ***\n");
 
@@ -86,7 +158,7 @@ namespace ExStoreTest2026.DebugAssist
 
 		public static void ShowSheetFields()
 		{
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
 			Msgs.WriteLineSpaced("\n*** sheet fields ***\n");
 
@@ -99,6 +171,7 @@ namespace ExStoreTest2026.DebugAssist
 		public static void ShowExid()
 		{
 			Exid ex = ExStorMgr.Instance.Exid;
+			// string modelCode = ExStorConst.CreateModelCode();
 
 			Msgs.WriteLineSpaced("\n*** exid properties ***\n");
 
@@ -111,7 +184,7 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.WriteLine($"DS names");
 			Msgs.NewLine();
 			Msgs.WriteLineSpaced($"create - as in if making new");
-			Msgs.WriteLineSpaced($"create wbk ds name", ex.CreateWbkDsName(ExStorConst.CreateModelCode()));
+			Msgs.WriteLineSpaced($"create wbk ds name", ex.CreateWbkDsName());
 			Msgs.WriteLineSpaced($"create 1st sht ds name", ex.CreateFirstShtDsName());
 			Msgs.WriteLineSpaced($"create sht ds name", ex.CreateShtDsName("AAAA"));
 
@@ -126,7 +199,7 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.NewLine();
 			Msgs.WriteLineSpaced($"wbk DS search name", ex.WbkSearchName);
 			Msgs.WriteLineSpaced($"sht DS search name (general)", ex.ShtSearchName);
-			Msgs.WriteLineSpaced($"sht DS search name (specific)", ex.ShtDsSearchNameModelSpecific);
+			// Msgs.WriteLineSpaced($"sht DS search name (specific)", ex.ShtSearchName);
 
 
 
@@ -138,13 +211,37 @@ namespace ExStoreTest2026.DebugAssist
 
 			Msgs.WriteLineSpaced("\n*** ExStorMgr properties ***\n");
 
-			Msgs.WriteLineSpaced($"model code", xMgr.TempModelCode);
+			// Msgs.WriteLineSpaced($"model code", xMgr.xData.TempModelCode);
 			// Msgs.WriteLineSpaced($"wbk ds name", xMgr.WorkBookDsName);
-			Msgs.WriteLineSpaced($"got workbook", xMgr.GotWorkBook.ToString());
-			Msgs.WriteLineSpaced($"got sheets", xMgr.GotSheets.ToString());
-			Msgs.WriteLineSpaced($"got wbk ds", xMgr.GotWbkDs.ToString());
-			Msgs.WriteLineSpaced($"workbook is empty", xMgr.IsWorkBookEmpty.ToString());
+			Msgs.WriteLineSpaced($"got workbook", xMgr.xData.GotWorkBook.ToString());
+			Msgs.WriteLineSpaced($"got sheets", xMgr.xData.GotAnySheets.ToString());
+			Msgs.WriteLineSpaced($"got wbk ds", xMgr.xData.GotWbkDs.ToString());
+			Msgs.WriteLineSpaced($"workbook is empty", xMgr.xData.IsWorkBookEmpty.ToString());
 
+
+		}
+
+		public static void ShowWorkBookFromMemory()
+		{
+			Msgs.Col1Width = 32;
+			Msgs.WriteLineSpaced("*** workbook values ***\n");
+
+			DynaValue? dv;
+
+			WorkBook wbk = ExStorMgr.Instance!.xData.WorkBook;
+
+			if (!wbk.GotDs)
+			{
+				Msgs.WriteLineSpaced("*** workbook ds is null or invalid ***\n");
+				return;
+			}
+
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk)
+			{
+				dv = ExStorLib.Instance.ReadField(wbk.ExsEntity!, value);
+
+				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(dv?.Value.ToString() ?? "null"),-40} | {dv.TypeIs, -20}  [{dv.RevitTypeIs}]");
+			}
 
 		}
 
@@ -152,67 +249,72 @@ namespace ExStoreTest2026.DebugAssist
 		{
 			Msgs.WriteLineSpaced("\n*** workbook values ***\n");
 
-			WorkBook wbk = ExStorMgr.Instance.WorkBook;
+			WorkBook wbk = ExStorMgr.Instance.xData.WorkBook;
 
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
-			if (!ExStorMgr.Instance.GotWbkDs)
+			if (!ExStorMgr.Instance.xData.GotWbkDs)
 			{
 				Msgs.WriteLineSpaced("*** workbook is null or invalid ***\n");
 				return;
-			}
+			}		
 
-			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk.Rows)
+
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk)
 			{
-				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value.ToString() ?? "null"),-40} | {value.DyValue.TypeIs, -20}  [{value.DyValue.RevitTypeIs}]");
+				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value.ToString() ?? "null"),-40} | {value.DyValue.TypeIs.BaseType, -20}  [{value.DyValue.RevitTypeIs.BaseType}]");
 			}
 
-			string dsName = wbk.ExsDataStorage.Name;
-			string scName = wbk.GotSchema ? wbk.ExsSchema.SchemaName : "invalid";
-			string scDoc = wbk.GotSchema ? wbk.ExsSchema.Documentation : "invalid";
+			showWorkBookInfo(wbk);
+		}
 
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tstatus", wbk.CreationStatus.ToString());
-			Msgs.WriteLineSpaced($"\tmodel code", wbk.ModelCode);
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tgot ds", wbk.GotDs.ToString());
-			Msgs.WriteLineSpaced($"\tex ds name", dsName);
-			Msgs.WriteLineSpaced($"\tds name", wbk.DsName);
-			Msgs.WriteLineSpaced($"\tdesc", wbk.Desc);
-			Msgs.WriteLineSpaced($"\tds search name", wbk.DsSearchName);
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tgot entity", wbk.GotEntity.ToString());
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tgot schema", wbk.GotSchema.ToString());
-			Msgs.WriteLineSpaced($"\tex schema name", scName);
-			Msgs.WriteLineSpaced($"\tex documentation", scDoc);
-			Msgs.WriteLineSpaced($"\tschema name", wbk.SchemaName);
-			Msgs.WriteLineSpaced($"\tschema desc", wbk.SchemaDesc);
-			Msgs.WriteLineSpaced($"\tschema guid", wbk.SchemaGuid.ToString());
+		public static void ShowSheetsFromMemory()
+		{
+			Msgs.Col1Width = 32;
+			int count = 0;
 
+			if (!ExStorMgr.Instance!.xData.GotAnySheets)
+			{
+				Msgs.WriteLineSpaced("\n*** NO sheets ***\n");
+				return;
+			}
+
+			foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.Sheets)
+			{
+				Msgs.WriteLineSpaced($"\n*** sheet {count} ***\n");
+			
+				if (ExStorMgr.Instance.xData.GotShtDs(k))
+				{
+					ShowSheetFromMemory(sht);
+				}
+				else
+				{
+					Msgs.WriteLineSpaced("\n*** sheet is NULL or INVALID ***\n");
+				}
+			}
 		}
 
 		public static void ShowSheets()
 		{
 			Exid ex = ExStorMgr.Instance.Exid;
-
-			Msgs.Col1width = 32;
-
+			
+			Msgs.Col1Width = 32;
+			
 			Msgs.WriteLineSpaced("\n*** exid sheets list values ***\n");
-
-			if (ExStorMgr.Instance.Sheets.Count == 0)
+			
+			if (ExStorMgr.Instance.xData.Sheets.Count == 0)
 			{
 				Msgs.WriteLineSpaced("*** no sheets ***\n");
 				return;
 			}
-
+			
 			int count = 0;
-
-			foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.Sheets)
+			
+			foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.Sheets)
 			{
 				Msgs.WriteLineSpaced($"*** sheet {count} ***\n");
-
-				if (ExStorMgr.Instance.GotShtDs(k))
+			
+				if (ExStorMgr.Instance.xData.GotShtDs(k))
 				{
 					ShowSheet(sht);
 				}
@@ -220,6 +322,97 @@ namespace ExStoreTest2026.DebugAssist
 				{
 					Msgs.WriteLineSpaced("*** sheet is null or invalid ***\n");
 				}
+			}
+		}
+
+		public static void ShowExData()
+		{
+			ExStorData xd = ExStorData.Instance;
+
+			Msgs.WriteLineSpaced("\n*** start ExStorData properties ***\n");
+
+			Msgs.WriteLineSpaced($"object id", xd.ObjectId);
+			Msgs.WriteLineSpaced($"restart required", xd.RestartRequired);
+			Msgs.NewLine();
+
+			Msgs.WriteLineSpaced($"is wbk empty", xd.IsWorkBookEmpty);
+			
+
+			if (xd.GotWorkBook)
+			{
+				Msgs.WriteLineSpaced($"got workbook", xd.GotWorkBook);
+				// Msgs.WriteLineSpaced($"workbook | ds name", $"{xd.WorkBook.DsName} | is empty {xd.WorkBook.IsEmpty} | is invalid {xd.WorkBook.IsInvalid}");
+				Msgs.WriteLineSpaced($"workbook | ds name", $"{xd.WorkBook.DsName} | is empty {xd.WorkBook.IsEmpty}");
+			}
+			else
+			{
+				Msgs.WriteLineSpaced("don't got workbook");
+			}
+			
+			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"got any sheets", xd.GotAnySheets);
+			
+			if (xd.GotAnySheets)
+			{
+				Msgs.WriteLineSpaced($"sheets count", xd.Sheets.Count);
+
+				foreach ((string? key, Sheet? sht) in xd.Sheets)
+				{
+					// Msgs.WriteLineSpaced($"\tsht | ds name", $"{sht.DsName} | is empty {sht.IsEmpty} | is invalid {sht.IsInvalid}");
+					Msgs.WriteLineSpaced($"\tsht | ds name", $"{sht.DsName} | is empty {sht.IsEmpty}");
+				}
+			}
+
+			Msgs.NewLine();
+
+			ShowValues("", xd.GotWbkSchema, 
+				"got sht schema?", xd.GotWbkSchema.ToString(),
+				"sbk schema name", xd.WorkBookSchema.SchemaName,
+				"don't got workbook schema"
+				);
+
+			ShowValues("", xd.GotShtSchema, 
+				"got sht schema?", xd.GotShtSchema.ToString(),
+				"sht schema name", xd.SheetSchema.SchemaName,
+				"don't got sheet schema"
+				);
+
+			// Msgs.NewLine();
+			// Msgs.WriteLineSpaced($"temp model code", xd.TempModelCode);
+
+			Msgs.NewLine();
+
+			Msgs.WriteLineSpaced($"got temp wbk ds"         , xd.GotTempWbkDs);
+			Msgs.WriteLineSpaced($"got temp wbk dslist"     , xd.GotTempWbkDsList);
+			Msgs.WriteLineSpaced($"got temp wbk schema"     , xd.GotTempWbkSchema);
+			// Msgs.WriteLineSpaced($"got temp wbk schema list", xd.GotTempWbkSchemaList);
+			Msgs.WriteLineSpaced($"got temp wbk entity"     , xd.GotTempWbkEntity);
+			Msgs.WriteLineSpaced($"got temp sht ds"         , xd.GotTempShtDs);
+			Msgs.WriteLineSpaced($"got temp sht dslist"     , xd.GotTempAnySheets);
+			Msgs.WriteLineSpaced($"got temp sht schema"     , xd.GotTempShtSchema);
+			// Msgs.WriteLineSpaced($"got temp sht schema list", xd.GotTempShtSchemaList);
+			Msgs.WriteLineSpaced($"got temp sht entity"     , xd.GotTempShtEntity);
+
+			Msgs.WriteLineSpaced("\n*** end ExStorData properties ***\n");
+		}
+
+		private static void ShowValues(string p1, bool b1, string s1a, string s1b, string s2a, string s2b, string s3, string p2 = null, string? s4 = null)
+		{
+			if (!s4.IsVoid())
+			{
+				Msgs.WriteLine($"{p2}{s4}");
+			}
+
+			if (b1)
+			{
+				Msgs.WriteLineSpaced($"{p1}{s1a}", $"{s1b}");
+				Msgs.WriteLineSpaced($"{p1}{s2a}", $"{s2b}");
+
+
+			}
+			else
+			{
+				Msgs.WriteLine($"{p1}{s3}");
 			}
 		}
 
@@ -243,14 +436,228 @@ namespace ExStoreTest2026.DebugAssist
 			}
 		}
 
+		public static void FindAndShowExObjects()
+		{
+			ExStorMgr xMgr = ExStorMgr.Instance;
+
+			string? name;
+			string? mn;
+			string? mc1;
+			string? mc2;
+			string temp;
+			Guid? guid;
+
+			Msgs.WriteLine("\n**** START - find and show all elements ****\n");
+
+			Msgs.NewLine();
+			Msgs.WriteLine($"\n\t** current model name {xMgr.Exid.Model_Name} [{xMgr.Exid.ModelName}] **\n");
+
+			Msgs.WriteLine("\tWBK Schema (local)");
+			if (xMgr.xData.GotWbkSchema)
+			{
+				Msgs.WriteLine($"\t\t{xMgr.xData.WorkBookSchema!.SchemaName,-40} | valid {xMgr.xData.WorkBookSchema!.IsValidObject,-8} | {xMgr.xData.WorkBookSchema.GUID}");
+				
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no WBK schema (local) **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tWBK DataStorage (local)");
+			if (xMgr.xData.GotWbkDs)
+			{
+				name = xMgr.xData.WorkBook!.ExsDataStorage!.Name;
+				mn = xMgr.xData.WorkBook.Model_Name;
+				// mc1 = xMgr.xData.WorkBook.ModelCode;
+				// mc2 = xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.WbkSearchName) ?? "is null";
+
+				Msgs.WriteLine($"\t\t{xMgr.xData.WorkBook!.ExsDataStorage!.Name,-40} | valid {xMgr.xData.WorkBook!.ExsDataStorage!.IsValidObject,-8} | {mn,-12}");
+
+				guid = xMgr.xData?.WorkBookSchema?.GUID ?? Guid.Empty;
+
+				matchDsSchemaGuids(xMgr.xData.WorkBook!.ExsDataStorage, guid, ExStorConst.WbkSchemaGuid);
+
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no WBK datastorage (local) **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tSHT Schema (local)");
+			if (xMgr.xData.GotShtSchema)
+			{
+				Msgs.WriteLine($"\t\t{xMgr.xData.SheetSchema!.SchemaName,-40} | valid {xMgr.xData.SheetSchema!.IsValidObject,-8} | {xMgr.xData.SheetSchema.GUID}");
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no SHT schema (local) **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tSHT DataStorage (local)");
+			if (xMgr.xData.GotAnySheets)
+			{
+				foreach ((string? key, Sheet? sht) in xMgr.xData.Sheets)
+				{
+					if (sht.ExsDataStorage != null && sht.ExsDataStorage.IsValidObject)
+					{
+						name = sht.ExsDataStorage.Name;
+						// mc2 = xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.ShtSearchName) ?? "is null";
+
+						Msgs.WriteLine($"\t\t{sht.ExsDataStorage.Name,-40} | valid {xMgr.xData.WorkBook!.ExsDataStorage!.IsValidObject,-8}");
+
+						guid = xMgr.xData?.SheetSchema?.GUID ?? Guid.Empty;
+
+						matchDsSchemaGuids(sht.ExsDataStorage, guid, ExStorConst.ShtSchemaGuid);
+					}
+					else
+					{
+						Msgs.WriteLine($"\t\t** SHT datastorage {key} is null (local) **");
+					}
+				}
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no SHT datastorage (local) **");
+			}
+
+			// above, what is currently saved on local data objects
+			// below find actual information
+
+			IList<Schema>? TempWbkSchemaList;
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tWBK Schema (live)");
+			if (xMgr.FindAllWbkSchema(out TempWbkSchemaList))
+			{
+				foreach (Schema sc in TempWbkSchemaList)
+				{
+
+					Msgs.WriteLine($"\t\t{sc.SchemaName,-40} | valid {sc.IsValidObject,-8} | {sc.GUID}");
+				}
+
+				if (TempWbkSchemaList.Count == 1)
+				{
+					xMgr.xData.TempWbkSchema = new ExListItem<Schema>( TempWbkSchemaList[0].SchemaName,  TempWbkSchemaList[0]);
+				}
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no WBK schema **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tWBK DataStorage (live)");
+
+			IList<DataStorage>? TempWbkDsList;
+
+			if (xMgr.FindAllWbkDs(out TempWbkDsList))
+			{
+				foreach (DataStorage ds in TempWbkDsList)
+				{
+					name = ds.Name;
+
+					if (xMgr.xData.TempWbkSchema != null)
+					{
+						mn = xMgr.ReadModelName(ds, xMgr.xData.TempWbkSchema.Item) ?? "is null";
+						// mc1 = xMgr.ReadModelCode(ds, xMgr.xData.TempWbkSchema) ?? "is null";
+						// mc2 =  xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.WbkSearchName) ?? "is null";
+						temp = $"{mn,-12}";
+					}
+					else
+					{
+						temp = "cannot get info - no temp schema";
+					}
+
+					Msgs.WriteLine($"\t\t{ds.Name,-40} | valid {ds.IsValidObject,-8} | {temp}");
+
+					guid = xMgr.xData?.TempWbkSchema.Item?.GUID ?? Guid.Empty;
+
+					matchDsSchemaGuids(ds, guid, ExStorConst.WbkSchemaGuid);
+				}
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no WBK datastorage **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tSHT Schema (live)");
+
+			IList<Schema>? TempShtSchemaList;
+
+			if (xMgr.FindAllShtSchema(out TempShtSchemaList))
+			{
+				foreach (Schema sc in TempShtSchemaList)
+				{
+					Msgs.WriteLine($"\t\t{sc.SchemaName,-40} | valid {sc.IsValidObject,-8} | {sc.GUID}");
+				}
+
+				if (TempShtSchemaList.Count == 1)
+				{
+					xMgr.xData.TempShtSchema = new ExListItem<Schema>(TempShtSchemaList[0].SchemaName, TempShtSchemaList[0]);
+				}
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no SHT schema **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\tSHT DataStorage (live)");
+
+			IList<DataStorage>? TempShtDsList;
+
+			if (xMgr.FindAllShtDs(out TempShtDsList))
+			{
+				foreach (DataStorage ds in TempShtDsList)
+				{
+					Msgs.NewLine();
+					Msgs.WriteLine($"\t\t{ds.Name,-40} | valid {ds.IsValidObject,-8}");
+
+					guid = xMgr.xData?.TempShtSchema?.Item.GUID ?? Guid.Empty;
+
+					matchDsSchemaGuids(ds, guid, ExStorConst.ShtSchemaGuid);
+				}
+			}
+			else
+			{
+				Msgs.WriteLine("\t\t** got no SHT datastorage **");
+			}
+
+			Msgs.NewLine();
+			Msgs.WriteLine("\n**** END - find and show all elements ****\n");
+		}
+
 
 		/* private */
 
+		private static void matchDsSchemaGuids(DataStorage? ds, Guid? tstGuid, Guid? constGuid)
+		{
+			bool match1;
+			bool match2;
+
+			if (ds == null || ds.GetEntitySchemaGuids().Count == 0)
+			{
+				Msgs.WriteLine($"\t\t\tno stored schema guids");
+			}
+
+			foreach (Guid g in ds.GetEntitySchemaGuids())
+			{
+				match1 = g.Equals(tstGuid);
+				match2 = g.Equals(constGuid);
+
+				Msgs.WriteLine($"\t\t\tmatch1? {match1} | match2? {match2} | {g}");
+			}
+		}
+
 		public static void ShowSheet(Sheet? sht)
 		{
-			Msgs.Col1width = 32;
+			Msgs.Col1Width = 32;
 
-			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> value) in sht.Rows)
+			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> value) in sht!)
 			{
 				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value?.ToString() ?? "null"),-40} | {value.DyValue?.TypeIs, -20}  [{value.DyValue?.RevitTypeIs}]");
 
@@ -258,53 +665,125 @@ namespace ExStoreTest2026.DebugAssist
 				{
 					IList<string>? famsAndTypes = (IList<string>) value.DyValue.Value;
 
-					if (famsAndTypes != null)
-					{
-						Msgs.WriteLineSpaced($"\tlist count > {famsAndTypes.Count.ToString()}");
+					showFamsAndTypes(famsAndTypes);
 
-						foreach (string ft in famsAndTypes)
-						{
-							int pos1 = ft.IndexOf('|');
-
-							if (pos1 >= 0)
-							{
-								Msgs.WriteLineSpaced($"\t> {ft.Substring(0, pos1)}<  >{ft.Substring(pos1 + 1)}<");
-							}
-							else
-							{
-								Msgs.WriteLineSpaced($"\t> {ft}");
-							}
-						}
-					}
-					else
-					{
-						Msgs.WriteLineSpaced($"\tlist count > is null");
-					}
+					// if (famsAndTypes != null)
+					// {
+					// 	Msgs.WriteLineSpaced($"\tlist count > {famsAndTypes.Count.ToString()}");
+					//
+					// 	foreach (string ft in famsAndTypes)
+					// 	{
+					// 		int pos1 = ft.IndexOf('|');
+					//
+					// 		if (pos1 >= 0)
+					// 		{
+					// 			Msgs.WriteLineSpaced($"\t> {ft.Substring(0, pos1)}<  >{ft.Substring(pos1 + 1)}<");
+					// 		}
+					// 		else
+					// 		{
+					// 			Msgs.WriteLineSpaced($"\t> {ft}");
+					// 		}
+					// 	}
+					// }
+					// else
+					// {
+					// 	Msgs.WriteLineSpaced($"\tlist count > is null");
+					// }
 				}
 			}
 
-			string dsName = sht.ExsDataStorage.Name;
-			string scName = sht.GotSchema ? sht.ExsSchema.SchemaName : "invalid";
-			string scDoc =  sht.GotSchema ? sht.ExsSchema.Documentation : "invalid";
+			showSheetInfo(sht);
+		}
+
+		public static void ShowSheetFromMemory(Sheet? sht)
+		{
+			Msgs.Col1Width = 32;
+			DynaValue dv;
+
+			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> value) in sht!)
+			{
+				dv = ExStorLib.Instance.ReadField(sht.ExsEntity, value);
+
+				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(dv?.Value?.ToString() ?? "null"),-40} | {dv?.TypeIs, -20}  [{dv?.RevitTypeIs}]");
+
+				if (key == SheetFieldKeys.RK_RD_FAMILY_LIST)
+				{
+					IList<string>? famsAndTypes = (IList<string>) dv.Value;
+
+					showFamsAndTypes(famsAndTypes);
+				}
+			}
+
+			showSheetInfo(sht);
+		}
+
+		private static void showFamsAndTypes(IList<string>? famsAndTypes)
+		{
+			if (famsAndTypes == null || famsAndTypes.Count == 0)
+			{
+				Msgs.WriteLineSpaced("\n*** got NO families / types");
+				return;
+			}
+
+			Msgs.WriteLineSpaced($"\n** show fam types - START | list count > {famsAndTypes.Count.ToString()}");
+
+			foreach (string ft in famsAndTypes)
+			{
+				int pos1 = ft.IndexOf('|');
+
+				if (pos1 >= 0)
+				{
+					Msgs.WriteLineSpaced($"\t> {ft.Substring(0, pos1)}<  >{ft.Substring(pos1 + 1)}<");
+				}
+				else
+				{
+					Msgs.WriteLineSpaced($"\t> {ft}");
+				}
+			}
+
+			Msgs.WriteLineSpaced($"\n** show fam types - DONE\n");
+		}
+
+		private static void showWorkBookInfo(WorkBook wbk)
+		{
+			string dsName = wbk.ExsDataStorage!.Name;
+
+			// Msgs.NewLine();
+			// Msgs.WriteLineSpaced($"model code", wbk.ModelCode);
+			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"got ds", wbk.GotDs.ToString());
+			Msgs.WriteLineSpaced($"ex ds name", dsName);
+			Msgs.WriteLineSpaced($"ds name", wbk.DsName);
+			Msgs.WriteLineSpaced($"desc", wbk.Desc);
+			Msgs.WriteLineSpaced($"ds search name", wbk.DsSearchName);
+			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"got entity", wbk.GotEntity.ToString());
+			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"schema name", wbk.SchemaName);
+			Msgs.WriteLineSpaced($"schema desc", wbk.SchemaDesc);
+			Msgs.WriteLineSpaced($"schema guid", wbk.SchemaGuid.ToString());
+		}
+
+		private static void showSheetInfo(Sheet sht)
+		{
+			Msgs.WriteLineSpaced($"\n** show sheet info - START\n");
+
+			string dsName = sht.ExsDataStorage!.Name;
 
 			Msgs.NewLine();
 
-			Msgs.WriteLineSpaced($"\tstatus", sht.CreationStatus.ToString());
+			Msgs.WriteLineSpaced($"ex data storage", dsName);
+			Msgs.WriteLineSpaced($"ds name", sht.DsName);
+			Msgs.WriteLineSpaced($"desc", sht.Desc);
+			Msgs.WriteLineSpaced($"sht search name", sht.DsSearchName);
 			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"got entity", sht.GotEntity.ToString());
+			Msgs.NewLine();
+			Msgs.WriteLineSpaced($"schema name", sht.SchemaName);
+			Msgs.WriteLineSpaced($"schema desc", sht.SchemaDesc);
+			Msgs.WriteLineSpaced($"schema guid", sht.SchemaGuid.ToString());
 
-			Msgs.WriteLineSpaced($"\tex data storage", dsName);
-			Msgs.WriteLineSpaced($"\tds name", sht.DsName);
-			Msgs.WriteLineSpaced($"\tdesc", sht.Desc);
-			Msgs.WriteLineSpaced($"\tsht search name", sht.DsSearchName);
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tgot entity", sht.GotEntity.ToString());
-			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"\tgot schema", sht.GotSchema.ToString());
-			Msgs.WriteLineSpaced($"\tex schema name", scName);
-			Msgs.WriteLineSpaced($"\tex documentation", scDoc);
-			Msgs.WriteLineSpaced($"\tschema name", sht.SchemaName);
-			Msgs.WriteLineSpaced($"\tschema desc", sht.SchemaDesc);
-			Msgs.WriteLineSpaced($"\tschema guid", sht.SchemaGuid.ToString());
+			Msgs.WriteLineSpaced($"\n** show sheet info - DONE\n");
 		}
 
 	}

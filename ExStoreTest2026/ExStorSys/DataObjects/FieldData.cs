@@ -20,10 +20,10 @@ public struct FieldData<Te>
 	}
 
 	// note - must occur within a transaction
-	public DynaValue? GetValue(Entity e)
-	{
-		return ExStorLib.Instance.ReadField(e, this);
-	}
+	// public DynaValue? GetValue(Entity e)
+	// {
+	// 	return ExStorLib.Instance.ReadField(e, this);
+	// }
 
 	// note - must occur within a transaction
 	// public void SetValue(Entity e, Schema s, DynaValue value)

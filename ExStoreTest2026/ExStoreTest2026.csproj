@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include=".Notes\ObjectNotes.txt" />
     <Content Include=".Notes\OperationNotes.txt" />
     <Content Include=".Notes\ProcessNotes.txt" />
   </ItemGroup>

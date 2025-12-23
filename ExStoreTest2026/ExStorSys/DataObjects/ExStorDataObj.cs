@@ -1,6 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
+using System.Windows.Controls.Primitives;
 using Autodesk.Revit.DB.ExtensibleStorage;
-using static ExStorSys.ExoCreationStatus;
+
 
 // Solution:     ExStorage
 // Project:       ExStoreTest2026
@@ -9,30 +14,39 @@ using static ExStorSys.ExoCreationStatus;
 
 namespace ExStorSys
 {
-	public interface IExStorDataObj
-	{
-		public string DsName { get; set; }
-	}
-
-	public abstract class ExStorDataObj<Te>
+	public abstract class ExStorDataObj<Te> : IEnumerable<KeyValuePair<Te, FieldData<Te>>>
 		where Te : Enum
-
 	{
 		private DataStorage? exsDataStorage;
 		private Entity? exsEntity;
-		public ExStorMgr ExMgr { get; set; }
+		private bool populated;
+
+		protected ExStorDataObj()
+		{
+			Rows = new ();
+		}
 
 		/* properties */
 
-		public bool IsInvalid => CreationStatus == CS_INVALID;
 		public bool IsEmpty { get; protected set; }
-		public ExoCreationStatus CreationStatus { get; protected set; }
 
-		public void SetReadStart() => CreationStatus = CS_INVALID;
-		public void SetReadComplete() => CreationStatus = CS_GOOD;
+		public bool Populated
+		{
+			get => populated;
+			set
+			{
+				populated = value;
+				updatePopulate();
+			}
+		}
+
+		private void updatePopulate()
+		{
+			IsEmpty = !populated || !GotDs || !GotEntity;
+		}
 
 		public abstract int WbkOrSht { get; }
-		
+
 		// to use as a generic object
 		// saved in ds
 		// ds name
@@ -52,19 +66,16 @@ namespace ExStorSys
 			set
 			{
 				exsDataStorage = value;
-				CreationStatus = CreationStatus == CS_INIT ? CS_GOOD : CS_INIT;
+				updatePopulate();
 			}
 		}
-
-		public abstract Schema? ExsSchema { get; set; }
-
 		public Entity? ExsEntity
 		{
 			get => exsEntity;
 			set
-			{ 
+			{
 				exsEntity = value;
-				CreationStatus = CreationStatus == CS_INIT ? CS_GOOD : CS_INIT;
+				updatePopulate();
 			}
 		}
 
@@ -79,17 +90,31 @@ namespace ExStorSys
 
 		public abstract string DsSearchName { get; }
 
+		public bool Ready => GotDs && GotEntity;
+
 		public bool GotDs => exsDataStorage != null && exsDataStorage.IsValidObject;
-		public bool GotSchema => ExsSchema != null && ExsSchema.IsValidObject;
 		public bool GotEntity => ExsEntity != null && ExsEntity.IsValid();
 
 		/* rows */
 
-		public Dictionary<Te, FieldData<Te>> Rows { get; set; }
+		protected Dictionary<Te, FieldData<Te>> Rows { get; set; }
+
+		public IEnumerator<KeyValuePair<Te, FieldData<Te>>> GetEnumerator()
+		{
+			return Rows.GetEnumerator();
+		}
+
+		// Implementation of the non-generic IEnumerable (required for compatibility)
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
 
 		/* rows methods */
 
-		public bool AddRow(Te key, Dictionary<Te, FieldDef<Te>>? fields, DynaValue? dv = null)
+		public int RowCount => Rows.Count;
+
+		private bool addRow(Te key, Dictionary<Te, FieldDef<Te>>? fields, DynaValue? dv = null)
 		{
 			if (Rows.ContainsKey(key)) return false;
 
@@ -113,7 +138,7 @@ namespace ExStorSys
 			return true;
 		}
 
-		public FieldData<Te> GetRow(Te key)
+		public FieldData<Te> getRow(Te key)
 		{
 			if (!(Rows?.ContainsKey(key) ?? false)) return FieldData<Te>.Empty();
 
@@ -122,11 +147,10 @@ namespace ExStorSys
 
 		public DynaValue? GetValue(Te key)
 		{
-			FieldData<Te> row = GetRow(key);
+			FieldData<Te> row = getRow(key);
 
 			return row.DyValue;
 		}
-
 
 		/* initialize row data */
 
@@ -136,8 +160,9 @@ namespace ExStorSys
 
 			foreach ((Te? key, FieldDef<Te>? value) in f)
 			{
-				AddRow(key, f);
+				addRow(key, f);
 			}
 		}
+
 	}
 }

@@ -1,15 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
 using Autodesk.Revit.ApplicationServices;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using RevitLibrary;
+
 using ExStoreTest2026.Windows;
+
 using ExStorSys;
+
+using RevitLibrary;
+
 using UtilityLibrary;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // projname: ExStoreTest2026
 // itemname: Command
@@ -23,7 +30,7 @@ namespace ExStoreTest2026
 	{
 	#region fields
 
-		private int objectId;
+		private int ObjectId;
 		private static MainWindow win;
 
 		private const string ROOT_TRANSACTION_NAME = "Transaction Name";
@@ -43,31 +50,30 @@ namespace ExStoreTest2026
 		public Result Execute(
 			ExternalCommandData commandData, ref string message, ElementSet elements)
 		{
-			objectId = AppRibbon.ObjectIdx++;
+			// objectId = AppRibbon.ObjectIdx++;
+
+			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(Command)) ?? -1;
 
 			R.RvtUiApp = commandData.Application;
 			R.RvtUidoc = R.RvtUiApp.ActiveUIDocument;
 			R.RvtApp   = R.RvtUiApp.Application;
 			R.RvtDoc   = R.RvtUidoc.Document;
 
-			win = new (objectId);
-			// win.Hide();
-
-			Result r = showMainWin();
+			ExStorStartMgr.Instance?.StartOpr();
 
 			return Result.Succeeded;
 		}
 
-		private Result showMainWin()
-		{
-			bool? result = win.ShowDialog();
-
-			if (result.HasValue && result.Value) return Result.Succeeded;
-
-			return Result.Cancelled;
-			
-			// win.Show();
-			// return Result.Succeeded;
-		}
+		// private Result showMainWin()
+		// {
+		// 	bool? result = win.ShowDialog();
+		//
+		// 	if (result.HasValue && result.Value) return Result.Succeeded;
+		//
+		// 	return Result.Cancelled;
+		// 	
+		// 	// win.Show();
+		// 	// return Result.Succeeded;
+		// }
 	}
 }

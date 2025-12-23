@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using Autodesk.Revit.DB.ExtensibleStorage;
 
-using static ExStorSys.ExoCreationStatus;
 
 
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -49,18 +48,17 @@ namespace ExStorSys
 			Rows = new ();
 			init(Fields.SheetFields);
 
-			CreationStatus = CS_CREATED;
 
-			ExMgr = ExStorMgr.Instance;
+			// ExMgr = ExStorMgr.Instance;
 		}
 
 		/*overrides*/
 
-		public override Schema? ExsSchema
-		{
-			get => ExMgr.WorkBook.ExsSheetSchema;
-			set => ExMgr.WorkBook.ExsSheetSchema = value;
-		}
+		// public override Schema? ExsSchema
+		// {
+		// 	get => ExStorData.Instance.WorkBook.ExsSheetSchema;
+		// 	set => ExStorData.Instance.WorkBook.ExsSheetSchema = value;
+		// }
 
 		/*shortcuts & properties*/
 
@@ -77,7 +75,11 @@ namespace ExStorSys
 
 		public override string SchemaName => ExStorMgr.Instance.Exid.ShtSchemaName;
 		public override string SchemaDesc => $"Sheet Schema for {ExStorConst.EXS_SHT_NAME_SEARCH}";
-		public override Guid SchemaGuid =>   Guid.NewGuid();
+		public override Guid SchemaGuid => ExStorConst.ShtSchemaGuid;
+
+		/* settings */
+
+		/* methods */
 
 		/// <summary>
 		/// create an "invalid" sheet - used as a return value rather than null
@@ -85,13 +87,12 @@ namespace ExStorSys
 		public static Sheet Invalid()
 		{
 			Sheet sht = Sheet.CreateEmptySheet("Invalid");
-			sht.CreationStatus = CS_INVALID;
 
 			return sht;
 		}
 
 		/// <summary>
-		/// create a named & empty sheet, which will contain the DS
+		/// create a named empty sheet.  ds is saved to the created sheet
 		/// </summary>
 		public static Sheet CreateEmptySheet(DataStorage ds)
 		{
@@ -99,13 +100,11 @@ namespace ExStorSys
 
 			sht.ExsDataStorage = ds;
 
-			sht.CreationStatus = CS_CREATED;
-
 			return sht;
 		}
 
 		/// <summary>
-		/// create a named & empty sheet
+		/// create a named empty sheet
 		/// </summary>
 		public static Sheet CreateEmptySheet(string shtName)
 		{
@@ -113,7 +112,6 @@ namespace ExStorSys
 
 			sht.updateWithInitialData(shtName);
 
-			sht.CreationStatus = CS_EMPTY;
 
 			return sht;
 		}
@@ -127,7 +125,6 @@ namespace ExStorSys
 
 			sht.updateWithCurrentData(shtName, sd);
 
-			sht.CreationStatus = ExoCreationStatus.CS_CREATED;
 
 			return sht;
 		}

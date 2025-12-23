@@ -10,8 +10,8 @@ using RevitLibrary;
 using ExStorSys;
 
 using static ExStorSys.WorkBookFieldKeys;
+using static ExStorSys.ActivateStatus;
 
-using static ExStorSys.ExoCreationStatus;
 
 
 // user name: jeffs
@@ -27,10 +27,13 @@ namespace ExStorSys
 		public int ObjectId;
 
 		private Schema? exsSchema;
+		private bool? isEmpty;
 
 		private WorkBook()
 		{
-			ObjectId = AppRibbon.ObjectIdx++;
+			// ObjectId = AppRibbon.ObjectIdx++;
+
+			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(WorkBook)) ?? -1;
 
 			Rows = new ();
 			init(Fields.WorkBookFields);
@@ -38,9 +41,9 @@ namespace ExStorSys
 
 		/* primary objects */
 
-		public override Schema? ExsSchema { get; set; }
+		// public override Schema? ExsSchema { get; set; }
 
-		public Schema? ExsSheetSchema { get; set; }
+		// public Schema? ExsSheetSchema { get; set; }
 
 		/* shortcuts & properties */
 
@@ -76,13 +79,13 @@ namespace ExStorSys
 		/// the description for the workbook schema
 		/// </summary>
 		public override string SchemaDesc => $"Schema for {ExStorConst.EXS_WBK_NAME_SEARCH}";
-		
+
 		/// <summary>
 		/// the guid for the workbook's schema.  assigned when the workbook is created
 		/// </summary>
-		public override Guid SchemaGuid   => Guid.NewGuid();
+		public override Guid SchemaGuid   => ExStorConst.WbkSchemaGuid;
 
-		public string ModelCode  => Rows[PK_AD_MODEL_CODE].DyValue!.Value;
+		// public string ModelCode  => Rows[PK_AD_MODEL_CODE].DyValue!.Value;
 		public string Model_Name  => Rows[PK_MD_MODEL_NAME].DyValue!.Value;
 		
 		public string LastId
@@ -91,10 +94,11 @@ namespace ExStorSys
 			set
 			{
 				UpdateRow(PK_AD_LAST_ID, new DynaValue(value));
-				CreationStatus = CS_MODIFIED;
 			}
 		}
 
+		/* status */
+		
 		/* methods */
 
 		/// <summary>
@@ -106,7 +110,7 @@ namespace ExStorSys
 
 			ExsDataStorage = ds;
 			ExsEntity = e;
-			ExsSchema = s;
+			// ExsSchema = s;
 
 			IsEmpty = false;
 
@@ -119,7 +123,6 @@ namespace ExStorSys
 		public static WorkBook Invalid()
 		{
 			WorkBook wbk = WorkBook.CreateEmptyWorkBook();
-			wbk.CreationStatus = CS_INVALID;
 
 			return wbk;
 		}
@@ -132,24 +135,22 @@ namespace ExStorSys
 			WorkBook wbk = new WorkBook();
 
 			wbk.updateWithInitialData();
-
-			wbk.CreationStatus = CS_EMPTY;
-
+			wbk.Populated = false;
 			return wbk;
 		}
 
 		/// <summary>
-		/// create a workbook with live, current data
+		/// create a workbook with typical data and with a model code
 		/// </summary>
 		public static WorkBook CreateNewWorkBook()
 		{
 			WorkBook wbk = new WorkBook();
 
-			string mc = ExStorConst.CreateModelCode();
+			// string mc = ExStorConst.CreateModelCode();
 
-			wbk.updateWithCurrentData(mc);
+			wbk.updateWithCurrentData();
 
-			wbk.CreationStatus = CS_CREATED;
+			wbk.Populated = true;
 
 			return wbk;
 		}
@@ -159,17 +160,20 @@ namespace ExStorSys
 			// UpdateRow(PK_SD_WBK_SCHEMA_NAME, new DynaValue(ExStorConst.WbkSchemaName));
 			// UpdateRow(PK_SD_SHT_SCHEMA_NAME, new DynaValue(ExStorConst.ShtSchemaName));
 			
-			UpdateRow(PK_MD_MODEL_NAME, new DynaValue(ExStorMgr.Instance.Exid.Model_Name));
+			UpdateRow(PK_MD_MODEL_NAME, new DynaValue(ExStorMgr.Instance.Exid.ModelName));
+			
+			// set to active status
+			UpdateRow(PK_AD_STATUS, new DynaValue(AS_ACTIVE));
 		}
 
-		private void updateWithCurrentData(string modelCode)
+		private void updateWithCurrentData()
 		{
 			IsEmpty = false;
 
 			// must be first
-			UpdateRow(PK_AD_MODEL_CODE, new DynaValue(modelCode));
+			// UpdateRow(PK_AD_MODEL_CODE, new DynaValue(modelCode));
 
-			UpdateRow(PK_DS_NAME, new DynaValue(ExStorMgr.Instance.Exid.CreateWbkDsName(modelCode)));
+			UpdateRow(PK_DS_NAME, new DynaValue(ExStorMgr.Instance.Exid.CreateWbkDsName()));
 			UpdateRow(PK_AD_DESC, new DynaValue($"Workbook for {ExStorMgr.Instance.Exid.ModelName}"));
 
 			UpdateRow(PK_AD_DATE_CREATED  , new DynaValue(DateTime.Now.ToString("s")));
@@ -182,7 +186,7 @@ namespace ExStorSys
 
 		public override string ToString()
 		{
-			return $"this is {nameof(WorkBook)}";
+			return $"{nameof(WorkBook)} [{ObjectId}]";
 		}
 
 	}

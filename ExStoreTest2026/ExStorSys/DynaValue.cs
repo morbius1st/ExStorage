@@ -1,4 +1,6 @@
-﻿using Autodesk.Revit.DB;
+﻿using System.Xaml;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.ExtensibleStorage;
 
 
 namespace ExStorSys
@@ -316,5 +318,59 @@ namespace ExStorSys
 		{
 			return $"DynaValue is| {dynValue ?? "is null"}";
 		}
+
+		/*
+		public DynaValue CreateFromField<TKeyType>(Entity e, FieldData<TKeyType>  data)
+			where TKeyType : Enum
+		{
+			DynaValue dv =new DynaValue(false);
+
+			Type t = data.DyValue.TypeIs;
+
+			if (t == typeof(string))
+			{
+				dv = new DynaValue(e.Get<string>(data.Field.FieldName));
+			}
+			else if (t == typeof(bool))
+			{
+				dv = new DynaValue(e.Get<bool>(data.Field.FieldName));
+			}
+			else if (t == typeof(Guid))
+			{
+				dv = new DynaValue(e.Get<Guid>(data.Field.FieldName));
+			}
+			else if (t == typeof(Dictionary<string, string>))
+			{
+				dv = new DynaValue(e.Get<IDictionary<string, string>>(data.Field.FieldName));
+			}
+			else if (t == typeof(List<string>))
+			{
+				dv = new DynaValue(e.Get<IList<string>>(data.Field.FieldName));
+			}
+			else if (t.BaseType == typeof(Enum))
+			{
+				if (data.Field.FieldName.Equals(Fields.KEY_DS_NAME)) return dv;
+
+				string eName = e.Get<string>(data.Field.FieldName);
+
+				if (t == typeof(UpdateRules)) dv = parseEnum(eName, UpdateRules.UR_NEVER);
+				else if (t == typeof(ActivateStatus)) dv = parseEnum(eName, ActivateStatus.AS_INACTIVE);
+				else if (t == typeof(SheetOpStatus)) dv = parseEnum(eName, SheetOpStatus.SS_HOLD);
+
+			}
+
+			return dv;
+		}
+
+		private DynaValue parseEnum<Te>(string enumName, Te def) 			
+			where Te : struct, Enum
+		{
+			Te e = default(Te);
+
+			bool ok = Enum.TryParse<Te>(enumName, out e);
+			if (!ok) e = def;
+			return new DynaValue(e);
+		}
+		*/
 	}
 }

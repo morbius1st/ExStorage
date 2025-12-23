@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 using static ExStorSys.WorkBookFieldKeys;
 using static ExStorSys.SheetFieldKeys;
 using static ExStorSys.FieldEditLevel;
-using static ExStorSys.FieldUsage;
+using static ExStorSys.ItemUsage;
 using static ExStorSys.UpdateRules;
+using static ExStorSys.ActivateStatus;
 using static ExStorSys.ExStorConst;
 
 
@@ -57,31 +58,30 @@ namespace ExStorSys
 		public static Dictionary<WorkBookFieldKeys, FieldDef<WorkBookFieldKeys>> WorkBookFields {get;} = new ()
 		{
 			// field usage flag is not used at this time
-			{PK_DS_NAME,              new (PK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                      new DynaValue(KEY_DS_NAME)                 , FU_S_AND_DS, DL_BASIC) }   , // 1
-			{PK_AD_DESC,              new (PK_AD_DESC,              "Desc",             "Description",                    new DynaValue(PRIMARY_SCHEMA_DESC)         , FU_S_AND_DS, DL_BASIC) }   , // 2
+			{PK_DS_NAME,              new (PK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                      new DynaValue(KEY_DS_NAME)                 , IU_S_AND_DS, DL_BASIC) }   , // 1
+			{PK_AD_DESC,              new (PK_AD_DESC,              "Desc",             "Description",                    new DynaValue(PRIMARY_SCHEMA_DESC)         , IU_S_AND_DS, DL_BASIC) }   , // 2
+			{PK_AD_STATUS,            new (PK_AD_STATUS,            "Status",           "Activate Status",                new DynaValue(AS_INACTIVE)                   , IU_S_AND_DS, DL_ADVANCED) } , // 
 																																												 //
-			{PK_AD_VENDORID,          new (PK_AD_VENDORID,          "VendorId",         "Vendor Id",                      new DynaValue(ExStorConst.VendorId)        , FU_S_AND_DS, DL_DEBUG) }   , // 
-			// {PK_AD_ADDINID,           new (PK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_DEBUG) }   , // 
-
-			// don't need - when a ds is deleted, it is gone - when a schema is deleted, I can only change its stored name
-			// {PK_AD_DELETED,           new (PK_AD_DELETED,           "Deleted",          "Flagged as to be Deleted",       new DynaValue(false)                       , FU_S_AND_DS, DL_DEBUG) }   , // 
+			{PK_AD_VENDORID,          new (PK_AD_VENDORID,          "VendorId",         "Vendor Id",                      new DynaValue(ExStorConst.VendorId)        , IU_S_AND_DS, DL_DEBUG) }   , // 
 																																												 //
-			{PK_AD_DATE_CREATED,      new (PK_AD_DATE_CREATED,      "CreateDate",       "Date Created",                   new DynaValue(DateTime.Now.ToString("s"))  , FU_S_AND_DS, DL_MEDIUM) }  , // 
-			{PK_AD_NAME_CREATED,      new (PK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",                 new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_ADVANCED) }, // 
-			{PK_AD_DATE_MODIFIED,     new (PK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",                  new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_MEDIUM) }  , // 
-			{PK_AD_NAME_MODIFIED,     new (PK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",                new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_ADVANCED) }, // 
-			{PK_AD_MODEL_CODE,        new (PK_AD_MODEL_CODE,        "ModelCode",        "Model's Identification Code",    new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_DEBUG) }   , // 
-			{PK_AD_LAST_ID,           new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code",    new DynaValue("9999")                      , FU_S_AND_DS, DL_DEBUG) }   , // 
+			{PK_AD_DATE_CREATED,      new (PK_AD_DATE_CREATED,      "CreateDate",       "Date Created",                   new DynaValue(DateTime.Now.ToString("s"))  , IU_S_AND_DS, DL_MEDIUM) }  , // 
+			{PK_AD_NAME_CREATED,      new (PK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",                 new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_ADVANCED) }, // 
+			{PK_AD_DATE_MODIFIED,     new (PK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",                  new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_MEDIUM) }  , // 
+			{PK_AD_NAME_MODIFIED,     new (PK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",                new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_ADVANCED) }, // 
+			{PK_AD_LAST_ID,           new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code",    new DynaValue("9999")                      , IU_S_AND_DS, DL_DEBUG) }   , // 
 																																												 // 
-			{PK_SD_SCHEMA_VERSION,    new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                 new DynaValue("1.0")                       , FU_S_AND_DS, DL_ADVANCED) }, // 
+			{PK_SD_SCHEMA_VERSION,    new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                 new DynaValue("1.0")                       , IU_S_AND_DS, DL_ADVANCED) }, // 
+			// full model name in case needs to be shown to the user / used to confirm working wiht the correct data																				//
+			{PK_MD_MODEL_NAME,        new (PK_MD_MODEL_NAME,        "ModelName",        "Model Name",                     new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_BASIC) }   , // 
+
 			// voided fields
-			// {PK_SD_WBK_SCHEMA_NAME,   new (PK_SD_WBK_SCHEMA_NAME,    KEY_WBK_SCHEMA_NAME, KEY_WBK_SCHEMA_NAME,            new DynaValue(KEY_WBK_SCHEMA_NAME)         , FU_S_AND_DS, DL_ADVANCED) }, // 
-			// {PK_SD_SHT_SCHEMA_NAME,   new (PK_SD_SHT_SCHEMA_NAME,    KEY_SHT_SCHEMA_NAME, KEY_SHT_SCHEMA_NAME,            new DynaValue(KEY_SHT_SCHEMA_NAME)         , FU_S_AND_DS, DL_ADVANCED) }, // 
-			// {PK_SD_SCHEMA_GUID,       new (PK_SD_SCHEMA_GUID,       "SchemaGuid",       "Schema GUID",                    new DynaValue(Guid.NewGuid())              , FU_S_AND_DS, DL_ADVANCED) }, // 
-																																												 // 
-			{PK_MD_MODEL_NAME,        new (PK_MD_MODEL_NAME,        "ModelName",        "Model Name",                     new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_BASIC) }   , // 
-
-
+			// {PK_AD_MODEL_CODE,        new (PK_AD_MODEL_CODE,        "ModelCode",        "Model's Identification Code",    new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_DEBUG) }   , // 
+			// {PK_AD_ADDINID,           new (PK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_DEBUG) }   , // 
+			// don't need - when a ds is deleted, it is gone - when a schema is deleted, I can only change its stored name
+			// {PK_AD_DELETED,           new (PK_AD_DELETED,           "Deleted",          "Flagged as to be Deleted",       new DynaValue(false)                       , IU_S_AND_DS, DL_DEBUG) }   , // 
+			// {PK_SD_WBK_SCHEMA_NAME,   new (PK_SD_WBK_SCHEMA_NAME,    KEY_WBK_SCHEMA_NAME, KEY_WBK_SCHEMA_NAME,            new DynaValue(KEY_WBK_SCHEMA_NAME)         , IU_S_AND_DS, DL_ADVANCED) }, // 
+			// {PK_SD_SHT_SCHEMA_NAME,   new (PK_SD_SHT_SCHEMA_NAME,    KEY_SHT_SCHEMA_NAME, KEY_SHT_SCHEMA_NAME,            new DynaValue(KEY_SHT_SCHEMA_NAME)         , IU_S_AND_DS, DL_ADVANCED) }, // 
+			// {PK_SD_SCHEMA_GUID,       new (PK_SD_SCHEMA_GUID,       "SchemaGuid",       "Schema GUID",                    new DynaValue(Guid.NewGuid())              , IU_S_AND_DS, DL_ADVANCED) }, // 
 		};
 
 		/// <summary>
@@ -90,34 +90,37 @@ namespace ExStorSys
 		public static Dictionary<SheetFieldKeys, FieldDef<SheetFieldKeys>> SheetFields {get; } = new ()
 		{
 			// field usage flag is not used at this time
-			{RK_DS_NAME,              new (RK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                      new DynaValue(KEY_DS_NAME)                 , FU_S_AND_DS, DL_DEBUG) }   ,
-			{RK_AD_DESC,              new (RK_AD_DESC,              "Desc",             "Description",                    new DynaValue(PRIMARY_SCHEMA_DESC)         , FU_S_AND_DS, DL_BASIC) }   ,
+			{RK_DS_NAME,              new (RK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                      new DynaValue(KEY_DS_NAME)                 , IU_S_AND_DS, DL_DEBUG) }   ,
+			{RK_AD_DESC,              new (RK_AD_DESC,              "Desc",             "Description",                    new DynaValue(PRIMARY_SCHEMA_DESC)         , IU_S_AND_DS, DL_BASIC) }   ,
 																																								     
-			{RK_AD_VENDORID,          new (RK_AD_VENDORID,          "VendorId",         "Vendor Id",                      new DynaValue(ExStorConst.VendorId)        , FU_S_AND_DS, DL_DEBUG) }   ,
-			// {RK_AD_ADDINID,           new (RK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_DEBUG) }   , // 
+			{RK_AD_VENDORID,          new (RK_AD_VENDORID,          "VendorId",         "Vendor Id",                      new DynaValue(ExStorConst.VendorId)        , IU_S_AND_DS, DL_DEBUG) }   ,
+
+			{RK_AD_DATE_CREATED,      new (RK_AD_DATE_CREATED,      "CreateDate",       "Date Created",                   new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_MEDIUM) }  ,
+			{RK_AD_NAME_CREATED,      new (RK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",                 new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_ADVANCED) },
+			{RK_AD_DATE_MODIFIED,     new (RK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",                  new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_MEDIUM) }  ,
+			{RK_AD_NAME_MODIFIED,     new (RK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",                new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_ADVANCED) },
+																																								     
+			{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                 new DynaValue("1.0")                       , IU_S_AND_DS, DL_ADVANCED) },
+																																								     
+			{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name",                new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_MEDIUM) }  ,
+			{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name",               new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_MEDIUM) }  ,
+																																								     
+			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status",               new DynaValue(SheetOpStatus.SS_GOOD)       , IU_S_AND_DS, DL_ADVANCED) },
+			{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence",             new DynaValue("A00")                       , IU_S_AND_DS, DL_ADVANCED) },
+			{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule",                    new DynaValue(UR_UNDEFINED)                , IU_S_AND_DS, DL_ADVANCED) },
+			{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass",                  new DynaValue(false)                       , IU_S_AND_DS, DL_MEDIUM) }  ,
+																																								     
+			{RK_RD_FAMILY_LIST,       new (RK_RD_FAMILY_LIST,        "Rows",             "List of Families (& types)",     new DynaValue(K_ARRAY)                    , IU_S_AND_DS, DL_MEDIUM) }  ,
+			
+			// voided fields
+			// {RK_AD_ADDINID,           new (RK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS, DL_DEBUG) }   , // 
+			// {RK_SD_SCHEMA_GUID,       new (RK_SD_SCHEMA_GUID,       "SchemaGuid",       "Schema GUID",                    new DynaValue(Guid.NewGuid())              , IU_S_AND_DS, DL_ADVANCED) },
 
 			// don't need - when a ds is deleted, it is gone - when a schema is deleted, I can only change its stored name
-			// {RK_AD_DELETED,           new (RK_AD_DELETED,           "Deleted",          "Flagged as to be Deleted",       new DynaValue(false)                       , FU_S_AND_DS, DL_DEBUG) }   , // 
-																																								     
-			{RK_AD_DATE_CREATED,      new (RK_AD_DATE_CREATED,      "CreateDate",       "Date Created",                   new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_MEDIUM) }  ,
-			{RK_AD_NAME_CREATED,      new (RK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",                 new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_ADVANCED) },
-			{RK_AD_DATE_MODIFIED,     new (RK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",                  new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_MEDIUM) }  ,
-			{RK_AD_NAME_MODIFIED,     new (RK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",                new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_ADVANCED) },
-																																								     
-			{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                 new DynaValue("1.0")                       , FU_S_AND_DS, DL_ADVANCED) },
-			// {RK_SD_SCHEMA_GUID,       new (RK_SD_SCHEMA_GUID,       "SchemaGuid",       "Schema GUID",                    new DynaValue(Guid.NewGuid())              , FU_S_AND_DS, DL_ADVANCED) },
-																																								     
-			{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name",                new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_MEDIUM) }  ,
-			{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name",               new DynaValue(K_NOT_DEFINED_STR)           , FU_S_AND_DS, DL_MEDIUM) }  ,
-																																								     
-			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status",               new DynaValue(SheetOpStatus.SS_GOOD)       , FU_S_AND_DS, DL_ADVANCED) },
-			{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence",             new DynaValue("A00")                       , FU_S_AND_DS, DL_ADVANCED) },
-			{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule",                    new DynaValue(UR_UNDEFINED)                , FU_S_AND_DS, DL_ADVANCED) },
-			{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass",                  new DynaValue(false)                       , FU_S_AND_DS, DL_MEDIUM) }  ,
-																																								     
-			{RK_RD_FAMILY_LIST,       new (RK_RD_FAMILY_LIST,        "Rows",             "List of Families (& types)",     new DynaValue(K_ARRAY)                    , FU_S_AND_DS, DL_MEDIUM) }  ,
-																																								     
+			// {RK_AD_DELETED,           new (RK_AD_DELETED,           "Deleted",          "Flagged as to be Deleted",       new DynaValue(false)                       , IU_S_AND_DS, DL_DEBUG) }   , // 
 		};
+
+
 
 		// @formatter:on
 	}
