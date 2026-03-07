@@ -1,16 +1,11 @@
 ﻿using System.Diagnostics;
 using System.Windows.Markup;
-
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
-
 using ExStoreTest2026;
 using ExStoreTest2026.DebugAssist;
-
 using RevitLibrary;
-
 using UtilityLibrary;
-
 using static ExStorSys.ActivateStatus;
 using static ExStorSys.WorkBookFieldKeys;
 
@@ -31,18 +26,13 @@ namespace ExStorSys
 
 	#region ctor
 
-
 		// ReSharper disable once InconsistentNaming
 		private static readonly Lazy<ExStorLib> instance =
 			new (() => new ExStorLib());
 
 		private ExStorLib()
 		{
-			// ObjectId = AppRibbon.ObjectIdx++;
-
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorLib)) ?? -1;
-
-			// _xMgr = ExStorMgr.Instance;
 		}
 
 		public static ExStorLib Instance => instance.Value;
@@ -62,9 +52,10 @@ namespace ExStorSys
 		/* system routines - workbook */
 
 		/// <summary>
-		/// takes the information stored in the workbook in Xdata and writes the
+		/// takes the information stored in the workbook in xData and writes the
 		/// information into the workbook's entity (and therefore into the models
-		/// ds)
+		/// ds).  this creates a new DS so an existing DS must not be present. use
+		/// UpdateWorkBook to update an existing DS
 		/// </summary>
 		/// <param name="wbk"></param>
 		/// <param name="wbkSchema"></param>
@@ -73,7 +64,7 @@ namespace ExStorSys
 		{
 			if (wbkSchema == null) return ExStoreRtnCode.XRC_SCHEMA_MISSING;
 
-			Msgs.WriteLineSpaced("step: 01|", ">>> start | transaction| save workbook");
+			// Msgs.WriteLineSpaced("step: 01|", ">>> start | transaction| save workbook");
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_FAIL;
 
 			if (wbk.GotDs) return ExStoreRtnCode.XRC_DS_EXISTS;
@@ -114,7 +105,7 @@ namespace ExStorSys
 		{
 			if (shtSchema == null) return ExStoreRtnCode.XRC_SCHEMA_MISSING;
 
-			Msgs.WriteLineSpaced("step: 01|", ">>> start | transaction| save sheet");
+			// Msgs.WriteLineSpaced("step: 01|", ">>> start | transaction| save sheet");
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_FAIL;
 
 			if (sheet.GotDs) return ExStoreRtnCode.XRC_DS_EXISTS;
@@ -158,7 +149,7 @@ namespace ExStorSys
 		//
 		// 	sht.SetReadStart();
 		//
-		// 	if (ReadFields(e, sht) != ExStoreRtnCode.XRC_GOOD) return ExStoreRtnCode.XRC_FAIL;
+		// 	if (ReadEntityFields(e, sht) != ExStoreRtnCode.XRC_GOOD) return ExStoreRtnCode.XRC_FAIL;
 		//
 		// 	sht.ExsEntity = e;
 		// 	sht.ExsSchema = s;
@@ -234,7 +225,10 @@ namespace ExStorSys
 				s = sb.Finish();
 			}
 			// ReSharper disable once EmptyGeneralCatchClause
-			catch { }
+			catch (Exception e) 
+			{
+				Debug.WriteLine($"exception | {e.Message}");
+			}
 
 			return s;
 		}
@@ -252,7 +246,7 @@ namespace ExStorSys
 		private void addSchemaFields<TE>(SchemaBuilder sb, ExStorDataObj<TE> exo)
 			where TE : Enum
 		{
-			Msgs.WriteLineSpaced("step: S2|", "write schema fields");
+			// Msgs.WriteLineSpaced("step: S2|", "write schema fields");
 
 			// ReSharper disable once UnusedVariable
 			foreach ((TE key, FieldData<TE> wkbkField) in exo)
@@ -260,13 +254,13 @@ namespace ExStorSys
 				addSchemaField(sb, wkbkField);
 			}
 
-			Msgs.WriteLine(" done");
+			// Msgs.WriteLine(" done");
 		}
 
 		private void addSchemaField<TE>(SchemaBuilder sb, FieldData<TE> fd)
 			where TE : Enum
 		{
-			Msgs.Write(".");
+			// Msgs.Write(".");
 
 			FieldBuilder fb;
 
@@ -306,7 +300,7 @@ namespace ExStorSys
 					R.RvtDoc?.Delete(ds.Id);
 					T.Commit();
 				}
-				catch 
+				catch
 				{
 					T.RollBack();
 					rtnCode = ExStoreRtnCode.XRC_FAIL;
@@ -333,7 +327,7 @@ namespace ExStorSys
 					s.Dispose();
 					T.Commit();
 				}
-				catch 
+				catch
 				{
 					T.RollBack();
 					rtnCode = ExStoreRtnCode.XRC_FAIL;
@@ -349,7 +343,7 @@ namespace ExStorSys
 		private void writeDataFields<TE>(Schema schema, ExStorDataObj<TE> exo)
 			where TE : Enum
 		{
-			Msgs.WriteLineSpaced("step: WD|", ">>> start | write data");
+			// Msgs.WriteLineSpaced("step: WD|", ">>> start | write data");
 
 			// ReSharper disable once UnusedVariable
 			foreach ((TE? key, FieldData<TE> data) in exo)
@@ -357,13 +351,13 @@ namespace ExStorSys
 				writeDataField(schema, exo, data);
 			}
 
-			Msgs.WriteLine(" done");
+			// Msgs.WriteLine(" done");
 		}
 
 		private void writeDataField<TE>(Schema schema, ExStorDataObj<TE> exo, FieldData<TE> fd)
 			where TE : Enum
 		{
-			Msgs.Write(".");
+			// Msgs.Write(".");
 			Field fx = schema.GetField(fd.Field.FieldName);
 
 			if (fx == null || !fx.IsValidObject) return;
@@ -385,23 +379,23 @@ namespace ExStorSys
 		}
 
 
-		/* update field */
+		/* update entity field */
 
 		/// <summary>
 		/// update a field within the ds entity using a revit transaction
 		/// </summary>
-		public void UpdateField<TE>(TE key, Schema? schema, ExStorDataObj<TE> exo, DynaValue value)
+		public void UpdateEntityField<TE>(TE key, Schema? schema, ExStorDataObj<TE> exo, DynaValue value)
 			where TE : Enum
 		{
-			FieldData<TE> fd = exo.getRow(key);
+			FieldData<TE> fd = exo.GetField(key);
 
-			updateField(schema, exo, fd, value);
+			updateEntityField(schema, exo, fd, value);
 		}
 
 		/// <summary>
 		/// update a field within the ds entity using a revit transaction
 		/// </summary>
-		private void updateField<TE, TK>(Schema? schema, ExStorDataObj<TE> exo, FieldData<TK>  field, DynaValue value)
+		private void updateEntityField<TE, TK>(Schema? schema, ExStorDataObj<TE> exo, FieldData<TK>  field, DynaValue value)
 			where TE : Enum
 			where TK : Enum
 		{
@@ -427,7 +421,7 @@ namespace ExStorSys
 
 			updateEntity(ds, e);
 		}
-		
+
 		/// <summary>
 		/// update a field within the ds entity using a revit transaction
 		/// </summary>
@@ -441,7 +435,7 @@ namespace ExStorSys
 					ds.SetEntity(e);
 					T.Commit();
 				}
-				catch 
+				catch
 				{
 					T.RollBack();
 				}
@@ -451,31 +445,30 @@ namespace ExStorSys
 
 		/* read */
 
+		/* switched to use dynavalue - start */
+
+		/* voided
 		/// <summary>
-		/// read all fields from the entity into the exo object
+		/// read a field from the entity using field data<br/>
+		/// returns a DynaValue or null if not found
 		/// </summary>
-		public ExStoreRtnCode ReadFields<TE>(Entity? e, ExStorDataObj<TE> exo)
-			where TE : Enum
+		public DynaValue? ReadField1a<TKeyType>(Entity e, FieldData<TKeyType>  data)
+			where TKeyType : Enum
 		{
-			if (e == null || !e.IsValid()) return ExStoreRtnCode.XRC_DATA_NOT_FOUND;
-
-			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_GOOD;
-			
-			foreach ((TE? key, FieldData<TE> fd) in exo)
-			{
-				if (!exo.UpdateRow(key, ReadField(e, fd)))
-				{
-					rtnCode = ExStoreRtnCode.XRC_FAIL;
-					break;
-				}
-			}
-
-			if (rtnCode == ExStoreRtnCode.XRC_GOOD) exo.Populated = true;
-
-			return rtnCode;
+			return readField<TKeyType>(e, data.Field.FieldName, data.DyValue.TypeIs);
 		}
 
-		public DynaValue? ReadField<TKeyType>(Entity e, FieldData<TKeyType>  data)
+		/// <summary>
+		/// read a field from the entity using the field definition<br/>
+		/// returns a DynaValue or null if not found
+		/// </summary>
+		public DynaValue? ReadField1b<TKeyType>(Entity e, FieldDef<TKeyType>  data)
+			where TKeyType : Enum
+		{
+			return readField<TKeyType>(e, data.FieldName, data.FieldType);
+		}
+
+		private DynaValue? readField<TKeyType>(Entity e, string? fieldName, Type t)
 			where TKeyType : Enum
 		{
 			// data is the field definition and the DV within contains the definition 
@@ -483,33 +476,33 @@ namespace ExStorSys
 
 			DynaValue? dv = null;
 
-			Type t = data.DyValue.TypeIs;
+			if (fieldName.IsVoid()) return dv;
 
 			if (t == typeof(string))
 			{
-				dv = new DynaValue(e.Get<string>(data.Field.FieldName));
+				dv = new DynaValue(e.Get<string>(fieldName));
 			}
 			else if (t == typeof(bool))
 			{
-				dv = new DynaValue(e.Get<bool>(data.Field.FieldName));
+				dv = new DynaValue(e.Get<bool>(fieldName));
 			}
 			else if (t == typeof(Guid))
 			{
-				dv = new DynaValue(e.Get<Guid>(data.Field.FieldName));
+				dv = new DynaValue(e.Get<Guid>(fieldName));
 			}
 			else if (t == typeof(Dictionary<string, string>))
 			{
-				dv = new DynaValue(e.Get<IDictionary<string, string>>(data.Field.FieldName));
+				dv = new DynaValue(e.Get<IDictionary<string, string>>(fieldName));
 			}
 			else if (t == typeof(List<string>))
 			{
-				dv = new DynaValue(e.Get<IList<string>>(data.Field.FieldName));
+				dv = new DynaValue(e.Get<IList<string>>(fieldName));
 			}
 			else if (t.BaseType == typeof(Enum))
 			{
-				if (data.Field.FieldName.Equals(Fields.KEY_DS_NAME)) return dv;
+				if (fieldName.Equals(Fields.KEY_DS_NAME)) return dv;
 
-				string eName = e.Get<string>(data.Field.FieldName);
+				string eName = e.Get<string>(fieldName);
 				// dv = parseEnum(t, eName);
 
 				if (t == typeof(UpdateRules)) dv = parseEnum(eName, ExStorConst.DEFAULT_UPDATE_RULE);
@@ -520,7 +513,7 @@ namespace ExStorSys
 			return dv;
 		}
 
-		private DynaValue parseEnum<Te>(string enumName, Te def) 			
+		private DynaValue parseEnum<Te>(string enumName, Te def)
 			where Te : struct, Enum
 		{
 			Te e = default(Te);
@@ -529,6 +522,104 @@ namespace ExStorSys
 			if (!ok) e = def;
 			return new DynaValue(e);
 		}
+		*/
+
+		public DynaValue? ReadFieldDyn<TKeyType>(Entity e, FieldDef<TKeyType>  data)
+			where TKeyType : Enum
+		{
+			return new DynaValue(readField2<TKeyType>(e, data.FieldName, data.FieldType));
+		}
+
+		/* switched to use dynavalue - end */
+
+		/* switched to use dynamic - start */
+
+		/// <summary>
+		/// read all fields from the entity into the exo object
+		/// </summary>
+		public ExStoreRtnCode ReadEntityFields<TE>(Entity? e, ExStorDataObj<TE> exo)
+			where TE : Enum
+		{
+			if (e == null || !e.IsValid()) return ExStoreRtnCode.XRC_DATA_NOT_FOUND;
+
+			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_GOOD;
+
+			foreach ((TE? key, FieldData<TE> fd) in exo)
+			{
+				if (!exo.SetInitValueDym(key, ReadField2(e, fd.Field!)))
+				{
+					rtnCode = ExStoreRtnCode.XRC_FAIL;
+					break;
+				}
+			}
+
+			return rtnCode;
+		}
+
+		public dynamic? ReadField2<TKeyType>(Entity e, FieldDef<TKeyType>  data)
+			where TKeyType : Enum
+		{
+			return readField2<TKeyType>(e, data.FieldName, data.FieldType);
+		}
+
+		private dynamic? readField2<TKeyType>(Entity e, string? fieldName, Type t)
+			where TKeyType : Enum
+		{
+			// data is the field definition and the DV within contains the definition 
+			// information
+
+			dynamic? dv = null;
+
+			if (fieldName.IsVoid()) return dv;
+
+			if (t == typeof(string))
+			{
+				dv = e.Get<string>(fieldName);
+			}
+			else if (t == typeof(bool))
+			{
+				dv = e.Get<bool>(fieldName);
+			}
+			else if (t == typeof(Guid))
+			{
+				dv = e.Get<Guid>(fieldName);
+			}
+			else if (t == typeof(Dictionary<string, string>))
+			{
+				dv = e.Get<IDictionary<string, string>>(fieldName);
+			}
+			else if (t == typeof(List<string>))
+			{
+				dv = e.Get<IList<string>>(fieldName);
+			}
+			else if (t.BaseType == typeof(Enum))
+			{
+				if (fieldName!.Equals(Fields.KEY_DS_NAME)) return dv;
+
+				string eName = e.Get<string>(fieldName);
+				// dv = parseEnum(t, eName);
+
+				if (t == typeof(UpdateRules)) dv = parseEnum2(eName, ExStorConst.DEFAULT_UPDATE_RULE);
+				else if (t == typeof(ActivateStatus)) dv = parseEnum2(eName, ExStorConst.DEFAULT_ACTIVATE_STATUS);
+				else if (t == typeof(SheetOpStatus)) dv = parseEnum2(eName, ExStorConst.DEFAULT_SHEET_OP_STATUS);
+			}
+
+			return dv;
+		}
+
+		private dynamic parseEnum2<Te>(string enumName, Te def)
+			where Te : struct, Enum
+		{
+			Te e = default(Te);
+
+			bool ok = Enum.TryParse<Te>(enumName, out e);
+			if (!ok) e = def;
+			return e;
+		}
+
+		/* switched to use dynamic - end */
+
+
 
 		// private DynaValue? parseEnum(Type t, string enumName)
 		// {
@@ -570,50 +661,37 @@ namespace ExStorSys
 		// 	return ReadModelName(e);
 		// }
 
+
+		/// <summary>
+		/// read the model name from the entity
+		/// </summary>
 		public string? ReadModelName(Entity? e)
 		{
 			if (e == null || !e.IsValid()) return null;
-
-			FieldData<WorkBookFieldKeys> f = Fields.GetWbkFieldData(PK_MD_MODEL_NAME);
-
-			return CleanName(ReadField(e, f)?.Value);
+		
+			FieldDef<WorkBookFieldKeys> f = Fields.GetWbkFieldDef(PK_MD_MODEL_TITLE);
+		
+			return CleanName(ReadField2(e, f!));
+			// return CleanName(ReadField(e, f)?.Value);
 		}
 
-		// public string? ReadModelCode(DataStorage ds, Schema? s)
+		// public ActivateStatus ReadActStatus(DataStorage ds, Schema? s)
 		// {
 		// 	Entity e;
 		//
-		// 	if (!GetEntity(ds, s, out e)) return null;
+		// 	if (!GetEntity(ds, s, out e)) return AS_INACTIVE;
 		//
-		// 	return ReadModelCode(e);
+		// 	return ReadActStatus(e);
 		// }
 
-		// public string? ReadModelCode(Entity? e)
+		// public ActivateStatus ReadActStatus2(Entity e)
 		// {
-		// 	if (e == null || !e.IsValid()) return null;
+		// 	if (e == null || !e.IsValid()) return AS_INACTIVE;
 		//
-		// 	FieldData<WorkBookFieldKeys> f = Fields.GetWbkFieldData(PK_AD_MODEL_CODE);
+		// 	FieldData<WorkBookFieldKeys> f = Fields.GetWbkFieldData(PK_AD_STATUS);
 		//
-		// 	return ReadField(e, f)?.Value;
+		// 	return (ActivateStatus) (ReadField(e, f)?.Value ?? AS_INACTIVE);
 		// }
-
-		public ActivateStatus ReadActStatus(DataStorage ds, Schema? s)
-		{
-			Entity e;
-
-			if (!GetEntity(ds, s, out e)) return AS_INACTIVE;
-
-			return ReadActStatus(e);
-		}
-
-		public ActivateStatus ReadActStatus(Entity e)
-		{
-			if (e == null || !e.IsValid()) return AS_INACTIVE;
-
-			FieldData<WorkBookFieldKeys> f = Fields.GetWbkFieldData(PK_AD_STATUS);
-
-			return (ActivateStatus) (ReadField(e, f)?.Value ?? AS_INACTIVE);
-		}
 
 
 		/* find */
@@ -658,7 +736,7 @@ namespace ExStorSys
 		}
 
 
-		private ExStoreRtnCode findExInfo(int wbkOrSht, string searchText, string matchText, 
+		private ExStoreRtnCode findExInfo(int wbkOrSht, string searchText, string matchText,
 			Schema? s, out DataStorage? ds, out Entity? en)
 		{
 			ds = null;
@@ -716,13 +794,13 @@ namespace ExStorSys
 		private ExStoreRtnCode findSchema(string schemaName, out Schema? s)
 		{
 			s = null;
-		
+
 			IList<Schema> schemas = Schema.ListSchemas();
-		
+
 			if (schemas == null || schemas.Count == 0) return ExStoreRtnCode.XRC_SCHEMA_NONE_FOUND;
-		
+
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_SCHEMA_NOT_FOUND;
-		
+
 			foreach (Schema schema in schemas)
 			{
 				// for schema, the name provided is the whole name
@@ -733,7 +811,7 @@ namespace ExStorSys
 					break;
 				}
 			}
-		
+
 			return rtnCode;
 		}
 
@@ -747,11 +825,11 @@ namespace ExStorSys
 			schemas = null;
 
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_SCHEMA_NOT_FOUND;
-		
+
 			if (scx == null || scx.Count == 0) return rtnCode;
 
 			schemas = new List<Schema>();
-		
+
 			foreach (Schema schema in scx)
 			{
 				// for schema, the name provided is the whole name
@@ -761,7 +839,7 @@ namespace ExStorSys
 					rtnCode = ExStoreRtnCode.XRC_GOOD;
 				}
 			}
-		
+
 			return rtnCode;
 		}
 
@@ -778,7 +856,7 @@ namespace ExStorSys
 			scList = new List<Schema>();
 
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_SCHEMA_NOT_FOUND;
-		
+
 			if (scx == null || scx.Count == 0) return rtnCode;
 
 			foreach (Schema schema in scx)
@@ -793,7 +871,7 @@ namespace ExStorSys
 
 				rtnCode = ExStoreRtnCode.XRC_GOOD;
 			}
-		
+
 			return rtnCode;
 		}
 
@@ -833,7 +911,7 @@ namespace ExStorSys
 		{
 			dsList = new List<DataStorage>();
 
-			FilteredElementCollector dsx = findDataStorages();	
+			FilteredElementCollector dsx = findDataStorages();
 
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_SCHEMA_NOT_FOUND;
 
@@ -842,7 +920,7 @@ namespace ExStorSys
 			foreach (Element el in dsx)
 			{
 				if (!validateName(el.Name, searchName)) continue;
-				
+
 				dsList.Add((DataStorage) el);
 
 				rtnCode = ExStoreRtnCode.XRC_GOOD;
@@ -886,7 +964,54 @@ namespace ExStorSys
 		// 	return dsList.Count > 0;
 		// }
 
+		/* copy / duplicate */
 
+		/// <summary>
+		/// duplicate a sheet based on the copy type (does not apply to workbook)<br/>
+		/// copy types: int 0 through 7 compared to the copy type in the field<br/>
+		/// however, defined types (all will need a new name): <br/>
+		/// 1 - copy as a template for a new item (needs creation / modification info)<br/>
+		/// 2 - copy to update the version (modification info)<br/>
+		/// 4 - copy to use in a new model (needs creation / modification info)
+		/// </summary>
+		public Sheet DuplicateSheet(int copyType, Sheet shtOldVer, 
+			string name, Dictionary<SheetFieldKeys, DynaValue> sd)
+		{
+			bool doUpdate;
+			Sheet shtNewVer;
+			FieldCopyType cpyType = (FieldCopyType) copyType;
+
+			shtNewVer = Sheet.CreateEmptySheet(name);
+
+			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> field) in shtOldVer)
+			{
+				if (field.Field.FieldCopyType == FieldCopyType.FC_IGNORE) continue;
+
+				doUpdate = field.Field.FieldCopyType.HasFlag(cpyType);
+
+				if (doUpdate)
+				{
+					if (sd.TryGetValue(key, out DynaValue? value))
+						shtNewVer.SetInitValueDym(key, value.Value);
+				}
+				else
+				{
+					shtNewVer.SetInitValueDym(key, shtOldVer.GetValue(key)?.Value ?? null);
+				}
+			}
+
+			// shtNewVer.IsPopulated = true;
+
+			// shtNewVer.SchemaName - fixed value
+			// shtNewVer.SchemaDesc - fixed value
+			// shtNewVer.SchemaGuid - fixed value
+			// shtNewVer.ExsDataStorage - set when written;
+			// shtNewVer.ExsEntity - set when written;
+
+			return shtNewVer;
+		}
+
+		
 		/* misc */
 
 		public bool ValidateModelName(string matchName, Entity e, out string? modelName)
@@ -948,31 +1073,51 @@ namespace ExStorSys
 			return name.Substring(pos1, pos2);
 		}
 
+		public string? ExtractIdFromShtName(string? name, string searchName)
+		{
+			// sht ds
+			//           1         2         3
+			// 0123456789012345678901234567890
+			// v----------v---v------e  
+			// CsCells_SHT_AAAA_v1_00
+			// look for search name
+			if (name.IsVoid()) return null;
 
-		// /// <summary>
-		// /// extract the model code portion of a data storage name<br/>
-		// /// return null if not found / extracted
-		// /// </summary>
-		// public string? ExtractModelCodeFromName(string dsName, string searchName)
-		// {
-		// 	// model code location
-		// 	// name format:
-		// 	// "search name_" + "model code" + "_" + remainder
-		// 	int pos1 = searchName.Length;
-		//
-		// 	//           1         2         3
-		// 	// 0123456789012345678901234567890
-		// 	// v----------vv-----------vv----v  
-		// 	// CsCells_WBK_250101_160101_v1_00
-		//
-		// 	if (pos1 + ExStorConst.MODEL_CODE_LENGTH >= dsName.Length) return null;
-		//
-		// 	return dsName.Substring(pos1, ExStorConst.MODEL_CODE_LENGTH);
-		// }
+			if (name!.Length != searchName.Length + 10) return null;
+
+			return name.Substring(searchName.Length, 4);
+		}
 
 		public string CleanName(string? name)
 		{
 			return CsStringUtil.RegexCleanString(name ?? "", ExStorConst.DOC_NAME_REPL_STRING[0], ExStorConst.DOC_NAME_REPL_STRING[1]) ?? "";
+		}
+
+		public string FormatFamAndType(string famName, string typeName)
+		{
+			string key = $"{famName}|{typeName}";
+
+			return key;
+		}
+
+		public bool DivideFamAndType(string? famAndType, out string? family, out string? famType)
+		{
+			family = null;
+			famType = null;
+			int pos;
+
+			if (famAndType!.IsVoid()) return false;
+
+			pos = famAndType.IndexOf('|');
+
+			// false if not there, or at begining, or at end
+			if (pos == -1 || pos == 0 || pos == famAndType.Length-1) return false;
+
+			// family is from start to the dividing charater but not including the dividing charagter
+			family = famAndType.Substring(0, pos);
+			famType = famAndType.Substring(pos+1, famAndType.Length - pos);
+
+			return true;
 		}
 
 	#endregion
@@ -993,7 +1138,5 @@ namespace ExStorSys
 		}
 
 	#endregion
-
-
 	}
 }

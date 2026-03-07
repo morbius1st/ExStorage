@@ -17,6 +17,7 @@
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsExtensions.cs" Link=".Linked\CsExtensions.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsIWin.cs" Link=".Linked\CsIWin.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsMath.cs" Link=".Linked\CsMath.cs" />
+    <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsObservableDictionary.cs" Link=".Linked\CsObservableDictionary.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsStringUtil.cs" Link=".Linked\CsStringUtil.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsUtilities.cs" Link=".Linked\CsUtilities.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsUtilitiesMedia.cs" Link=".Linked\CsUtilitiesMedia.cs" />
@@ -27,9 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".Notes\ObjectNotes.txt" />
-    <Content Include=".Notes\OperationNotes.txt" />
-    <Content Include=".Notes\ProcessNotes.txt" />
+    <None Include=".Notes\Sequence Notes.txt" />
+    <None Include=".Notes\ExStoreTest2026.xml" />
+    <None Include=".Notes\OperationNotes.txt" />
+    <None Include=".Notes\ObjectNotes.txt" />
+    <None Include=".Notes\Launch-Start OperationNotes.txt" />
+    <None Include=".Notes\ProcessNotes.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,18 +44,24 @@
 	<PropertyGroup>
 		<AddinDirectory>$(AppData)\Autodesk\Revit\Addins\2026</AddinDirectory>
 		<Authors>CyberStudio</Authors>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="RevitAPI">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="RevitAPIUI">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="echo work dir $(AddinDirectory)&#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\revit\*.addin&quot;  &quot;$(AddinDirectory)&quot; &#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\$(OutputPath)*.dll&quot;  &quot;$(AddinDirectory)&quot;  " />
@@ -61,6 +71,21 @@
     <None Include=".Notes\FieldNotes.txt" />
     <None Include=".Notes\SystemNotes.txt" />
     <None Include=".Notes\DataContainers.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RevitAPI">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2024\RevitAPI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2024\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
 
 </Project>

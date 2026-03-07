@@ -9,7 +9,7 @@
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		Title="MainWindow"
 		Height="750"
-		Width="1600"
+		Width="1700"
 		Foreground="White"
 		mc:Ignorable="d"
 		DataContext="{Binding ElementName=WinMain}"
@@ -27,12 +27,31 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="110" />
+			<ColumnDefinition Width="500"/>
 		</Grid.ColumnDefinitions>
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
 			<RowDefinition Height="40" />
 		</Grid.RowDefinitions>
+		
+		<DockPanel
+				Grid.Column="0"
+				Grid.Row="1"
+				HorizontalAlignment="Stretch"
+				>
+			
+			<Button x:Name="BtnTbxClear"
+					Content="Clear"
+					DockPanel.Dock="Right"
+					Height="{StaticResource BtnHeight}"
+					Width="{StaticResource BtnWidth}"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Right"
+					Margin="0,0,0,5"
+					Click="BtnTbxClear_OnClick"
+			/>
+			</DockPanel>
 
 		<DockPanel
 				Grid.Column="1"
@@ -42,6 +61,7 @@
 				HorizontalAlignment="Right"
 				VerticalAlignment="Stretch"
 				>
+
 
 
 			<Button x:Name="BtnExp00"
@@ -176,6 +196,88 @@
 				TextWrapping="Wrap"
 				/>
 
+		<DockPanel
+				Grid.Row="0"
+				Grid.Column="2"
+				>
+
+			<ListBox
+					DockPanel.Dock="Top"
+					Foreground="White"
+					Background="Black"
+					d:ItemsSource="{d:SampleData}"
+					ItemsSource="{Binding ShtD.Rows}"
+					VerticalAlignment="Top"
+					ScrollViewer.VerticalScrollBarVisibility="Visible"
+					ScrollViewer.HorizontalScrollBarVisibility="Visible"
+					>
+
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<DockPanel>
+								<TextBox
+										Width="60"
+										Text="{Binding Path=Key, Mode=OneWay}"
+										/>
+								<TextBox
+										Text="{Binding Path=Value.UserName, Mode=OneWay}"
+										Width="90"
+										/>
+
+								<TextBox
+										Text="{Binding Path=Value.ModelName, Mode=OneWay}"
+										Width="90"
+										/>
+
+								<TextBox
+										Text="{Binding Path=Value.ModelPath, Mode=OneWay}"
+										Width="190"
+										/>
+							</DockPanel>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+
+			</ListBox>
+
+			<ListBox
+					DockPanel.Dock="Top"
+					Foreground="White"
+					Background="Black"
+					d:ItemsSource="{d:SampleData}"
+					ItemsSource="{Binding ShtD.Fields}"
+					VerticalAlignment="Top"
+					ScrollViewer.VerticalScrollBarVisibility="Visible"
+					ScrollViewer.HorizontalScrollBarVisibility="Visible"
+					>
+
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<DockPanel>
+							<TextBox
+									Width="60"
+									Text="{Binding Path=Key, Mode=OneWay}"
+							/>
+							<TextBox
+									Text="{Binding Path=Value.FieldName, Mode=OneWay}"
+									Width="90"
+							/>
+							<TextBox
+									Text="{Binding Path=Value.FieldDesc, Mode=OneWay}"
+									Width="120"
+							/>
+							<TextBox
+									Text="{Binding Path=Value.DyValue.Value}"
+									Width="160"
+							/>
+
+						</DockPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+
+			</ListBox>
+
+
+		</DockPanel>
 
 	</Grid>
 </Window>

@@ -1,25 +1,18 @@
 ﻿using System.Diagnostics;
-using System.DirectoryServices.ActiveDirectory;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Windows.Interop;
-using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using Autodesk.Revit.UI;
 using ExStoreTest2026;
 using ExStoreTest2026.DebugAssist;
-using ExStoreTest2026.ExStorSys;
 using ExStoreTest2026.Windows;
 using RevitLibrary;
 using UtilityLibrary;
-using static ExStorSys.DynaValue;
 using static ExStorSys.ExStorStartMgr.TdKey;
 using static ExStorSys.ExSysStatus;
 using static ExStorSys.PropertyId;
-using static ExStorSys.PropertyOwner;
 using static ExStorSys.ValidateDataStorage;
 using static ExStorSys.ValidateSchema;
-
+using static ExStorSys.ExStorStartMgr.SbResult;
 
 // user name: jeffs
 // created:   11/3/2025 5:47:16 PM
@@ -38,13 +31,20 @@ namespace ExStorSys
 		private ExStorMgr xMgr;
 		private ExStorData xData;
 
-		private string tdMsgXtra;
+		private ValidateSchema			wbkScResCode;
+		private ValidateDataStorage		wbkDsResCode;
+		private ValidateSchema			shtScResCode;
+		private ValidateDataStorage		shtDsResCode;
 
-		private RunningStatus rs;
+		private int issueCode;
+		private string issueMainDesc;
+		private string issueExtDesc;
 
-		// private ExSysStatus tempExSysStatus;
-		// private RunningStatus tempRunStat;
+		private SbResult sbResult = SB_ASK_SEL_NO;
 
+		public Dictionary<string, List<int>> ObjectIdList = new ();
+		private Dictionary<int, Tuple<string, string, string>> procIndex;
+		private string navProc2;
 
 	#region ctor
 
@@ -91,6 +91,7 @@ namespace ExStorSys
 			xData = ExStorData.Instance;
 			Mw = new MainWindow();
 
+			
 			// events??
 
 			xMgr.MessageCache = String.Empty;
@@ -99,8 +100,6 @@ namespace ExStorSys
 		}
 
 	#endregion
-
-		public Dictionary<string, List<int>> ObjectIdList = new ();
 
 		/* start operator rules
 		* use the results from LaunchManager
@@ -125,23 +124,30 @@ namespace ExStorSys
 
 		/* primary start routines */
 
+		/// <summary>
+		/// primary startup routine
+		/// </summary>
 		public void StartOpr()
 		{
+			saveStatus();
+
+			SecurityMgr.Instance.Init(CsUtilities.UserName, R.RvtApp.Username);
+			
 			// DialogTest();
 
 			Msgs.ShowDebug = true;
-			DebugRoutines.ShowObjectId(-1, -1);
+			// DebugRoutines.ShowObjectId(-1, -1);
 
-			Msgs.CWriteLine($"\n\n*** Start Operator - Begin *** [ {R.FileName} ]\n");
+			Msgs.CWriteLine($"\n\n*** Start Operator - Begin *** [ {R.FileName} ]");
 
-			showStatus2("** init status");
-			showStatus1("** status before switchboard");
-			ShowStatus3("** data status before switchboard");
+			showStatus2("init status");
+			showStatus1("status before switchboard");
+			ShowStatus3("data status before switchboard");
 
 			// testStart();
 			// return;
 
-			int result;
+			bool result = false;
 
 			OnPropChgd(new PropChgEvtArgs( PI_GEN_RESTART, false));
 
@@ -149,230 +155,418 @@ namespace ExStorSys
 				xMui.SystemRunningStatus == RunningStatus.RN_RUNNING_NORMAL ||
 				xMui.SystemRunningStatus == RunningStatus.RN_RUNNING_NEED_SHT))
 			{
-				// result = 0;
+				switchBoardD();
 
-				result = switchBoardD();
-				
-				if (result == 1 && gotData() == false)
+				if (sbResult == SB_REPAIRED_REOPEN)
 				{
 					stdTaskDialogMsg(TD_CLOSEOPEN);
 					return;
+				}
+
+				if (sbResult == SB_ALL_GOOD || sbResult == SB_REPAIRED_NEED_SHTS)
+				{
+					result = true;
+
+					xData.WbkEnableTrackChanges();
+					xData.ShtsEnableTrackChanges();
 				}
 			}
 			else
 			{
 				Msgs.CWriteLine($"2nd + times through - just show window");
-				result = 0;
+				result = true;
 			}
 
 			showStatus1("status after switchboard");
 			showStatus2();
 
-			if (result == 0) winOpen2ndPlus();
+			publishStatus();
+			Mw.Wm.UpdateData();
 
+			if (result) winOpen2ndPlus();
+			
 			Msgs.CWriteLine($"\n*** Start Operator - End\n\n");
 		}
 
 		// ReSharper disable once InconsistentNaming
+		/// <summary>
+		/// open the window when the 2nd or more time
+		/// </summary>
 		private void winOpen2ndPlus()
 		{
 			// got here from 2nd+ times the window has been opened - normal start
-			setStatus();
+			
 			Mw.ShowDialog();
 		}
 
 		/* processing switchboard */
 
+		internal enum SbResult
+		{
+			SB_ASK_SEL_NO		= -1,
+			SB_NOT_ACTIVATED	= -2,
+			SB_OTHER_FAIL		= -3,
+			SB_FAIL_NEED_NEW	= 0,
+			SB_ALL_GOOD			= 1,
+			SB_REPAIRED_NEED_SHTS	= 2,
+			SB_REPAIRED_REOPEN	= 3,
+		}
+
 		/// <summary>
 		/// main processing switchboard<br/>
 		/// possible results<br/>
-		/// 0 = all good - no changes needed<br/>
-		/// 1 = selected YES at an ask above, was repaired and now needs to be saved and restarted<br/>
-		/// -1 = default answer == selected NO at an ask above<br/>
-		/// -2 = selected ignore or off above<br/>
-		/// -3 = none of the above - failed<br/>
+		/// see SbResult enum
 		/// </summary>
-		private int switchBoardD()
+		private void switchBoardD()
 		{
-			int result = -1;
+			sbResult = SB_ASK_SEL_NO;
 
-			key = makeKey();
+			int key = makeKey();
 
-			string opt = procIndex[key];
-
-			switch (opt)
+			if (procIndex.ContainsKey(key))
 			{
-			case "S":
-			case "0":
-				{
-					if (proc_sn())
-					{
-						OnPropChgdExs(ES_START_DONE_GOOD);
+				navProc2 = procIndex[key].Item2;
+				string opt = procIndex[key].Item1;
+				string id = procIndex[key].Item3;
 
-						OnPropChgdRn(opt.Equals("0") ? RunningStatus.RN_RUNNING_NORMAL : 
-							RunningStatus.RN_RUNNING_NEED_SHT);
+				Msgs.CWriteLine($"\n** at switchboard - procedures | {key} | {id} = {opt} {(navProc2.IsVoid() ? "" : $"/ {navProc2}")}");
 
-						result = 0;
-					}
-					// else -1 per above
-					break;
-				}
-			case "1":
+				switch (opt)
 				{
-					if (askActivate())
+				// open - all normal except got no sheets
+				case "S":
+					// open - all normal, got both workbook and sheets
+				case "0":
 					{
-						if (proc_nw()) { result = 1; }
-					}
-					break;
-				}
-			case "2":
-				{
-					if (askRepair())
-					{
-						if (proc_b()) result = 1;
-					}
-					break;
-				}
-			case "3":
-				{
-					if (askUpgrade())
-					{
-						if (proc_b())
+						// xData.ResetSheets();
+
+						sbResult = proc_sn();
+
+						Msgs.CWriteLine($"after proc_sn");
+
+						if (sbResult == SB_ALL_GOOD)
 						{
-							if (proc_cs()) result = 1;
+							sbResult = opt.Equals("0") ? SB_ALL_GOOD : SB_REPAIRED_NEED_SHTS;
+							//
+							// OnPropChgdExs(ES_START_DONE_GOOD);
+							//
+							// OnPropChgdRn(opt.Equals("0") ? RunningStatus.RN_RUNNING_NORMAL : RunningStatus.RN_RUNNING_NEED_SHT);
 						}
+
+						// else SB_ASK_SEL_NO per above
+						break;
 					}
-					break;
-				}
-			case "4":
-				{
-					if (askUpgrade())
+				// activate as new
+				case "1":
 					{
-						if (proc_cs()) result = 1;
-					}
-					break;
-				}
-			case "6":
-				{
-					if (askFixModelInfo())
-					{
-						if (proc_d()) result = 1;
-					}
-					break;
-				}
-			case "7":
-				{
-					if (askRepair())
-					{
-						if (proc_cs())
+						if (askActivate())
 						{
-							if (proc_d()) result = 1;
+							xMgr.ResetData();
+
+							sbResult = proc_nw();
 						}
+
+						break;
 					}
-					break;
-				}
-			case "O":
-				{
-					result = -2;
-					OnPropChgdExs(ES_START_DONE_EXIT);
-					OnPropChgdRn(RunningStatus.RN_NOT_RUNNING);
-					break;
-				}
-			case "I":
-				{
-					result = -2;
-					OnPropChgdExs(ES_START_DONE_EXIT);
-					OnPropChgdRn(RunningStatus.RN_DEACTIVATE);
-					break;
-				}
-			default:
-				{
-					result = -3;
-					OnPropChgdExs(ES_START_DONE_EXIT);
-					OnPropChgdRn(RunningStatus.RN_CANNOT_RUN_FAIL);
-					break;
+				// repair by creating workbook
+				case "2":
+					{
+						if (askRepair())
+						{
+							xMgr.ResetData();
+
+							sbResult = proc_b();
+						}
+
+						break;
+					}
+				// repair by creating workbook and fixing sheet version
+				case "3":
+					{
+						if (askUpgrade())
+						{
+							xMgr.ResetData();
+
+							sbResult = proc_b();
+
+							if (sbResult == SB_REPAIRED_NEED_SHTS)
+							{
+								sbResult = proc_cs();
+							}
+						}
+
+						break;
+					}
+				// repair by fixing sheet version
+				case "4":
+					{
+						if (askUpgrade())
+						{
+							xData.ResetSheets();
+							xData.ResetWorkBook();
+							xData.ResetWorkBookSchemaSilent();
+
+							sbResult = proc_cs();
+						}
+
+						break;
+					}
+				// repair by fixing model name
+				case "6":
+					{
+						if (askFixModelInfo())
+						{
+							xMgr.ResetData();
+
+							sbResult = proc_d();
+						}
+
+						break;
+					}
+				// repair by fixing sheet version and fixing model name
+				case "7":
+					{
+						if (askRepair())
+						{
+							xMgr.ResetData();
+
+							sbResult = proc_cs();
+
+							if (sbResult == SB_REPAIRED_NEED_SHTS)
+							{
+								sbResult = proc_d();
+							}
+						}
+
+						break;
+					}
+				// activation is off
+				case "O":
+					{
+						if (askReActivate())
+						{
+							xMgr.ResetData();
+
+							sbResult = proc_o();
+						}
+						else
+						{
+							sbResult = SB_NOT_ACTIVATED;
+							OnPropChgdExs(ES_START_DONE_EXIT);
+							OnPropChgdRn(RunningStatus.RN_NOT_RUNNING);
+						}
+
+						break;
+					}
+				// activation is ignore
+				case "I":
+					{
+						sbResult = SB_NOT_ACTIVATED;
+						OnPropChgdExs(ES_START_DONE_EXIT);
+						OnPropChgdRn(RunningStatus.RN_DEACTIVATE);
+						break;
+					}
+				default:
+					{
+						
+						sbResult = SB_FAIL_NEED_NEW;
+						OnPropChgdExs(ES_START_DONE_EXIT);
+						OnPropChgdRn(RunningStatus.RN_CANNOT_RUN_FAIL);
+						break;
+					}
 				}
 			}
-
+			else
+			{
+				Msgs.CWriteLine($"\n** at switchboard - key not found for key {key}");
+				ShowStatus5();
+			}
+			
 			// selected NO for an ask above
-			if (result == -1)
+			if (sbResult == SB_ALL_GOOD)
+			{
+				OnPropChgdExs(ES_START_DONE_GOOD);
+				OnPropChgdRn(RunningStatus.RN_RUNNING_NORMAL);
+
+				setNeutralStatusSht();
+				setNeutralStatusWbk();
+			}
+			else
+			// selected NO for an ask above
+			if (sbResult == SB_REPAIRED_NEED_SHTS)
+			{
+				OnPropChgdExs(ES_START_DONE_GOOD);
+				OnPropChgdRn(RunningStatus.RN_RUNNING_NEED_SHT);
+
+				setNeutralStatusSht();
+				setNeutralStatusWbk();
+			}
+			else
+				// selected NO for an ask above
+			if (sbResult == SB_ASK_SEL_NO || sbResult == SB_OTHER_FAIL)
 			{
 				OnPropChgdExs(ES_START_DONE_EXIT);
 				OnPropChgdRn(RunningStatus.RN_DEACTIVATE);
 			}
-
-			// selected yes for an ask aboveand now needs to be saved and restarted
-			if (result == 1)
+			else
+				// selected yes for an ask aboveand now needs to be saved and restarted
+			if (sbResult == SB_REPAIRED_REOPEN)
 			{
 				OnPropChgdExs(ES_START_DONE_EXIT);
 				OnPropChgdRn(RunningStatus.RN_CANNOT_RUN_RESTART);
-			}
 
-			return result;
+				setNeutralStatusSht();
+				setNeutralStatusWbk();
+			}
 		}
 
 		/* primary processing methods */
 
 		/// <summary>
-		/// start up normal
+		/// start up normal<br/>
+		/// can return<br/>
+		/// SB_ALL_GOOD<br/>
+		/// SB_OTHER_FAIL
 		/// </summary>
-		private bool proc_sn()
+		private SbResult proc_sn()
 		{
-			Msgs.CWriteLine("at proc_sn (start normal)");
-			return startNormal();
+			Msgs.CWriteLine("\n**at proc_sn (start normal)");
+
+			SbResult res = SB_OTHER_FAIL;
+
+			bool? b;
+
+			if (startNormal())
+				if  ((b = gotData()) == null)
+					res = SB_REPAIRED_NEED_SHTS;
+				else if (b == true) 
+					res = SB_ALL_GOOD;
+
+			return res;
 		}
 
 		/// <summary>
-		/// create new
+		/// create new<br/>
+		/// can return<br/>
+		/// SB_REPAIRED_NEED_SHTS<br/>
+		/// SB_OTHER_FAIL
 		/// </summary>
-		private bool proc_nw()
+		private SbResult proc_nw()
 		{
-			Msgs.CWriteLine("at proc_nw (start activate)");
+			Msgs.CWriteLine("\n** at proc_nw (start activate)");
 
-			if (startActivate()) return true;
+			SbResult res = SB_OTHER_FAIL;
 
-			return false;
+			bool? b;
+
+			if (startActivate())
+				if  ((b = gotData()) == null)
+					res = SB_REPAIRED_NEED_SHTS;
+				else if (b == true) 
+					res = SB_ALL_GOOD;
+
+			return res;
 		}
 
 		/// <summary>
-		/// fix sheet version
+		/// fix sheet version<br/>
+		/// can return<br/>
+		/// SB_REPAIRED_NEED_SHTS<br/>
+		/// SB_OTHER_FAIL
 		/// </summary>
-		private bool proc_cs()
+		private SbResult proc_cs()
 		{
-			return true;
+			Msgs.CWriteLine("\n** at proc_c (startFixShtVersion)");
+
+			SbResult res = SB_OTHER_FAIL;
+
+			bool? b;
+
+			if (startFixShtVersion())
+				if  ((b = gotData()) == null)
+					res = SB_REPAIRED_NEED_SHTS;
+				else if (b == true) 
+					res = SB_ALL_GOOD;
+
+			return res;
 		}
 
 		/// <summary>
-		/// fix model name
+		/// fix model name<br/>
+		/// can return<br/>
+		/// SB_REPAIRED_NEED_SHTS<br/>
+		/// SB_FAIL_NEED_NEW
 		/// </summary>
-		private bool proc_d()
+		private SbResult proc_d()
 		{
-			return true;
+			Msgs.CWriteLine("\n** at proc_d (startFixModelName)");
+
+			SbResult res = SB_FAIL_NEED_NEW;
+
+			bool? b;
+			if (xMgr.ProcTransWbk() != false)
+			{
+				res = startFixModelName();
+			}
+
+			if (xMgr.ProcTransSht() == true) res = SB_ALL_GOOD;
+
+			return res;
 		}
 
 		/// <summary>
-		/// create workbook
+		/// create workbook<br/>
+		/// can return<br/>
+		/// SB_REPAIRED_NEED_SHTS<br/>
+		/// SB_FAIL_NEED_NEW
 		/// </summary>
-		private bool proc_b()
+		private SbResult proc_b()
 		{
-			return true;
+			Msgs.CWriteLine("\n** at proc_b (create workbook)");
+
+			SbResult res = SB_FAIL_NEED_NEW;
+
+			bool? b;
+
+			if (navProc2.Equals("A"))
+			{
+				Msgs.CWriteLine("** at start activate - A");
+				if (!deleteExistWbkDs()) return res;
+			}
+
+			deleteExistWbkSchema();
+
+			if (xMgr.ProcCreateAndWriteWbk() != false)
+			{
+				xMgr.ProcTransSht();
+
+				if  ((b = gotData()) == null)
+					res = SB_REPAIRED_NEED_SHTS;
+				else if (b == true)
+				{
+					res = SB_ALL_GOOD;
+				}
+			}
+
+			return res;
 		}
 
-		private bool? gotData()
+		/// <summary>
+		/// reactivate<br/>
+		/// can return<br/>
+		/// SB_ALL_GOOD<br/>
+		/// SB_REPAIRED_NEED_SHTS<br/>
+		/// SB_FAIL_NEED_NEW
+		/// </summary>
+		private SbResult proc_o()
 		{
-			bool resultW = xData.GotWbkSchema && xData.GotWbkDs;
-			bool resultS =xData.GotShtSchema && xData.GotTempAnySheetsEx;
+			Msgs.CWriteLine("\n** at proc_o (reactivate)");
 
-			return resultW ? (resultS ? true : null) : false;
-
-		}
-
-		private bool startNormal(bool reset = true)
-		{
-			if (reset) xMgr.ResetData();
-
+			SbResult res = SB_OTHER_FAIL;
 			bool? result;
+			bool? b;
 
+			// transfer the information
 			result = xMgr.ProcTransWbk();
 
 			if (result != false)
@@ -380,19 +574,85 @@ namespace ExStorSys
 				// return value does not matter
 				// it is ok if there are no sheets to process
 				xMgr.ProcTransSht();
+
+				if (navProc2.Equals("A"))
+				{
+					res = startFixModelName();
+					if (res == SB_FAIL_NEED_NEW) return res;
+				}
+
+				res = startSetActive();
+			}
+
+			return res;
+		}
+
+
+		/// <summary>
+		/// flag if the repair process worked - that is, xData has the expected data<br/>
+		/// true if got both schema's and both DS's
+		/// null if need sheet DS
+		/// false otherwise
+		/// </summary>
+		/// <returns></returns>
+		private bool? gotData()
+		{
+			bool result1 =  xData.GotWbkSchema && xData.GotWbkDs;
+			bool result2 = xData.GotShtSchema && xData.GotTempAnySheetsEx;
+
+			return result1 ? (result2 ? true : null) : false;
+		}
+
+		/// <summary>
+		/// normal start procedure - no repair needed
+		/// </summary>
+		private bool startNormal()
+		{
+			bool? result;
+
+			result = xMgr.ProcTransWbk();
+
+			Msgs.CWriteLine($"after ProcTransWbk");
+
+			if (result != false)
+			{
+				// return value does not matter
+				// it is ok if there are no sheets to process
+				xMgr.ProcTransSht();
+
+				Msgs.CWriteLine($"after ProcTransSht");
 			}
 
 			return result != false;
 		}
 
+		/// <summary>
+		/// normal first time procedure - create and activate the system
+		/// </summary>
 		private bool startActivate()
 		{
 			bool? result;
 
-			xMgr.ResetData();
+			if (navProc2.Equals("A"))
+			{
+				Msgs.CWriteLine("** at start activate - A");
+
+				if (!deleteExistWbkDs()) return false;
+			}
+			else if (navProc2.Equals("B"))
+			{
+				Msgs.CWriteLine("** at start activate - B");
+
+				IList<DataStorage> dsList;
+				if (!xMgr.FindAllShtDs(out dsList)) return false;
+
+
+				if (!deleteExistWbkDs()) return false;
+				if (!deleteExistShtDs(dsList)) return false;
+			}
 
 			result = xMgr.ProcCreateAndWriteWbk();
-		
+
 			if (result == true)
 			{
 				result = xMgr.ProcCreateSht();
@@ -403,11 +663,111 @@ namespace ExStorSys
 			return result != false;
 		}
 
+		/// <summary>
+		/// convert the found sheets from an old version to a new version<br/>
+		/// got: old sheets in xData.TempShtDsListEx
+		/// </summary>
+		private bool startFixShtVersion()
+		{
+			ExStorData xd1 = xData;
+
+			if (!xData.GotTempShtSchema) return false;
+
+			Schema? schemaOld = xData.TempShtSchemaEx!.Item;
+
+			deleteExistWbkDs();
+
+			if (xMgr.ProcCreateAndWriteWbk() != true) return false;
+
+			if (!xMgr.CreateSheetSchema()) return false;
+
+			if (xMgr.ProcTransShtToNewVer(schemaOld) != true) return false;
+
+			deleteExistShtDs(ExList<DataStorage>.ToIList(xData.TempShtDsListEx?.AllItems));
+
+			return true;
+		}
+
+		/// <summary>
+		/// repair the incorrect model name stored in a workbook DS
+		/// </summary>
+		private SbResult startFixModelName()
+		{
+			SbResult res = SB_FAIL_NEED_NEW;
+			bool? b;
+
+			if (xMgr.ProcFixModelName2() != false)
+			{
+				if ((b=gotData()) != false &&
+					xMgr.VerifyModelName() == VDS_GOOD)
+				{
+					xMui.WbkDsResCode = VDS_GOOD;
+
+					res = b == null ? SB_REPAIRED_NEED_SHTS : SB_ALL_GOOD;
+				}
+			}
+
+			return res;
+		}
+
+		/// <summary>
+		/// adjust the workbook DS to re-activate the ex stor system (but only when turned off)
+		/// </summary>
+		private SbResult startSetActive()
+		{
+			SbResult res = SB_OTHER_FAIL;
+			bool? result;
+			bool? b;
+
+			if (xMgr.UpdateWbkEntityField(WorkBookFieldKeys.PK_AD_STATUS,
+					new DynaValue(ActivateStatus.AS_ACTIVE)))
+			{
+				if  ((b = gotData()) == null)
+					res = SB_REPAIRED_NEED_SHTS;
+				else if (b == true) 
+					res = SB_ALL_GOOD;
+			}
+
+			return res;
+		}
+
+		/// <summary>
+		/// delete all existing workbook DS found in memory
+		/// </summary>
+		private bool deleteExistWbkDs()
+		{
+			IList<DataStorage> dsList;
+
+			if (!xMgr.FindAllWbkDs(out dsList)) return false;
+
+			return xMgr.DeleteDsList(dsList);
+		}
+
+		/// <summary>
+		/// delete all sheet DS per the list provided
+		/// </summary>
+		private bool deleteExistShtDs(IList<DataStorage>? dsList)
+		{
+			if (dsList == null) return false;
+
+			return xMgr.DeleteDsList(dsList);
+		}
+
+		/// <summary>
+		/// delete any workbook schema, from the workbook and from temp<br/>
+		/// revised, only from the workbook - keep temp
+		/// </summary>
+		private void deleteExistWbkSchema()
+		{
+			if (xData.GotWbkSchema)     xData.WorkBookSchema = null;
+			// if (xData.GotTempWbkSchema) xData.TempWbkSchemaEx = null;
+		}
 
 		/* alt start routines */
 
 		public void StartOprAlt()
 		{
+			publishStatus();
 			winOpen2ndPlus();
 		}
 
@@ -422,34 +782,214 @@ namespace ExStorSys
 
 		/* utilities */
 
+		
+		private string getMainDescIssues(ValidateSchema ws, ValidateDataStorage wd, ValidateSchema ss, ValidateDataStorage sd)
+		{
+			string result;
+
+			int count = 0;
+
+			string titleSs = "Sheet Schema";
+			string titleSd = "Sheet DataStorage";
+
+			string titleWs = "WorkBook Schema";
+			string titleWd = "WorkBook DataStorage";
+
+			string descA = "\nThe ExStorSystem has {0}:\n";
+			string[] descB = new [] { "this issue", "these issues" };
+
+			// string x = string.Format("test {0}", "");
+
+			StringBuilder sb = new StringBuilder();
+
+			// sheet schema
+			if (ss >= VSC_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateSchemaDesc[ss], out result) == 1)
+					sb.AppendLine(result);
+			}
+			
+			// sheet datastorage
+			if (sd >= VDS_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateDataStorageDesc[sd], out result) == 1)
+					sb.AppendLine(result);
+			}
+
+
+			// workbook schema
+			if (ws >= VSC_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateSchemaDesc[ws], out result) == 1)
+					sb.AppendLine(result);
+			}
+
+			if (wd == VDS_MULTIPLE_MN_O)
+			{
+				count++;
+
+				sb.Append(getWdDesc(VDS_WRONG_MODEL_NAME));
+				sb.Append(getWdDesc(VDS_ACT_OFF));
+			}
+			else
+			{
+				if (wd >= VDS_MISSING)
+				{
+					count++;
+
+					sb.Append(getWdDesc(wd));
+				}
+			}
+
+			return sb.ToString();
+		}
+
+		private string getWdDesc(ValidateDataStorage wd)
+		{
+			string result = "";
+
+			if ( fmtIssue( ExStorConst.ValidateDataStorageDesc[wd], out result) == 1) return $"{result}\n";
+
+			return result;
+		}
+
+		private string getExtDescIssues(ValidateSchema ws, ValidateDataStorage wd, ValidateSchema ss, ValidateDataStorage sd)
+		{
+			string result;
+
+			int count = 0;
+
+			string titleSs = "Sheet Schema";
+			string titleSd = "Sheet DataStorage";
+
+			string titleWs = "WorkBook Schema";
+			string titleWd = "WorkBook DataStorage";
+
+			string descA = "\nThe ExStorSystem has {0}:\n";
+			string[] descB = new [] { "this issue", "these issues" };
+
+			string x = string.Format("test {0}", "");
+
+			StringBuilder sb = new StringBuilder();
+
+			// sheet schema
+			if (ss >= VSC_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateSchemaDesc[ss], out result) == 2)
+					sb.AppendLine(result);
+			}
+			
+			// sheet datastorage
+			if (sd >= VDS_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateDataStorageDesc[sd], out result) == 2)
+					sb.AppendLine(result);
+			}
+
+
+			// workbook schema
+			if (ws >= VSC_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateSchemaDesc[ws], out result) == 2)
+					sb.AppendLine(result);
+			}
+
+			// sheet datastorage
+			if (wd >= VDS_MISSING)
+			{
+				count++;
+
+				if ( fmtIssue( ExStorConst.ValidateDataStorageDesc[wd], out result) == 2)
+					sb.AppendLine(result);
+			}
+
+			return sb.ToString();
+		}
+
+		private int fmtIssue(  Tuple<int, string, string, string> issue, out string issueDesc)
+		{
+			// issueDesc = $"* {title}\n   Issue: {issue.Item2}\n   Resolution: {issue.Item3}\n";
+			issueDesc = $"*  {issue.Item2}\n   Resolution: {issue.Item3}\n";
+
+			return issue.Item1;
+		}
+
 		private int makeKey()
 		{
 			return getKey(
-				xMui.WbkScResCode, 
-				xMui.WbkDsResCode, 
+				xMui.WbkScResCode,
+				xMui.WbkDsResCode,
 				xMui.ShtScResCode,
-				xMui.ShtDsResCode 
+				xMui.ShtDsResCode
 				);
-
 		}
 
-		private int getKey(ValidateSchema sw, ValidateDataStorage dw, ValidateSchema ss, ValidateDataStorage ds)
+		private int getKey(ValidateSchema ws, ValidateDataStorage wd, ValidateSchema ss, ValidateDataStorage sd)
 		{
-			return (int)dw * 1000 + (int)ds * 100 + (int) sw * 10 + (int) ss;
+			bool b = wd >= VDS_ACT_IGNORE && wd <= VDS_MULTIPLE_MN_O;
+
+			int iwd = (int) wd * 1000; 
+			int iws = (int) ws * 10;
+
+			int isd = b ? 0 : (int) sd * 100;
+			int iss = b ? 0 : (int) ss;
+
+			return iwd + iws + isd + iss;
+
+			// return (int) wd * 1000 +
+			// 	((int) (sd <= VDS_DEFAULT ? VDS_DEFAULT : sd) * 100) +
+			// 	((int) ws) * 10 +
+			// 	((int) (ss <= VSC_DEFAULT ? VSC_DEFAULT : ss));
+
+			// return (int)wd * 1000 + (int) sd * 100 + ((int) ws ) * 10 + ((int) ss);
+		}
+
+		private void saveStatus()
+		{
+			// Debug.WriteLine($"** using xMui = {xMui?.ObjectId ?? -1} | ws {xMui?.WbkScResCode ?? VSC_NG} | wd {xMui?.WbkDsResCode ?? VDS_NG} | ss {xMui?.ShtScResCode ?? VSC_NG} | sd {xMui?.ShtDsResCode ?? VDS_NG}");
+
+			wbkScResCode = xMui?.WbkScResCode ?? VSC_NG;
+			wbkDsResCode = xMui?.WbkDsResCode ?? VDS_NG;
+			shtScResCode = xMui?.ShtScResCode ?? VSC_NG;
+			shtDsResCode = xMui?.ShtDsResCode ?? VDS_NG;
+		}
+
+		private void setNeutralStatusWbk()
+		{
+			wbkScResCode = VSC_NA;
+			wbkDsResCode = VDS_NA;
+		}
+
+		private void setNeutralStatusSht()
+		{
+			shtScResCode = VSC_NA;
+			shtDsResCode = VDS_NA;
 		}
 
 		/// <summary>
 		/// set the verify status for each component<br/>
 		/// set launch code to LC_NA
 		/// </summary>
-		private void setStatus()
+		private void publishStatus()
 		{
 			// status to set
 			// these - validation status
-			OnPropChgd(new PropChgEvtArgs( PI_VFY_WBK_SC, xMui.WbkScResCode));
-			OnPropChgd(new PropChgEvtArgs( PI_VFY_WBK_DS, xMui.WbkDsResCode));
-			OnPropChgd(new PropChgEvtArgs( PI_VFY_SHT_SC, xMui.ShtScResCode));
-			OnPropChgd(new PropChgEvtArgs( PI_VFY_SHT_DS, xMui.ShtDsResCode));
+			OnPropChgd(new PropChgEvtArgs( PI_VFY_WBK_SC, wbkScResCode));
+			OnPropChgd(new PropChgEvtArgs( PI_VFY_WBK_DS, wbkDsResCode));
+			OnPropChgd(new PropChgEvtArgs( PI_VFY_SHT_SC, shtScResCode));
+			OnPropChgd(new PropChgEvtArgs( PI_VFY_SHT_DS, shtDsResCode));
 
 			// launch
 			OnPropChgd(new PropChgEvtArgs( PI_GEN_LAUNCHCODE, LaunchCode.LC_NA));
@@ -480,7 +1020,8 @@ namespace ExStorSys
 
 		private bool askFixModelInfo()
 		{
-			TaskDialogResult tdResult = stdTaskDialogMsg(TD_MODEL_INFO_WRONG);
+			// TaskDialogResult tdResult = stdTaskDialogMsg(TD_MODEL_INFO_WRONG);
+			TaskDialogResult tdResult = extTaskDialogMsg(TD_HASISSUES);
 
 			if (tdResult == TaskDialogResult.Yes) return true;
 
@@ -498,23 +1039,104 @@ namespace ExStorSys
 
 		private bool askReActivate()
 		{
-			ask = "aa";
-			askName = "re-activate";
+			string mi = $"The {ExStorConst.APP_NAME} is Deactivated";
 
-			return true;
+			// TaskDialogResult tdResult = stdTaskDialogMsg(TD_REACTIVATE, mi);
 
-			TaskDialogResult tdResult = stdTaskDialogMsg(TD_REACTIVATE);
+			TaskDialogResult tdResult = extTaskDialogMsg(TD_REACTIVATE, mi);
 
 			if (tdResult == TaskDialogResult.Yes) return true;
 
 			return false;
 		}
 
-		private void norifyCloseOpen()
+		private void notifyCloseOpen()
 		{
-			TaskDialogResult tdResult = stdTaskDialogMsg(TD_REACTIVATE);
+			TaskDialogResult tdResult = stdTaskDialogMsg(TD_CLOSEOPEN);
 		}
 
+
+		private void reCat()
+		{
+			procIndex = new ();
+
+
+			foreach ((ValidateSchema sw, ValidateDataStorage dw, ValidateSchema ss, ValidateDataStorage ds, navigateItem t) in _navData)
+			{
+				int key = getKey(sw, dw, ss, ds);
+
+				string p1 = t.Procedure1;
+				string p2 = t.Procedure2;
+				string p3 = t.Id;
+
+				try
+				{
+					procIndex.Add(key, new (p1, p2, p3));
+				}
+				catch (Exception e)
+				{
+					Debug.WriteLine(e);
+					throw;
+				}
+			}
+		}
+
+
+		private struct navigateItem
+		{
+			public string Id { get; set; }
+			public string Procedure1 { get; set; }
+			public string Procedure2 { get; set; }
+
+			public navigateItem(string id, string procedure1, string procedure2)
+			{
+				Id = id;
+				Procedure1 = procedure1;
+				Procedure2 = procedure2;
+			}
+		}
+
+		private readonly Tuple<ValidateSchema, ValidateDataStorage, ValidateSchema, ValidateDataStorage, navigateItem>[] _navData =
+		[
+			// 	wbk sc		        wbk ds			       sht sc			       sht ds	                               id   proc1  proc2
+			new (VSC_GOOD         , VDS_GOOD	         , VSC_MISSING            , VDS_MISSING         , new navigateItem("1",   "S", "")),    //		normal open, just needs sheets
+			new (VSC_GOOD         , VDS_GOOD			 , VSC_MISSING            , VDS_INVALID         , new navigateItem("5",   "1", "B")),   // 
+			new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_GOOD            , new navigateItem("10",  "0", "")),    // 
+			new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_MISSING         , new navigateItem("12",  "S", "")),    // 
+			new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_INVALID         , new navigateItem("13",  "1", "B")),   // 
+			new (VSC_GOOD         , VDS_GOOD             , VSC_WRONG_VER          , VDS_WRONG_VER       , new navigateItem("15",  "4", "")),    // 20 & 25 below
+																																 			   
+			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_MISSING         , new navigateItem("30",  "1", "A")),   // 
+			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_INVALID         , new navigateItem("35",  "1", "B")),   // 
+			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_GOOD            , new navigateItem("40",  "6", "")),    // 
+			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_MISSING         , new navigateItem("43",  "6", "")),    // 
+			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_WRONG_VER          , VDS_WRONG_VER       , new navigateItem("45",  "7", "")),    // 
+			new (VSC_GOOD	      , VDS_MISSING          , VSC_GOOD               , VDS_GOOD            , new navigateItem("47",  "2", "")),    // 
+			new (VSC_GOOD         , VDS_MISSING	         , VSC_GOOD               , VDS_MISSING         , new navigateItem("51",  "1", "")),    // 50 below
+			new (VSC_GOOD         , VDS_INVALID	         , VSC_GOOD               , VDS_MISSING         , new navigateItem("52",  "1", "A")),   // 
+			new (VSC_GOOD         , VDS_INVALID	         , VSC_GOOD               , VDS_INVALID         , new navigateItem("54",  "1", "B")),   // 
+			new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_MISSING         , new navigateItem("56",  "1", "")),    // 
+			new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_INVALID         , new navigateItem("60",  "1", "")),    // 
+			new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_GOOD            , new navigateItem("65",  "2", "")),    // 
+			new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_MISSING         , new navigateItem("68",  "2", "")),    // 
+			new (VSC_MISSING      , VDS_MISSING          , VSC_WRONG_VER          , VDS_WRONG_VER       , new navigateItem("70",  "3", "")),    // 
+			new (VSC_MISSING      , VDS_INVALID          , VSC_MISSING            , VDS_MISSING         , new navigateItem("75",  "1", "A")),   // 
+			new (VSC_MISSING      , VDS_INVALID          , VSC_MISSING            , VDS_INVALID         , new navigateItem("78",  "1", "B")),   // 
+			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new navigateItem("80",  "1", "A")),   // 
+			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new navigateItem("85",  "1", "B")),   // 
+			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new navigateItem("90",  "2", "")),    // 
+			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new navigateItem("93",  "2", "")),    // 
+			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new navigateItem("95",  "3", "")),    // 
+			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new navigateItem("100", "1", "A")),   // 
+			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new navigateItem("105", "1", "B")),   // 
+			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new navigateItem("110", "2", "A")),   // 
+			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new navigateItem("113", "2", "A")),   // 
+			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new navigateItem("115", "3", "")),    // 
+																																				   
+			new (VSC_GOOD         , VDS_ACT_IGNORE       , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new navigateItem("20", "I" , "")),    // 
+			new (VSC_GOOD         , VDS_ACT_OFF          , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new navigateItem("25", "O" , "")),    // 
+			new (VSC_GOOD         , VDS_MULTIPLE_MN_O    , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new navigateItem("50", "O" , "A")),   // model name + act off
+		];
 
 		/* utilities */
 
@@ -525,20 +1147,20 @@ namespace ExStorSys
 
 		private void showStatus1(string prefix = "", string suffix = "")
 		{
-			if (!prefix.IsVoid())  Msgs.CWriteLine($"\n**  {prefix}");
+			if (!prefix.IsVoid())  Msgs.CWriteLine($"\n** {prefix}");
 
-			Msgs.CWriteLine($"\n*** {xMui.WbkDsResCode} [{xMui.WbkDsResDesc}]");
-			Msgs.CWriteLine($"*** {xMui.WbkScResCode} [{xMui.WbkScResDesc}]");
-			Msgs.CWriteLine($"\n*** {xMui.ShtDsResCode} [{xMui.ShtDsResDesc}]");
-			Msgs.CWriteLine($"*** {xMui.ShtScResCode} [{xMui.ShtScResDesc}]");
+			Msgs.CWriteLine($"\n\t*** {xMui.WbkScResCode,-20} {$"[{xMui.WbkScResDesc}]",-60} | {xMui.WbkDsResCode, -12} [{xMui.WbkDsResDesc}]");
+
+			Msgs.CWriteLine($"\t*** {xMui.ShtScResCode,-20} {$"[{xMui.ShtScResDesc}]",-60} | {xMui.ShtDsResCode, -12} [{xMui.ShtDsResDesc}]");
+
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"**  {suffix}\n");
 		}
 
 		private void showStatus2(string prefix = "", string suffix = "")
 		{
-			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n{prefix}");
-			Msgs.CWriteLine($"\n{xMui.ExSysStatus} [{xMui.ExSysStatusDesc}]");
-			Msgs.CWriteLine($"{xMui.SystemRunningStatus} [{xMui.SystemRunningStatusDesc}]");
+			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n** {prefix}");
+			Msgs.CWriteLine($"\t*** {xMui.ExSysStatus,-20} [{xMui.ExSysStatusDesc}]");
+			Msgs.CWriteLine($"\t*** {xMui.SystemRunningStatus, -20} [{xMui.SystemRunningStatusDesc}]");
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"{suffix}\n");
 		}
 
@@ -547,17 +1169,12 @@ namespace ExStorSys
 			bool saved = Msgs.ShowDebug;
 			Msgs.ShowDebug = true;
 
-			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n{prefix}");
-			Msgs.CWriteLine($"got wbk        | {xData.GotWorkBook}");
-			Msgs.CWriteLine($"got wbk schema | {xData.GotWbkSchema}");
-			Msgs.CWriteLine($"got wbk ds     | {xData.GotWbkDs}");
-			Msgs.CWriteLine($"got sht schema | {xData.GotShtSchema}");
-			Msgs.CWriteLine($"got any sht ds | {xData.GotAnySheets}");
+			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n** {prefix}");
+			Msgs.CWriteLine(  $"\t*** WBK got schema      | {xData.GotWbkSchema, -7    }| got ds          | {xData.GotWbkDs,-7}| got workbook  | {xData.GotWorkBook}");
+			Msgs.CWriteLine(  $"\t*** SHT got schema      | {xData.GotShtSchema, -7    }| got any ds      | {xData.GotAnySheets}");
 
-			Msgs.CWriteLine($"\ngot temp wbk schema | {xData.GotTempWbkSchema}");
-			Msgs.CWriteLine($"got temp wbk ds     | {xData.GotTempWbkDs}");
-			Msgs.CWriteLine($"got temp sht schema | {xData.GotTempShtSchema}");
-			Msgs.CWriteLine($"got temp any sht ds | {xData.GotTempAnySheetsEx}");
+			Msgs.CWriteLine($"\n\t*** WBK got temp schema | {xData.GotTempWbkSchema, -7}| got temp ds     | {xData.GotTempWbkDs}");
+			Msgs.CWriteLine(  $"\t*** SHT got temp schema | {xData.GotTempShtSchema, -7}| got temp any ds | {xData.GotTempAnySheetsEx}");
 
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"{suffix}\n");
 
@@ -575,18 +1192,33 @@ namespace ExStorSys
 			bool saved = Msgs.ShowDebug;
 			Msgs.ShowDebug = true;
 
-			Msgs.CWriteLine($"{" ".Repeat(26)}{"WbkDs",COL_A}\t{"WbkSc",COL_C}\t{"ShtDs",COL_B}\t{"ShtSc",COL_D}");
-			Msgs.CWriteLine($"{"ignore LaunchCode",-26}{xMui.WbkDsResCode,COL_A}\t{xMui.WbkScResCode,COL_C}\t{xMui.ShtDsResCode,COL_B}\t{xMui.ShtScResCode, COL_D}\n");
+			Msgs.CWriteLine($"{" ".Repeat(26)}{"WbkSc",COL_A}\t{"WbkDs",COL_C}\t{"ShtSc",COL_B}\t{"ShtDs",COL_D}");
+			Msgs.CWriteLine($"{"ignore LaunchCode",-26}{xMui.WbkScResCode,COL_A}\t{xMui.WbkDsResCode,COL_C}\t{xMui.ShtScResCode,COL_B}\t{xMui.ShtDsResCode, COL_D}\n");
+
+			Msgs.ShowDebug = saved;
+
+		}
+
+		public void ShowStatus5(string prefix = "", string suffix = "")
+		{
+			bool saved = Msgs.ShowDebug;
+			Msgs.ShowDebug = true;
+
+			Msgs.CWriteLine($"\t***{"WbkSc",-8}{xMui.WbkScResCode,-12} | {"WbkDs",-8}{xMui.WbkDsResCode,-12} | {"ShtSc",-8}{xMui.ShtScResCode,-12} | {"ShtDs",-8}{xMui.ShtDsResCode, -12}");
 
 			Msgs.ShowDebug = saved;
 		}
 
-		private void showStatus2(ExSysStatus status, string prefix = "", string suffix = "")
-		{
-			Msgs.CWriteLine("\nstatus 2");
-			string msg = $"{prefix}{status} | {xMui.ExSysStatus} | {xMui.LaunchCode} | {xMui.SystemRunningStatus}{suffix}";
-			Msgs.CWriteLine(msg);
-		}
+
+
+
+
+		// private void showStatus2(ExSysStatus status, string prefix = "", string suffix = "")
+		// {
+		// 	Msgs.CWriteLine("\nstatus 2");
+		// 	string msg = $"{prefix}{status} | {xMui.ExSysStatus} | {xMui.LaunchCode} | {xMui.SystemRunningStatus}{suffix}";
+		// 	Msgs.CWriteLine(msg);
+		// }
 
 	#region task dialogs
 
@@ -601,6 +1233,7 @@ namespace ExStorSys
 			TD_UPGRADE			,
 			TD_FIX				,
 			TD_CLOSEOPEN		,
+			TD_HASISSUES		,
 		}
 
 		private static TaskDialogIcon infoTdIcon = TaskDialogIcon.TaskDialogIconInformation;
@@ -637,8 +1270,16 @@ namespace ExStorSys
 
 			{
 				TD_REACTIVATE,
-				new ($"{ExStorConst.APP_NAME}", "The {0} for this model",
-					[$"Select Yes to Reactivate\nSelect No to continue without the {ExStorConst.APP_NAME}"], [""],
+				new ($"{ExStorConst.APP_NAME}", "not used",
+					[
+						"The {0} system cannot continue due to {1}:\n\n",
+						"{2}",
+						"Do you want to correct these issues and activate the system?\n\n",
+						"Selecting Yes will modify the issues and activate the system.\n\n",
+						$"Selecting No will preserve the issues but the {ExStorConst.APP_NAME} addin cannot ",
+						"continue and must exit"
+					], 
+					[""],
 					TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No,
 					TaskDialogResult.No, infoTdIcon)
 			},
@@ -656,7 +1297,7 @@ namespace ExStorSys
 				new ($"{ExStorConst.APP_NAME} Status", "Invalid or Out of Date information Found",
 					[
 						"For an unknown reason, the saved information does not match this model.\n",
-						"Do you want to update the stored information for this model?",
+						"Do you want to update the stored information for this model?\n\n",
 						$"Selecting Yes will update the saved information and the {ExStorConst.APP_NAME} addin can continue.\n",
 						$"Selecting No will preserve the incorrect information but the {ExStorConst.APP_NAME} addin cannot ",
 						"continue and will exit"
@@ -675,7 +1316,7 @@ namespace ExStorSys
 				new ($"{ExStorConst.APP_NAME} Status", "Incorrect information Found",
 					[
 						"For an unknown reason, the saved information is missing or incorrect\n",
-						"Do you want to adjust the stored information and activate the system for this model?",
+						"Do you want to adjust the stored information and activate the system for this model?\n\n",
 						$"Selecting Yes will modify the saved information and the {ExStorConst.APP_NAME} addin can continue.\n",
 						$"Selecting No will preserve the incorrect information but the {ExStorConst.APP_NAME} addin cannot ",
 						"continue and will exit"
@@ -694,7 +1335,7 @@ namespace ExStorSys
 				new ($"{ExStorConst.APP_NAME} Status", "Out-of-date information Found",
 					[
 						$"This model is using an old version of the saved information used by the {ExStorConst.APP_NAME} addin\n",
-						"Do you want to upgrade the stored information and activate the system for this model?",
+						"Do you want to upgrade the stored information and activate the system for this model?\n\n",
 						$"Selecting Yes will upgrade the saved information and the {ExStorConst.APP_NAME} addin can continue.\n",
 						$"Selecting No will preserve the old information but the {ExStorConst.APP_NAME} addin cannot ",
 						"continue and will exit"
@@ -718,8 +1359,28 @@ namespace ExStorSys
 					TaskDialogCommonButtons.Ok,
 					TaskDialogResult.Ok, infoTdIcon)
 			},
-		};
+			
+			{
+				TD_HASISSUES,
+				new ($"{ExStorConst.APP_NAME} Status", $"The {ExStorConst.APP_NAME} addin cannot proceed",
+					[
+						"For an unknown reason, the saved information has {1}\n\n",
+						"{2}",
+						"Do you want to correct these issues and activate the system?\n\n",
+						$"Selecting Yes will modify the issues and activate the system.\n\n",
+						$"Selecting No will preserve the issues but the {ExStorConst.APP_NAME} addin cannot ",
+						"continue and must exit"
+					],
+					[
+						"This generally happens when the model is saved or duplicated as a new model. ",
+						"Or may happen if the model is moved to a new location",
+						"{0}"
+					],
+					TaskDialogCommonButtons.Yes | TaskDialogCommonButtons.No,
+					TaskDialogResult.No, infoTdIcon)
+			},
 
+		};
 
 		private TaskDialogResult statDialog(string msg2 = "", string? msg3 = "", TaskDialogCommonButtons btns = TaskDialogCommonButtons.None)
 		{
@@ -753,7 +1414,7 @@ namespace ExStorSys
 			return stdTaskDialogMsg(TD_CUSTOM, mainInst, mainCont, btns);
 		}
 
-		private TaskDialogResult stdTaskDialogMsg(  TdKey which, string mainInst = "", string mainCont = "", TaskDialogCommonButtons btns = TaskDialogCommonButtons.None)
+		private TaskDialogResult stdTaskDialogMsg(TdKey which, string mainInst = "", string mainCont = "", TaskDialogCommonButtons btns = TaskDialogCommonButtons.None)
 		{
 			string mainContent = "";
 			string expContent = "";
@@ -780,6 +1441,64 @@ namespace ExStorSys
 
 
 			TaskDialog td = new TaskDialog(TdData[which].Item1);
+			td.TitleAutoPrefix = false;
+			td.MainInstruction = mainInst.IsVoid() ? TdData[which].Item2 : mainInst;
+			td.MainContent = mainContent;
+			td.ExpandedContent = expContent;
+			td.CommonButtons = btns == TaskDialogCommonButtons.None ?  TdData[which].Item5 : btns;
+			td.DefaultButton = TdData[which].Item6;
+			td.MainIcon = TdData[which].Item7;
+
+			return td.Show();
+		}
+
+		private TaskDialogResult extTaskDialogMsg(  TdKey which, string mainInst = "", string mainCont = "", TaskDialogCommonButtons btns = TaskDialogCommonButtons.None)
+		{
+
+			string mainDescQualifier = "issues.";
+			string mainContent = "";
+			string expContent = "";
+
+			string mainDesc = getMainDescIssues(wbkScResCode, wbkDsResCode, shtScResCode, shtDsResCode);
+			string extDesc  = getExtDescIssues(wbkScResCode, wbkDsResCode, shtScResCode, shtDsResCode);
+
+			if (!mainDesc.IsVoid())
+			{
+				mainDescQualifier = "the following issues:";
+			}
+			else if (!extDesc.IsVoid())
+			{
+				mainDescQualifier = "issues, see the details. below.";
+			}
+
+
+			if (!mainCont.IsVoid())
+			{
+				mainContent = mainCont;
+			}
+			else if (TdData[which].Item3 != null && TdData[which].Item3!.Length > 0)
+			{
+				foreach (string s in TdData[which].Item3!)
+				{
+					mainContent += s;
+				}
+
+				mainContent = string.Format(mainContent, ExStorConst.APP_NAME, mainDescQualifier, mainDesc);
+			}
+
+			if (TdData[which].Item4 != null && TdData[which].Item4!.Length > 0)
+			{
+				foreach (string s in TdData[which].Item4!)
+				{
+					expContent += s;
+				}
+
+				expContent = string.Format(expContent, extDesc);
+			}
+
+
+			TaskDialog td = new TaskDialog(TdData[which].Item1);
+			td.TitleAutoPrefix = false;
 			td.MainInstruction = mainInst.IsVoid() ? TdData[which].Item2 : mainInst;
 			td.MainContent = mainContent;
 			td.ExpandedContent = expContent;
@@ -849,622 +1568,585 @@ namespace ExStorSys
 
 	#endregion
 
-	#region test procedures
-
-		/* processing switchboard */
-
-		private bool t_switchBoardD()
-		{
-			bool result = false;
-
-			key = makeKey();
-
-			string opt = procIndex[key];
-
-			switch (opt)
-			{
-			case "S":
-			case "0":
-				{
-					proc = opt;
-					ask = "-";
-					p2 = "";
-
-					pyn = proc.Equals("0") ? "good" : "-";
-
-					result = true;
-					break;
-				}
-			case "1":
-				{
-					proc = "1";
-
-					if (t_askActivate())
-					{
-						if (t_proc_n(out pyn, out procNameyn)) result = true;
-					}
-
-					// result = t_proc_1();
-					break;
-				}
-			case "2":
-				{
-					proc = "2";
-
-					if (t_askRepair())
-					{
-						if (t_proc_b(out pyn, out procNameyn)) result = true;
-					}
-
-					// result = t_proc_2();
-					break;
-				}
-			case "3":
-				{
-					proc = "3";
-
-					if (t_askUpgrade())
-					{
-						if (t_proc_b(out pyn, out procNameyn))
-						{
-							if (t_proc_cs(out p2, out procName2)) result = true;
-						}
-					}
-
-					// result = t_proc_3();
-					break;
-				}
-			case "4":
-				{
-					proc = "4";
-
-					if (t_askUpgrade())
-					{
-						if (t_proc_cs(out pyn, out procNameyn)) result = true;
-					}
-
-					// result = t_proc_4();
-					break;
-				}
-			case "6":
-				{
-					proc = "6";
-
-					if (t_askFixModelInfo())
-					{
-						if (t_proc_d(out pyn, out procNameyn)) result = true;
-					}
-
-					// result = t_proc_6();
-					break;
-				}
-			case "7":
-				{
-					proc = "7";
-
-					if (t_askRepair())
-					{
-						if (t_proc_cs(out pyn, out procNameyn))
-						{
-							if (t_proc_d(out p2, out procName2)) result = true;
-						}
-					}
-
-					// result = t_proc_7();
-					break;
-				}
-			case "O":
-				{
-					proc = "O";
-					ask = "-";
-					pyn = "-";
-					result = false;
-					break;
-				}
-			case "I":
-				{
-					proc = "I";
-					ask = "-";
-					pyn = "-";
-					result = false;
-					break;
-				}
-				default:
-				{
-					proc = $"NONE (failed)";
-					result = false;
-					break;
-				}
-			}
-
-			ans = result;
-
-			procMatch(result);
-
-			return true;
-		}
-
-		/* processing methods */
-
-		private bool t_proc_n(out string answer, out string pName)
-		{
-			pName = "make new";
-			answer = "n";
-			return true;
-		}
-
-		private bool t_proc_cs(out string answer, out string pName)
-		{
-			pName  = "fix sht ver";
-			answer = "cs";
-			return true;
-		}
-
-		private bool t_proc_d(out string answer, out string pName)
-		{
-			pName  = "fix mod name";
-			answer = "d";
-			return true;
-		}
-
-		private bool t_proc_b(out string answer, out string pName)
-		{
-			pName  = "new wbk";
-			answer = "b";
-			return true;
-		}
-
-		private bool t_askActivate()
-		{
-			ask = "an";
-			askName = "activate";
-
-			return true;
-		}
-
-		private bool t_askUpgrade()
-		{
-			ask = "au";
-			askName = "upgrade";
-
-			return true;
-		}
-
-		private bool t_askFixModelInfo()
-		{
-			ask = "am";
-			askName = "mod info";
-
-			return true;
-		}
-
-		private bool t_askRepair()
-		{
-			ask = "ar";
-			askName = "repair";
-
-			return true;
-		}
-
-		private struct tstResults
-		{
-			public string Id { get; set; }
-			public string Procedure { get; set; }
-			public string Path { get; set; }
-			public string WhichAsk { get; set; }
-			public string IfYesNo { get; set; }
-			public string IfYes2 { get; set; }
-			public bool Result { get; set; }
-
-			public tstResults(    string id, string procedure, string path,
-				string whichAsk, string ifYesNo, string ifYes2, bool result)
-			{
-				Id = id;
-				Procedure = procedure;
-				Path = path;
-				WhichAsk = whichAsk;
-				IfYesNo = ifYesNo;
-				IfYes2 = ifYes2;
-				Result = result;
-			}
-		}
-
-		// private string answer;
-		private tstResults tstRes;
-
-		private string? askName;
-		private string? procNameyn;
-		private string? procName2;
-
-		private string? ask;
-
-		private int key;
-		private string? proc;
-		private string? pyn;
-		private string? p2;
-		private bool ans;
-
-		public void testStart()
-		{
-			reCat();
-
-			// showlist1();
-			//
-			// showList2();
-
-
-			foreach ((ValidateSchema item1, ValidateDataStorage item2, ValidateSchema item3, ValidateDataStorage item4, tstResults item5) in _tstData1)
-			{
-				StringBuilder result = new StringBuilder();
-
-				askName = "";
-				proc    = "";
-				ask     = "";
-				pyn     = "";
-				p2      = "";
-				ans     = false;
-
-				tstRes = item5;
-
-				xMui.WbkScResCode = item1;
-				result.Append(ExStorConst.ValidateSchemaDesc[item1].Item3).Append(" / ");
-
-				xMui.WbkDsResCode = item2;
-				result.Append(ExStorConst.ValidateDataStorageDesc[item2].Item3).Append(" / ");
-
-				xMui.ShtScResCode = item3;
-				result.Append(ExStorConst.ValidateSchemaDesc[item3].Item3).Append(" / ");
-
-				xMui.ShtDsResCode = item4;
-				result.Append(ExStorConst.ValidateDataStorageDesc[item4].Item3);
-
-				Msgs.Write($"test {tstRes.Id,-5} | {result.ToString()} | ");
-
-				// switchBoardC();
-				t_switchBoardD();
-			}
-		}
-
-		//                key   list of proc
-		private Dictionary<int, List<string>> keyProc;
-		private Dictionary<int, string> procIndex;
-		private Dictionary<string, List<int>> keyIdx;
-
-		private void reCat()
-		{
-			keyProc = new ();
-			procIndex = new ();
-			keyIdx = new ();
-
-			foreach ((ValidateSchema sw, ValidateDataStorage dw, ValidateSchema ss, ValidateDataStorage ds, tstResults t) in _tstData1)
-			{
-				int key = getKey(sw, dw, ss, ds);
-
-				string val = t.Procedure;
-
-				if (keyProc.TryGetValue(key, out List<string>? procs))
-				{
-					procs.Add(val);
-					keyProc[key] = procs;
-				}
-				else
-				{
-					keyProc.Add(key, [ val ]);
-
-					procIndex.Add(key, val);
-				}
-
-				if (keyIdx.TryGetValue(val, out List<int>? idxs))
-				{
-					idxs.Add(key);
-					keyIdx[val] = idxs;
-				}
-				else
-				{
-					keyIdx.Add(val, [ key ]);
-				}
-			}
-		}
-
-		private readonly Tuple<ValidateSchema, ValidateDataStorage, ValidateSchema, ValidateDataStorage, tstResults>[] _tstData1 =
-		[
-			// 	wbk sc		        wbk ds			       sht sc			       sht ds	                            id   proc  path     ask   pyn      p2     ans
-			new (VSC_GOOD         , VDS_GOOD	         , VSC_MISSING            , VDS_MISSING         , new tstResults("1",  "S" , "G-A"  , "-"  , "-"    , ""   , true)),  // g/g   - A //
-			new (VSC_GOOD         , VDS_GOOD			 , VSC_MISSING            , VDS_INVALID         , new tstResults("5",  "1" , "G-B"  , "an" , "n"    , ""   , true)),  // g/mn  - B //
-			new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_GOOD            , new tstResults("10", "0" , "G-C"  , "-"  , "good" , ""   , true)),  // g/g   - C //
-			new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_MISSING         , new tstResults("13", "S" , "G-E"  , "-"  , "-"    , ""   , true)),  // g/g   - E //
-			new (VSC_GOOD         , VDS_GOOD             , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("15", "4" , "G-D"  , "au" , "cs"   , ""   , true)),  // g/g   - D //
-																																														   //
-			new (VSC_GOOD         , VDS_ACT_IGNORE       , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("20", "I" , "H-any", "-"  , "-"    , ""   , false)), // g/ai  - I //
-																																														   //
-			new (VSC_GOOD         , VDS_ACT_OFF          , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("25", "O" , "I-any", "-"  , "-"    , ""   , false)), // g/ai  - O //
-																																														   //
-			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_MISSING         , new tstResults("30", "1" , "J-A"  , "an" , "n"    , ""   , true)),  // g/mn  - A //
-			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_INVALID         , new tstResults("35", "1" , "J-B"  , "an" , "n"    , ""   , true)),  // g/mn  - B //
-			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_GOOD            , new tstResults("40", "6" , "J-C"  , "am" , "d"    , ""   , true)),  // g/mn  - C //
-			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_MISSING         , new tstResults("43", "6" , "J-E"  , "am" , "d"    , ""   , true)),  // g/g   - E //
-			new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("45", "7" , "J-D"  , "ar" , "cs"   , "d"  , true)),  // g/mn  - D //
-																																														   //
-			new (VSC_GOOD         , VDS_MULTIPLE         , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("50", "O" , "K-Any", "-"  , "-"    , ""   , false)), // g/mx  - x //
-																																														   //
-			new (VSC_GOOD         , VDS_MISSING	         , VSC_GOOD               , VDS_MISSING         , new tstResults("53", "1" , "R-E"  , "an" , "n"    , ""   , true)),  // g/g   - B //
-																																														   //
-			new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_MISSING         , new tstResults("55", "1" , "L-A"  , "an" , "n"    , ""   , true)),  // ms/ms - A //
-			new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_INVALID         , new tstResults("60", "1" , "L-B"  , "an" , "n"    , ""   , true)),  // ms/ms - B //
-			new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_GOOD            , new tstResults("65", "2" , "L-C"  , "ar" , "b"    , ""   , true)),  // ms/ms - C //
-			new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_MISSING         , new tstResults("68", "2" , "L-E"  , "ar" , "b"    , ""   , true)),  // ms/ms - E //
-			new (VSC_MISSING      , VDS_MISSING          , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("70", "3" , "L-D"  , "au" , "b"    , "cs" , true)),  // ms/ms - D //
-																																														   //
-			new (VSC_MISSING      , VDS_INVALID          , VSC_MISSING            , VDS_MISSING         , new tstResults("75", "1" , "M-A"  , "an" , "n"    , ""   , true)),  // ms/ms - A //
-																																														   //
-			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new tstResults("80", "1" , "N-A"  , "an" , "n"    , ""   , true)),  // ms/ms - A //
-			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new tstResults("85", "1" , "N-B"  , "an" , "n"    , ""   , true)),  // ms/ms - B //
-			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new tstResults("90", "2" , "N-C"  , "ar" , "b"    , ""   , true)),  // ms/ms - C //
-			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new tstResults("93", "2" , "N-E"  , "ar" , "b"    , ""   , true)),  // ms/ms - C //
-			new (VSC_INVALID      , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("95", "3" , "N-D"  , "au" , "b"    , "cs" , true)),  // ms/ms - D //
-																																														   //
-			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new tstResults("100", "1", "P-A" , "an"  , "n"    , ""   , true)),  // ms/ms - A //
-			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new tstResults("105", "1", "P-B" , "an"  , "n"    , ""   , true)),  // ms/ms - B //
-			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new tstResults("110", "2", "P-C" , "ar"  , "b"    , ""   , true)),  // ms/ms - C //
-			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new tstResults("113", "2", "P-E" , "ar"  , "b"    , ""   , true)),  // ms/ms - C //
-			new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("115", "3", "P-D" , "au"  , "b"    , "cs" , true)),  // ms/ms - D //
-		];
-
-		private void procMatch(bool result)
-		{
-			bool resFinal = true;
-
-			string res1 = tstRes.Procedure.Equals(proc) ? "YES" : "NO";
-			resFinal = resFinal && (tstRes.Procedure.Equals(proc));
-
-			string res2 = result == tstRes.Result ? "YES" : "NO";
-			resFinal = resFinal && (result == tstRes.Result);
-
-			string res2a = result ? "T" : "F";
-			string res2b = tstRes.Result ? "T" : "F";
-			res2 = $"{res2} ({res2a} vs {res2b})";
-
-			string res4 = ask.Equals(tstRes.WhichAsk) ? "YES" : "NO";
-
-			resFinal = resFinal && (ask.Equals(tstRes.WhichAsk));
-
-			string res4a = $"({ask} vs {tstRes.WhichAsk})";
-			res4 = $"{res4} {res4a,-10}";
-
-			string res3 = $"pyn {$"{pyn.Equals(tstRes.IfYesNo)}",-6} {$"({tstRes.IfYesNo} vs {pyn})",-16}  {$"[{procNameyn}]", -14}";
-
-			resFinal = resFinal && (pyn.Equals(tstRes.IfYesNo));
-
-			if (result)
-			{
-				if (!tstRes.IfYes2.IsVoid())
-				{
-					res3 = $"{res3} | p2 {$"{p2.Equals(tstRes.IfYes2)}",-6} {$"({tstRes.IfYes2} vs {p2})",-16}   {$"[{procName2}]", -14}";
-				}
-				else
-				{
-					res3 = $"{res3} | p2 (n/a)";
-				}
-			}
-
-			string finalAnswer = resFinal ? "** GOOD" : "failed";
-
-			StringBuilder sb = new StringBuilder();
-			sb.Append($"key {key,-6}| {finalAnswer,-10} | ");
-			sb.Append($"ask {askName,-10} | ");
-			sb.Append($"procedure {proc,-2} {$"(vs {tstRes.Procedure})", -7} {res1,-5} | ");
-			sb.Append($"path {tstRes.Path,-6} | ");
-			sb.Append($"result match? {res2,-15} | ");
-			sb.Append($"ask match? {res4,-15} | ");
-			sb.Append($"results {res3}");
-
-
-
-
-			Msgs.WriteLine(sb.ToString());
-		}
-
-		private void showlist1()
-		{
-			Msgs.WriteLine($"number index & associated procedures");
-
-			foreach ((int i, List<string>? value) in keyProc)
-			{
-				Msgs.Write($"** idx  {i,-5} | ");
-
-				foreach (string s in value)
-				{
-					Msgs.Write($"{s,-4}");
-				}
-
-				Msgs.WriteLine("");
-			}
-		}
-
-		private void showList2()
-		{
-			Msgs.WriteLine($"proc index & associated indices");
-
-			foreach ((string? s, List<int>? value) in keyIdx)
-			{
-				Msgs.Write($"** proc {s,-5} | ");
-
-				foreach (int i in value)
-				{
-					Msgs.Write($"{i,-6}");
-				}
-
-				Msgs.WriteLine("");
-			}
-		}
-
-
-	#endregion
-
-
 	#region saved
 
-				/* voided
-		private bool t_switchBoardE()
+	// #region test procedures
+	//
+	// 	/* processing switchboard */
+	//
+	// 	private bool t_switchBoardD()
+	// 	{
+	// 		bool result = false;
+	//
+	// 		key = makeKey();
+	//
+	// 		string opt = procIndex[key].Item1;
+	//
+	// 		switch (opt)
+	// 		{
+	// 		case "S":
+	// 		case "0":
+	// 			{
+	// 				proc = opt;
+	// 				ask = "-";
+	// 				p2 = "";
+	//
+	// 				pyn = proc.Equals("0") ? "good" : "-";
+	//
+	// 				result = true;
+	// 				break;
+	// 			}
+	// 		case "1":
+	// 			{
+	// 				proc = "1";
+	//
+	// 				if (t_askActivate())
+	// 				{
+	// 					if (t_proc_n(out pyn, out procNameyn)) result = true;
+	// 				}
+	//
+	// 				// result = t_proc_1();
+	// 				break;
+	// 			}
+	// 		case "2":
+	// 			{
+	// 				proc = "2";
+	//
+	// 				if (t_askRepair())
+	// 				{
+	// 					if (t_proc_b(out pyn, out procNameyn)) result = true;
+	// 				}
+	//
+	// 				// result = t_proc_2();
+	// 				break;
+	// 			}
+	// 		case "3":
+	// 			{
+	// 				proc = "3";
+	//
+	// 				if (t_askUpgrade())
+	// 				{
+	// 					if (t_proc_b(out pyn, out procNameyn))
+	// 					{
+	// 						if (t_proc_cs(out p2, out procName2)) result = true;
+	// 					}
+	// 				}
+	//
+	// 				// result = t_proc_3();
+	// 				break;
+	// 			}
+	// 		case "4":
+	// 			{
+	// 				proc = "4";
+	//
+	// 				if (t_askUpgrade())
+	// 				{
+	// 					if (t_proc_cs(out pyn, out procNameyn)) result = true;
+	// 				}
+	//
+	// 				// result = t_proc_4();
+	// 				break;
+	// 			}
+	// 		case "6":
+	// 			{
+	// 				proc = "6";
+	//
+	// 				if (t_askFixModelInfo())
+	// 				{
+	// 					if (t_proc_d(out pyn, out procNameyn)) result = true;
+	// 				}
+	//
+	// 				// result = t_proc_6();
+	// 				break;
+	// 			}
+	// 		case "7":
+	// 			{
+	// 				proc = "7";
+	//
+	// 				if (t_askRepair())
+	// 				{
+	// 					if (t_proc_cs(out pyn, out procNameyn))
+	// 					{
+	// 						if (t_proc_d(out p2, out procName2)) result = true;
+	// 					}
+	// 				}
+	//
+	// 				// result = t_proc_7();
+	// 				break;
+	// 			}
+	// 		case "O":
+	// 			{
+	// 				proc = "O";
+	// 				ask = "-";
+	// 				pyn = "-";
+	// 				result = false;
+	// 				break;
+	// 			}
+	// 		case "I":
+	// 			{
+	// 				proc = "I";
+	// 				ask = "-";
+	// 				pyn = "-";
+	// 				result = false;
+	// 				break;
+	// 			}
+	// 		default:
+	// 			{
+	// 				proc = $"NONE (failed)";
+	// 				result = false;
+	// 				break;
+	// 			}
+	// 		}
+	//
+	// 		ans = result;
+	//
+	// 		procMatch(result);
+	//
+	// 		return true;
+	// 	}
+	//
+	// 	/* processing methods */
+	//
+	// 	private bool t_proc_n(out string answer, out string pName)
+	// 	{
+	// 		pName = "make new";
+	// 		answer = "n";
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_proc_cs(out string answer, out string pName)
+	// 	{
+	// 		pName  = "fix sht ver";
+	// 		answer = "cs";
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_proc_d(out string answer, out string pName)
+	// 	{
+	// 		pName  = "fix mod name";
+	// 		answer = "d";
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_proc_b(out string answer, out string pName)
+	// 	{
+	// 		pName  = "new wbk";
+	// 		answer = "b";
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_askActivate()
+	// 	{
+	// 		ask = "an";
+	// 		askName = "activate";
+	//
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_askUpgrade()
+	// 	{
+	// 		ask = "au";
+	// 		askName = "upgrade";
+	//
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_askFixModelInfo()
+	// 	{
+	// 		ask = "am";
+	// 		askName = "mod info";
+	//
+	// 		return true;
+	// 	}
+	//
+	// 	private bool t_askRepair()
+	// 	{
+	// 		ask = "ar";
+	// 		askName = "repair";
+	//
+	// 		return true;
+	// 	}
+	//
+	//
+	// 	private struct tstResults
+	// 	{
+	// 		public string Id { get; set; }
+	// 		public string Procedure { get; set; }
+	// 		public string Path { get; set; }
+	// 		public string WhichAsk { get; set; }
+	// 		public string IfYesNo { get; set; }
+	// 		public string IfYes2 { get; set; }
+	// 		public bool Result { get; set; }
+	//
+	// 		public tstResults(    string id, string procedure, string path,
+	// 			string whichAsk, string ifYesNo, string ifYes2, bool result)
+	// 		{
+	// 			Id = id;
+	// 			Procedure = procedure;
+	// 			Path = path;
+	// 			WhichAsk = whichAsk;
+	// 			IfYesNo = ifYesNo;
+	// 			IfYes2 = ifYes2;
+	// 			Result = result;
+	// 		}
+	// 	}
+	//
+	// 	// private string answer;
+	// 	private tstResults tstRes;
+	//
+	// 	private string? askName;
+	// 	private string? procNameyn;
+	// 	private string? procName2;
+	//
+	// 	private string? ask;
+	//
+	// 	private int key;
+	// 	private string? proc;
+	// 	private string? pyn;
+	// 	private string? p2;
+	// 	private bool ans;
+	//
+	// 	public void testStart()
+	// 	{
+	// 		reCat();
+	//
+	// 		// showlist1();
+	// 		//
+	// 		// showList2();
+	//
+	//
+	// 		foreach ((ValidateSchema item1, ValidateDataStorage item2, ValidateSchema item3, ValidateDataStorage item4, tstResults item5) in _tstData1)
+	// 		{
+	// 			StringBuilder result = new StringBuilder();
+	//
+	// 			askName = "";
+	// 			proc    = "";
+	// 			ask     = "";
+	// 			pyn     = "";
+	// 			p2      = "";
+	// 			ans     = false;
+	//
+	// 			tstRes = item5;
+	//
+	// 			xMui.WbkScResCode = item1;
+	// 			result.Append(ExStorConst.ValidateSchemaDesc[item1].Item3).Append(" / ");
+	//
+	// 			xMui.WbkDsResCode = item2;
+	// 			result.Append(ExStorConst.ValidateDataStorageDesc[item2].Item3).Append(" / ");
+	//
+	// 			xMui.ShtScResCode = item3;
+	// 			result.Append(ExStorConst.ValidateSchemaDesc[item3].Item3).Append(" / ");
+	//
+	// 			xMui.ShtDsResCode = item4;
+	// 			result.Append(ExStorConst.ValidateDataStorageDesc[item4].Item3);
+	//
+	// 			Msgs.Write($"test {tstRes.Id,-5} | {result.ToString()} | ");
+	//
+	// 			// switchBoardC();
+	// 			t_switchBoardD();
+	// 		}
+	// 	}
+	//
+	// 	//                key   list of proc
+	// 	private Dictionary<int, List<string>> keyProc;
+	//
+	// 	private Dictionary<string, List<int>> keyIdx;
+	//
+	// 	private readonly Tuple<ValidateSchema, ValidateDataStorage, ValidateSchema, ValidateDataStorage, tstResults>[] _tstData1 =
+	// 	[
+	// 		// 	wbk sc		        wbk ds			       sht sc			       sht ds	                            id   proc  path     ask   pyn      p2     ans
+	// 		new (VSC_GOOD         , VDS_GOOD	         , VSC_MISSING            , VDS_MISSING         , new tstResults("1",  "S" , "G-A"  , "-"  , "-"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_GOOD			 , VSC_MISSING            , VDS_INVALID         , new tstResults("5",  "9" , "G-B"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_GOOD            , new tstResults("10", "0" , "G-C"  , "-"  , "good" , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_GOOD             , VSC_GOOD               , VDS_MISSING         , new tstResults("13", "S" , "G-E"  , "-"  , "-"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_GOOD             , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("15", "4" , "G-D"  , "au" , "cs"   , ""   , true)), // 
+	// 		//
+	// 		new (VSC_GOOD         , VDS_ACT_IGNORE       , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("20", "I" , "H-any", "-"  , "-"    , ""   , false)), //
+	// 		//
+	// 		new (VSC_GOOD         , VDS_ACT_OFF          , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("25", "O" , "I-any", "-"  , "-"    , ""   , false)), //
+	// 		//
+	// 		new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_MISSING         , new tstResults("30", "9" , "J-A"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_MISSING            , VDS_INVALID         , new tstResults("35", "9" , "J-B"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_GOOD            , new tstResults("40", "6" , "J-C"  , "am" , "d"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_GOOD               , VDS_MISSING         , new tstResults("43", "6" , "J-E"  , "am" , "d"    , ""   , true)), // 
+	// 		new (VSC_GOOD         , VDS_WRONG_MODEL_NAME , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("45", "7" , "J-D"  , "ar" , "cs"   , "d"  , true)), // 
+	// 		//
+	// 		new (VSC_GOOD         , VDS_MULTIPLE_MN_O         , VSC_VRFY_UNTESTED      , VDS_VRFY_UNTESTED   , new tstResults("50", "O" , "K-Any", "-"  , "-"    , ""   , false)), //
+	// 		//
+	// 		new (VSC_GOOD         , VDS_MISSING	         , VSC_GOOD               , VDS_MISSING         , new tstResults("53", "1" , "R-E"  , "an" , "n"    , ""   , true)),  //
+	// 		//
+	// 		new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_MISSING         , new tstResults("55", "1" , "L-A"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_MISSING      , VDS_MISSING          , VSC_MISSING            , VDS_INVALID         , new tstResults("60", "1" , "L-B"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_GOOD            , new tstResults("65", "2" , "L-C"  , "ar" , "b"    , ""   , true)), // 
+	// 		new (VSC_MISSING      , VDS_MISSING          , VSC_GOOD               , VDS_MISSING         , new tstResults("68", "2" , "L-E"  , "ar" , "b"    , ""   , true)), // 
+	// 		new (VSC_MISSING      , VDS_MISSING          , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("70", "3" , "L-D"  , "au" , "b"    , "cs" , true)), // 
+	// 		//
+	// 		new (VSC_MISSING      , VDS_INVALID          , VSC_MISSING            , VDS_MISSING         , new tstResults("75", "9" , "M-A"  , "an" , "n"    , ""   , true)), //
+	// 		new (VSC_MISSING      , VDS_INVALID          , VSC_MISSING            , VDS_INVALID         , new tstResults("78", "10", "M-B"  , "an" , "n"    , ""   , true)), //
+	// 		//
+	// 		new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new tstResults("80", "9" , "N-A"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_INVALID      , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new tstResults("85", "9" , "N-B"  , "an" , "n"    , ""   , true)), // 
+	// 		new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new tstResults("90", "2" , "N-C"  , "ar" , "b"    , ""   , true)), // 
+	// 		new (VSC_INVALID      , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new tstResults("93", "2" , "N-E"  , "ar" , "b"    , ""   , true)), // 
+	// 		new (VSC_INVALID      , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("95", "3" , "N-D"  , "au" , "b"    , "cs" , true)), // 
+	// 		//
+	// 		new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_MISSING         , new tstResults("100", "9", "P-A" , "an"  , "n"    , ""   , true)), // 
+	// 		new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_MISSING            , VDS_INVALID         , new tstResults("105", "9", "P-B" , "an"  , "n"    , ""   , true)), // 
+	// 		new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_GOOD            , new tstResults("110", "2", "P-C" , "ar"  , "b"    , ""   , true)), // 
+	// 		new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_GOOD               , VDS_MISSING         , new tstResults("113", "2", "P-E" , "ar"  , "b"    , ""   , true)), // 
+	// 		new (VSC_WRONG_VER    , VDS_WRONG_VER        , VSC_WRONG_VER          , VDS_WRONG_VER       , new tstResults("115", "3", "P-D" , "au"  , "b"    , "cs" , true)), // 
+	// 	];
+	//
+	// 	private void procMatch(bool result)
+	// 	{
+	// 		bool resFinal = true;
+	//
+	// 		string res1 = tstRes.Procedure.Equals(proc) ? "YES" : "NO";
+	// 		resFinal = resFinal && (tstRes.Procedure.Equals(proc));
+	//
+	// 		string res2 = result == tstRes.Result ? "YES" : "NO";
+	// 		resFinal = resFinal && (result == tstRes.Result);
+	//
+	// 		string res2a = result ? "T" : "F";
+	// 		string res2b = tstRes.Result ? "T" : "F";
+	// 		res2 = $"{res2} ({res2a} vs {res2b})";
+	//
+	// 		string res4 = ask.Equals(tstRes.WhichAsk) ? "YES" : "NO";
+	//
+	// 		resFinal = resFinal && (ask.Equals(tstRes.WhichAsk));
+	//
+	// 		string res4a = $"({ask} vs {tstRes.WhichAsk})";
+	// 		res4 = $"{res4} {res4a,-10}";
+	//
+	// 		string res3 = $"pyn {$"{pyn.Equals(tstRes.IfYesNo)}",-6} {$"({tstRes.IfYesNo} vs {pyn})",-16}  {$"[{procNameyn}]", -14}";
+	//
+	// 		resFinal = resFinal && (pyn.Equals(tstRes.IfYesNo));
+	//
+	// 		if (result)
+	// 		{
+	// 			if (!tstRes.IfYes2.IsVoid())
+	// 			{
+	// 				res3 = $"{res3} | p2 {$"{p2.Equals(tstRes.IfYes2)}",-6} {$"({tstRes.IfYes2} vs {p2})",-16}   {$"[{procName2}]", -14}";
+	// 			}
+	// 			else
+	// 			{
+	// 				res3 = $"{res3} | p2 (n/a)";
+	// 			}
+	// 		}
+	//
+	// 		string finalAnswer = resFinal ? "** GOOD" : "failed";
+	//
+	// 		StringBuilder sb = new StringBuilder();
+	// 		sb.Append($"key {key,-6}| {finalAnswer,-10} | ");
+	// 		sb.Append($"ask {askName,-10} | ");
+	// 		sb.Append($"procedure {proc,-2} {$"(vs {tstRes.Procedure})", -7} {res1,-5} | ");
+	// 		sb.Append($"path {tstRes.Path,-6} | ");
+	// 		sb.Append($"result match? {res2,-15} | ");
+	// 		sb.Append($"ask match? {res4,-15} | ");
+	// 		sb.Append($"results {res3}");
+	//
+	//
+	// 		Msgs.WriteLine(sb.ToString());
+	// 	}
+	//
+	// 	private void showlist1()
+	// 	{
+	// 		Msgs.WriteLine($"number index & associated procedures");
+	//
+	// 		foreach ((int i, List<string>? value) in keyProc)
+	// 		{
+	// 			Msgs.Write($"** idx  {i,-5} | ");
+	//
+	// 			foreach (string s in value)
+	// 			{
+	// 				Msgs.Write($"{s,-4}");
+	// 			}
+	//
+	// 			Msgs.WriteLine("");
+	// 		}
+	// 	}
+	//
+	// 	private void showList2()
+	// 	{
+	// 		Msgs.WriteLine($"proc index & associated indices");
+	//
+	// 		foreach ((string? s, List<int>? value) in keyIdx)
+	// 		{
+	// 			Msgs.Write($"** proc {s,-5} | ");
+	//
+	// 			foreach (int i in value)
+	// 			{
+	// 				Msgs.Write($"{i,-6}");
+	// 			}
+	//
+	// 			Msgs.WriteLine("");
+	// 		}
+	// 	}
+	//
+	// #endregion
+
+
+
+		/* voided
+private bool t_switchBoardE()
+{
+	bool result;
+
+	key = makeKey();
+
+	string opt = procIndex[key];
+
+	switch (opt)
+	{
+	case "0":
 		{
-			bool result;
-		
-			key = makeKey();
-		
-			string opt = procIndex[key];
-		
-			switch (opt)
-			{
-			case "0":
-				{
-					proc = "0";
-					ask = "-";
-					pyn = "good";
-					p2 = "";
-					result = true;
-					break;
-				}
-			case "1":
-				{
-					result = t_proc_1();
-					break;
-				}
-			case "2":
-				{
-					result = t_proc_2();
-					break;
-				}
-			case "3":
-				{
-					result = t_proc_3();
-					break;
-				}
-			case "4":
-				{
-					result = t_proc_4();
-					break;
-				}
-			case "6":
-				{
-					result = t_proc_6();
-					break;
-				}
-			case "7":
-				{
-					result = t_proc_7();
-					break;
-				}
-			case "O":
-				{
-					result = t_proc_Off();
-					break;
-				}
-			case "I":
-				{
-					result = t_proc_Ignore();
-					break;
-				}
-				default:
-				{
-					proc = $"NONE (failed)";
-					result = false;
-					break;
-				}
-			}
-		
-			ans = result;
-		
-			procMatch(result);
-		
-			return true;
-		}
-		
-		private bool t_proc_Ignore()
-		{
-			proc = "I";
+			proc = "0";
 			ask = "-";
-			pyn = "-";
-			// p2 = "";
-			return false;
+			pyn = "good";
+			p2 = "";
+			result = true;
+			break;
 		}
-
-		private bool t_proc_Off()
+	case "1":
 		{
-			proc = "O";
-			ask = "-";
-			pyn = "-";
-			// p2 = "";
-			return false;
+			result = t_proc_1();
+			break;
 		}
-
-		private bool t_proc_1()
+	case "2":
 		{
-			if (!t_askActivate()) return false;
-
-			proc = "1";
-			if (!t_proc_n(out pyn, out procNameyn)) return false;
-			// p2 = "";
-			return true;
+			result = t_proc_2();
+			break;
 		}
-
-		private bool t_proc_2()
+	case "3":
 		{
-			if (!t_askRepair()) return false;
-
-			proc = "2";
-
-			if (!t_proc_b(out pyn, out procNameyn)) return false;
-			// p2 = "";
-			return true;
+			result = t_proc_3();
+			break;
 		}
-
-		private bool t_proc_3()
+	case "4":
 		{
-			if (!t_askUpgrade()) return false;
-
-			proc = "3";
-
-			if (!t_proc_b(out pyn, out procNameyn)) return false;
-
-			if (!t_proc_cs(out p2, out procName2)) return false;
-			return true;
+			result = t_proc_4();
+			break;
 		}
-
-		private bool t_proc_4()
+	case "6":
 		{
-			if (!t_askUpgrade()) return false;
-
-			proc = "4";
-
-			if (!t_proc_cs(out pyn, out procNameyn)) return false;
-			// p2 = "";
-			return true;
+			result = t_proc_6();
+			break;
 		}
-
-		private bool t_proc_6()
+	case "7":
 		{
-			if (!t_askFixModelInfo()) return false;
-
-			proc = "6";
-
-			if (!t_proc_d(out pyn, out procNameyn)) return false;
-			// p2 = "";
-			return true;
+			result = t_proc_7();
+			break;
 		}
-
-		private bool t_proc_7()
+	case "O":
 		{
-			if (!t_askRepair()) return false;
-
-			proc = "7";
-
-			if (!t_proc_cs(out pyn, out procNameyn)) return false;
-
-			if (!t_proc_d(out p2, out procName2)) return false;
-			return true;
+			result = t_proc_Off();
+			break;
 		}
-		*/
+	case "I":
+		{
+			result = t_proc_Ignore();
+			break;
+		}
+		default:
+		{
+			proc = $"NONE (failed)";
+			result = false;
+			break;
+		}
+	}
 
+	ans = result;
+
+	procMatch(result);
+
+	return true;
+}
+
+private bool t_proc_Ignore()
+{
+	proc = "I";
+	ask = "-";
+	pyn = "-";
+	// p2 = "";
+	return false;
+}
+
+private bool t_proc_Off()
+{
+	proc = "O";
+	ask = "-";
+	pyn = "-";
+	// p2 = "";
+	return false;
+}
+
+private bool t_proc_1()
+{
+	if (!t_askActivate()) return false;
+
+	proc = "1";
+	if (!t_proc_n(out pyn, out procNameyn)) return false;
+	// p2 = "";
+	return true;
+}
+
+private bool t_proc_2()
+{
+	if (!t_askRepair()) return false;
+
+	proc = "2";
+
+	if (!t_proc_b(out pyn, out procNameyn)) return false;
+	// p2 = "";
+	return true;
+}
+
+private bool t_proc_3()
+{
+	if (!t_askUpgrade()) return false;
+
+	proc = "3";
+
+	if (!t_proc_b(out pyn, out procNameyn)) return false;
+
+	if (!t_proc_cs(out p2, out procName2)) return false;
+	return true;
+}
+
+private bool t_proc_4()
+{
+	if (!t_askUpgrade()) return false;
+
+	proc = "4";
+
+	if (!t_proc_cs(out pyn, out procNameyn)) return false;
+	// p2 = "";
+	return true;
+}
+
+private bool t_proc_6()
+{
+	if (!t_askFixModelInfo()) return false;
+
+	proc = "6";
+
+	if (!t_proc_d(out pyn, out procNameyn)) return false;
+	// p2 = "";
+	return true;
+}
+
+private bool t_proc_7()
+{
+	if (!t_askRepair()) return false;
+
+	proc = "7";
+
+	if (!t_proc_cs(out pyn, out procNameyn)) return false;
+
+	if (!t_proc_d(out p2, out procName2)) return false;
+	return true;
+}
+*/
 
 
 		// private bool switchBoardC()
@@ -1495,7 +2177,7 @@ namespace ExStorSys
 		// 		// X, 6, 7
 		// 		// wbk sc is good
 		// 	if (xMui.WbkDsResCode == VDS_ACT_OFF
-		// 		|| xMui.WbkDsResCode == VDS_MULTIPLE )
+		// 		|| xMui.WbkDsResCode == VDS_MULTIPLE_MN_O )
 		// 	{
 		// 		result = t_proc_Off();
 		// 	}
@@ -1562,9 +2244,6 @@ namespace ExStorSys
 		//
 		// 	return result;
 		// }
-
-
-
 
 
 		// private bool switchBoardB()
@@ -1759,7 +2438,6 @@ namespace ExStorSys
 		// }
 
 
-
 		/*
 private bool askModelInfo()
 {
@@ -1848,7 +2526,7 @@ private ExSysStatus reActivateSystem()
 		return ES_START_DONE_FAIL;
 	}
 
-	if (xMgr.UpdateWbkField(WorkBookFieldKeys.PK_AD_STATUS,
+	if (xMgr.UpdateWbkEntityField(WorkBookFieldKeys.PK_AD_STATUS,
 			new DynaValue(ActivateStatus.AS_INACTIVE)))
 	{
 		OnPropChgd(PI_GEN_RUNNING_STAT, new DynaValue(RunningStatus.RN_RUNNING_NORMAL));
@@ -1996,7 +2674,7 @@ private bool? SetStartResultStatus(bool? result)
 		// {
 		// 	if (status == ES_START_DONE_GOOD)
 		// 	{
-		// 		setStatus();
+		// 		publishStatus();
 		// 		Mw.ShowDialog();
 		// 	}
 		// 	{
@@ -2242,7 +2920,7 @@ private bool? SetStartResultStatus(bool? result)
 		// 		{
 		// 			if (status == ES_START_DONE_GOOD)
 		// 			{
-		// 				setStatus();
+		// 				publishStatus();
 		// 				Mw.ShowDialog();
 		// 			}
 		// 			// else
@@ -2368,7 +3046,7 @@ private bool? SetStartResultStatus(bool? result)
 		//
 		// 	if (status == ES_START_DONE_GOOD)
 		// 	{
-		// 		setStatus();
+		// 		publishStatus();
 		//
 		// 		Mw.ShowDialog();
 		// 	}
@@ -2485,6 +3163,5 @@ private bool? SetStartResultStatus(bool? result)
 		// }
 
 	#endregion
-
 	}
 }

@@ -1,0 +1,1271 @@
+<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>ExStoreTest2026</name>
+</assembly>
+<members>
+<member name="T:ExStoreTest2026.Windows.ExStorStartWin">
+<summary>
+Interaction logic for ExStorStartWin.xaml
+</summary>
+<summary>
+ExStorStartWin
+</summary>
+</member>
+<member name="M:ExStoreTest2026.Windows.ExStorStartWin.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="T:ExStoreTest2026.Windows.MainWindow">
+<summary>
+Interaction logic for MainWindow.xaml
+</summary>
+<summary>
+MainWindow
+</summary>
+</member>
+<member name="M:ExStoreTest2026.Windows.MainWindow.InitializeComponent">
+<summary>
+InitializeComponent
+</summary>
+</member>
+<member name="M:ExStoreTest2026.Windows.MainWinModel.ReadAllFromTemp">
+<summary>
+read the current information and save into ExStorData<br/>
+this can only be run after launch manager or if the information<br/>
+has been placed into the temp values in workbook<br/>
+</summary>
+</member>
+<member name="M:ExStoreTest2026.Windows.MainWinModel.WbkWithFalseModelName">
+<summary>
+create a workbook with an incorrect model name - this will mimic a model<br/>
+having been created and then renamed or having been "saveas"d<br/>
+must be done on a "clean" model and then saved
+</summary>
+</member>
+<member name="M:ExStoreTest2026.Windows.MainWinModelUi.OnPropChgdEvent(System.Object,ExStorSys.PropChgEvtArgs)">
+<summary>
+handle property changes from remote sources
+</summary>
+<param name="sender"></param>
+<param name="e"></param>
+</member>
+<member name="M:ExStoreTest2026.Windows.MainWinModelUi.OnRestartReqdChanged(System.Object,System.Nullable{System.Boolean})">
+<summary>
+Flag noting that no other Ex Storage operations can occur until the<br/>
+system is restarted.Also, this can only happen when there is a<br/>
+single model open
+</summary>
+</member>
+<!-- Badly formed XML comment ignored for member "M:ExStoreTest2026.Windows.MainWinModelUi.OnPropertyChanged(System.Object,System.ComponentModel.PropertyChangedEventArgs)" -->
+<member name="T:ExStorSys.ExListItem`1">
+<summary>
+Ex Storage Element List Item of type (T) (schema or datastorage)<br/>
+each item can have attributes:<br/>
+version: T == correct version (default) | F == wrong version<br/>
+isvalid: T == is valid (default) | F == is invalid<br/>
+actoff:T == activation is off | F activation is not off (default)<br/>
+modelname: T == model name is correct (default) | F == model name is wrong
+</summary>
+<typeparam name="T"></typeparam>
+</member>
+<member name="P:ExStorSys.ExListItem`1.Version">
+<summary>
+applied to sht ds and wbk ds<br/>
+true, item has the correct version (default)<br/>
+false, item has the wrong version
+</summary>
+</member>
+<member name="P:ExStorSys.ExListItem`1.IsValid">
+<summary>
+sht only
+true if valid (default)
+false if not valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExListItem`1.ActOff">
+<summary>
+wbk ds only
+true if activation is off (bad)
+false if activation is not off (good) (default)
+</summary>
+</member>
+<member name="P:ExStorSys.ExListItem`1.ModelTitle">
+<summary>
+wbk ds only
+true if model name is good (default)
+false if model name is not good 
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.RestartRequired">
+<summary>
+flag that a restart of revit is required
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetWorkBook">
+<summary>
+reset the workbook to an empty workbook
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetSheet(System.String)">
+<summary>
+reset a sheet (set to empty)<br/>
+but only if creationstation >= 5
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetWorkBookSchemaSilent">
+<summary>
+Reset the workboon schema to null
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetSheetSchemaSilent">
+<summary>
+Reset the workboon schema to null
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetSheets">
+<summary>
+initialize sheets to an empty list
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.ResetTemp">
+<summary>
+reset all temp objects to null or empty
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.WorkBookSchema">
+<summary>
+the workbook schema object<br/>
+can only be set to a schema once<br/>
+but can be set to null - which triggers the ResetRequired event
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.WorkBook">
+<summary>
+the workbook object<br/>
+cannot be set to null
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.GetEmptyWorkBook">
+<summary>
+get an empty workbook
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.SheetSchema">
+<summary>
+the sheet schema object<br/>
+can only be set to a schema once<br/>
+but can be set to null - which triggers the ResetRequired event<br/>
+and, if set to null, can then be set
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.GetSheet(System.String)">
+<summary>
+find and return a sheet by its name<br/>
+return invalid sheet if not found
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.TryGetSheet(System.String,ExStorSys.Sheet@)">
+<summary>
+find a sheet by name and return as an out parameter<br/>
+return true if found, else false
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.GotSheet(System.String)">
+<summary>
+determine if a sheet exists by its name 
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.GotShtDs(System.String)">
+<summary>
+does the named sheet have a DS
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.GetSheetFieldData(System.String,ExStorSys.SheetFieldKeys)">
+<summary>
+Retrieves the data for a specified field from a sheet with the given name.
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.SheetsList">
+<summary>
+return the sheets list
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.AddSheet(ExStorSys.Sheet)">
+<summary>
+add a sheet to the sheets list<br/>
+but only if creationstation > 0
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.UpdateSheet(ExStorSys.Sheet)">
+<summary>
+update a sheet (replace) with a sheet<br/>
+but only if the replacement sheet creationstation > 0
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.RemoveSheet(ExStorSys.Sheet)">
+<summary>
+remove a sheet from the sheets list<br/>
+but only if creationstation less than 5
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.SheetsCount">
+<summary>
+return the number of sheets in the list
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotWbkSchema">
+<summary>
+got a valid workbook schema
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotShtSchema">
+<summary>
+got a valid sheet schema
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotWorkBook">
+<summary>
+got a defined workbook?
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.IsWorkBookEmpty">
+<summary>
+determine if the workbook is empty
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotWbkDs">
+<summary>
+does the workbook object have a DS
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorData.IsSheetEmpty(System.String)">
+<summary>
+true if the named sheet is flagged as empty
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotAnySheets">
+<summary>
+does the sheets list have any sheets
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempWbkSchema">
+<summary>
+temp workbook schema is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempWbkDs">
+<summary>
+temp workbook DS is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempWbkEntity">
+<summary>
+temp entity is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempWbkDsList">
+<summary>
+list of not null and has > 0 elements
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempShtSchema">
+<summary>
+temp sheet schema is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempShtDs">
+<summary>
+temp sheet DS is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempShtEntity">
+<summary>
+temp entity is not null and is valid
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempAnySheets">
+<summary>
+list is not null and has > 0 elements
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorData.GotTempAnySheetsEx">
+<summary>
+Exlist is not null and has > 0 elements
+</summary>
+</member>
+<member name="T:ExStorSys.Sheet">
+<summary>
+the secondary data object(s) stored in the data storage object 
+</summary>
+</member>
+<member name="P:ExStorSys.Sheet.DsSearchName">
+<summary>
+the root name for searching for the actual DS - does not include
+model code or thereafter.
+</summary>
+</member>
+<member name="M:ExStorSys.Sheet.Invalid">
+<summary>
+create an "invalid" sheet - used as a return value rather than null
+</summary>
+</member>
+<member name="M:ExStorSys.Sheet.PlaceHolder">
+<summary>
+create an "invalid" sheet - used as a return value rather than null
+</summary>
+</member>
+<member name="M:ExStorSys.Sheet.CreateEmptySheet(Autodesk.Revit.DB.ExtensibleStorage.DataStorage)">
+<summary>
+create a named empty sheet.ds is saved to the created sheet
+</summary>
+</member>
+<member name="M:ExStorSys.Sheet.CreateEmptySheet(System.String)">
+<summary>
+create a named empty sheet
+</summary>
+</member>
+<member name="M:ExStorSys.Sheet.CreateSheet(System.String,ExStorSys.SheetCreationData)">
+<summary>
+create a complete sheet populated with sheetCreationData
+</summary>
+</member>
+<member name="T:ExStorSys.SheetCreationData">
+<summary>
+used to hold data needed to create or copy a sheet<br/>
+for copy, only those fields NOT marked as FC_NEVER need a possible value<br/>
+and, depending on copy type, not all of the other copy types will need a value
+</summary>
+</member>
+<member name="T:ExStorSys.WorkBook">
+<summary>
+the primary data object stored in the data storage object 
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.DsSearchName">
+<summary>
+the root name for searching for the actual DS - does not include
+model code or thereafter.
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.DsName">
+<summary>
+the name for the data storage object.assigned when the workbook is created
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.Desc">
+<summary>
+shortcut for access to the description of the workbook
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.SchemaName">
+<summary>
+the name for the workbook schema. fixed value.assigned when the workbook is created
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.SchemaDesc">
+<summary>
+the description for the workbook schema
+</summary>
+</member>
+<member name="P:ExStorSys.WorkBook.SchemaGuid">
+<summary>
+the guid for the workbook's schema.assigned when the workbook is created
+</summary>
+</member>
+<!-- Badly formed XML comment ignored for member "M:ExStorSys.WorkBook.UpdateExsObjects(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Entity,Autodesk.Revit.DB.ExtensibleStorage.Schema)" -->
+<member name="M:ExStorSys.WorkBook.Invalid">
+<summary>
+create an "invalid" workbook
+</summary>
+</member>
+<member name="M:ExStorSys.WorkBook.CreateEmptyWorkBook">
+<summary>
+create a workbook with initial / basic data
+</summary>
+</member>
+<member name="M:ExStorSys.WorkBook.CreateNewWorkBook">
+<summary>
+create a workbook with typical data and with a model code
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.ModelTitle">
+<summary>
+Actual model name (title) (un-cleaned)
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.ModelName">
+<summary>
+Cleaned actual model name (title)
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.WbkSearchName">
+<summary>
+includes app code + wkb name code - does not include model code
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.ShtSearchName">
+<summary>
+includes app code + sheet name code - does not include model code
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.WbkSchemaName">
+<summary>
+Full name of the workbook schema
+</summary>
+</member>
+<member name="P:ExStorSys.Exid.ShtSchemaName">
+<summary>
+Full name of the sheet schema
+</summary>
+</member>
+<member name="M:ExStorSys.Exid.CreateWbkDsName">
+<summary>
+CsCells_WBK_v1_00 / example: CsCells_WBK_v1_00<br/>
+id code removed
+</summary>
+</member>
+<member name="M:ExStorSys.Exid.CreateShtDsName(System.String)">
+<summary>
+CsCells_Sht_{ID}_v1_00 / example: CsCells_Sht_ABCD_v1_00<br/>
+model code removed, uses current version
+</summary>
+</member>
+<member name="M:ExStorSys.Exid.CreateFirstShtDsName">
+<summary>
+CsCells_Sht_250101_16010_AAAA_v1_00<br/>
+model code / id code reversed
+</summary>
+</member>
+<!-- Badly formed XML comment ignored for member "M:ExStorSys.ExStorLaunchMgr.OnOpenDocLaunch" -->
+<member name="M:ExStorSys.ExStorLaunchMgr.OnOpenDocLaunchVfy">
+<summary>
+initial verification.verifys that schema's and data objects exist<br/>
+true if both schema and ds are found and good<br/>
+false if any issues<br/>
+a code is returned that identifies the status of each of the four validations<br/>
+the code -1 is returned when a validation is not performed because a prior<br/>
+failed and testing cannot continue
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.findWbkDataStorage2">
+<summary>
+initial verification step.find a wbk ds and save
+this to xData
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.verifyWbkDataStorage2">
+<summary>
+verify wbk ds part 2.verify activation status / setting<br/>
+and verify the model name
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.findShtDataStorage2">
+<summary>
+initial verification step.find sht ds's and save
+this to xData
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.verifyDataStorage(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,System.String,ExStorSys.ExListItem{Autodesk.Revit.DB.ExtensibleStorage.DataStorage}@,System.String@)">
+<summary>
+initial validation of a datastorage element
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.verifySchema(Autodesk.Revit.DB.ExtensibleStorage.Schema,System.String,ExStorSys.ExListItem{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+verify if the schema is OK<br/>
+validates if an OK revit object and the version is correct
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLaunchMgr.verifySchemaGuid(Autodesk.Revit.DB.ExtensibleStorage.Schema,System.Collections.Generic.IList{System.Guid})">
+<summary>
+validate the schema's guid against a list of guids.the list of guids
+should come from the data storage object
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.WriteWorkBook(ExStorSys.WorkBook,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+<summary>
+takes the information stored in the workbook in xData and writes the
+information into the workbook's entity (and therefore into the models
+ds).this creates a new DS so an existing DS must not be present. use
+UpdateWorkBook to update an existing DS
+</summary>
+<param name="wbk"></param>
+<param name="wbkSchema"></param>
+<returns></returns>
+</member>
+<member name="M:ExStorSys.ExStorLib.createDs``1(ExStorSys.ExStorDataObj{``0})">
+<summary>
+create a DataStorage object for the associated exo object.the DS object
+must not already exist - check first
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.MakeSchema``1(ExStorSys.ExStorDataObj{``0})">
+<summary>
+make, populate, and return a schema.return null if fail (if already exists)
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.DeleteDs(Autodesk.Revit.DB.ExtensibleStorage.DataStorage)">
+<summary>
+delete a datastorage object - when done it is gone
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.EraseSc(Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+<summary>
+erase a schema and all its entities.when it is deleted, a schema<br/>
+stays in memory until the document is closed.it cannot be reused<br/>
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.UpdateEntityField``1(``0,Autodesk.Revit.DB.ExtensibleStorage.Schema,ExStorSys.ExStorDataObj{``0},UtilityLibrary.DynaValue)">
+<summary>
+update a field within the ds entity using a revit transaction
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.updateEntityField``2(Autodesk.Revit.DB.ExtensibleStorage.Schema,ExStorSys.ExStorDataObj{``0},ExStorSys.FieldData{``1},UtilityLibrary.DynaValue)">
+<summary>
+update a field within the ds entity using a revit transaction
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.updateEntity(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Entity)">
+<summary>
+update a field within the ds entity using a revit transaction
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.ReadEntityFields``1(Autodesk.Revit.DB.ExtensibleStorage.Entity,ExStorSys.ExStorDataObj{``0})">
+<summary>
+read all fields from the entity into the exo object
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.FindAllSchemaByNamePrefix2(System.String,System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+find all schema's that starts with the search name
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.FindAllSchemaByNamePrefix(System.String,System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+find all schema's that starts with the search name
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorLib.findDataStorages">
+<summary>
+collect all datastore elements
+</summary>
+<returns></returns>
+</member>
+<member name="M:ExStorSys.ExStorLib.DuplicateSheet(System.Int32,ExStorSys.Sheet,System.String,System.Collections.Generic.Dictionary{ExStorSys.SheetFieldKeys,UtilityLibrary.DynaValue})">
+<summary>
+duplicate a sheet based on the copy type (does not apply to workbook)<br/>
+copy types: int 0 through 7 compared to the copy type in the field<br/>
+however, defined types (all will need a new name): <br/>
+1 - copy as a template for a new item (needs creation / modification info)<br/>
+2 - copy to update the version (modification info)<br/>
+4 - copy to use in a new model (needs creation / modification info)
+</summary>
+</member>
+<!-- Badly formed XML comment ignored for member "M:ExStorSys.ExStorLib.validateName(System.String,System.String,System.String)" -->
+<!-- Badly formed XML comment ignored for member "M:ExStorSys.ExStorLib.validateName(System.String,System.String)" -->
+<member name="T:ExStorSys.FieldEditLevel">
+<summary>
+controls who can access the field.
+that is, a user's security level us used and the user
+can access a field if the field's edit level matches
+their security level or is a larger number.<br/>
+also, NONE, -1, cannot access anything
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorConst.WbkSchemaName">
+<summary>
+always: CsCells_Wbk_Schema_v1_00
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorConst.ShtSchemaName">
+<summary>
+always: CsCells_Sht_Schema_v1_00
+</summary>
+</member>
+<member name="F:ExStorSys.ExStorConst.EXS_WBK_DS_NAME_PREFIX">
+<summary>
+base name for a Wbk Ds (e.g. CsCells_WKB)
+</summary>
+</member>
+<member name="F:ExStorSys.ExStorConst.EXS_WBK_NAME_SEARCH">
+<summary>
+name used to search for Wbk Ds (same as EXS_WBK_DS_NAME_PREFIX) (e.g. CsCells_WKB)
+</summary>
+</member>
+<member name="F:ExStorSys.ExStorConst.EXS_SHT_NAME_SEARCH">
+<summary>
+name used to search for Sht Ds (e.g. CsCells_SHT)
+</summary>
+</member>
+<member name="F:ExStorSys.ExStorConst.EXS_SHT_DS_NAME_PREFIX_FIRST">
+<summary>
+name used to search for the first Sht Ds (e.g. CsCells_SHT_AAAA)
+</summary>
+</member>
+<member name="T:ExStorSys.ExStorMgr">
+<summary>
+Storage Manager - controls the primary admin operations
+</summary>
+</member>
+<member name="P:ExStorSys.ExStorMgr.ExSysStatus">
+<summary>
+state of the system<br/>
+0 == started / configured, no schema, no ds
+1 == got wbk
+2 == got 1+ sheet(s)
+3 == all ready
+4 == restart required
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.UpdateWbkEntityField(ExStorSys.WorkBookFieldKeys,UtilityLibrary.DynaValue)">
+<summary>
+update a workbook field of the key provided with the value provided<br/>
+return true if OK | return false if schema or workbook are missing
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.UpdateShtEntityField(System.String,ExStorSys.SheetFieldKeys,UtilityLibrary.DynaValue)">
+<summary>
+update a sheet field of the name provided of the key provided with the value provided<br/>
+return true if OK | return false if schema or workbook are missing
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.updateEntityField``1(``0,Autodesk.Revit.DB.ExtensibleStorage.Schema,ExStorSys.ExStorDataObj{``0},UtilityLibrary.DynaValue)">
+<summary>
+update a field within the ds entity using a revit transaction
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.CreateWorkBookSchema">
+<summary>
+create a schema for workbook - if needed<br/>
+return true when made or already exists
+else return false
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.MakeWorkBook">
+<summary>
+create the workbook and store in xData<br/>
+configure workbook with typical data and model code 
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.WriteWorkBook">
+<summary>
+Writes the workbook data to the external storage using the defined schema.
+</summary>
+<remarks>This method attempts to write the workbook data to an external storage location.The operation
+requires that the workbook schema is defined prior to invocation.If the write operation fails, the workbook
+schema is reset to null.</remarks>
+</member>
+<member name="M:ExStorSys.ExStorMgr.CreateSheetSchema">
+<summary>
+create a schema for sheet - if needed<br/>
+return true when made or already exists
+else return false
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.DeleteDsList(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage},System.Boolean)">
+<summary>
+delete the DS in the list provided<br/>
+if "onlyOne" onlu delete the first DS
+</summary>
+<param name="dsList"></param>
+<param name="onlyOne"></param>
+<returns></returns>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindWorkBookDs(Autodesk.Revit.DB.ExtensibleStorage.DataStorage@,Autodesk.Revit.DB.ExtensibleStorage.Entity@,Autodesk.Revit.DB.ExtensibleStorage.Schema@)">
+<summary>
+find a model's associated data storage object (if any)<br/>
+regardless of whether it already exists<br/>
+that is, search type == 0
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindSheetDs(System.String,Autodesk.Revit.DB.ExtensibleStorage.DataStorage@,Autodesk.Revit.DB.ExtensibleStorage.Entity@,Autodesk.Revit.DB.ExtensibleStorage.Schema@)">
+<summary>
+find a model's associated data storage object (if any)<br/>
+using the model code and id code (that is, with a full DS name)<br/>
+that is, search type == 1
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindSheetsDs(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage}@)">
+<summary>
+{\rtf1\ansi\pard this is {\b bold} text\par}
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindAllWbkSchema(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+find all workbook schemas and return them as a list<br/>
+based on the search name but not using the version
+</summary>
+<remarks>
+true == one+ found | false == none found
+</remarks>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindAllWbkDs(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage}@)">
+<summary>
+\b1find\b0 all workbook DS<br/>
+**true** == one+ found | false == none found
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindAllShtSchema(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+find all sheet schemas and place into temp variable
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.FindAllShtDs(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage}@)">
+<summary>
+find all sheet DS and return via "out"<br/>
+true == one+ found | false == none found
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.findAllSchemaByName(System.String,System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.Schema}@)">
+<summary>
+find all schema that start with the search name provided<br/>
+true == one+ found | false == none found
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.findAllDsByName(System.String,System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage}@)">
+<summary>
+find all datastorage that start with the search name provided<br/>
+true == one+ found | false == none found
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.readSheet(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Schema,ExStorSys.Sheet@)">
+<summary>
+read all of the field values into a sheet
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ReadModelName(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+<summary>
+Reads the model name from the workbook DS
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ReadActivationStatus(Autodesk.Revit.DB.ExtensibleStorage.DataStorage,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+<summary>
+Reads the model name from the workbook DS
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ResetData">
+<summary>
+reset the schema, workbook, and sheets to empty / null condition in xData
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcTransWbk">
+<summary>
+combo routine to transfer the workbook schema and the workbook ds
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcTransSht">
+<summary>
+combo routine to transfer a sht schema and the sht ds list (if exists)
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcCreateAndWriteWbk">
+<summary>
+combo routine to create a wbk schema and a wbk ds
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcCreateSht">
+<summary>
+combo routine to create a sht schema and the sht ds list
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcFixModelName2">
+<summary>
+combo routine to transfer the wbk schema and ds, update the model
+name with the current model name, then write the updated informtion
+back into the model's ds / entity
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcTransShtToNewVer(Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+<summary>
+duplicate one sheet to another sheet with the same ID but uses the
+current Sheet version
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.ProcFixActivationOff">
+<summary>
+combo routine to transfer the wbk schema and ds, update the 
+activate status to true, then write the updated informtion
+back into the model's ds / entity
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.procTransOrCreateWbkSchema">
+<summary>
+procedure to transfer or create a wbk schema
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.VerifyModelName">
+<summary>
+verify if the temp workbook DS has the correct model name
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.VerifyActivationIgnore">
+<summary>
+verify if the current temp workbook DS has activation ignore set
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.VerifyActivationOff">
+<summary>
+verify if the current temp workbook DS has activation off set
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.transShtV1ToShtV2(ExStorSys.Sheet,ExStorSys.Sheet@)">
+<summary>
+transfer the data from an old sheet version to the new version<br/>
+real routine but bogus as new and old are the same class<br/>
+but the concept is worked out.<br/>
+new sheet needs to be pre-configured with basic info (name, model name, etc.)
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.MakeCpyShtDataForNewVer(UtilityLibrary.DynaValue,UtilityLibrary.DynaValue)">
+<summary>
+create the dictionary with the updated values when a sheet is duplicated
+specific for a type 2 (new version) copy
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.MakeCpyShtData(UtilityLibrary.DynaValue,UtilityLibrary.DynaValue,UtilityLibrary.DynaValue,UtilityLibrary.DynaValue)">
+<summary>
+create the dictionary with the updated values when a sheet is duplicated
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.TransTempWbkObjectsToXdata">
+<summary>
+transfer the temp version of workbook objects (schema, ds, and entity)
+to their standard location in xData
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.transTempWkbSchemaToXdata">
+<summary>
+transfer the temp version of workbook schema to its
+standard location in xdata / workbook<br/>
+true if got temp wbk schema and it was saved in xData<br/>
+false if no temp wbk schema
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.transTempWbkDsToXdata">
+<summary>
+transfers the model's wbk to the xData object and save the
+ds entity inxData
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.TransTempShtObjectsToXdata">
+<summary>
+transfer the temp version of sheet objects to their
+standard location in the sheet(s)
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.transTempShtSchemaToXdata">
+<summary>
+transfer the temp version of sheet schema to its
+standard location in the sheet<br/>
+true if got temp sheet schema and it was saved in xData<br/>
+false if no temp sheet schema
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.TransTempExSheetsToXdata">
+<summary>
+transfer all of the sheets in the temp sheet list
+to their standard location in xdata / sheets<br/>
+true if got sheets and transfered<br/>
+null if there are no sheets to transfer<br/>
+false if the transfer process did not work<br/>
+note: reset the sheets list before using this method
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorMgr.setupSheets">
+<summary>
+prep for sheets - transfer the sheet schema and reset the sheets list.<br/>
+does not make any sheets.returns false only if unable to <br/>
+create a missing sheet schema
+</summary>
+<returns></returns>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.StartOpr">
+<summary>
+primary startup routine
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.winOpen2ndPlus">
+<summary>
+open the window when the 2nd or more time
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.switchBoardD">
+<summary>
+main processing switchboard<br/>
+possible results<br/>
+see SbResult enum
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_sn">
+<summary>
+start up normal<br/>
+can return<br/>
+SB_ALL_GOOD<br/>
+SB_OTHER_FAIL
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_nw">
+<summary>
+create new<br/>
+can return<br/>
+SB_REPAIRED_NEED_SHTS<br/>
+SB_OTHER_FAIL
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_cs">
+<summary>
+fix sheet version<br/>
+can return<br/>
+SB_REPAIRED_NEED_SHTS<br/>
+SB_OTHER_FAIL
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_d">
+<summary>
+fix model name<br/>
+can return<br/>
+SB_REPAIRED_NEED_SHTS<br/>
+SB_FAIL_NEED_NEW
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_b">
+<summary>
+create workbook<br/>
+can return<br/>
+SB_REPAIRED_NEED_SHTS<br/>
+SB_FAIL_NEED_NEW
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.proc_o">
+<summary>
+reactivate<br/>
+can return<br/>
+SB_ALL_GOOD<br/>
+SB_REPAIRED_NEED_SHTS<br/>
+SB_FAIL_NEED_NEW
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.gotData">
+<summary>
+flag if the repair process worked - that is, xData has the expected data<br/>
+true if got both schema's and both DS's
+null if need sheet DS
+false otherwise
+</summary>
+<returns></returns>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.startNormal">
+<summary>
+normal start procedure - no repair needed
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.startActivate">
+<summary>
+normal first time procedure - create and activate the system
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.startFixShtVersion">
+<summary>
+convert the found sheets from an old version to a new version<br/>
+got: old sheets in xData.TempShtDsListEx
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.startFixModelName">
+<summary>
+repair the incorrect model name stored in a workbook DS
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.startSetActive">
+<summary>
+adjust the workbook DS to re-activate the ex stor system (but only when turned off)
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.deleteExistWbkDs">
+<summary>
+delete all existing workbook DS found in memory
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.deleteExistShtDs(System.Collections.Generic.IList{Autodesk.Revit.DB.ExtensibleStorage.DataStorage})">
+<summary>
+delete all sheet DS per the list provided
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.deleteExistWbkSchema">
+<summary>
+delete any workbook schema, from the workbook and from temp<br/>
+revised, only from the workbook - keep temp
+</summary>
+</member>
+<member name="M:ExStorSys.ExStorStartMgr.publishStatus">
+<summary>
+set the verify status for each component<br/>
+set launch code to LC_NA
+</summary>
+</member>
+<member name="T:ExStorSys.FieldDef`1">
+<summary>
+the definition of a single schema field.
+the schema field defines the information actual<br/>
+information stored in a DataStorage object<br/>
+this also contains field management and usage information<br/>
+v2 - added clean / dirty flag | added Duplicate Flag
+</summary>
+</member>
+<member name="P:ExStorSys.FieldDef`1.FieldStatus">
+<summary>
+identifies the status of the field - clean or dirty or n/a
+</summary>
+</member>
+<member name="P:ExStorSys.FieldDef`1.FieldCopyType">
+<summary>
+determines if the field should be duplicated when
+making a copy of the data
+</summary>
+</member>
+<member name="T:ExStorSys.Fields">
+<summary>
+The definition of each schema field for both primary and row schemas
+</summary>
+</member>
+<member name="P:ExStorSys.Fields.WorkBookFields">
+<summary>
+definition of each primary Sheet schema field
+this is stored in the data storage object named "workbook"
+</summary>
+</member>
+<member name="P:ExStorSys.Fields.SheetFields">
+<summary>
+definition of each row schema field
+</summary>
+</member>
+<member name="T:UtilityLibrary.DynaValue">
+<summary>
+store a value as one of these data types:<br/>
+string, int, double, enum, Guid
+</summary>
+</member>
+<member name="F:UtilityLibrary.DynaValue.dynValue">
+<summary>
+the raw value stored
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsInvalid">
+<summary>
+identified that this dynaValue is not valid
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.LastValueReturnedIsValid">
+<summary>
+flag weather that the last GetValue() did<br/>
+provide the actual value.doing this rather<br/>
+than throw an exception
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.TypeIs">
+<summary>
+get the data type
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.GetValueAs``1">
+<summary>
+get the value based on the type parameter
+</summary>
+<typeparam name="TD">Data type to provide<br/>
+possible: string, int, double, enum
+</typeparam>
+<returns></returns>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsString">
+<summary>
+get the value as a string
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsString">
+<summary>
+determine if the value is a string
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsInt">
+<summary>
+get the value as n int
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsInt">
+<summary>
+determine if the value is an int
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsDouble">
+<summary>
+get the value as a double
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsDouble">
+<summary>
+determine if the value is a double
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsBool">
+<summary>
+get the value as a bool
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsBool">
+<summary>
+is the current dyna value a bool?
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsEnum">
+<summary>
+determine if the value is a bool
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsEnum">
+<summary>
+is the current dyna value an enum?
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsGuid">
+<summary>
+return the value as a Guid if it is a Guid
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsGuid">
+<summary>
+is the current dyna value a Guid?
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsDictStringString">
+<summary>
+get the current value as a Dictionary of string, string
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsDictStringString">
+<summary>
+is the current dyna value a Dictionary of string, string?
+</summary>
+</member>
+<member name="M:UtilityLibrary.DynaValue.AsListString">
+<summary>
+get the current value as a List of string
+</summary>
+</member>
+<member name="P:UtilityLibrary.DynaValue.IsListString">
+<summary>
+is the current dyna value a List of string?
+</summary>
+</member>
+<member name="M:UtilityLibrary.CsExtensions.IsVoid(System.String)">
+<summary>
+true if string is null or whitespace false otherwise
+</summary>
+</member>
+<member name="T:UtilityLibrary.CsStringUtil">
+<summary>
+StringDivide - divide a string into sub-strings of maxLength size and a maximum of maxLines<br/>
+JustifyString - justify (L/R/C) within a provided column width<br/>
+EllipsisifyString- ellipsisify (L/R/C) within a provided column width<br/>
+</summary>
+</member>
+<member name="M:UtilityLibrary.CsStringUtil.ChoseWord(System.String[],System.Int32)">
+<summary>
+provide a word depending on count (max array length).
+return the word form depending on the count number.
+use to pluralize a word for example
+this is 1 based (1 = the first word form)
+</summary>
+<param name="s">string array with the various word options</param>
+<param name="index">the index for the word form to return (max array length - 1)</param>
+<returns></returns>
+</member>
+<member name="T:UtilityLibrary.CsUtilities">
+<summary>
+Utilities - list of functions<br/>
+nl - system new line<br/>
+UserName- the user's login name<br/>
+MachineName - the name of the machine<br/>
+CompanyName - the name of the user's company (if any)<br/>
+AssemblyName - the name of the assembly<br/>
+AssemblyVersion - the version of the assembly<br/>
+AssemblyDirectory - the directory of the assembly<br/>
+CreateSubFolders - based a root path, create sub-folders based on an array<br/>
+SubFolder - based on a root path, create a sub-folder path<br/>
+ValidateStringChars - search the test string for "invalid" characters<br/>
+ValidateChar - determine if the char is in a list of invalid char's<br/>
+RandomString - create a random string of a defined length (do I need this?)<br/>
+Extn: IndexOf(T Array) - get the index of an element in a generic array<br/>
+<br/>
+INVALID_FILE_NAME_CHARACTERS - array of char that are not allowed in a file name<br/>
+INVALID_FILE_NAME_STRING- string of characters that are not allowed in a file name
+</summary>
+</member>
+<member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImage(System.String,System.String)">
+<summary>
+Load an image from embeded resource[use GetBitmapImageResource instead]
+</summary>
+<param name="imageName">String name of the image</param>
+<param name="namespacePrefix">String Image Namespace</param>
+<returns></returns>
+</member>
+<member name="M:UtilityLibrary.CsUtilitiesMedia.GetBitmapImageResource(System.String)">
+<summary>
+get a BitmapImage from an assembly's resource cache (not from the embeded resource cache)
+</summary>
+<param name="imagePath">The path to the image including a preceding slash<br/>e.g. /folder/imagename.png</param>
+<returns></returns>
+</member>
+<member name="M:UtilityLibrary.CsWpfUtilities.FindElementByNameContentControl``1(System.Windows.FrameworkElement,System.String)">
+<summary>
+search for a framework fe
+</summary>
+<typeparam name="T">FrameworkElement</typeparam>
+<param name="fe">Starting point fe to start the search</param>
+<param name="sChildName">The string name of the fe to find</param>
+<returns></returns>
+</member>
+<member name="M:UtilityLibrary.CsWpfUtilities.FindElementByName``1(System.Windows.FrameworkElement,System.String,System.Boolean)">
+<summary>
+Find a WPF element given its name<br/>
+However, this is limited to the available visual tree<br/>
+That is, if the element is not displayed (e.g. on a hidden tab), it cannot be found
+</summary>
+<typeparam name="T">The Type of element being found (i.e. 'ListBox'</typeparam>
+<param name="element">The starting element of the search - use 'this' for the current window</param>
+<param name="sChildName">The string Name of the element to find (which means it must have a name)</param>
+<param name="dbug">A flag to show each element as it is found in the Debug window</param>
+<returns></returns>
+</member>
+<member name="P:RevitLibrary.RevitAddIns.AddIn">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.Name">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.Text">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.Description">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.Assembly">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.FullClassName">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.ClientId">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.VendorId">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.VendorDescription">
+<remarks/>
+</member>
+<member name="P:RevitLibrary.RevitAddInsAddIn.Type">
+<remarks/>
+</member>
+</members>
+</doc>

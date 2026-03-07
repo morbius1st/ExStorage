@@ -1,16 +1,24 @@
-﻿using System.Xaml;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Xaml;
+
 using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.ExtensibleStorage;
+
+using ExStorSys;
+using JetBrains.Annotations;
 
 
-namespace ExStorSys
+namespace UtilityLibrary
 {
 	/// <summary>
 	/// store a value as one of these data types:<br/>
 	/// string, int, double, enum, Guid
 	/// </summary>
-	public class DynaValue
+	public class DynaValue : INotifyPropertyChanged
 	{
+		public int ObjectId { get; set; }
+
 		// the only types Revit will allow as a stored value
 		// Boolean, Byte, Int16, Int32, Float, Double, ElementId, GUID, String, XYZ, UV and Entity
 
@@ -19,16 +27,101 @@ namespace ExStorSys
 		public DynaValue(dynamic value)
 		{
 			dynValue = value;
-			LastValueReturnedIsValid = false;
+			ApplyChange();
+
+			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorLib)) ?? -1;
+			IsChanged = null;
+
+			dynamic a = test;
 		}
 
 		/// <summary>
-		/// get the raw value stored
+		/// the raw value stored
 		/// </summary>
 		private dynamic dynValue;
+		private dynamic dynValuePrior;
+		private int changeQty;
+		private bool? isChanged;
+
+		private dynamic test;
+
+		public dynamic Value => dynValue;
+
+		// an invalid DynaValue for use in error situations
+		public static DynaValue InValid()
+		{
+			DynaValue dv = new DynaValue(null!);
+			dv.IsInvalid = true;
+
+			return dv;
+		}
 
 		/// <summary>
-		/// flag weather that the last GetValue() did<br/>
+		/// flag that this dynavalue has been modified<br/>
+		/// number value indicates number of modifications / undo level<br/>
+		/// currently only 0 (clean) and 1 (modified) are used
+		/// </summary>
+		public int ChangeQty
+		{
+			get => changeQty;
+			private set
+			{
+				changeQty = value;
+
+				if (changeQty > 0)
+				{
+					IsChanged = true;
+				}
+				else
+				{
+					IsChanged = false;
+				}
+
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// flag for the change status<br/>
+		/// null == not being tracked / ignore changes<br/>
+		/// true == modified<br/>
+		/// false == not modified
+		/// </summary>
+		public bool? IsChanged
+		{
+			get => isChanged;
+			private set
+			{
+				if (!isChanged.HasValue) return;
+
+				if (value == isChanged) return;
+				isChanged = value;
+
+				OnPropertyChanged();
+				OnPropertyChanged(nameof(IsDirty));
+				OnPropertyChanged(nameof(IsClean));
+			}
+		}
+
+		/// <summary>
+		/// flag that this dynaValue has been modified
+		/// </summary>
+		public bool IsDirty => isChanged == true;
+
+		/// <summary>
+		/// flag that this dynaValue is not modified
+		/// </summary>
+		public bool IsClean => !isChanged.HasValue || isChanged == false;
+
+		public bool TrackChanges => IsChanged.HasValue;
+
+		/// <summary>
+		/// identified that this dynaValue is not valid
+		/// </summary>
+		public bool IsInvalid { get; private set; }
+
+		/// <summary>
+		/// flag whether the last GetValue() did<br/>
 		/// provide the actual value.  doing this rather<br/>
 		/// than throw an exception
 		/// </summary>
@@ -49,8 +142,6 @@ namespace ExStorSys
 		/// get the data type
 		/// </summary>
 		public Type TypeIs => dynValue?.GetType();
-
-		public dynamic Value => dynValue;
 
 		/// <summary>
 		/// get the value based on the type parameter
@@ -161,11 +252,11 @@ namespace ExStorSys
 		/// <summary>
 		/// get the value as a string
 		/// </summary>
-		public string AsString()
+		public string? AsString()
 		{
 			if (!IsString && !IsEnum)
 			{
-				return null;
+				return dynValue?.ToString() ?? "null";
 			}
 			LastValueReturnedIsValid = true;
 			return dynValue?.ToString() ?? null;
@@ -216,6 +307,9 @@ namespace ExStorSys
 			return (bool) dynValue;
 		}
 
+		/// <summary>
+		/// is the current dyna value a bool?
+		/// </summary>
 		public bool IsBool => dynValue is bool;
 
 		/// <summary>
@@ -228,6 +322,9 @@ namespace ExStorSys
 			return (Enum) dynValue;
 		}
 
+		/// <summary>
+		/// is the current dyna value an enum?
+		/// </summary>
 		public bool IsEnum => dynValue is Enum;
 
 		/// <summary>
@@ -240,17 +337,31 @@ namespace ExStorSys
 			return (Guid) dynValue;
 		}
 
+		/// <summary>
+		/// is the current dyna value a Guid?
+		/// </summary>
 		public bool IsGuid => dynValue is Guid;
 
+		/// <summary>
+		/// get the current value as a Dictionary of string, string
+		/// </summary>
 		public Dictionary<string, string> AsDictStringString()
 		{
 			if (!IsDictStringString) return null;
+			
 			LastValueReturnedIsValid = true;
+
 			return (Dictionary<string, string>) dynValue;
 		}
 
+		/// <summary>
+		/// is the current dyna value a Dictionary of string, string?
+		/// </summary>
 		public bool IsDictStringString => dynValue is Dictionary<string, string>;
 
+		/// <summary>
+		/// get the current value as a List of string
+		/// </summary>
 		public List<string> AsListString()
 		{
 			if (!IsListString) return null;
@@ -258,7 +369,26 @@ namespace ExStorSys
 			return (List<string>) dynValue;
 		}
 
+		/// <summary>
+		/// is the current dyna value a List of string?
+		/// </summary>
 		public bool IsListString => dynValue is List<string>;
+
+		public override string ToString()
+		{
+			return $"DynaValue is| {dynValue ?? "is null"} | Id = {ObjectId}";
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[DebuggerStepThrough]
+		[NotifyPropertyChangedInvocator]
+		private void OnPropertyChanged([CallerMemberName] string memberName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+		}
+
+	#region revit specific ops
 
 		// revit specific
 
@@ -314,63 +444,117 @@ namespace ExStorSys
 			}
 		}
 
-		public override string ToString()
+		#endregion
+
+
+		/* basic value undo operations */
+
+		public void SetTrackChanges()
 		{
-			return $"DynaValue is| {dynValue ?? "is null"}";
+			if (TrackChanges) return;
+
+			changeQty = 0;
+			isChanged = false;
+
+			OnPropertyChanged();
+			OnPropertyChanged(nameof(IsDirty));
+			OnPropertyChanged(nameof(IsClean));
+			
 		}
 
-		/*
-		public DynaValue CreateFromField<TKeyType>(Entity e, FieldData<TKeyType>  data)
-			where TKeyType : Enum
+		/// <summary>
+		/// update the value if the type matches<br/>
+		/// save the prior value if clean<br/>
+		/// return false if type does not match, true elsewise
+		/// </summary>
+		public bool ChangeValue(dynamic value)
 		{
-			DynaValue dv =new DynaValue(false);
+			if (!(value.GetType().Equals(TypeIs))) return false;
 
-			Type t = data.DyValue.TypeIs;
+			// type matches
+			// save prior value
+			// save new value
+			// set "dirty" flag
+			// set last value returned flag to false
 
-			if (t == typeof(string))
-			{
-				dv = new DynaValue(e.Get<string>(data.Field.FieldName));
-			}
-			else if (t == typeof(bool))
-			{
-				dv = new DynaValue(e.Get<bool>(data.Field.FieldName));
-			}
-			else if (t == typeof(Guid))
-			{
-				dv = new DynaValue(e.Get<Guid>(data.Field.FieldName));
-			}
-			else if (t == typeof(Dictionary<string, string>))
-			{
-				dv = new DynaValue(e.Get<IDictionary<string, string>>(data.Field.FieldName));
-			}
-			else if (t == typeof(List<string>))
-			{
-				dv = new DynaValue(e.Get<IList<string>>(data.Field.FieldName));
-			}
-			else if (t.BaseType == typeof(Enum))
-			{
-				if (data.Field.FieldName.Equals(Fields.KEY_DS_NAME)) return dv;
+			// only save first prior value 
+			// other prior values are lost
+			if (TrackChanges && IsClean) dynValuePrior = dynValue;
 
-				string eName = e.Get<string>(data.Field.FieldName);
+			dynValue = value;
 
-				if (t == typeof(UpdateRules)) dv = parseEnum(eName, UpdateRules.UR_NEVER);
-				else if (t == typeof(ActivateStatus)) dv = parseEnum(eName, ActivateStatus.AS_INACTIVE);
-				else if (t == typeof(SheetOpStatus)) dv = parseEnum(eName, SheetOpStatus.SS_HOLD);
-
+			if (TrackChanges)
+			{
+				ChangeQty = 1;
 			}
 
-			return dv;
+			LastValueReturnedIsValid = false;
+
+			OnPropertyChanged(nameof(Value));
+
+			return true;
 		}
 
-		private DynaValue parseEnum<Te>(string enumName, Te def) 			
-			where Te : struct, Enum
+		public void UndoChange(int qty = 1)
 		{
-			Te e = default(Te);
+			if (qty < 1) return;
+			if (dynValuePrior == null) return;
+			// restore prior value
+			// clear prior value
+			// clear "dirty" flag
+			// set last value returned flag to false
 
-			bool ok = Enum.TryParse<Te>(enumName, out e);
-			if (!ok) e = def;
-			return new DynaValue(e);
+			(dynValue, dynValuePrior) = (dynValuePrior, dynValue);
+
+			applyChange();
 		}
-		*/
+
+		public void ApplyChange()
+		{
+			dynValuePrior = null;
+			applyChange();
+		}
+
+		private void applyChange()
+		{
+			changeQty = 0;
+			IsChanged = false;
+			LastValueReturnedIsValid = false;
+		}
+
+		public dynamic PriorValue => dynValuePrior;
+
+
+		// value update management
+
+		// need (for a single undo level)
+		//	> prior value
+		//	> flag for clean vs dirty
+		//	() set new value (must be same type => return false)
+		//	() reset to clean
+		//	() restore prior value
+
+		// original value set when created
+		//	> set clean to true
+		//	> prior value to null
+
+		// set new value
+		//	> can happen multiple times but prior values are lost but original value is maintained
+		//	> if type not same => return false;
+		//	> clean = false
+		// 	> prior value = current value
+		//	> current value = new value
+
+		// reset to clean
+		//	> clean = true
+		//	> prior value = null
+
+		// restore prior value
+		//	> if prior value is null => ignore / return
+		//	> current value = prior value
+		//	> prior value = null
+		//	> clean = true
+
+
 	}
 }

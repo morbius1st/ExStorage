@@ -1,5 +1,8 @@
 ﻿#region using
 using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Autodesk.Revit.DB;
 #endregion
 
@@ -15,7 +18,7 @@ namespace ShExStorageN.ShSchemaFields
 	/// store a value as one of these data types:<br/>
 	/// string, int, double, enum, Guid
 	/// </summary>
-	public class DynaValue
+	public class DynaValue : INotifyPropertyChanged
 	{
 		// the only types Revit will allow as a stored value
 		// Boolean, Byte, Int16, Int32, Float, Double, ElementId, GUID, String, XYZ, UV and Entity
@@ -56,7 +59,15 @@ namespace ShExStorageN.ShSchemaFields
 		/// </summary>
 		public Type TypeIs => dynValue?.GetType();
 
-		public dynamic Value => dynValue;
+		public dynamic Value 
+		{
+			get => dynValue;
+			set
+			{
+				dynValue = value;
+				OnPropertyChanged();
+			}
+		}
 
 		/// <summary>
 		/// get the value based on the type parameter
@@ -281,6 +292,14 @@ namespace ShExStorageN.ShSchemaFields
 		public override string ToString()
 		{
 			return $"DynaValue is| {dynValue ?? "is null"}";
+		}
+
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[DebuggerStepThrough]
+		private void OnPropertyChanged([CallerMemberName] string memberName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
 	}
 }

@@ -5,127 +5,904 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:ExStoreTest2026.Windows"
+		xmlns:cs="clr-namespace:ExStoreTest2026.Windows"
+		xmlns:exSys="clr-namespace:ExStorSys"
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		xmlns:revitLibrary="clr-namespace:RevitLibrary"
 		Title="MainWindow"
-		Width="1600"
-		Height="1050"
 		DataContext="{Binding ElementName=MainWin}"
+		Width="2200"
+		Height="1400"
 		mc:Ignorable="d"
 		Background="#222222"
 		BorderThickness="0"
 		BorderBrush="Transparent"
 		Closing="MainWin_Closing"
 		Activated="MainWin_Activated"
-		Loaded="MainWindow_OnLoaded" 
+		Loaded="MainWindow_OnLoaded"
 		>
-		<!-- SourceInitialized="MainWin_SourceInitialized" -->
+
 	<Window.Resources>
 
-		<sys:Double x:Key="BtnWidth">140</sys:Double>
-		<sys:Double x:Key="BtnHeight">33</sys:Double>
+		<!--#region > resources-->
 
-		<sys:Double x:Key="LblValueNumber">58</sys:Double>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<!-- <ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/MasterColorList.xaml" /> -->
+				<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/GlobalResources.xaml" />
 
-		<sys:Double x:Key="LblHeight">14</sys:Double>
+			</ResourceDictionary.MergedDictionaries>
 
-		<GridLength x:Key="griRowHeight">22</GridLength>
+			<!--#region > objects-->
 
-		<Style x:Key="Lbl"
-				TargetType="{x:Type Label}"
-				>
-			<Setter Property="FontSize" Value="11" />
-		</Style>
+			<Geometry x:Key="Ic.Reset"
+					x:Shared="false"
+					>
+				F0 M 1.8563 14.3437 C 2.2741 14.9009 2.7522 15.4045 3.2906 15.8545 C 3.829 16.3044 4.409 16.6889 5.0304 17.0076 C 5.6518 17.3263 6.3093 17.5714 7.0031 17.7429 C 7.6968 17.9143 8.4161 18 9.1607 18 C 9.975 18 10.7612 17.8955 11.5192 17.6866 C 12.2772 17.4777 12.983 17.183 13.6366 16.8027 C 14.2901 16.4223 14.8848 15.9643 15.4205 15.4286 C 15.9563 14.8928 16.4156 14.2982 16.7986 13.6446 C 17.1817 12.991 17.4777 12.2893 17.6866 11.5393 C 17.8955 10.7893 18 10.0071 18 9.1929 L 18 9.0241 C 17.984 8.1991 17.8634 7.4023 17.6384 6.6335 C 17.4134 5.8647 17.1 5.1469 16.6982 4.4799 C 16.2964 3.813 15.8183 3.2035 15.2638 2.6517 C 14.7094 2.1 14.0946 1.6285 13.4196 1.2375 C 12.7447 0.8464 12.0214 0.5424 11.25 0.3254 C 10.4786 0.1085 9.675 0 8.8393 0 C 7.5803 0 6.4111 0.2384 5.3317 0.7151 C 4.2522 1.192 3.3081 1.8455 2.4991 2.6758 L 0 0.1929 L 0 7.2 L 7.0071 7.2 L 4.4196 4.6045 C 4.9822 4.0098 5.6464 3.5424 6.4125 3.2022 C 7.1785 2.8621 8.0036 2.692 8.8875 2.692 C 9.7661 2.692 10.5911 2.858 11.3625 3.1901 C 12.1339 3.5223 12.8102 3.975 13.3915 4.5482 C 13.9728 5.1214 14.4348 5.7924 14.7777 6.5611 C 15.1205 7.3299 15.2973 8.1509 15.308 9.0241 L 15.308 9.1205 C 15.308 9.9776 15.1473 10.7826 14.8259 11.5352 C 14.5044 12.288 14.0639 12.9428 13.504 13.5 C 12.9442 14.0571 12.2893 14.4964 11.5393 14.8178 C 10.7893 15.1393 9.9831 15.3 9.1205 15.3 C 8.5687 15.3 8.0317 15.2303 7.5094 15.091 C 6.987 14.9518 6.4996 14.7562 6.0468 14.5044 C 5.5942 14.2526 5.175 13.9513 4.7893 13.6004 C 4.4036 13.2496 4.0661 12.8571 3.7767 12.4232 Z
+			</Geometry>
 
-		<Style x:Key="BtnStyleBase"
-				TargetType="Button"
-				>
-			<Setter Property="BorderBrush" Value="#EEEEEEEE" />
-			<Setter Property="Background" Value="#EEEEEEEE" />
-			<Setter Property="Margin" Value="0,2.5,0,2.5" />
-			<Setter Property="Height" Value="{StaticResource BtnHeight}" />
-			<Setter Property="Padding" Value="0" />
-			<Setter Property="HorizontalAlignment" Value="Stretch" />
-		</Style>
+			<Geometry x:Key="Ic.ClearText"
+					x:Shared="False"
+					>
+				F0 M 17.8761 0.0826 C 17.8761 0.1254 17.789 0.1988 17.6147 0.3028 C 17.4404 0.4067 17.1927 0.5596 16.8716 0.7615 C 16.5505 0.9633 16.1605 1.2263 15.7018 1.5505 C 15.2431 1.8746 14.7278 2.2768 14.156 2.7569 C 13.5841 3.237 12.9633 3.8058 12.2936 4.4633 C 11.6239 5.1208 10.9159 5.8838 10.1697 6.7523 C 10.2064 6.8012 10.2661 6.8761 10.3486 6.9771 C 10.4312 7.078 10.5199 7.185 10.6147 7.2982 C 10.7095 7.4113 10.7997 7.5183 10.8853 7.6193 C 10.9709 7.7202 11.0321 7.7951 11.0688 7.844 C 11.6682 8.6147 12.2034 9.3761 12.6743 10.1284 C 13.1453 10.8807 13.5566 11.6024 13.9083 12.2936 C 14.2599 12.9847 14.5581 13.6346 14.8028 14.2431 C 15.0474 14.8517 15.2446 15.3976 15.3945 15.8807 C 15.5443 16.3639 15.6529 16.7752 15.7202 17.1147 C 15.7875 17.4541 15.8211 17.6972 15.8211 17.844 C 15.8211 17.9419 15.8089 17.9939 15.7844 18 L 15.7752 18 C 15.7324 18 15.6498 17.893 15.5275 17.6789 C 15.4052 17.4648 15.2294 17.1606 15 16.7661 C 14.7706 16.3716 14.4771 15.8976 14.1193 15.344 C 13.7615 14.7905 13.3257 14.1728 12.8119 13.4908 C 12.2982 12.8089 11.6988 12.0749 11.0138 11.289 C 10.3287 10.5031 9.5398 9.682 8.6468 8.8257 L 8.5734 8.9083 C 8.5245 8.9633 8.4633 9.0367 8.3899 9.1284 C 8.3165 9.2202 8.2339 9.3226 8.1422 9.4358 C 8.0505 9.5489 7.9648 9.6636 7.8853 9.7798 C 7.2492 10.6728 6.7095 11.4908 6.2661 12.2339 C 5.8226 12.9771 5.4587 13.6269 5.1743 14.1835 C 4.8899 14.7401 4.6743 15.1911 4.5275 15.5367 C 4.3807 15.8823 4.2798 16.104 4.2248 16.2018 C 4.1636 16.3119 4.0688 16.367 3.9404 16.367 C 3.8792 16.367 3.818 16.3517 3.7569 16.3211 C 3.7263 16.3028 3.6651 16.263 3.5734 16.2018 C 3.4817 16.1407 3.3716 16.0657 3.2431 15.9771 C 3.1147 15.8884 2.9755 15.7936 2.8257 15.6927 C 2.6758 15.5917 2.5291 15.4939 2.3853 15.3991 C 2.2416 15.3043 2.1086 15.2171 1.9862 15.1376 C 1.8639 15.0581 1.7661 14.9969 1.6927 14.9541 C 1.6376 14.9235 1.5917 14.8853 1.555 14.8394 C 1.5183 14.7936 1.5 14.7431 1.5 14.6881 C 1.5 14.6575 1.5122 14.6116 1.5367 14.5505 C 1.6529 14.2936 1.8471 13.9327 2.1193 13.4679 C 2.3914 13.0031 2.7446 12.4557 3.1789 11.8257 C 3.6131 11.1957 4.1361 10.4939 4.7477 9.7202 C 5.3593 8.9465 6.0657 8.1254 6.867 7.2569 C 6.0474 6.5535 5.2844 5.9327 4.578 5.3945 C 3.8716 4.8563 3.2385 4.3899 2.6789 3.9954 C 2.1193 3.6009 1.6391 3.2768 1.2385 3.0229 C 0.8379 2.7691 0.5275 2.5749 0.3073 2.4404 C 0.2523 2.4098 0.208 2.3792 0.1743 2.3486 C 0.1407 2.318 0.1239 2.2783 0.1239 2.2294 C 0.1239 2.1743 0.1514 2.1132 0.2064 2.0459 C 0.2309 2.0031 0.2997 1.9083 0.4128 1.7615 C 0.526 1.6147 0.6606 1.4465 0.8165 1.2569 C 0.9725 1.0673 1.1376 0.8716 1.3119 0.6697 C 1.4862 0.4679 1.6529 0.2936 1.8119 0.1468 C 1.8609 0.1101 1.9037 0.0765 1.9404 0.0459 C 1.9771 0.0153 2.0291 0 2.0963 0 C 2.1514 0 2.2003 0.0153 2.2431 0.0459 C 2.3777 0.1193 2.6498 0.2921 3.0596 0.5642 C 3.4694 0.8364 3.9664 1.1957 4.5505 1.6422 C 5.1346 2.0887 5.7768 2.6177 6.4771 3.2294 C 7.1774 3.841 7.8853 4.5199 8.6009 5.2661 C 9.182 4.685 9.7997 4.1514 10.4541 3.6651 C 11.1086 3.1789 11.7599 2.7431 12.4083 2.3578 C 13.0566 1.9725 13.682 1.6361 14.2844 1.3486 C 14.8868 1.0612 15.4327 0.8226 15.922 0.633 C 16.4113 0.4434 16.8226 0.3012 17.156 0.2064 C 17.4893 0.1116 17.708 0.0642 17.8119 0.0642 C 17.8486 0.0642 17.87 0.0673 17.8761 0.0734 Z
+			</Geometry>
 
-		<Style x:Key="BtnStyleTop"
-				TargetType="Button"
-				BasedOn="{StaticResource BtnStyleBase}"
-				>
-			<Setter Property="Margin" Value="0,1.5,0,2.5" />
-		</Style>
+			<Geometry x:Key="Ic.Apply"
+					x:Shared="false"
+					>
+				F0 M 0.9987 11.8209 C 0.843 11.6574 0.7242 11.5172 0.6424 11.4003 C 0.5607 11.2836 0.5198 11.1706 0.5198 11.0616 C 0.5198 10.9215 0.588 10.7813 0.7242 10.6411 C 0.8605 10.5009 1.0357 10.3764 1.2498 10.2673 C 1.464 10.1583 1.6976 10.0707 1.9507 10.0045 C 2.2038 9.9384 2.4471 9.9052 2.6807 9.9052 C 2.9299 9.9052 3.1343 9.9384 3.294 10.0045 C 3.4536 10.0707 3.6074 10.1817 3.7554 10.3374 C 4.355 10.9682 4.8982 11.6126 5.3848 12.2706 C 5.8715 12.9286 6.3485 13.6081 6.8157 14.3089 C 7.2673 13.1019 7.7346 11.9358 8.2174 10.8105 C 8.7002 9.6852 9.2122 8.5834 9.7534 7.5048 C 10.2946 6.4263 10.8748 5.3634 11.4938 4.316 C 12.1129 3.2687 12.7845 2.2154 13.5087 1.1564 C 13.7735 0.7592 14.1648 0.4673 14.6827 0.2804 C 15.2005 0.0935 15.8643 0 16.6743 0 C 16.9156 0 17.1103 0.035 17.2583 0.1052 C 17.4062 0.1752 17.4802 0.2687 17.4802 0.3854 C 17.4802 0.4867 17.4568 0.5879 17.4101 0.6892 C 17.3634 0.7904 17.2933 0.9072 17.1999 1.0396 C 15.4322 3.5081 13.8242 6.0934 12.3757 8.7956 C 10.9273 11.4977 9.6697 14.3478 8.6029 17.3458 C 8.5327 17.5639 8.3614 17.7274 8.0889 17.8364 C 7.8163 17.9455 7.4153 18 6.8858 18 C 6.6366 18 6.4264 17.9922 6.2551 17.9766 C 6.0837 17.9611 5.9397 17.9318 5.8228 17.889 C 5.7061 17.8462 5.6087 17.7936 5.5309 17.7313 C 5.4529 17.669 5.3868 17.5912 5.3323 17.4977 C 4.9974 16.9526 4.6723 16.4445 4.3569 15.9733 C 4.0415 15.5023 3.7145 15.0448 3.3757 14.6009 C 3.037 14.157 2.6749 13.7092 2.2894 13.2576 C 1.904 12.8059 1.4737 12.3271 0.9987 11.8209 Z
+			</Geometry>
 
-		<Style x:Key="BtnStyleBott"
-				TargetType="Button"
-				BasedOn="{StaticResource BtnStyleBase}"
-				>
-			<Setter Property="Margin" Value="0,2.5,0,1.5" />
-		</Style>
+			<Geometry x:Key="Ic.HeavyX"
+					x:Shared="false"
+					>
+				F0 M 12 10.0032 L 15.9935 6.0002 L 17.9998 7.997 L 13.9968 12 L 17.9998 16.003 L 15.9935 17.9997 L 12 13.9967 L 7.997 17.9997 L 6.0003 16.003 L 9.9937 12 L 6.0003 7.997 L 7.997 6.0002 Z
+			</Geometry>
 
-		<Style x:Key="BtnSolo"
-				TargetType="Button"
-				BasedOn="{StaticResource BtnStyleBase}"
-				>
-			<Setter Property="Margin" Value="0,1.5,0,1.5" />
-		</Style>
 
-		<Style x:Key="Rect"
-				TargetType="Rectangle"
-				>
-			<Setter Property="Margin" Value="-2,0.5,-2,0.5" />
-			<Setter Property="Height" Value="1" />
-		</Style>
+			<!--  ReSharper disable Xaml.RedundantResource  -->
+			<local:PassThroughConverter x:Key="PassThru" />
+			<local:TypeMatch2Visibility x:Key="Type2Vis" />
+			<!--  ReSharper restore Xaml.RedundantResource  -->
 
-		<Style x:Key="LblTextBlock"
-				TargetType="TextBlock"
-				>
-			<Setter Property="Foreground" Value="Red" />
-			<Setter Property="Margin" Value="0,-2.5,0,0" />
-			<Setter Property="Padding" Value="0" />
-		</Style>
+			<local:FieldAccessToVisibilityConverter x:Key="FldAccess2Vis" />
+			<local:FieldAccessToEditibilityConverter x:Key="FldAccess2Edit" />
+			<local:FieldEditLevelEnumToStrConverter x:Key="FldEditLevel2Str" />
+			<local:UserSecurityEnumToStrConverter x:Key="UsrSec2Str" />
+			<local:EnumToColorConverter x:Key="Enum2Brush" />
 
-		<Style x:Key="Label"
-				TargetType="Label"
-				>
-			<Setter Property="Height" Value="{StaticResource LblHeight}" />
-			<Setter Property="Margin" Value="0,1.5,0,2.5" />
-			<Setter Property="Padding" Value="0" />
-			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="HorizontalContentAlignment" Value="Center" />
-			<Setter Property="Foreground" Value="Red" />
-			<Setter Property="Background" Value="White" />
-		</Style>
+			<local:StringVoidToBool x:Key="StrIsVoid" />
 
-		<Style x:Key="LblTitle"
-				TargetType="Label"
-				BasedOn="{StaticResource Lbl}"
-				>
-			<Setter Property="Background" Value="#111111" />
-			<Setter Property="Foreground" Value="DarkGray" />
-			<Setter Property="Margin" Value="0,1.0,0,0" />
-			<Setter Property="Padding" Value="3,0,0,4" />
-			<Setter Property="VerticalContentAlignment" Value="Center" />
-			<Setter Property="HorizontalAlignment" Value="Stretch" />
-			<Setter Property="VerticalAlignment" Value="Stretch" />
-		</Style>
 
-		<Style x:Key="LblValue"
-				TargetType="Label"
-				BasedOn="{StaticResource LblTitle}"
-				>
-			<Setter Property="Margin" Value="2,1.0,0,0" />
-			<Setter Property="Foreground" Value="White" />
-			<Setter Property="Background" Value="#333333" />
-			<!-- <Setter Property="ToolTip" Value="{Binding Content}"/> -->
-		</Style>
+
+			<!--  sheet values  -->
+
+			<local:SheetFieldEnumToStringConverter x:Key="ShtEnum2Str" />
+
+			<!--  workbook values  -->
+
+			<!--  math  -->
+
+			<!-- <local:AddConverter x:Key="AddCvtr" /> -->
+
+			<!--  debug  -->
+
+			<!-- <local:PassThroughConverter x:Key="PassThrough" /> -->
+			<!-- <local:TestConverter x:Key="TestCvtr" /> -->
+
+
+			<sys:Double x:Key="BtnWidth">140</sys:Double>
+			<sys:Double x:Key="BtnHeight">33</sys:Double>
+
+			<sys:Double x:Key="LblValueNumber">58</sys:Double>
+
+			<sys:Double x:Key="LblHeight">14</sys:Double>
+
+			<GridLength x:Key="GriRowHeight">22</GridLength>
+
+			<sys:Int32 x:Key="CanEditOrView">1</sys:Int32>
+			<sys:Int32 x:Key="CanEditOnly">2</sys:Int32>
+
+
+			<SolidColorBrush x:Key="DisabledFieldForeGround" Color="{StaticResource Gray.600}" />
+			<SolidColorBrush x:Key="DisabledFieldForeGround.Tbx" Color="{StaticResource Gray.800}" />
+			<SolidColorBrush x:Key="ActiveFieldForeGround" Color="{StaticResource Gray.900}" />
+
+			<!--#endregion-->
+
+			<!--#region > general styles and settings-->
+
+			<!--  button styles  -->
+
+			<Style x:Key="BtnStyleBase"
+					TargetType="Button"
+					>
+				<Setter Property="BorderBrush" Value="#EEEEEEEE" />
+				<Setter Property="Background" Value="#EEEEEEEE" />
+				<Setter Property="Margin" Value="0,2.5,0,2.5" />
+				<Setter Property="Height" Value="{StaticResource BtnHeight}" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalAlignment" Value="Stretch" />
+			</Style>
+
+			<Style x:Key="BtnStyleTop"
+					TargetType="Button"
+					BasedOn="{StaticResource BtnStyleBase}"
+					>
+				<Setter Property="Margin" Value="0,1.5,0,2.5" />
+			</Style>
+
+			<Style x:Key="BtnStyleBott"
+					TargetType="Button"
+					BasedOn="{StaticResource BtnStyleBase}"
+					>
+				<Setter Property="Margin" Value="0,2.5,0,1.5" />
+			</Style>
+
+			<Style x:Key="BtnEditNameWithIcon"
+					TargetType="Button"
+					BasedOn="{StaticResource Btn.Std}"
+					>
+				<Setter Property="Width" Value="20" />
+				<Setter Property="Height" Value="20" />
+				<Setter Property="Padding" Value="2" />
+				<Setter Property="Background" Value="Transparent" />
+				<Setter Property="BorderBrush" Value="Transparent" />
+			</Style>
+
+
+			<!--  rect styles  -->
+
+			<Style x:Key="Rect"
+					TargetType="Rectangle"
+					>
+				<Setter Property="Margin" Value="-2,0.5,-2,0.5" />
+				<Setter Property="Height" Value="1" />
+			</Style>
+
+			<!--  label styles  -->
+
+			<Style x:Key="LblCtrlSample"
+					TargetType="Label"
+					>
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="FontSize" Value="4" />
+				<Setter Property="Foreground" Value="White" />
+				<Setter Property="HorizontalAlignment" Value="Center" />
+				<Setter Property="VerticalAlignment" Value="Bottom" />
+
+			</Style>
+
+			<Style x:Key="Lbl"
+					TargetType="{x:Type Label}"
+					>
+				<Setter Property="FontSize" Value="11" />
+			</Style>
+
+			<Style x:Key="LblTextBlock"
+					TargetType="TextBlock"
+					>
+				<Setter Property="Foreground" Value="Red" />
+				<Setter Property="Margin" Value="0,-2.5,0,0" />
+				<Setter Property="Padding" Value="0" />
+			</Style>
+
+			<Style x:Key="Label"
+					TargetType="Label"
+					>
+				<Setter Property="Height" Value="{StaticResource LblHeight}" />
+				<Setter Property="Margin" Value="0,1.5,0,2.5" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalAlignment" Value="Stretch" />
+				<Setter Property="HorizontalContentAlignment" Value="Center" />
+				<Setter Property="Foreground" Value="Red" />
+				<Setter Property="Background" Value="White" />
+			</Style>
+
+			<Style x:Key="LblTitle"
+					TargetType="Label"
+					BasedOn="{StaticResource Lbl}"
+					>
+				<Setter Property="Background" Value="#111111" />
+				<Setter Property="Foreground" Value="DarkGray" />
+				<Setter Property="Margin" Value="0,1.0,0,0" />
+				<Setter Property="Padding" Value="3,0,0,4" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="HorizontalAlignment" Value="Stretch" />
+				<Setter Property="VerticalAlignment" Value="Stretch" />
+			</Style>
+
+			<Style x:Key="LblValue"
+					TargetType="Label"
+					BasedOn="{StaticResource LblTitle}"
+					>
+				<Setter Property="Margin" Value="2,1.0,0,0" />
+				<Setter Property="Foreground" Value="White" />
+				<Setter Property="Background" Value="#333333" />
+				<!-- <Setter Property="ToolTip" Value="{Binding Content}"/> -->
+			</Style>
+
+			<!--  content panel styles  -->
+
+			<Style x:Key="LblContent"
+					TargetType="Control"
+					>
+				<Setter Property="MinHeight" Value="16" />
+				<Setter Property="FontSize" Value="14" />
+				<Setter Property="VerticalAlignment" Value="Center" />
+
+				<Setter Property="Margin" Value="0,0,5,0" />
+				<Setter Property="Padding" Value="5,0,5,2" />
+				<Setter Property="Foreground" Value="White" />
+			</Style>
+
+			<Style x:Key="LblContentStd"
+					TargetType="Label"
+					BasedOn="{StaticResource LblContent}"
+					>
+				<Setter Property="Background" Value="Black" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+			</Style>
+
+			<Style x:Key="LblContentSecurity"
+					TargetType="Label"
+					BasedOn="{StaticResource LblContentStd}"
+					>
+				<Setter Property="Width" Value="150" />
+				<Setter Property="BorderBrush" Value="Red" />
+				<Setter Property="BorderThickness" Value="1,0,0,0" />
+			</Style>
+
+			<Style x:Key="LblContentTitle"
+					TargetType="Label"
+					BasedOn="{StaticResource LblContentSecurity}"
+					>
+				<Setter Property="Width" Value="104" />
+			</Style>
+
+			<!--#endregion-->
+
+			<!--#region > listbox styles and settings-->
+
+			<!--  listbox settings  -->
+
+			<!-- <GridLength x:Key="Lbx0C0">240</GridLength> -->
+			<!-- <GridLength x:Key="Lbx0C1">200</GridLength> -->
+
+			<GridLength x:Key="Lbx1C0">220</GridLength>
+			<!-- <GridLength x:Key="Lbx1C1">240</GridLength> -->
+			<GridLength x:Key="Lbx1C2">50</GridLength>
+			<GridLength x:Key="Lbx1C3">50</GridLength>
+
+			<!--  panels  -->
+
+			<!--  lables  -->
+
+			<Style x:Key="Lbx.Item"
+					TargetType="Control"
+					BasedOn="{StaticResource LblContent}"
+					>
+
+				<Setter Property="VerticalContentAlignment" Value="Bottom" />
+				<Setter Property="Padding" Value="3,0,0,2" />
+				<Setter Property="Margin" Value="0,0,0,0" />
+			</Style>
+
+			<Style x:Key="Lbx.Hdr.Lbl"
+					TargetType="Control"
+					BasedOn="{StaticResource Lbx.Item}"
+					>
+				<Setter Property="Foreground" Value="Silver" />
+				<Setter Property="Background" Value="#333333" />
+				<Setter Property="BorderBrush" Value="#222222" />
+				<Setter Property="BorderThickness" Value="0,0,0,1" />
+				<Setter Property="Margin" Value="0,0,2,0" />
+			</Style>
+
+			<Style x:Key="Lbx.Hdr.Lbl.Sht.Row2"
+					TargetType="Control"
+					BasedOn="{StaticResource Lbx.Hdr.Lbl}"
+					>
+				<Setter Property="Margin" Value="0,-1,2,2" />
+			</Style>
+
+			<!--#endregion-->
+
+			<!--#region > tab control-->
+
+			<Style x:Key="TbBdrHdrInner"
+					TargetType="Border"
+					>
+				<Setter Property="Margin" Value="0,0,0,-1" />
+				<Setter Property="Padding" Value="10,2,10,1" />
+				<Setter Property="BorderThickness" Value="0,0,0,1" />
+				<Setter Property="BorderBrush" Value="Red" />
+				<Style.Triggers>
+					<DataTrigger Value="True" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
+						<Setter Property="BorderBrush" Value="DimGray" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="TbBdrHdrOuter"
+					TargetType="Border"
+					>
+				<Setter Property="Margin" Value="0,2,0,0" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="BorderThickness" Value="1,1,1,0" />
+				<Setter Property="CornerRadius" Value="3,3,0,0" />
+				<Setter Property="BorderBrush" Value="Red" />
+				<Setter Property="Background" Value="DimGray">
+				</Setter>
+				<Style.Triggers>
+					<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
+						<Setter Property="BorderBrush" Value="DarkGray" />
+						<Setter Property="Background" Value="#222222" />
+						<Setter Property="BorderThickness" Value=".5,.5,.5,0" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="TbHdrTblk"
+					TargetType="TextBlock"
+					>
+				<Setter Property="Foreground" Value="DarkGray" />
+				<Style.Triggers>
+					<DataTrigger Value="True" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
+						<Setter Property="Foreground" Value="White">
+						</Setter>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+			<SolidColorBrush x:Key="TabItem.Selected.Background" Color="#FFFFFF" />
+			<SolidColorBrush x:Key="TabItem.Selected.Border" Color="#ACACAC" />
+
+			<Style x:Key="TabControlStyle1"
+					TargetType="{x:Type TabControl}"
+					>
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalContentAlignment" Value="Center" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="Background" Value="{StaticResource TabItem.Selected.Background}" />
+				<Setter Property="BorderBrush" Value="{StaticResource TabItem.Selected.Border}" />
+				<Setter Property="BorderThickness" Value="1" />
+				<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="{x:Type TabControl}">
+							<Grid x:Name="templateRoot"
+									ClipToBounds="true"
+									SnapsToDevicePixels="true"
+									KeyboardNavigation.TabNavigation="Local"
+									>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition x:Name="ColumnDefinition0" />
+									<ColumnDefinition x:Name="ColumnDefinition1"
+											Width="0"
+											/>
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition x:Name="RowDefinition0"
+											Height="Auto"
+											/>
+									<RowDefinition x:Name="RowDefinition1"
+											Height="*"
+											/>
+								</Grid.RowDefinitions>
+								<TabPanel x:Name="headerPanel"
+										Grid.Row="0"
+										Grid.Column="0"
+										Margin="0,0,0,0"
+										Panel.ZIndex="1"
+										Background="Transparent"
+										IsItemsHost="true"
+										KeyboardNavigation.TabIndex="1"
+										/>
+								<Border x:Name="contentPanel"
+										Grid.Row="1"
+										Grid.Column="0"
+										Background="{TemplateBinding Background}"
+										BorderThickness="{TemplateBinding BorderThickness}"
+										BorderBrush="{TemplateBinding BorderBrush}"
+										KeyboardNavigation.DirectionalNavigation="Contained"
+										KeyboardNavigation.TabIndex="2"
+										KeyboardNavigation.TabNavigation="Local"
+										>
+
+									<ContentPresenter x:Name="PART_SelectedContentHost"
+											Margin="{TemplateBinding Padding}"
+											ContentSource="SelectedContent"
+											SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+											/>
+								</Border>
+							</Grid>
+							<ControlTemplate.Triggers>
+								<!-- <Trigger Property="TabStripPlacement" Value="Bottom"> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Grid.Row" Value="1" /> -->
+								<!-- 	<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" /> -->
+								<!-- 	<Setter TargetName="RowDefinition0" Property="Height" Value="*" /> -->
+								<!-- 	<Setter TargetName="RowDefinition1" Property="Height" Value="Auto" /> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Margin" Value="2,0,2,2" /> -->
+								<!-- </Trigger> -->
+								<!-- <Trigger Property="TabStripPlacement" Value="Left"> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Grid.Row" Value="0" /> -->
+								<!-- 	<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" /> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Grid.Column" Value="0" /> -->
+								<!-- 	<Setter TargetName="contentPanel" Property="Grid.Column" Value="1" /> -->
+								<!-- 	<Setter TargetName="ColumnDefinition0" Property="Width" Value="Auto" /> -->
+								<!-- 	<Setter TargetName="ColumnDefinition1" Property="Width" Value="*" /> -->
+								<!-- 	<Setter TargetName="RowDefinition0" Property="Height" Value="*" /> -->
+								<!-- 	<Setter TargetName="RowDefinition1" Property="Height" Value="0" /> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Margin" Value="2,2,0,2" /> -->
+								<!-- </Trigger> -->
+								<!-- <Trigger Property="TabStripPlacement" Value="Right"> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Grid.Row" Value="0" /> -->
+								<!-- 	<Setter TargetName="contentPanel" Property="Grid.Row" Value="0" /> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Grid.Column" Value="1" /> -->
+								<!-- 	<Setter TargetName="contentPanel" Property="Grid.Column" Value="0" /> -->
+								<!-- 	<Setter TargetName="ColumnDefinition0" Property="Width" Value="*" /> -->
+								<!-- 	<Setter TargetName="ColumnDefinition1" Property="Width" Value="Auto" /> -->
+								<!-- 	<Setter TargetName="RowDefinition0" Property="Height" Value="*" /> -->
+								<!-- 	<Setter TargetName="RowDefinition1" Property="Height" Value="0" /> -->
+								<!-- 	<Setter TargetName="headerPanel" Property="Margin" Value="0,2,2,2" /> -->
+								<!-- </Trigger> -->
+								<Trigger Property="IsEnabled" Value="false">
+									<Setter TargetName="templateRoot" Property="TextElement.Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+								</Trigger>
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+			</Style>
+
+			<!--#endregion-->
+
+			<!--#region > content control - data templates-->
+
+			<Style x:Key="LblCbxA"
+					TargetType="Label"
+					>
+				<Setter Property="Margin" Value="0,0,0,2" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="VerticalAlignment" Value="Center" />
+				<Setter Property="Foreground" Value="{StaticResource ActiveFieldForeGround}" />
+				<Style.Triggers>
+					<Trigger Property="IsEnabled" Value="false">
+						<Setter Property="Foreground" Value="{StaticResource DisabledFieldForeGround}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="CbxEnum1"
+					TargetType="ComboBox"
+					BasedOn="{StaticResource CsComboBoxStyle}"
+					>
+
+				<Setter Property="Margin" Value="0,0,0,0" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="VerticalAlignment" Value="Center" />
+				<Setter Property="Background" Value="#333333" />
+				<Setter Property="Foreground" Value="White" />
+				<Setter Property="BorderBrush" Value="#3FFFFFFF" />
+				<Setter Property="BorderThickness" Value="1" />
+				<Setter Property="IsSynchronizedWithCurrentItem" Value="True" />
+				<Setter Property="AllowDrop" Value="True" />
+				<Setter Property="IsEditable" Value="False" />
+
+				<Setter Property="cs:CsComboBoxAp.ComboBoxBdrRadius" Value="2" />
+				<Setter Property="cs:CsComboBoxAp.DropDownBrush" Value="#ff444444" />
+				<Setter Property="cs:CsComboBoxAp.DropDownBdrRadius" Value="2" />
+				<Setter Property="cs:CsComboBoxAp.DropDownBdrBrush" Value="#8FffFFFF" />
+				<Setter Property="cs:CsComboBoxAp.DropDownBdrThickness" Value="1" />
+				<Setter Property="cs:CsComboBoxAp.DropDownMaxWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource self}}" />
+				<Setter Property="cs:CsComboBoxAp.DropDownMinWidth" Value="{Binding ActualWidth, RelativeSource={RelativeSource self}}" />
+			</Style>
+
+			<DataTemplate x:Key="LbxCbx1">
+				<!--  SelectedValue="{Binding ActStatus}"  -->
+				<ComboBox
+						HorizontalAlignment="Stretch"
+						d:ItemsSource="{d:SampleData ItemCount=5}"
+						SelectedValuePath="Key"
+						SelectedValue="{Binding Path=Wm.Wbk.Status,
+																		ElementName=MainWin,
+																		FallbackValue='AS_IGNORE'}"
+						ItemsSource="{x:Static exSys:ExStorConst.ActiveStatusDescUi}"
+						Style="{StaticResource CbxEnum1}"
+						>
+					<!--  Visibility="{Binding Path=Field.FieldType,  -->
+					<!--  Mode=OneWay,  -->
+					<!--  Converter={StaticResource Type2Vis},  -->
+					<!--  ConverterParameter={x:Type sys:Enum}}"  -->
+					<!--  SelectedValuePath="Key"  -->
+					<!--  SelectedValue="{Binding DynaValue}"  -->
+
+					<ComboBox.ItemTemplate>
+						<DataTemplate>
+							<StackPanel
+									HorizontalAlignment="Left"
+									VerticalAlignment="Center"
+									Orientation="Horizontal"
+									>
+
+								<Rectangle
+										Margin="0,0,5,0"
+										Width="10"
+										Height="10"
+										Fill="{Binding Path=Key,
+																	 Mode=OneWay,
+																	 Converter={StaticResource Enum2Brush},
+																	 FallbackValue='blue'}"
+										/>
+
+								<Label
+										Content="{Binding Path=Value.Item1,
+																			FallbackValue='item 1'}"
+										Width="100"
+										Style="{StaticResource LblCbxA}"
+										/>
+								<Label
+										Content="{Binding Path=Value.Item2,
+																			FallbackValue='item 2'}"
+										Style="{StaticResource LblCbxA}"
+										/>
+
+							</StackPanel>
+						</DataTemplate>
+					</ComboBox.ItemTemplate>
+				</ComboBox>
+
+			</DataTemplate>
+
+			<!--#endregion-->
+
+			<!--#region > editor B styles and settings-->
+
+			<Style x:Key="BdrEditorStatus"
+					TargetType="Border"
+					>
+				<Setter Property="BorderThickness" Value="2,4,2,4" />
+				<Setter Property="BorderBrush" Value="Black" />
+
+			</Style>
+
+			<Style x:Key="BdrEditStatus"
+					TargetType="Border"
+					>
+				<Setter Property="BorderBrush" Value="Transparent" />
+				<Setter Property="BorderThickness" Value="1" />
+				<!-- <Setter Property="Margin" Value="0,4,0,4" /> -->
+				<!-- <Setter Property="Padding" Value="0" /> -->
+				<Setter Property="Margin" Value="8,4,0,4" />
+				<Setter Property="Padding" Value="5,0,0,0" />
+				<Style.Triggers>
+					<DataTrigger Value="false" Binding="{Binding Path=DyValue.IsClean}">
+						<Setter Property="Margin" Value="8,4,0,4" />
+						<Setter Property="Padding" Value="5,0,0,0" />
+						<Setter Property="BorderThickness" Value="1" />
+						<Setter Property="BorderBrush">
+							<Setter.Value>
+								<SolidColorBrush Color="{StaticResource Deep.Orange.450}" />
+							</Setter.Value>
+						</Setter>
+					</DataTrigger>
+				</Style.Triggers>
+
+			</Style>
+
+			<Style x:Key="RtEditStatus"
+					TargetType="Rectangle"
+					>
+				<Setter Property="Width" Value="3" />
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="VerticalAlignment" Value="Stretch" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="Fill" Value="{Binding Path=Field.FieldEditLevel, Mode=OneWay, Converter={StaticResource Enum2Brush}, ConverterParameter={x:Static exSys:FieldEditLevel.FEL_LOCKED}, FallbackValue='Red'}" />
+			</Style>
+
+			<Style x:Key="RtFiller"
+					TargetType="Rectangle"
+					>
+				<Setter Property="Fill" Value="#333333" />
+				<Setter Property="Margin" Value="6,0,17,0" />
+				<Setter Property="Height" Value="18" />
+				<Setter Property="Width" Value="18" />
+			</Style>
+
+
+			<!--  editor elements  -->
+
+			<Style x:Key="DpField"
+					TargetType="DockPanel"
+					>
+				<Setter Property="MinHeight" Value="34" />
+				<Setter Property="Margin" Value="8,2,0,2" />
+				<Setter Property="VerticalAlignment" Value="Top" />
+				<Setter Property="HorizontalAlignment" Value="Stretch" />
+				<Setter Property="Dock" Value="Top" />
+			</Style>
+
+			<Style x:Key="DpRow"
+					TargetType="DockPanel"
+					BasedOn="{StaticResource DpField}"
+					>
+				<Setter Property="Visibility" Value="Visible" />
+				<Setter Property="Margin" Value="2,2,0,2" />
+				<Style.Triggers>
+					<DataTrigger Value="false">
+						<Setter Property="Visibility" Value="Collapsed" />
+						<Setter Property="Background" Value="#3A3A3A" />
+						<DataTrigger.Binding>
+							<MultiBinding
+									ConverterParameter="{StaticResource CanEditOrView}"
+									Converter="{StaticResource FldAccess2Vis}"
+									>
+								<Binding
+										ElementName="MainWin"
+										Path="Mui.UseSecLvl"
+										/>
+								<Binding
+										Path="Field.FieldEditLevel"
+										TargetNullValue="{x:Static exSys:FieldEditLevel.FEL_UNASSIGNED}"
+										FallbackValue="{x:Static exSys:FieldEditLevel.FEL_UNASSIGNED}"
+										/>
+							</MultiBinding>
+						</DataTrigger.Binding>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="DpItem"
+					TargetType="DockPanel"
+					BasedOn="{StaticResource DpField}"
+					>
+
+				<Setter Property="Margin" Value="0" />
+
+				<Setter Property="IsEnabled">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource FldAccess2Edit}">
+							<MultiBinding.Bindings>
+								<Binding
+										ElementName="MainWin"
+										Path="Mui.UseSecLvl"
+										/>
+								<Binding Path="Field.FieldEditLevel" />
+							</MultiBinding.Bindings>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+
+			</Style>
+
+
+			<!--  editing elements  -->
+
+			<Style x:Key="BtnUndo"
+					TargetType="Button"
+					BasedOn="{StaticResource Btn.Std}"
+					>
+				<Setter Property="Tag" Value="{Binding}" />
+				<Setter Property="Margin" Value="3,0,0,0" />
+				<Setter Property="Width" Value="22" />
+				<Setter Property="Height" Value="22" />
+				<Setter Property="Padding" Value="3" />
+				<Setter Property="Background" Value="Transparent" />
+				<Setter Property="cs:CsButtons.ButtonCornerRadius" Value="{StaticResource CornerRadius.Sm}" />
+				<Setter Property="IsEnabled" Value="False" />
+				<Setter Property="ContentTemplate">
+					<Setter.Value>
+						<DataTemplate>
+							<ContentControl>
+								<ContentControl.Content>
+									<Path
+											DataContext="{Binding Path=DataContext,
+																						RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+											Stretch="UniformToFill"
+											>
+										<Path.Style>
+											<Style TargetType="Path">
+												<Setter Property="Data" Value="{StaticResource Ic.Reset}" />
+												<Setter Property="Fill" Value="MediumSpringGreen" />
+												<Style.Triggers>
+													<DataTrigger Value="true" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=IsPressed}">
+														<Setter Property="Fill" Value="DarkRed" />
+													</DataTrigger>
+													<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=IsEnabled}">
+														<Setter Property="Fill" Value="DimGray" />
+													</DataTrigger>
+
+												</Style.Triggers>
+											</Style>
+										</Path.Style>
+									</Path>
+								</ContentControl.Content>
+							</ContentControl>
+						</DataTemplate>
+					</Setter.Value>
+				</Setter>
+				<Style.Triggers>
+					<DataTrigger Value="true" Binding="{Binding Path=DyValue.IsDirty}">
+						<Setter Property="IsEnabled" Value="True" />
+					</DataTrigger>
+					<DataTrigger Value="false">
+						<Setter Property="IsEnabled" Value="false" />
+						<Setter Property="ContentTemplate" Value="{x:Null}" />
+						<Setter Property="cs:CsButtons.ButtonCornerRadius" Value="0" />
+						<Setter Property="Height" Value="18" />
+						<Setter Property="Width" Value="18" />
+						<Setter Property="Margin" Value="6,0,0,0" />
+						<DataTrigger.Binding>
+							<MultiBinding
+									ConverterParameter="{StaticResource CanEditOnly}"
+									Converter="{StaticResource FldAccess2Vis}"
+									>
+								<Binding
+										ElementName="MainWin"
+										Path="Mui.UseSecLvl"
+										/>
+								<Binding
+										Path="Field.FieldEditLevel"
+										FallbackValue="{x:Static exSys:FieldEditLevel.FEL_UNASSIGNED}"
+										/>
+							</MultiBinding>
+						</DataTrigger.Binding>
+					</DataTrigger>
+				</Style.Triggers>
+				<Style.Resources>
+
+					<!--  ReSharper disable Xaml.RedundantResource  -->
+					<SolidColorBrush x:Key="Btn.Bg.IsSel" Color="Transparent" />
+
+					<SolidColorBrush x:Key="Btn.Bdr.IsSel" Color="Transparent" />
+					<!-- <SolidColorBrush x:Key="Btn.Fg.IsSel"      Color="{DynamicResource Gray.200}" /> -->
+
+					<SolidColorBrush x:Key="Btn.Bg.Disabled" Color="#333333" />
+					<SolidColorBrush x:Key="Btn.Bdr.Disabled" Color="#333333" />
+
+					<!-- <SolidColorBrush x:Key="Btn.Bg.Disabled" Color="{DynamicResource Gray.400}" /> -->
+					<!-- <SolidColorBrush x:Key="Btn.Bdr.Disabled" Color="{DynamicResource Gray.400}" /> -->
+					<!-- <SolidColorBrush x:Key="Btn.Fg.Disabled"   Color="{DynamicResource Gray.550}" /> -->
+
+					<SolidColorBrush x:Key="Btn.Bg.IsEnabled" Color="Transparent" />
+					<SolidColorBrush x:Key="Btn.Bdr.IsEnabled" Color="Transparent" />
+					<!-- <SolidColorBrush x:Key="Btn.Fg.IsEnabled"  Color="{DynamicResource Gray.500}" /> -->
+
+					<SolidColorBrush x:Key="Btn.Bg.Pressed" Color="Black" />
+					<SolidColorBrush x:Key="Btn.Bdr.Pressed" Color="Red" />
+					<!-- <SolidColorBrush x:Key="Btn.Fg.Pressed"    Color="{Binding Color, Source={StaticResource Btn.Fg.IsSel}}" /> -->
+
+
+					<SolidColorBrush x:Key="Btn.Bg.MouseOver" Color="Transparent" />
+					<SolidColorBrush x:Key="Btn.Bdr.MouseOver" Color="Gray" />
+					<!-- <SolidColorBrush x:Key="Btn.Fg.MouseOver"  Color="{Binding Color, Source={StaticResource Btn.Fg.IsSel}}" /> -->
+					<!--  ReSharper restore Xaml.RedundantResource  -->
+
+				</Style.Resources>
+			</Style>
+
+			<Style x:Key="CtrlBase"
+					TargetType="Control"
+					>
+				<Setter Property="MinHeight" Value="16" />
+				<Setter Property="FontSize" Value="14" />
+				<Setter Property="VerticalAlignment" Value="Stretch" />
+				<Setter Property="HorizontalAlignment" Value="Left" />
+				<Setter Property="VerticalContentAlignment" Value="Center" />
+				<Setter Property="Margin" Value="3,4,3,4" />
+				<Setter Property="Padding" Value="2,0,5,3" />
+				<Setter Property="Foreground" Value="White" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="BorderBrush" Value="Transparent" />
+			</Style>
+
+			<sys:Double x:Key="DescFieldWidth">180</sys:Double>
+			<sys:Double x:Key="DescFieldWidthEx">189</sys:Double>
+
+			<Style x:Key="EditBDescField"
+					TargetType="Control"
+					BasedOn="{StaticResource CtrlBase}"
+					>
+				<Setter Property="Foreground" Value="DarkGray" />
+				<Setter Property="Background" Value="Black" />
+				<Setter Property="Width" Value="{StaticResource DescFieldWidth}" />
+
+			</Style>
+
+			<Style x:Key="EditBValueField"
+					TargetType="Control"
+					BasedOn="{StaticResource CtrlBase}"
+					>
+				<Setter Property="Margin" Value="0,0,0,0" />
+				<Setter Property="Foreground" Value="{StaticResource ActiveFieldForeGround}" />
+				<Setter Property="Background" Value="Transparent" />
+				<Style.Triggers>
+					<!-- <DataTrigger Value="true" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type DockPanel}}, Path=IsEnabled}"> -->
+					<!-- 	<Setter Property="Foreground" Value="#F0F8FF" /> -->
+					<!-- </DataTrigger> -->
+					<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type DockPanel}}, Path=IsEnabled}">
+						<Setter Property="Foreground" Value="{StaticResource DisabledFieldForeGround}" />
+						<Setter Property="Opacity" Value="1">
+						</Setter>
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+			<Style x:Key="EditBValueFieldTbx"
+					TargetType="TextBox"
+					BasedOn="{StaticResource EditBValueField}"
+					>
+				<Style.Triggers>
+					<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type DockPanel}}, Path=IsEnabled}">
+						<Setter Property="Foreground" Value="{StaticResource DisabledFieldForeGround.Tbx}" />
+
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+
+			<!--#endregion-->
+
+			<!--#region > family list-->
+
+			<!--  family list styles  -->
+
+			<Style x:Key="TbxFamListEntry"
+					TargetType="TextBox"
+					>
+				<Setter Property="Margin" Value="0,1,5,1" />
+				<Setter Property="Padding" Value="2,3,0,4" />
+				<Setter Property="Background" Value="Black" />
+				<Setter Property="Foreground" Value="White" />
+				<Setter Property="CaretBrush" Value="White" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="HorizontalAlignment" Value="Left">
+				</Setter>
+
+
+			</Style>
+
+
+			<Style x:Key="TbxFamListEntryEx"
+					TargetType="TextBox"
+					BasedOn="{StaticResource TbxFamListEntry}"
+					>
+				<Setter Property="Width" Value="167" />
+				<Setter Property="Focusable" Value="false" />
+				<Style.Triggers>
+					<!-- <DataTrigger Value="{x:Static exSys:Sheet.AddNewKey}" Binding="{Binding Path=Key}"> -->
+					<!-- 	<Setter Property="BorderThickness" Value="1" /> -->
+					<!-- </DataTrigger> -->
+					<DataTrigger Value="true" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Path=IsSelected}">
+						<Setter Property="Focusable" Value="true" />
+					</DataTrigger>
+				</Style.Triggers>
+			</Style>
+
+
+
+			<!--#endregion-->
+
+
+
+		</ResourceDictionary>
+
+		<!--#endregion-->
 
 	</Window.Resources>
 
 	<Grid Margin="5">
 
+		<!--#region > primary grid definitions-->
+
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="435" />
+			<ColumnDefinition Width="550" />
+			<ColumnDefinition Width="200" />
 		</Grid.ColumnDefinitions>
 
 		<Grid.RowDefinitions>
@@ -133,97 +910,101 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="40" />
 		</Grid.RowDefinitions>
+		<!--#endregion-->
 
-		<Grid
+		<!--#region > general header-->
+
+		<Grid x:Name="GrdGenHdr"
+				Grid.Row="0"
+				Grid.Column="0"
 				Height="auto"
 				VerticalAlignment="Top"
 				>
-			<Grid.Resources>
 
-			</Grid.Resources>
+			<!--#region > general header grid-->
+
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="130" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="130" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="130" />
-				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="0" />
+				<ColumnDefinition Width="0" />
 			</Grid.ColumnDefinitions>
 
 			<Grid.RowDefinitions>
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
-				<RowDefinition Height="{StaticResource griRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
+				<RowDefinition Height="{StaticResource GriRowHeight}" />
 			</Grid.RowDefinitions>
 
-
 			<Label
+					Grid.Row="0"
+					Grid.Column="0"
 					Content="Object Id"
-					Grid.Column="0"
-					Grid.Row="0"
 					Style="{StaticResource LblTitle}"
-			/>
+					/>
 
 			<Label
-					Content="{Binding Path=ObjId, FallbackValue='void',
-														TargetNullValue='does not exist'}"
-					Grid.Column="1"
 					Grid.Row="0"
+					Grid.Column="1"
+					Content="{Binding Path=ObjId,
+														FallbackValue='void',
+														TargetNullValue='does not exist'}"
 					Style="{StaticResource LblValue}"
-			/>
+					/>
 
 
 			<Label
+					Grid.Row="1"
+					Grid.Column="0"
 					Content="Doc File Name"
-					Grid.Column="0"
-					Grid.Row="1"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<Label
-					Content="{Binding Path=(revitLibrary:R.FileName), Mode=OneWay,
-														TargetNullValue='does not exist'}"
-					Grid.Column="1"
 					Grid.Row="1"
+					Grid.Column="1"
+					Content="{Binding Path=(revitLibrary:R.FileName),
+														Mode=OneWay,
+														TargetNullValue='does not exist'}"
 					Style="{StaticResource LblValue}"
 					/>
-			<!-- Content="{Binding Source={x:Static revitLibrary:R.FileName}, Mode=OneWay, -->
-			<!-- TargetNullValue='does not exist'}" -->
+			<!--  Content="{Binding Source={x:Static revitLibrary:R.FileName}, Mode=OneWay,  -->
+			<!--  TargetNullValue='does not exist'}"  -->
 
 			<Label
-					Content="Open Model Count"
-					Grid.Column="0"
 					Grid.Row="2"
+					Grid.Column="0"
+					Content="Open Model Count"
 					Margin="0"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<Label
+					Grid.Row="2"
+					Grid.Column="1"
 					Content="{Binding Path=Mui.OpenModelCount,
 														FallbackValue='undetermined',
 														Mode=OneWay}"
-					Grid.Column="1"
-					Grid.Row="2"
 					Style="{StaticResource LblValue}"
 					/>
 
-
-
 			<Label
-					Content="WBK Schema Status"
-					Grid.Column="0"
 					Grid.Row="4"
+					Grid.Column="0"
+					Content="WBK Schema Status"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="1"
 					Grid.Row="4"
+					Grid.Column="1"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
@@ -250,15 +1031,15 @@
 			</DockPanel>
 
 			<Label
-					Content="WBK DataStorage Status"
-					Grid.Column="0"
 					Grid.Row="5"
+					Grid.Column="0"
+					Content="WBK DataStorage Status"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="1"
 					Grid.Row="5"
+					Grid.Column="1"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
@@ -285,15 +1066,15 @@
 			</DockPanel>
 
 			<Label
-					Content="SHT Schema Status"
-					Grid.Column="0"
 					Grid.Row="6"
+					Grid.Column="0"
+					Content="SHT Schema Status"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="1"
 					Grid.Row="6"
+					Grid.Column="1"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
@@ -320,15 +1101,15 @@
 			</DockPanel>
 
 			<Label
-					Content="SHT DataStorage Status"
-					Grid.Column="0"
 					Grid.Row="7"
+					Grid.Column="0"
+					Content="SHT DataStorage Status"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="1"
 					Grid.Row="7"
+					Grid.Column="1"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					>
@@ -355,15 +1136,15 @@
 
 
 			<Label
-					Content="Running Status"
-					Grid.Column="2"
 					Grid.Row="0"
+					Grid.Column="2"
+					Content="Running Status"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="3"
 					Grid.Row="0"
+					Grid.Column="3"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
@@ -386,17 +1167,16 @@
 						/>
 			</DockPanel>
 
-
 			<Label
+					Grid.Row="1"
+					Grid.Column="2"
 					Content="ExStorSys Status"
-					Grid.Column="4"
-					Grid.Row="0"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<DockPanel
-					Grid.Column="5"
-					Grid.Row="0"
+					Grid.Row="1"
+					Grid.Column="3"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
@@ -421,19 +1201,19 @@
 
 
 			<Label
+					Grid.Row="2"
+					Grid.Column="2"
 					Content="Restart Status"
-					Grid.Column="4"
-					Grid.Row="1"
 					Style="{StaticResource LblTitle}"
-			/>
+					/>
 
 			<DockPanel
-					Grid.Column="5"
-					Grid.Row="1"
+					Grid.Row="2"
+					Grid.Column="3"
 					Margin="0"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
-			>
+					>
 
 				<Label
 						Content="{Binding Path=Mui.RestartStatus,
@@ -442,7 +1222,7 @@
 						HorizontalAlignment="Left"
 						HorizontalContentAlignment="Center"
 						Style="{StaticResource LblValue}"
-				/>
+						/>
 
 				<Label
 						Content="{Binding Path=Mui.RestartStatusDesc,
@@ -450,541 +1230,66 @@
 															TargetNullValue='null',
 															Mode=OneWay}"
 						Style="{StaticResource LblValue}"
-				/>
+						/>
 			</DockPanel>
 
 
 
 			<Label
-					Content="WBK Got Schema"
-					Grid.Column="2"
 					Grid.Row="4"
+					Grid.Column="2"
+					Content="WBK Got Schema"
 					Margin="0"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<Label
+					Grid.Row="4"
+					Grid.Column="3"
 					Content="{Binding Path=Mui.WorkBookSchemaStatusDesc,
 														FallbackValue='undetermined',
 														Mode=OneWay}"
-					Grid.Column="3"
-					Grid.Row="4"
 					Style="{StaticResource LblValue}"
 					/>
 
 			<Label
-					Content="SHT Got Schema"
-					Grid.Column="2"
 					Grid.Row="6"
+					Grid.Column="2"
+					Content="SHT Got Schema"
 					Margin="0"
 					Style="{StaticResource LblTitle}"
 					/>
 
 			<Label
+					Grid.Row="6"
+					Grid.Column="3"
 					Content="{Binding Path=Mui.SheetSchemaStatusDesc,
 														FallbackValue='undetermined',
 														Mode=OneWay}"
-					Grid.Column="3"
-					Grid.Row="6"
 					Style="{StaticResource LblValue}"
 					/>
 
-
-
-			<!-- <Label -->
-			<!-- 		Content="Resolve Status" -->
-			<!-- 		Grid.Column="2" -->
-			<!-- 		Grid.Row="2" -->
-			<!-- 		Style="{StaticResource LblTitle}" -->
-			<!-- 		/> -->
-			<!-- -->
-			<!-- <DockPanel -->
-			<!-- 		Grid.Column="3" -->
-			<!-- 		Grid.Row="2" -->
-			<!-- 		Margin="1" -->
-			<!-- 		HorizontalAlignment="Stretch" -->
-			<!-- 		VerticalAlignment="Stretch" -->
-			<!-- 		> -->
-			<!-- -->
-			<!-- 	<Label -->
-			<!-- 			Content="{Binding Path=Mui.ResolveStatus, -->
-			<!-- 												FallbackValue='false'}" -->
-			<!-- 			Width="{StaticResource LblValueNumber}" -->
-			<!-- 			HorizontalAlignment="Left" -->
-			<!-- 			HorizontalContentAlignment="Center" -->
-			<!-- 			Style="{StaticResource LblValue}" -->
-			<!-- 			/> -->
-			<!-- -->
-			<!-- 	<Label -->
-			<!-- 			Content="{Binding Path=Mui.ResolveStatusDesc, -->
-			<!-- 												FallbackValue='unassigned', -->
-			<!-- 												Mode=OneWay}" -->
-			<!-- 			Style="{StaticResource LblValue}" -->
-			<!-- 			/> -->
-			<!-- </DockPanel> -->
-
-
-
-			<Label
-					Content="Launch Status"
-					Grid.Column="2"
-					Grid.Row="1"
-					Style="{StaticResource LblTitle}"
-					/>
-
-			<DockPanel
-					Grid.Column="3"
-					Grid.Row="1"
-					Margin="0"
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Stretch"
-					>
-
-				<Label
-						Content="{Binding Path=Mui.LaunchCode,
-															FallbackValue='false'}"
-						Width="{StaticResource LblValueNumber}"
-						HorizontalAlignment="Left"
-						HorizontalContentAlignment="Center"
-						Style="{StaticResource LblValue}"
-						/>
-
-				<Label
-						Content="{Binding Path=Mui.LaunchStatusDesc,
-															FallbackValue='unassigned',
-															Mode=OneWay}"
-						Style="{StaticResource LblValue}"
-						/>
-			</DockPanel>
-
-
-
-
+			<!--#endregion-->
 
 		</Grid>
 
+		<!--#endregion-->
 
-		<StackPanel
-				Grid.Column="1"
+		<!--#region > button panels-->
+
+		<DockPanel x:Name="DpButtons"
 				Grid.Row="0"
+				Grid.Column="1"
 				Grid.RowSpan="2"
 				Margin="0"
-				Orientation="Horizontal"
 				>
-
-			<Button Name="BtnTemplate"
-					Visibility="Collapsed"
-					Style="{StaticResource BtnStyleBase}"
-					>
-				<Button.Content>
-					<StackPanel Orientation="Vertical">
-						<TextBlock
-								Margin="0,-1,0,-1"
-								Padding="0"
-								VerticalAlignment="Top"
-								TextAlignment="Center"
-								Text="line 1"
-								/>
-						<TextBlock
-								Margin="0,-2,0,2"
-								Padding="0"
-								VerticalAlignment="Bottom"
-								TextAlignment="Center"
-								Text="line 2"
-								/>
-					</StackPanel>
-				</Button.Content>
-			</Button>
-
-			<StackPanel
-					Margin="5,0,0,0"
-					Width="{StaticResource BtnWidth}"
-					Orientation="Vertical"
-					>
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-				<Label Style="{StaticResource Label}">
-					<Label.Content>
-						<TextBlock
-								Text="Initialize"
-								Style="{StaticResource LblTextBlock}"
-								/>
-					</Label.Content>
-				</Label>
-				
-				<!-- <Button Name="BtnVerifyInit" -->
-				<!-- 		Style="{StaticResource BtnStyleBase}" -->
-				<!-- 		Click="BtnInitVerify_OnClick" -->
-				<!-- 		> -->
-				<!-- 	<Button.Content> -->
-				<!-- 		<StackPanel Orientation="Vertical"> -->
-				<!-- 			<TextBlock -->
-				<!-- 					Margin="0,-1,0,-1" -->
-				<!-- 					Padding="0" -->
-				<!-- 					VerticalAlignment="Top" -->
-				<!-- 					TextAlignment="Center" -->
-				<!-- 					Text="Initial" -->
-				<!-- 					/> -->
-				<!-- 			<TextBlock -->
-				<!-- 					Margin="0,-2,0,2" -->
-				<!-- 					Padding="0" -->
-				<!-- 					VerticalAlignment="Bottom" -->
-				<!-- 					TextAlignment="Center" -->
-				<!-- 					Text="Verification" -->
-				<!-- 					/> -->
-				<!-- 		</StackPanel> -->
-				<!-- 	</Button.Content> -->
-				<!-- </Button> -->
-
-
-				
-				<Button Name="BtnVerifyStartup"
-						Style="{StaticResource BtnStyleBott}"
-						Click="BtnVerifyStartup_OnClick"
-						>
-					<Button.Content>
-						<StackPanel Orientation="Vertical">
-							<TextBlock
-									Margin="0,-1,0,-1"
-									Padding="0"
-									VerticalAlignment="Top"
-									TextAlignment="Center"
-									Text="Startup"
-									/>
-							<TextBlock
-									Margin="0,-2,0,2"
-									Padding="0"
-									VerticalAlignment="Bottom"
-									TextAlignment="Center"
-									Text="Verification"
-									/>
-						</StackPanel>
-					</Button.Content>
-				</Button>
-				
-				<Button Name="BtnVerifyTest"
-						Style="{StaticResource BtnStyleBott}"
-						Click="BtnVerifyTest_OnClick"
-						>
-					<Button.Content>
-						<StackPanel Orientation="Vertical">
-							<TextBlock
-									Margin="0,-1,0,-1"
-									Padding="0"
-									VerticalAlignment="Top"
-									TextAlignment="Center"
-									Text="Test"
-									/>
-							<TextBlock
-									Margin="0,-2,0,2"
-									Padding="0"
-									VerticalAlignment="Bottom"
-									TextAlignment="Center"
-									Text="Verification"
-									/>
-						</StackPanel>
-					</Button.Content>
-				</Button>
-
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-			</StackPanel>
-
-			<StackPanel
-					Margin="5,0,0,0"
-					Width="{StaticResource BtnWidth}"
-					Orientation="Vertical"
-					>
-
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-				<Label Style="{StaticResource Label}">
-					<Label.Content>
-						<TextBlock
-								Text="Show"
-								Style="{StaticResource LblTextBlock}"
-								/>
-					</Label.Content>
-				</Label>
-
-				<Button Name="BtnShowObjId"
-						Content="Show object id's"
-						Style="{StaticResource BtnStyleBase}"
-						Click="BtnShowObjId_OnClick"
-						/>
-
-
-				<Button Name="BtnShowInfoOne"
-						Content="Show info 1"
-						Style="{StaticResource BtnStyleBase}"
-						Click="ShowInfoOne_OnClick"
-						/>
-
-				<Button Name="BtnShowInfoTwo"
-						Content="Show info 2"
-						Style="{StaticResource BtnStyleBase}"
-						Click="ShowInfoTwo_OnClick"
-						/>
-
-				<Button Name="BtnShowExMgr"
-						Content="Show ExMgr"
-						Style="{StaticResource BtnStyleBott}"
-						Click="ShowExMgr_OnClick"
-						/>
-
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-				<!--  <Label  -->
-				<!--  Content="WorkBook"  -->
-				<!--  Style="{StaticResource Label}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnMkWkBk"  -->
-				<!--  Content="Make WorkBook"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnMakeWkBk_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--    -->
-				<!--  <Button Name="BtnMkMtWkBk"  -->
-				<!--  Content="Make Empty WorkBook"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnMakeEmptyWkBk_OnClick"  -->
-				<!--  />  -->
-
-				<Button Name="BtnShowWbk"
-						Content="Show WorkBook"
-						Style="{StaticResource BtnStyleTop}"
-						Click="BtnShowWbk_OnClick"
-						/>
-				<!--    -->
-				<!--  <Rectangle  -->
-				<!--  Fill="Red"  -->
-				<!--  Style="{StaticResource Rect}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnWriteWbk"  -->
-				<!--  Style="{StaticResource BtnTop}"  -->
-				<!--  Click="BtnMakeAndWriteWbk_OnClick"  -->
-				<!--  >  -->
-				<!-- 	<Button.Content> -->
-				<!-- 		<StackPanel Orientation="Vertical"> -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-1,0,-1"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Top"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Make And"  -->
-				<!--  />  -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-2,0,2"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Bottom"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Write WorkBook"  -->
-				<!--  />  -->
-				<!-- 		</StackPanel> -->
-				<!-- 	</Button.Content> -->
-				<!-- </Button> -->
-				<!--    -->
-				<!--  <Button Name="BtnReadWbk"  -->
-				<!--  Style="{StaticResource BtnBott}"  -->
-				<!--  Click="BtnClearAndReadbk_OnClick"  -->
-				<!--  >  -->
-				<!-- 	<Button.Content> -->
-				<!-- 		<StackPanel Orientation="Vertical"> -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-1,0,-1"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Top"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Clear And"  -->
-				<!--  />  -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-2,0,2"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Bottom"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Read WorkBook"  -->
-				<!--  />  -->
-				<!-- 		</StackPanel> -->
-				<!-- 	</Button.Content> -->
-				<!-- </Button> -->
-				<!--    -->
-				<!--  <Rectangle  -->
-				<!--  Fill="Red"  -->
-				<!--  Style="{StaticResource Rect}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Label  -->
-				<!--  Content="Sheet"  -->
-				<!--  Style="{StaticResource Label}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnMkSht"  -->
-				<!--  Content="Make Sheet"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnMakeSht_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnMkMtSht"  -->
-				<!--  Content="Make Empty Sheet"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnMakeEmptySht_OnClick"  -->
-				<!--  />  -->
-
-				<Button Name="BtnShowSht"
-						Content="Show Sheet"
-						Style="{StaticResource BtnStyleBott}"
-						Click="BtnShowSht_OnClick"
-						/>
-
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-				<!--  <Button Name="BtnWriteSht"  -->
-				<!--  Style="{StaticResource BtnSolo}"  -->
-				<!--  Click="BtnWriteSht_OnClick"  -->
-				<!--  >  -->
-				<!-- 	<Button.Content> -->
-				<!-- 		<StackPanel Orientation="Vertical"> -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-1,0,-1"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Top"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Make And"  -->
-				<!--  />  -->
-				<!--  <TextBlock  -->
-				<!--  Margin="0,-2,0,2"  -->
-				<!--  Padding="0"  -->
-				<!--  VerticalAlignment="Bottom"  -->
-				<!--  TextAlignment="Center"  -->
-				<!--  Text="Write Sheet"  -->
-				<!--  />  -->
-				<!-- 		</StackPanel> -->
-				<!-- 	</Button.Content> -->
-				<!-- </Button> -->
-				<!--    -->
-				<!--  <Rectangle  -->
-				<!--  Fill="Red"  -->
-				<!--  Style="{StaticResource Rect}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Label  -->
-				<!--  Content="Change"  -->
-				<!--  Style="{StaticResource Label}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnChgWbk"  -->
-				<!--  Content="Change WorkBook Field"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnChgWbk_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--    -->
-				<!--  <Button Name="BtnChgWin"  -->
-				<!--  Content="Change Win Text"  -->
-				<!--  Click="BtnChgWin_OnClick"  -->
-				<!--  Style="{StaticResource BtnBott}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Rectangle  -->
-				<!--  Fill="Red"  -->
-				<!--  Style="{StaticResource Rect}"  -->
-				<!--  />  -->
-
-				<Label Style="{StaticResource Label}">
-					<Label.Content>
-						<TextBlock
-								Text="Find"
-								Style="{StaticResource LblTextBlock}"
-								/>
-					</Label.Content>
-				</Label>
-
-
-				<Button Name="BtnFindWbkDs"
-						Content="Find Wbk DS"
-						Style="{StaticResource BtnStyleBase}"
-						Click="BtnFindWbkDs_OnClick"
-						/>
-
-				<Button Name="BtnFindShtDs"
-						Content="Find Sht DS"
-						Style="{StaticResource BtnStyleBase}"
-						Click="BtnFindShtDs_OnClick"
-						/>
-
-				<Button Name="BtnFindAllShtDs"
-						Content="Clr, Find, and Show All"
-						Style="{StaticResource BtnStyleBase}"
-						Click="BtnFindAllShtDs_OnClick"
-						/>
-
-				<Button Name="BtnFindAndShowElements"
-						Content="Find and Show All Obj"
-						Style="{StaticResource BtnStyleBott}"
-						Click="BtnFindAndShowAll_OnClick"
-						/>
-
-
-				<Rectangle
-						Fill="Red"
-						Style="{StaticResource Rect}"
-						/>
-
-				<!--  <Label  -->
-				<!--  Content="Delete"  -->
-				<!--  Style="{StaticResource Label}"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnDeleteShtSc"  -->
-				<!--  Content="Delete Sht Schema"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnDeleteShtSc_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnDeleteShtDs"  -->
-				<!--  Content="Delete Sht DataStorage"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnDeleteShtDs_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnDeleteWbkSc"  -->
-				<!--  Content="Delete Wbk Schema"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnDeleteWbkSc_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-				<!--  <Button Name="BtnDeleteWbkDs"  -->
-				<!--  Content="Delete Wbk DataStorage"  -->
-				<!--  Style="{StaticResource BtnStyleBase}"  -->
-				<!--  Click="BtnDeleteWbkDs_OnClick"  -->
-				<!--  />  -->
-				<!--    -->
-
-			</StackPanel>
 
 			<DockPanel
 					Margin="5,0,0,0"
 					Width="{StaticResource BtnWidth}"
 					VerticalAlignment="Stretch"
 					>
+
 				<StackPanel
 						VerticalAlignment="Top"
 						DockPanel.Dock="Top"
@@ -999,23 +1304,557 @@
 					<Label Style="{StaticResource Label}">
 						<Label.Content>
 							<TextBlock
-									Text="Read"
+									Text="Initialize"
 									Style="{StaticResource LblTextBlock}"
 									/>
 						</Label.Content>
 					</Label>
 
-					<Button Name="BtnReadAll"
-							Content="Read and Show All"
-							Style="{StaticResource BtnStyleBase}"
-							Click="BtnReadAndShowAll_OnClick"
+					<Button Name="BtnVerifyStartup"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnVerifyStartup_OnClick"
+							>
+						<Button.Content>
+							<StackPanel Orientation="Vertical">
+								<TextBlock
+										Margin="0,-1,0,-1"
+										Padding="0"
+										VerticalAlignment="Top"
+										TextAlignment="Center"
+										Text="Startup"
+										/>
+								<TextBlock
+										Margin="0,-2,0,2"
+										Padding="0"
+										VerticalAlignment="Bottom"
+										TextAlignment="Center"
+										Text="Verification"
+										/>
+							</StackPanel>
+						</Button.Content>
+					</Button>
+
+					<Button Name="BtnVerifyTest"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnVerifyTest_OnClick"
+							>
+						<Button.Content>
+							<StackPanel Orientation="Vertical">
+								<TextBlock
+										Margin="0,-1,0,-1"
+										Padding="0"
+										VerticalAlignment="Top"
+										TextAlignment="Center"
+										Text="Test"
+										/>
+								<TextBlock
+										Margin="0,-2,0,2"
+										Padding="0"
+										VerticalAlignment="Bottom"
+										TextAlignment="Center"
+										Text="Verification"
+										/>
+							</StackPanel>
+						</Button.Content>
+					</Button>
+
+					<Rectangle
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+				</StackPanel>
+
+
+				<StackPanel
+						Margin="0,0,0,30"
+						VerticalAlignment="Bottom"
+						DockPanel.Dock="Bottom"
+						Orientation="Vertical"
+						>
+
+					<Rectangle
+							VerticalAlignment="Bottom"
+							Fill="Red"
+							Style="{StaticResource Rect}"
 							/>
 
-					<Button Name="BtnClrAndReadAll"
-							Content="Clear And Read All"
-							Style="{StaticResource BtnStyleBott}"
-							Click="BtnClearReadAll_OnClick"
+					<Label Style="{StaticResource Label}">
+						<Label.Content>
+							<TextBlock
+									Text="Sheet Tests"
+									Style="{StaticResource LblTextBlock}"
+									/>
+						</Label.Content>
+					</Label>
+
+					<Button
+							Content="Change Sht Fields"
+							Style="{StaticResource BtnStyleTop}"
+							Click="BtnChgShtValueTest_OnClick"
 							/>
+
+					<Button
+							Content="Change Sht Entity Field"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnChgSht_OnClick"
+							/>
+
+					<Button
+							Content="Add Sheet"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnAddSht_OnClick"
+							/>
+
+					<Button
+							Content="Remove Sheet"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnRemoveSht_OnClick"
+							/>
+
+					<Button
+							Content="Remove All Sheets"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnRemoveAllShts_OnClick"
+							/>
+
+					<Button
+							Content="Add Family+Type"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnAddFam_OnClick"
+							/>
+
+					<Button
+							Content="Remove Family+Type"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnRemoveFam_OnClick"
+							/>
+
+					<Button
+							Content="Remove All Family+Type"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnRemoveAllFams_OnClick"
+							/>
+
+					<Rectangle
+							VerticalAlignment="Bottom"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+				</StackPanel>
+
+			</DockPanel>
+
+			<DockPanel
+					Margin="5,0,0,0"
+					Width="{StaticResource BtnWidth}"
+					VerticalAlignment="Stretch"
+					>
+
+				<StackPanel
+						VerticalAlignment="Top"
+						DockPanel.Dock="top"
+						Orientation="Vertical"
+						>
+					<Rectangle
+							DockPanel.Dock="Top"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<Label
+							DockPanel.Dock="Top"
+							Style="{StaticResource Label}"
+							>
+						<Label.Content>
+							<TextBlock
+									Text="Show"
+									Style="{StaticResource LblTextBlock}"
+									/>
+						</Label.Content>
+					</Label>
+
+					<Button Name="BtnShowObjId"
+							Content="Show object id's"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnShowObjId_OnClick"
+							/>
+
+
+					<Button Name="BtnShowInfoOne"
+							Content="Show info 1"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBase}"
+							Click="ShowInfoOne_OnClick"
+							/>
+
+					<Button Name="BtnShowInfoTwo"
+							Content="Show info 2"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBase}"
+							Click="ShowInfoTwo_OnClick"
+							/>
+
+					<Button Name="BtnShowExMgr"
+							Content="Show ExMgr"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBott}"
+							Click="ShowExMgr_OnClick"
+							/>
+
+					<Rectangle
+							DockPanel.Dock="Top"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<!--  <Label  -->
+					<!--  Content="WorkBook"  -->
+					<!--  Style="{StaticResource Label}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnMkWkBk"  -->
+					<!--  Content="Make WorkBook"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnMakeWkBk_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--    -->
+					<!--  <Button Name="BtnMkMtWkBk"  -->
+					<!--  Content="Make Empty WorkBook"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnMakeEmptyWkBk_OnClick"  -->
+					<!--  />  -->
+
+					<Button Name="BtnShowWbk"
+							Content="Show WorkBook"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleTop}"
+							Click="BtnShowWbk_OnClick"
+							/>
+					<!--    -->
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnWriteWbk"  -->
+					<!--  Style="{StaticResource BtnTop}"  -->
+					<!--  Click="BtnMakeAndWriteWbk_OnClick"  -->
+					<!--  >  -->
+					<!-- 	<Button.Content> -->
+					<!-- 		<StackPanel Orientation="Vertical"> -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-1,0,-1"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Top"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Make And"  -->
+					<!--  />  -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-2,0,2"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Bottom"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Write WorkBook"  -->
+					<!--  />  -->
+					<!-- 		</StackPanel> -->
+					<!-- 	</Button.Content> -->
+					<!-- </Button> -->
+					<!--    -->
+					<!--  <Button Name="BtnReadWbk"  -->
+					<!--  Style="{StaticResource BtnBott}"  -->
+					<!--  Click="BtnClearAndReadbk_OnClick"  -->
+					<!--  >  -->
+					<!-- 	<Button.Content> -->
+					<!-- 		<StackPanel Orientation="Vertical"> -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-1,0,-1"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Top"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Clear And"  -->
+					<!--  />  -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-2,0,2"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Bottom"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Read WorkBook"  -->
+					<!--  />  -->
+					<!-- 		</StackPanel> -->
+					<!-- 	</Button.Content> -->
+					<!-- </Button> -->
+					<!--    -->
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Label  -->
+					<!--  Content="Sheet"  -->
+					<!--  Style="{StaticResource Label}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnMkSht"  -->
+					<!--  Content="Make Sheet"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnMakeSht_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnMkMtSht"  -->
+					<!--  Content="Make Empty Sheet"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnMakeEmptySht_OnClick"  -->
+					<!--  />  -->
+
+					<Button Name="BtnShowSht"
+							Content="Show Sheet"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnShowSht_OnClick"
+							/>
+
+					<Rectangle
+							DockPanel.Dock="Top"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<!--  <Button Name="BtnWriteSht"  -->
+					<!--  Style="{StaticResource BtnSolo}"  -->
+					<!--  Click="BtnWriteSht_OnClick"  -->
+					<!--  >  -->
+					<!-- 	<Button.Content> -->
+					<!-- 		<StackPanel Orientation="Vertical"> -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-1,0,-1"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Top"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Make And"  -->
+					<!--  />  -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-2,0,2"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Bottom"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Write Sheet"  -->
+					<!--  />  -->
+					<!-- 		</StackPanel> -->
+					<!-- 	</Button.Content> -->
+					<!-- </Button> -->
+					<!--    -->
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Label  -->
+					<!--  Content="Change"  -->
+					<!--  Style="{StaticResource Label}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnChgWbk"  -->
+					<!--  Content="Change WorkBook Field"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnChgWbk_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--    -->
+					<!--  <Button Name="BtnChgWin"  -->
+					<!--  Content="Change Win Text"  -->
+					<!--  Click="BtnChgWin_OnClick"  -->
+					<!--  Style="{StaticResource BtnBott}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+
+					<Label
+							DockPanel.Dock="Top"
+							Style="{StaticResource Label}"
+							>
+						<Label.Content>
+							<TextBlock
+									Text="Find"
+									Style="{StaticResource LblTextBlock}"
+									/>
+						</Label.Content>
+					</Label>
+
+
+					<Button Name="BtnFindWbkDs"
+							Content="Find Wbk DS"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnFindWbkDs_OnClick"
+							/>
+
+					<Button Name="BtnFindShtDs"
+							Content="Find Sht DS"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBase}"
+							Click="BtnFindShtDs_OnClick"
+							/>
+
+					<!--  <Button Name="BtnFindAllShtDs"  -->
+					<!--  Content="Clr, Find, and Show All"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnFindAllShtDs_OnClick"  -->
+					<!--  />  -->
+
+					<Button Name="BtnFindAndShowElements"
+							Content="Find and Show All Obj"
+							DockPanel.Dock="Top"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnFindAndShowAll_OnClick"
+							/>
+
+
+					<Rectangle
+							DockPanel.Dock="Top"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<!--  <Label  -->
+					<!--  Content="Delete"  -->
+					<!--  Style="{StaticResource Label}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnDeleteShtSc"  -->
+					<!--  Content="Delete Sht Schema"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnDeleteShtSc_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnDeleteShtDs"  -->
+					<!--  Content="Delete Sht DataStorage"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnDeleteShtDs_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnDeleteWbkSc"  -->
+					<!--  Content="Delete Wbk Schema"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnDeleteWbkSc_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+					<!--  <Button Name="BtnDeleteWbkDs"  -->
+					<!--  Content="Delete Wbk DataStorage"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnDeleteWbkDs_OnClick"  -->
+					<!--  />  -->
+					<!--    -->
+
+				</StackPanel>
+
+				<StackPanel
+						Margin="0,0,0,30"
+						VerticalAlignment="Bottom"
+						DockPanel.Dock="Bottom"
+						Orientation="Vertical"
+						>
+
+					<Rectangle
+							VerticalAlignment="Bottom"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<Label Style="{StaticResource Label}">
+						<Label.Content>
+							<TextBlock
+									Text="General Tests"
+									Style="{StaticResource LblTextBlock}"
+									/>
+						</Label.Content>
+					</Label>
+
+					<Button
+							Content="Change User"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnChgUserTest_OnClick"
+							/>
+
+					<Rectangle
+							VerticalAlignment="Bottom"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+					<Label Style="{StaticResource Label}">
+						<Label.Content>
+							<TextBlock
+									Text="WorkBook Tests"
+									Style="{StaticResource LblTextBlock}"
+									/>
+						</Label.Content>
+					</Label>
+
+					<Button
+							Content="Change Wbk Fields"
+							Style="{StaticResource BtnStyleTop}"
+							Click="BtnChgWbkValueTest_OnClick"
+							/>
+
+					<Button Name="BtnChgWbk"
+							Content="Change Wbk Entity Field"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnChgWbk_OnClick"
+							/>
+
+
+					<Rectangle
+							VerticalAlignment="Bottom"
+							Fill="Red"
+							Style="{StaticResource Rect}"
+							/>
+
+				</StackPanel>
+
+			</DockPanel>
+
+			<DockPanel
+					Margin="5,0,0,0"
+					Width="{StaticResource BtnWidth}"
+					VerticalAlignment="Stretch"
+					>
+				<StackPanel
+						VerticalAlignment="Top"
+						DockPanel.Dock="Top"
+						Orientation="Vertical"
+						>
+
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+
+					<!-- <Label Style="{StaticResource Label}"> -->
+					<!-- 	<Label.Content> -->
+					<!--  <TextBlock  -->
+					<!--  Text="Read"  -->
+					<!--  Style="{StaticResource LblTextBlock}"  -->
+					<!--  />  -->
+					<!-- 	</Label.Content> -->
+					<!-- </Label> -->
+					<!--    -->
+					<!--  <Button Name="BtnReadAll"  -->
+					<!--  Content="Read and Show All"  -->
+					<!--  Style="{StaticResource BtnStyleBase}"  -->
+					<!--  Click="BtnReadAndShowAll_OnClick"  -->
+					<!--  />  -->
+
+					<!--  <Button Name="BtnClrAndReadAll"  -->
+					<!--  Content="Clear And Read All"  -->
+					<!--  Style="{StaticResource BtnStyleBott}"  -->
+					<!--  Click="BtnClearReadAll_OnClick"  -->
+					<!--  />  -->
 
 					<Rectangle
 							Fill="Red"
@@ -1069,50 +1908,50 @@
 					<!--  Style="{StaticResource Rect}"  -->
 					<!--  />  -->
 					<!--    -->
-					 <Button Name="BtnMakeAndWriteWbk"
-					 Style="{StaticResource BtnStyleBott}"
-					 Click="BtnMakeAndWriteWbk_OnClick"
-					 >
+					<Button Name="BtnMakeAndWriteWbk"
+							Style="{StaticResource BtnStyleBott}"
+							Click="BtnMakeAndWriteWbk_OnClick"
+							>
 						<Button.Content>
 							<StackPanel Orientation="Vertical">
-					 <TextBlock
-					 Margin="0,-1,0,-1"
-					 Padding="0"
-					 VerticalAlignment="Top"
-					 TextAlignment="Center"
-					 Text="Make And"
-					 />
-					 <TextBlock
-					 Margin="0,-2,0,2"
-					 Padding="0"
-					 VerticalAlignment="Bottom"
-					 TextAlignment="Center"
-					 Text="Write WorkBook"
-					 />
+								<TextBlock
+										Margin="0,-1,0,-1"
+										Padding="0"
+										VerticalAlignment="Top"
+										TextAlignment="Center"
+										Text="Make And"
+										/>
+								<TextBlock
+										Margin="0,-2,0,2"
+										Padding="0"
+										VerticalAlignment="Bottom"
+										TextAlignment="Center"
+										Text="Write WorkBook"
+										/>
 							</StackPanel>
 						</Button.Content>
 					</Button>
 
-					<!-- <Button Name="BtnReadWbk" -->
-					<!-- 		Style="{StaticResource BtnStyleBott}" -->
-					<!-- 		Click="BtnClearAndReadbk_OnClick" -->
-					<!-- 		> -->
+					<!--  <Button Name="BtnReadWbk"  -->
+					<!--  Style="{StaticResource BtnStyleBott}"  -->
+					<!--  Click="BtnClearAndReadbk_OnClick"  -->
+					<!--  >  -->
 					<!-- 	<Button.Content> -->
 					<!-- 		<StackPanel Orientation="Vertical"> -->
-					<!-- 			<TextBlock -->
-					<!-- 					Margin="0,-1,0,-1" -->
-					<!-- 					Padding="0" -->
-					<!-- 					VerticalAlignment="Top" -->
-					<!-- 					TextAlignment="Center" -->
-					<!-- 					Text="Clear And" -->
-					<!-- 					/> -->
-					<!-- 			<TextBlock -->
-					<!-- 					Margin="0,-2,0,2" -->
-					<!-- 					Padding="0" -->
-					<!-- 					VerticalAlignment="Bottom" -->
-					<!-- 					TextAlignment="Center" -->
-					<!-- 					Text="Read WorkBook" -->
-					<!-- 					/> -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-1,0,-1"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Top"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Clear And"  -->
+					<!--  />  -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-2,0,2"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Bottom"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Read WorkBook"  -->
+					<!--  />  -->
 					<!-- 		</StackPanel> -->
 					<!-- 	</Button.Content> -->
 					<!-- </Button> -->
@@ -1144,13 +1983,14 @@
 					<!--  />  -->
 
 
-					<!-- <Rectangle -->
-					<!-- 		Fill="Red" -->
-					<!-- 		Style="{StaticResource Rect}" -->
-					<!-- 		/> -->
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+
 
 					<Button Name="BtnWriteSht"
-							Style="{StaticResource BtnStyleBott}"
+							Style="{StaticResource BtnStyleBase}"
 							Click="BtnWriteSht_OnClick"
 							>
 						<Button.Content>
@@ -1173,26 +2013,20 @@
 						</Button.Content>
 					</Button>
 
-					<Rectangle
-							Fill="Red"
-							Style="{StaticResource Rect}"
-							/>
 
-					<Label Style="{StaticResource Label}">
-						<Label.Content>
-							<TextBlock
-									Text="Change"
-									Style="{StaticResource LblTextBlock}"
-									/>
-						</Label.Content>
-					</Label>
-
-					<Button Name="BtnChgWbk"
-							Content="Change WorkBook Field"
-							Style="{StaticResource BtnStyleBott}"
-							Click="BtnChgWbk_OnClick"
-							/>
-
+					<!--  <Rectangle  -->
+					<!--  Fill="Red"  -->
+					<!--  Style="{StaticResource Rect}"  -->
+					<!--  />  -->
+					<!--    -->
+					<!-- <Label Style="{StaticResource Label}"> -->
+					<!-- 	<Label.Content> -->
+					<!--  <TextBlock  -->
+					<!--  Text="Change"  -->
+					<!--  Style="{StaticResource LblTextBlock}"  -->
+					<!--  />  -->
+					<!-- 	</Label.Content> -->
+					<!-- </Label> -->
 
 
 					<!--  <Rectangle  -->
@@ -1247,13 +2081,13 @@
 							Content="(void) Del Sht Schema"
 							Style="{StaticResource BtnStyleBase}"
 							/>
-							<!-- Click="BtnDeleteShtSc_OnClick" -->
+					<!--  Click="BtnDeleteShtSc_OnClick"  -->
 
 					<Button Name="BtnDeleteWbkSc"
 							Content="(void) Del Wbk Schema"
 							Style="{StaticResource BtnStyleBase}"
 							/>
-							<!-- Click="BtnDeleteWbkSc_OnClick" -->
+					<!--  Click="BtnDeleteWbkSc_OnClick"  -->
 
 					<Button Name="BtnDeleteOneSht"
 							Content="Delete One Sheet"
@@ -1336,26 +2170,26 @@
 					</Button>
 
 
-					<!-- <Button Name="BtnTstShtFalseModelCode" -->
-					<!-- 		Style="{StaticResource BtnStyleBott}" -->
-					<!-- 		Click="BtnTstShtFalseModelCode_OnClick" -->
-					<!-- > -->
+					<!--  <Button Name="BtnTstShtFalseModelCode"  -->
+					<!--  Style="{StaticResource BtnStyleBott}"  -->
+					<!--  Click="BtnTstShtFalseModelCode_OnClick"  -->
+					<!--  >  -->
 					<!-- 	<Button.Content> -->
 					<!-- 		<StackPanel Orientation="Vertical"> -->
-					<!-- 			<TextBlock -->
-					<!-- 					Margin="0,-1,0,-1" -->
-					<!-- 					Padding="0" -->
-					<!-- 					VerticalAlignment="Top" -->
-					<!-- 					TextAlignment="Center" -->
-					<!-- 					Text="Make Sht with" -->
-					<!-- 			/> -->
-					<!-- 			<TextBlock -->
-					<!-- 					Margin="0,-2,0,2" -->
-					<!-- 					Padding="0" -->
-					<!-- 					VerticalAlignment="Bottom" -->
-					<!-- 					TextAlignment="Center" -->
-					<!-- 					Text="False Model Code" -->
-					<!-- 			/> -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-1,0,-1"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Top"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="Make Sht with"  -->
+					<!--  />  -->
+					<!--  <TextBlock  -->
+					<!--  Margin="0,-2,0,2"  -->
+					<!--  Padding="0"  -->
+					<!--  VerticalAlignment="Bottom"  -->
+					<!--  TextAlignment="Center"  -->
+					<!--  Text="False Model Code"  -->
+					<!--  />  -->
 					<!-- 		</StackPanel> -->
 					<!-- 	</Button.Content> -->
 					<!-- </Button> -->
@@ -1409,11 +2243,12 @@
 
 
 			</DockPanel>
-		</StackPanel>
 
-		<StackPanel
-				Grid.Column="0"
+		</DockPanel>
+
+		<StackPanel x:Name="SpBottomButtons"
 				Grid.Row="2"
+				Grid.Column="0"
 				HorizontalAlignment="Right"
 				>
 
@@ -1427,43 +2262,43 @@
 
 		</StackPanel>
 
-
-		<DockPanel
-							Grid.Column="1"
-					Grid.Row="2"	
-							Margin="0,2,0,0"
+		<DockPanel x:Name="DpExitButtons"
+				Grid.Row="2"
+				Grid.Column="1"
+				Margin="0,2,0,0"
 				>
 
 			<Button Name="BtnDebug"
-					DockPanel.Dock="Left"
 					Content="Debug"
 					Margin="5,0,0,0"
 					Width="{StaticResource BtnWidth}"
 					HorizontalAlignment="Left"
+					DockPanel.Dock="Left"
 					Style="{StaticResource BtnStyleBase}"
 					Click="BtnDebug_OnClick"
-			/>
+					/>
 
 
 			<Button Name="BtnExit"
-					DockPanel.Dock="Right"
 					Content="Exit"
 					Margin="0,5,0,0"
 					Width="{StaticResource BtnWidth}"
 					HorizontalAlignment="Right"
+					DockPanel.Dock="Right"
 					Style="{StaticResource BtnStyleBase}"
 					Click="BtnExit_OnClick"
-			/>
+					/>
 
 
-			</DockPanel>
+		</DockPanel>
 
+		<!--#endregion-->
 
+		<!--#region > main text box-->
 
-
-		<TextBox
-				Grid.Column="0"
+		<TextBox x:Name="TbxMain"
 				Grid.Row="1"
+				Grid.Column="0"
 				FontFamily="Consolas"
 				Background="#333333"
 				Foreground="White"
@@ -1473,5 +2308,3364 @@
 											 Path=Message}"
 				/>
 
+		<!--#endregion-->
+
+		<!--#region >value lists-->
+
+		<Grid x:Name="GrdValueEditor"
+				Grid.Row="0"
+				Grid.Column="2"
+				Grid.RowSpan="3"
+				VerticalAlignment="Stretch"
+				>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+
+			</Grid.RowDefinitions>
+
+			<!--#region > editor header-->
+
+			<StackPanel
+					Grid.Row="0"
+					Grid.Column="0"
+					Margin="5,5,0,5"
+					DockPanel.Dock="Top"
+					Orientation="Vertical"
+					>
+
+				<StackPanel x:Name="SDpLbxHeader"
+						Margin="0,5,0,5"
+						DockPanel.Dock="Top"
+						Orientation="Horizontal"
+						>
+					<!--  DataContext="{Binding Path=(stmgr:SecurityMgr.Instance)}"  -->
+
+
+					<Label
+							Content="User Name"
+							Style="{StaticResource LblContentTitle}"
+							/>
+
+					<Label
+							Content="{Binding Path=Mui.UserName}"
+							Width="136"
+							Style="{StaticResource LblContent}"
+							/>
+
+					<Label
+							Content="User's Name"
+							Style="{StaticResource LblContentTitle}"
+							/>
+
+					<Label
+							Content="{Binding Path=Mui.UserName2}"
+							Style="{StaticResource LblContent}"
+							/>
+				</StackPanel>
+
+				<DockPanel
+						Margin="0,5,0,5"
+						DockPanel.Dock="Top"
+						>
+
+					<Label
+							Content="Security Class"
+							DockPanel.Dock="Left"
+							Style="{StaticResource LblContentTitle}"
+							/>
+
+					<Rectangle
+							Margin="0,0,0,0"
+							Width="3"
+							Height="22"
+							DockPanel.Dock="Left"
+							Fill="{Binding Path=Mui.UseSecLvl,
+														 Mode=OneWay,
+														 Converter={StaticResource Enum2Brush},
+														 FallbackValue='LawnGreen'}"
+							/>
+
+					<Label
+							Content="{Binding Path=Mui.SecurityLeveName,
+																FallbackValue='unassigned'}"
+							Width="134"
+							DockPanel.Dock="Left"
+							Style="{StaticResource LblContentStd}"
+							/>
+
+					<Label
+							Content="{Binding Path=Mui.SecurityLevelDesc,
+																FallbackValue='unassigned'}"
+							HorizontalAlignment="Stretch"
+							Style="{StaticResource LblContentStd}"
+							/>
+
+
+				</DockPanel>
+
+			</StackPanel>
+
+
+			<!--#endregion-->
+
+			<!--#region > upper legend - user security level-->
+
+			<Border
+					Grid.Row="1"
+					Grid.Column="0"
+					Margin="5,0,0,0"
+					HorizontalAlignment="Stretch"
+					BorderThickness="0,1,0,1"
+					BorderBrush="Red"
+					>
+
+
+				<Border
+						Margin="0,3,0,3"
+						HorizontalAlignment="Stretch"
+						BorderThickness="1,0,1,0"
+						BorderBrush="Red"
+						>
+
+					<Grid
+							Margin="0,0,0,0"
+							HorizontalAlignment="Left"
+							VerticalAlignment="Bottom"
+							>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="108" />
+							<ColumnDefinition Width="138" />
+							<ColumnDefinition Width="138" />
+							<ColumnDefinition Width="*" />
+
+						</Grid.ColumnDefinitions>
+
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="Auto" />
+
+						</Grid.RowDefinitions>
+
+						<!--  title  -->
+						<Label
+								Grid.Column="0"
+								Grid.RowSpan="2"
+								Style="{StaticResource LblContentStd}"
+								>
+							<Label.Content>
+								<StackPanel
+										Margin="0"
+										Width="110"
+										>
+									<Label
+											Content="User Security"
+											Margin="0,-2,0,0"
+											Padding="0"
+											Foreground="White"
+											/>
+									<Label
+											Content="Class Legend"
+											Margin="0,-2,0,0"
+											Padding="0"
+											Foreground="White"
+											/>
+								</StackPanel>
+							</Label.Content>
+						</Label>
+
+						<!--  advanced  -->
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="1"
+								Orientation="Horizontal"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_ADVANCED},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_ADVANCED},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  limited  -->
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="2"
+								Orientation="Horizontal"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_LIMITED},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_LIMITED},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  unassigned  -->
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="3"
+								Orientation="Horizontal"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_UNASSIGNED},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_UNASSIGNED},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  basic  -->
+						<StackPanel
+								Grid.Row="1"
+								Grid.Column="1"
+								Orientation="Horizontal"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_BASIC},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_BASIC},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  view only  -->
+						<StackPanel
+								Grid.Row="1"
+								Grid.Column="2"
+								Orientation="Horizontal"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_VIEW_ONLY},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_VIEW_ONLY},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  none  -->
+						<StackPanel
+								Grid.Row="2"
+								Grid.Column="1"
+								d:Visibility="Visible"
+								Orientation="Horizontal"
+								Visibility="Collapsed"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_NONE},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_NONE},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<!--  debug only  -->
+						<StackPanel
+								Grid.Row="2"
+								Grid.Column="2"
+								d:Visibility="Visible"
+								Orientation="Horizontal"
+								Visibility="Collapsed"
+								>
+
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:UserSecutityLevel.SL_DEBUG},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:UserSecutityLevel.SL_DEBUG},
+																		Converter={StaticResource UsrSec2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+						</StackPanel>
+
+					</Grid>
+
+				</Border>
+
+			</Border>
+			<!--#endregion-->
+
+			<!--#region > editor tab control-->
+
+			<DockPanel
+					Grid.Row="2"
+					Grid.Column="0"
+					VerticalAlignment="Stretch"
+					>
+
+				<TabControl x:Name="editor_tab"
+						Margin="5,0,0,0"
+						Padding="0,0,0,0"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						HorizontalContentAlignment="Stretch"
+						VerticalContentAlignment="Stretch"
+						Background="#191919"
+						BorderThickness="1,1,0,0"
+						BorderBrush="Red"
+						Style="{DynamicResource TabControlStyle1}"
+						>
+
+					<TabControl.Resources>
+						<Style TargetType="TabItem">
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="TabItem">
+
+										<ContentPresenter x:Name="ContentSite"
+												Margin="0,0,3,0"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												ContentSource="Header"
+												/>
+
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</TabControl.Resources>
+
+					<!--#region  workbook tab-->
+
+					<TabItem Background="DimGray">
+
+						<TabItem.Header>
+							<Border Style="{StaticResource TbBdrHdrOuter}">
+								<Border Style="{StaticResource TbBdrHdrInner}">
+
+									<TextBlock
+											Text="Workbook"
+											Style="{StaticResource TbHdrTblk}"
+											>
+									</TextBlock>
+
+								</Border>
+							</Border>
+						</TabItem.Header>
+
+						<DockPanel HorizontalAlignment="Stretch">
+
+							<!--#region > editor B-->
+
+							<Border
+									Margin="5,5,5,5"
+									Padding="0,5,0,0"
+									HorizontalAlignment="Stretch"
+									BorderThickness="2,24,0,0"
+									BorderBrush="DimGray"
+									DockPanel.Dock="Top"
+									CornerRadius="22,0,0,0"
+									>
+
+								<Border
+										Margin="-2,-10,0,0"
+										HorizontalAlignment="Stretch"
+										BorderThickness="2,6,0,0"
+										BorderBrush="DimGray"
+										DockPanel.Dock="Top"
+										CornerRadius="20,0,0,0"
+										>
+
+									<DockPanel
+											DataContext="{Binding Path=Wm.Wbk}"
+											Margin="10,-26,0,10"
+											HorizontalAlignment="Stretch"
+											>
+										<StackPanel
+												Margin="10,0,0,10"
+												DockPanel.Dock="Top"
+												Orientation="Horizontal"
+												>
+
+											<Label
+													Content="WorkBook Fields"
+													Padding="0"
+													FontSize="18"
+													Foreground="White"
+													/>
+
+											<Rectangle
+													Margin="10,3,0,0"
+													Width="12"
+													Height="12"
+													>
+												<Rectangle.Style>
+													<Style TargetType="Rectangle">
+														<Setter Property="Fill" Value="LawnGreen" />
+														<Style.Triggers>
+															<DataTrigger Value="true" Binding="{Binding Path=IsModified}">
+																<Setter Property="Fill" Value="Red" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Rectangle.Style>
+
+											</Rectangle>
+
+										</StackPanel>
+
+
+										<!--  ds name  -->
+										<DockPanel
+												DataContext="{Binding Path=DsNameField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+
+											<DockPanel x:Name="Sprow01"
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel x:Name="Dpitem01"
+														Style="{StaticResource DpItem}"
+														>
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='dsname Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Rectangle x:Name="RtDsName"
+															Style="{StaticResource RtFiller}"
+															/>
+
+													<Label x:Name="DsName"
+															Content="{Binding Path=Wm.Wbk.DsName,
+																								ElementName=MainWin,
+																								FallbackValue='ds name'}"
+															Style="{StaticResource EditBValueField}"
+															/>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  ds desc  -->
+										<DockPanel
+												DataContext="{Binding Path=DescField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+
+											<DockPanel x:Name="Dprow02"
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel x:Name="Dpitem02"
+														Style="{StaticResource DpItem}"
+														>
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='desc Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button x:Name="BtnDsDesc"
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo2_OnClick"
+															/>
+
+													<Border x:Name="BdrDsDesc"
+															Style="{StaticResource BdrEditStatus}"
+															>
+
+														<TextBox x:Name="DsDesc"
+																Text="{Binding Path=Wm.Wbk.Desc,
+																							 ElementName=MainWin,
+																							 Mode=TwoWay,
+																							 FallbackValue='description'}"
+																Style="{StaticResource EditBValueFieldTbx}"
+																/>
+
+													</Border>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  status  -->
+										<DockPanel
+												DataContext="{Binding Path=StatusField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel x:Name="Dprow03"
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel x:Name="Dpitem03"
+														Style="{StaticResource DpItem}"
+														>
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='status Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo2_OnClick"
+															/>
+
+													<Border Style="{StaticResource BdrEditStatus}">
+
+														<ContentControl ContentTemplate="{StaticResource LbxCbx1}" />
+
+													</Border>
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+
+										<!--  model title  -->
+										<DockPanel
+												DataContext="{Binding Path=ModelTitleField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel x:Name="Dprow04"
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+												<DockPanel x:Name="Dpitem04"
+														Style="{StaticResource DpItem}"
+														>
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='model title'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Rectangle Style="{StaticResource RtFiller}" />
+
+													<Label
+															Content="{Binding Path=Wm.Wbk.ModelTitle,
+																								ElementName=MainWin,
+																								FallbackValue='model title'}"
+															Style="{StaticResource EditBValueField}"
+															/>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  name created  -->
+										<DockPanel
+												DataContext="{Binding Path=NameCreatedField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel x:Name="Dprow05"
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel x:Name="Dpitem05"
+														Style="{StaticResource DpItem}"
+														>
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='name created Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo_OnClick"
+															/>
+
+													<Border Style="{StaticResource BdrEditStatus}">
+
+														<TextBox
+																Text="{Binding Path=Wm.Wbk.NameCreated,
+																							 ElementName=MainWin,
+																							 FallbackValue='name created'}"
+																Style="{StaticResource EditBValueFieldTbx}"
+																/>
+
+													</Border>
+												</DockPanel>
+
+											</DockPanel>
+										</DockPanel>
+
+										<!--  date created  -->
+										<DockPanel
+												DataContext="{Binding Path=DateCreatedField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+												<DockPanel Style="{StaticResource DpItem}">
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='date created'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Rectangle Style="{StaticResource RtFiller}" />
+
+													<Label
+															Content="{Binding Path=Wm.Wbk.DateCreated,
+																								ElementName=MainWin,
+																								FallbackValue='date created'}"
+															Style="{StaticResource EditBValueField}"
+															/>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  name modified  -->
+										<DockPanel
+												DataContext="{Binding Path=NameModifiedField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel Style="{StaticResource DpItem}">
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='name modified Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo_OnClick"
+															/>
+
+													<Border Style="{StaticResource BdrEditStatus}">
+
+														<TextBox
+																Text="{Binding Path=Wm.Wbk.NameModified,
+																							 ElementName=MainWin,
+																							 FallbackValue='name modified'}"
+																Style="{StaticResource EditBValueFieldTbx}"
+																/>
+
+													</Border>
+												</DockPanel>
+											</DockPanel>
+
+										</DockPanel>
+
+										<!--  date modified  -->
+										<DockPanel
+												DataContext="{Binding Path=DateModifiedField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+												<DockPanel Style="{StaticResource DpItem}">
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='date modified'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Rectangle Style="{StaticResource RtFiller}" />
+
+													<Label
+															Content="{Binding Path=Wm.Wbk.DateModified,
+																								ElementName=MainWin,
+																								FallbackValue='date modified'}"
+															Style="{StaticResource EditBValueField}"
+															/>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+
+										<!--  last id  -->
+										<DockPanel
+												DataContext="{Binding Path=LastIdField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel Style="{StaticResource DpItem}">
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='last id Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo_OnClick"
+															/>
+
+													<Border Style="{StaticResource BdrEditStatus}">
+
+														<TextBox
+																Text="{Binding Path=Wm.Wbk.LastId,
+																							 ElementName=MainWin,
+																							 FallbackValue='last id'}"
+																Style="{StaticResource EditBValueFieldTbx}"
+																/>
+
+													</Border>
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  vendor id  -->
+										<DockPanel
+												DataContext="{Binding Path=VendorIdField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+
+												<DockPanel Style="{StaticResource DpItem}">
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='vendor id Description'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Button
+															Style="{StaticResource BtnUndo}"
+															Click="BtnUndo_OnClick"
+															/>
+
+													<Border Style="{StaticResource BdrEditStatus}">
+
+														<TextBox
+																Text="{Binding Path=Wm.Wbk.VendorId,
+																							 ElementName=MainWin,
+																							 FallbackValue='vendor id'}"
+																Style="{StaticResource EditBValueFieldTbx}"
+																/>
+
+													</Border>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+
+										<!--  schema version  -->
+										<DockPanel
+												DataContext="{Binding Path=SchemaVersionField,
+																							Mode=OneWay}"
+												DockPanel.Dock="Top"
+												>
+											<DockPanel
+													d:Visibility="Visible"
+													Style="{StaticResource DpRow}"
+													>
+												<Border Style="{StaticResource BdrEditorStatus}">
+													<Rectangle Style="{StaticResource RtEditStatus}" />
+												</Border>
+												<DockPanel Style="{StaticResource DpItem}">
+
+													<Label
+															Content="{Binding Path=Field.FieldDesc,
+																								FallbackValue='schema version desc'}"
+															Style="{StaticResource EditBDescField}"
+															/>
+
+													<Rectangle Style="{StaticResource RtFiller}" />
+
+													<Label
+															Content="{Binding Path=Wm.Wbk.SchemaVersion,
+																								ElementName=MainWin,
+																								FallbackValue='schema version'}"
+															Style="{StaticResource EditBValueField}"
+															/>
+
+												</DockPanel>
+											</DockPanel>
+										</DockPanel>
+									</DockPanel>
+								</Border>
+							</Border>
+							<!--#endregion-->
+
+						</DockPanel>
+
+					</TabItem>
+
+					<!--#endregion-->
+
+					<!--#region sheets tab-->
+
+					<TabItem x:Name="TabSheets"
+							VerticalAlignment="Stretch"
+							HorizontalContentAlignment="Stretch"
+							VerticalContentAlignment="Stretch"
+							Background="DimGray"
+							>
+
+						<TabItem.Header>
+							<Border Style="{StaticResource TbBdrHdrOuter}">
+								<Border Style="{StaticResource TbBdrHdrInner}">
+
+									<TextBlock
+											Text="Sheets"
+											Style="{StaticResource TbHdrTblk}"
+											>
+
+									</TextBlock>
+
+								</Border>
+							</Border>
+						</TabItem.Header>
+
+						<DockPanel x:Name="DpSheetsTabOuter"
+								VerticalAlignment="Stretch"
+								>
+
+							<!--  <Grid x:Name="GrdSheetsTab"  -->
+							<!--  DockPanel.Dock="Top"  -->
+							<!--  VerticalAlignment="Stretch"  -->
+							<!--  >  -->
+							<!-- 	<Grid.ColumnDefinitions> -->
+							<!-- 		<ColumnDefinition Width="*" /> -->
+							<!--    -->
+							<!-- 	</Grid.ColumnDefinitions> -->
+							<!--    -->
+							<!-- 	<Grid.RowDefinitions> -->
+							<!-- 		<RowDefinition Height="220" /> -->
+							<!-- 		<RowDefinition Height="Auto" /> -->
+							<!-- 		<RowDefinition Height="Auto" /> -->
+							<!-- 		<RowDefinition Height="Auto" /> -->
+							<!-- 		<RowDefinition Height="Auto" /> -->
+							<!--    -->
+							<!-- 	</Grid.RowDefinitions> -->
+
+
+							<!--  row 0  -->
+							<DockPanel x:Name="DpSheetsControlPanel"
+									Grid.Row="4"
+									Grid.Column="0"
+									DataContext="{Binding ElementName=MainWin,
+																				Path=Wm}"
+									Margin="8,0,5,5"
+									DockPanel.Dock="Bottom"
+									>
+
+								<!-- <DockPanel.DataContext> -->
+								<!-- 	<local:MainWinModel /> -->
+								<!-- </DockPanel.DataContext> -->
+
+								<DockPanel
+										Margin="8,0,0,0"
+										HorizontalAlignment="Left"
+										DockPanel.Dock="Left"
+										>
+									<!--  DataContext="{Binding Path=Mui}"  -->
+
+									<Button x:Name="BtnResetFamList"
+											Margin="0,0,5,0"
+											Width="{StaticResource Btn.Width.Std}"
+											Height="{StaticResource Btn.Height.Std}"
+											HorizontalAlignment="Left"
+											Command="{Binding CmdResetFamList}"
+											CommandParameter="{Binding Path=CurrSht.FamList.Count,
+																								 Mode=OneWay}"
+											Style="{StaticResource Btn.Std}"
+											>
+										<!-- <Button.DataContext> -->
+										<!-- 	<Binding Path="Mui" /> -->
+										<!-- </Button.DataContext> -->
+										<Button.Content>
+											<StackPanel
+													Margin="0"
+													Orientation="Vertical"
+													>
+												<Label
+														Content="Clear the"
+														Margin="0,-1,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+												<Label
+														Content="Family List"
+														Margin="0,-3,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+											</StackPanel>
+										</Button.Content>
+
+									</Button>
+
+									<Button x:Name="BtnCommitFamList"
+											Margin="0,0,5,0"
+											Width="{StaticResource Btn.Width.Std}"
+											Height="{StaticResource Btn.Height.Std}"
+											HorizontalAlignment="Left"
+											Style="{StaticResource Btn.Std}"
+											>
+										<Button.Content>
+											<StackPanel
+													Margin="0"
+													Orientation="Vertical"
+													>
+												<Label
+														Content="Save the"
+														Margin="0,-1,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+												<Label
+														Content="Family List"
+														Margin="0,-3,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+											</StackPanel>
+										</Button.Content>
+
+									</Button>
+
+								</DockPanel>
+
+								<DockPanel
+										HorizontalAlignment="Right"
+										DockPanel.Dock="Right"
+										>
+
+									<Button x:Name="BtnResetSheet"
+											Margin="5,0,0,0"
+											Width="{StaticResource Btn.Width.Std}"
+											Height="{StaticResource Btn.Height.Std}"
+											HorizontalAlignment="Right"
+											Style="{StaticResource Btn.Std}"
+											>
+										<Button.Content>
+											<StackPanel
+													Margin="0"
+													Orientation="Vertical"
+													>
+												<Label
+														Content="Reset"
+														Margin="0,-1,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+												<Label
+														Content="the Sheet"
+														Margin="0,-3,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+											</StackPanel>
+										</Button.Content>
+
+									</Button>
+
+									<Button x:Name="BtnSaveSheet"
+											Margin="5,0,0,0"
+											Width="{StaticResource Btn.Width.Std}"
+											Height="{StaticResource Btn.Height.Std}"
+											HorizontalAlignment="Right"
+											Style="{StaticResource Btn.Std}"
+											>
+										<Button.Content>
+											<StackPanel
+													Margin="0"
+													Orientation="Vertical"
+													>
+												<Label
+														Content="Save"
+														Margin="0,-1,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+												<Label
+														Content="the Sheet"
+														Margin="0,-3,0,0"
+														Padding="0"
+														HorizontalAlignment="Center"
+														FontSize="10"
+														/>
+											</StackPanel>
+										</Button.Content>
+
+									</Button>
+
+								</DockPanel>
+
+							</DockPanel>
+
+							<!--  row 1  -->
+							<DockPanel x:Name="DpNewFamAndType"
+									Grid.Row="3"
+									Margin="5,0,0,5"
+									DockPanel.Dock="Bottom"
+									>
+
+								<Border
+										BorderThickness="2,0,0,0"
+										BorderBrush="DimGray"
+										>
+
+									<Border
+											Margin="8,0,0,0"
+											BorderThickness="0,0,0,1"
+											BorderBrush="Red"
+											>
+
+										<StackPanel Margin="1,5,0,5"
+													DataContext="{Binding ElementName=MainWin,
+																								Path=Wm}"
+												>
+
+											<StackPanel
+
+													Margin="0,0,0,0"
+													DockPanel.Dock="top"
+													Orientation="Horizontal"
+													>
+
+												<Label
+														Content=""
+														Margin="0,0,0,2"
+														Width="20"
+														Padding="0,0,0,3"
+														HorizontalAlignment="Center"
+														VerticalAlignment="Center"
+														HorizontalContentAlignment="Center"
+														Background="Black"
+														Foreground="DarkGray"
+														/>
+
+												<Label
+														Content="Add a New Family Name, Family Type Name, and Properties"
+														Margin="5,0,0,2"
+														Padding="4,0,0,3"
+														HorizontalAlignment="Left"
+														VerticalAlignment="Center"
+														Background="Black"
+														Foreground="DarkGray"
+														/>
+
+											</StackPanel>
+
+											<DockPanel x:Name="DpFamName"
+													Margin="0,0,0,0"
+													HorizontalAlignment="Stretch"
+													DockPanel.Dock="Top"
+													>
+
+												<Button
+														Margin="0,2,5,2"
+														ToolTip="Save"
+														DockPanel.Dock="left"
+														Command="{Binding SaveNewFamilyListItem}"
+														CommandParameter="{Binding GotValuesFamList}"
+														>
+
+													<Button.Style>
+														<Style
+																TargetType="Button"
+																BasedOn="{StaticResource BtnEditNameWithIcon}"
+																>
+															<Setter Property="ContentTemplate">
+																<Setter.Value>
+																	<DataTemplate>
+																		<ContentControl>
+																			<ContentControl.Content>
+																				<Path Stretch="UniformToFill">
+																					<Path.Style>
+																						<Style TargetType="Path">
+																							<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																							<Setter Property="Fill" Value="{DynamicResource Btn.Fill.Disabled}" />
+																							<Style.Triggers>
+																								<Trigger Property="IsEnabled" Value="True">
+																									<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+																								</Trigger>
+																							</Style.Triggers>
+																						</Style>
+																					</Path.Style>
+																				</Path>
+																			</ContentControl.Content>
+																		</ContentControl>
+																	</DataTemplate>
+																</Setter.Value>
+															</Setter>
+															<!-- <Setter Property="Visibility" Value="Hidden" /> -->
+															<Setter Property="IsEnabled" Value="False">
+															</Setter>
+															<Style.Triggers>
+																<!-- <DataTrigger Value="false" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+																<!-- 	<Setter Property="Visibility" Value="Visible" /> -->
+																<!-- </DataTrigger> -->
+																<!-- <DataTrigger Value="false" Binding="{Binding ElementName=TbxTempTypeName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+																<!-- 	<Setter Property="Visibility" Value="Visible" /> -->
+																<!-- </DataTrigger> -->
+																<!-- <DataTrigger Value="true" Binding="{Binding ElementName=DpNewFamAndType, Path=IsKeyboardFocusWithin}"> -->
+																<!-- 	<Setter Property="Visibility" Value="Visible" /> -->
+																<!-- </DataTrigger> -->
+																<DataTrigger Value="false" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}">
+																	<Setter Property="IsEnabled" Value="True" />
+																</DataTrigger>
+															</Style.Triggers>
+
+														</Style>
+													</Button.Style>
+
+												</Button>
+
+												<Label
+														Content="Family Name"
+														Margin="0,0,0,0"
+														Width="167"
+														Background="Black"
+														Foreground="White"
+														DockPanel.Dock="Left"
+														/>
+
+												<TextBox x:Name="TbxTempFamName"
+														Margin="3,1,0,1"
+														HorizontalAlignment="Stretch"
+														Background="Transparent"
+														DockPanel.Dock="Top"
+														Text="{Binding Path=TempFamilyName,
+																					 Mode=TwoWay,
+																					 FallbackValue='Family name'}"
+														Style="{StaticResource TbxFamListEntry}"
+														/>
+
+											</DockPanel>
+
+											<DockPanel x:Name="DpTypeName"
+													Margin="0,0,0,0"
+													HorizontalAlignment="Stretch"
+													DockPanel.Dock="Top"
+													>
+												<!-- <DockPanel.Style> -->
+												<!-- 	<Style TargetType="DockPanel"> -->
+												<!-- 		<Setter Property="Visibility" Value="Collapsed" /> -->
+												<!-- 		<Style.Triggers> -->
+												<!-- 			<DataTrigger Value="true" Binding="{Binding ElementName=DpNewFamAndType, Path=IsKeyboardFocusWithin}"> -->
+												<!-- 				<Setter Property="Visibility" Value="Visible" /> -->
+												<!-- 			</DataTrigger> -->
+												<!-- 			<DataTrigger Value="False" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+												<!-- 				<Setter Property="Visibility" Value="Visible" /> -->
+												<!-- 			</DataTrigger> -->
+												<!-- 			<DataTrigger Value="False" Binding="{Binding ElementName=TbxTempTypeName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+												<!-- 				<Setter Property="Visibility" Value="Visible" /> -->
+												<!-- 			</DataTrigger> -->
+												<!-- 		</Style.Triggers> -->
+												<!-- 	</Style> -->
+												<!--    -->
+												<!-- </DockPanel.Style> -->
+
+												<Button
+														Margin="0,2,5,2"
+														ToolTip="Clear"
+														Command="{Binding ClearNewFamilyListItem}"
+														CommandParameter="{Binding GotValuesFamList}"
+														>
+													<Button.Style>
+														<Style
+																TargetType="Button"
+																BasedOn="{StaticResource BtnEditNameWithIcon}"
+																>
+															<Setter Property="ContentTemplate">
+																<Setter.Value>
+																	<DataTemplate>
+																		<ContentControl>
+																			<ContentControl.Content>
+																				<Path Stretch="UniformToFill">
+																					<Path.Style>
+																						<Style TargetType="Path">
+																							<Setter Property="Data" Value="{StaticResource Ic.ClearText}" />
+																							<Setter Property="Fill" Value="{DynamicResource Btn.Fill.Disabled}" />
+																							<Style.Triggers>
+																								<Trigger Property="IsEnabled" Value="True">
+																									<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+																								</Trigger>
+																							</Style.Triggers>
+																						</Style>
+																					</Path.Style>
+																				</Path>
+																			</ContentControl.Content>
+																		</ContentControl>
+																	</DataTemplate>
+																</Setter.Value>
+															</Setter>
+
+															<!-- <Setter Property="Visibility" Value="Hidden" /> -->
+															<Setter Property="IsEnabled" Value="False" />
+															<Style.Triggers>
+																<!-- <DataTrigger Value="false" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+																<!-- 	<Setter Property="Visibility" Value="Visible" /> -->
+																<!-- </DataTrigger> -->
+																<!-- <DataTrigger Value="false" Binding="{Binding ElementName=TbxTempTypeName, Path=Text, Converter={StaticResource StrIsVoid}}"> -->
+																<!-- 	<Setter Property="Visibility" Value="Visible" /> -->
+																<!-- </DataTrigger> -->
+																<DataTrigger Value="false" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}">
+																	<Setter Property="IsEnabled" Value="True" />
+																</DataTrigger>
+																<DataTrigger Value="false" Binding="{Binding ElementName=TbxTempTypeName, Path=Text, Converter={StaticResource StrIsVoid}}">
+																	<Setter Property="IsEnabled" Value="True" />
+																</DataTrigger>
+																<DataTrigger Value="false" Binding="{Binding ElementName=TbxTempFamName, Path=Text, Converter={StaticResource StrIsVoid}}">
+																	<Setter Property="IsEnabled" Value="True" />
+																</DataTrigger>
+															</Style.Triggers>
+
+														</Style>
+													</Button.Style>
+												</Button>
+
+												<Label
+														Content="Family Type Name"
+														Margin="0,0,0,0"
+														Width="167"
+														Background="Black"
+														Foreground="White"
+														/>
+
+												<TextBox x:Name="TbxTempTypeName"
+														Margin="3,1,0,1"
+														HorizontalAlignment="Stretch"
+														Background="Transparent"
+														Text="{Binding Path=TempFamilyType,
+																					 Mode=TwoWay,
+																					 FallbackValue='Type name'}"
+														DockPanel.Dock="Bottom"
+														>
+													<TextBox.Style>
+														<Style
+																TargetType="TextBox"
+																BasedOn="{StaticResource TbxFamListEntry}"
+																>
+														</Style>
+													</TextBox.Style>
+
+												</TextBox>
+
+											</DockPanel>
+
+										</StackPanel>
+
+									</Border>
+								</Border>
+
+							</DockPanel>
+
+							<!--  row 2  -->
+							<Border x:Name="BdrListOfSheets"
+									Grid.Row="0"
+									Grid.Column="0"
+									Margin="5,5,5,0"
+									Padding="0,5,0,0"
+									HorizontalAlignment="Stretch"
+									BorderThickness="2,24,0,0"
+									BorderBrush="DimGray"
+									DockPanel.Dock="Top"
+									CornerRadius="22,0,0,0"
+									>
+
+								<Border x:Name="BdrLbx2"
+										Margin="-2,-10,0,0"
+										Padding="0,0,0,0"
+										HorizontalAlignment="Stretch"
+										BorderThickness="2,6,0,0"
+										BorderBrush="DimGray"
+										CornerRadius="20,0,0,0"
+										DockPanel.Dock="Top"
+										>
+
+									<DockPanel x:Name="DpLbxHeader2"
+											DataContext="{Binding Wm}"
+											Margin="10,-26,0,0"
+											MaxHeight="240"
+											HorizontalAlignment="Stretch"
+											>
+
+										<Label
+												Content="Sheets"
+												Margin="18,0,0,4"
+												Width="200"
+												Padding="0"
+												HorizontalAlignment="Left"
+												FontSize="18"
+												Foreground="White"
+												DockPanel.Dock="Top"
+												/>
+
+										<ListBox x:Name="Lbx02"
+												Margin="0,6,0,0"
+												Padding="0"
+												FontSize="14"
+												Background="Transparent"
+												d:ItemsSource="{d:SampleData ItemCount=8}"
+												DockPanel.Dock="Top"
+												SelectedIndex="0"
+												SelectedValue="{Binding Path=XData.SelectSheet}"
+												SelectedValuePath="DsName"
+												ItemsSource="{Binding XData.Sheets.Values}"
+												>
+
+											<ListBox.ItemContainerStyle>
+												<Style TargetType="ListBoxItem">
+													<Setter Property="Padding" Value="0" />
+													<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+												</Style>
+											</ListBox.ItemContainerStyle>
+
+											<ListBox.Template>
+												<ControlTemplate>
+
+													<DockPanel x:Name="DpLbxWbkHeader2"
+															DataContext="{Binding Path=(exSys:SecurityMgr.Instance)}"
+															>
+
+														<Grid
+																Margin="0,0,0,0"
+																DockPanel.Dock="Top"
+																>
+
+															<Grid.ColumnDefinitions>
+																<ColumnDefinition Width="{StaticResource Lbx1C3}" />
+																<ColumnDefinition Width="{StaticResource Lbx1C0}" />
+																<ColumnDefinition Width="{StaticResource Lbx1C2}" />
+																<ColumnDefinition />
+																<!-- <ColumnDefinition Width="9" /> -->
+															</Grid.ColumnDefinitions>
+
+															<Grid.RowDefinitions>
+																<RowDefinition Height="*" />
+																<RowDefinition Height="*" />
+															</Grid.RowDefinitions>
+
+															<Label
+																	Grid.Row="0"
+																	Grid.Column="1"
+																	Content="DataStorage Name"
+																	Padding="2,0,2,2"
+																	Style="{StaticResource Lbx.Hdr.Lbl}"
+																	/>
+															<Label
+																	Grid.Row="1"
+																	Grid.Column="1"
+																	Content="DataStorage Description"
+																	Padding="2,0,2,2"
+																	Style="{StaticResource Lbx.Hdr.Lbl.Sht.Row2}"
+																	/>
+
+															<Label
+																	Grid.Row="0"
+																	Grid.Column="0"
+																	Content=""
+																	Padding="2,0,2,2"
+																	DockPanel.Dock="Left"
+																	Style="{StaticResource Lbx.Hdr.Lbl}"
+																	/>
+															<Label
+																	Grid.Row="1"
+																	Grid.Column="0"
+																	Content="Seq "
+																	Padding="2,0,2,2"
+																	HorizontalContentAlignment="Center"
+																	Style="{StaticResource Lbx.Hdr.Lbl.Sht.Row2}"
+																	/>
+
+															<Label
+																	Grid.Row="0"
+																	Grid.Column="2"
+																	Content="Fmly"
+																	Padding="2,0,2,2"
+																	HorizontalContentAlignment="Center"
+																	DockPanel.Dock="Left"
+																	Style="{StaticResource Lbx.Hdr.Lbl}"
+																	/>
+
+															<Label
+																	Grid.Row="1"
+																	Grid.Column="2"
+																	Content="Cnt "
+																	Padding="2,0,2,2"
+																	HorizontalContentAlignment="Center"
+																	Style="{StaticResource Lbx.Hdr.Lbl.Sht.Row2}"
+																	/>
+
+															<Label
+																	Grid.Row="0"
+																	Grid.Column="3"
+																	Content=""
+																	Padding="2,0,2,2"
+																	DockPanel.Dock="Left"
+																	Style="{StaticResource Lbx.Hdr.Lbl}"
+																	/>
+
+															<Label
+																	Grid.Row="1"
+																	Grid.Column="3"
+																	Content="Status"
+																	Style="{StaticResource Lbx.Hdr.Lbl.Sht.Row2}"
+																	/>
+															<!--    -->
+															<!--  <Rectangle  -->
+															<!--  Grid.Row="1"  -->
+															<!--  Grid.Column="0"  -->
+															<!--  Height="0.75"  -->
+															<!--  Fill="Red"  -->
+															<!--  Margin="0,1,0,1"  -->
+															<!--  VerticalAlignment="Bottom"  -->
+															<!--  Grid.ColumnSpan="4"  -->
+															<!--  />  -->
+
+														</Grid>
+
+
+														<ScrollViewer
+																Padding="0"
+																VerticalAlignment="Top"
+																DockPanel.Dock="Bottom"
+																HorizontalScrollBarVisibility="Visible"
+																VerticalScrollBarVisibility="Visible"
+																Template="{StaticResource CsScrollViewerRedBdrCt}"
+																>
+															<ItemsPresenter />
+
+														</ScrollViewer>
+
+													</DockPanel>
+
+												</ControlTemplate>
+
+											</ListBox.Template>
+
+											<ListBox.ItemTemplate>
+												<DataTemplate x:Name="DtLbxItemTemp2">
+													<DockPanel>
+														<DockPanel x:Name="DpLbxWbkFlds2">
+															<Grid
+																	Margin="0,0,0,0"
+																	DockPanel.Dock="Top"
+																	>
+
+
+																<Grid.ColumnDefinitions>
+																	<ColumnDefinition Width="{StaticResource Lbx1C3}" />
+																	<ColumnDefinition Width="{StaticResource Lbx1C0}" />
+																	<ColumnDefinition Width="{StaticResource Lbx1C2}" />
+																	<ColumnDefinition />
+																</Grid.ColumnDefinitions>
+
+																<Grid.RowDefinitions>
+																	<RowDefinition Height="Auto" />
+																	<RowDefinition Height="Auto" />
+																</Grid.RowDefinitions>
+
+																<Label
+																		Grid.Row="0"
+																		Grid.Column="1"
+																		Content="{Binding Path=DsName,
+																											Mode=OneWay,
+																											FallbackValue='name'}"
+																		Margin="0"
+																		Padding="2,0,2,2"
+																		Foreground="White"
+																		DockPanel.Dock="Left"
+																		/>
+
+																<Label
+																		Grid.Row="1"
+																		Grid.Column="1"
+																		Grid.ColumnSpan="3"
+																		Content="{Binding Path=Desc,
+																											Mode=OneWay,
+																											FallbackValue='desc'}"
+																		Margin="0"
+																		Padding="2,0,2,2"
+																		Foreground="White"
+																		DockPanel.Dock="Left"
+																		/>
+
+																<Label
+																		Grid.Row="0"
+																		Grid.Column="3"
+																		Content="{Binding Converter={StaticResource ShtEnum2Str},
+																											ConverterParameter={x:Static exSys:SheetFieldKeys.RK_OD_STATUS},
+																											FallbackValue='status'}"
+																		Margin="0"
+																		Padding="2,0,2,2"
+																		Foreground="White"
+																		DockPanel.Dock="Left"
+																		/>
+																<Label
+																		Grid.Row="0"
+																		Grid.Column="0"
+																		Content="{Binding Converter={StaticResource ShtEnum2Str},
+																											ConverterParameter={x:Static exSys:SheetFieldKeys.RK_OD_SEQUENCE},
+																											FallbackValue='seq',
+																											TargetNullValue='seq'}"
+																		Margin="0"
+																		Padding="2,0,2,2"
+																		Foreground="White"
+																		DockPanel.Dock="Left"
+																		/>
+
+																<Label
+																		Grid.Row="0"
+																		Grid.Column="2"
+																		Content="{Binding Converter={StaticResource ShtEnum2Str},
+																											ConverterParameter={x:Static exSys:SheetFieldKeys.RK_MGMT_FAM_COUNT},
+																											FallbackValue='fam count'}"
+																		Margin="0"
+																		Padding="2,0,2,2"
+																		Foreground="White"
+																		DockPanel.Dock="Left"
+																		/>
+
+																<Rectangle
+																		Grid.Row="1"
+																		Grid.Column="0"
+																		Grid.ColumnSpan="4"
+																		Margin="0,0,0,-2"
+																		Height="0.25"
+																		VerticalAlignment="Bottom"
+																		Fill="Red"
+																		/>
+
+															</Grid>
+
+														</DockPanel>
+
+													</DockPanel>
+
+												</DataTemplate>
+											</ListBox.ItemTemplate>
+
+										</ListBox>
+
+									</DockPanel>
+								</Border>
+							</Border>
+
+							<!--  row 3  -->
+							<Border x:Name="BdrSheetsList"
+									Grid.Row="1"
+									Grid.Column="0"
+									Margin="5,10,5,0"
+									Padding="0,5,0,0"
+									HorizontalAlignment="Stretch"
+									VerticalAlignment="Top"
+									BorderThickness="2,20,0,0"
+									BorderBrush="DimGray"
+									DockPanel.Dock="Top"
+									CornerRadius="22,0,0,0"
+									>
+
+
+								<Border x:Name="BdrSheetFieldsInner"
+										Margin="-2,-10,0,0"
+										Padding="0,5,0,0"
+										HorizontalAlignment="Stretch"
+										BorderThickness="2,8,0,0"
+										BorderBrush="DimGray"
+										DockPanel.Dock="Top"
+										CornerRadius="12,0,0,0"
+										>
+
+									<Grid x:Name="GrdSheetFieldsInner"
+											Margin="0,-30,0,0"
+											>
+
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*" />
+										</Grid.ColumnDefinitions>
+
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="*" />
+
+
+										</Grid.RowDefinitions>
+
+										<Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Content="Sheet Fields"
+												Margin="18,0,0,4"
+												Width="200"
+												Padding="0"
+												HorizontalAlignment="Left"
+												FontSize="18"
+												Foreground="White"
+												DockPanel.Dock="Top"
+												/>
+
+										<ScrollViewer x:Name="SvSheetValues"
+												Grid.Row="1"
+												Grid.Column="0"
+												DataContext="{Binding ElementName=MainWin,
+																							Path=Wm.CurrSht}"
+												Margin="8,0,0,0"
+												Padding="0"
+												DockPanel.Dock="Top"
+												HorizontalScrollBarVisibility="Visible"
+												VerticalScrollBarVisibility="Visible"
+												Template="{StaticResource CsScrollViewerRedBdrCt}"
+												>
+
+											<DockPanel VerticalAlignment="Top">
+
+												<!--  ds name  -->
+												<DockPanel
+														DataContext="{Binding Path=DsNameField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='dsname Description'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Rectangle Style="{StaticResource RtFiller}" />
+
+															<Label
+																	Content="{Binding Path=Wm.CurrSht.DsName,
+																										ElementName=MainWin,
+																										FallbackValue='ds name'}"
+																	Style="{StaticResource EditBValueField}"
+																	/>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  ds desc  -->
+												<DockPanel
+														DataContext="{Binding Path=DescField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='desc Description'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.Desc,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='description'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  name created  -->
+												<DockPanel
+														DataContext="{Binding Path=NameCreatedField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='name created Description'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndo_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.NameCreated,
+																									 ElementName=MainWin,
+																									 FallbackValue='name created'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+														</DockPanel>
+
+													</DockPanel>
+												</DockPanel>
+
+												<!--  family list (removed)  -->
+												<!--    -->
+												<!--  ~1~  family list  @1@  -->
+												<!--    -->
+												<!--  <DockPanel  -->
+												<!--  DataContext="{Binding Path=FamilyListField,  -->
+												<!--  Mode=OneWay}"  -->
+												<!--  DockPanel.Dock="Top"  -->
+												<!--  >  -->
+												<!--  <DockPanel  -->
+												<!--  d:Visibility="Visible"  -->
+												<!--  Style="{StaticResource DpRow}"  -->
+												<!--  >  -->
+												<!-- 		<Border Style="{StaticResource BdrEditorStatus}"> -->
+												<!-- 			<Rectangle Style="{StaticResource RtEditStatus}" /> -->
+												<!-- 		</Border> -->
+												<!-- 		<DockPanel Style="{StaticResource DpItem}"> -->
+												<!--    -->
+												<!--  <Label  -->
+												<!--  Content="{Binding Path=Field.FieldDesc,  -->
+												<!--  FallbackValue='family list desc'}"  -->
+												<!--  Style="{StaticResource EditBDescField}"  -->
+												<!--  />  -->
+												<!--    -->
+												<!-- 			<Rectangle Style="{StaticResource RtFiller}" /> -->
+												<!--    -->
+												<!--  <Label  -->
+												<!--  Content="{Binding Path=Wm.CurrSht.FamilyListCount,  -->
+												<!--  StringFormat='Family List has {0} elms ',  -->
+												<!--  ElementName=MainWin,  -->
+												<!--  FallbackValue='family list count'}"  -->
+												<!--  Style="{StaticResource EditBValueField}"  -->
+												<!--  />  -->
+												<!-- 		</DockPanel> -->
+												<!-- 	</DockPanel> -->
+												<!-- </DockPanel> -->
+												<!--    -->
+												<!--    -->
+												<!--  ~1~  family list template selected  @1@  -->
+												<!--  <DockPanel  -->
+												<!--  DataContext="{Binding Path=FamilyListField,  -->
+												<!--  Mode=OneWay}"  -->
+												<!--  DockPanel.Dock="Top"  -->
+												<!--  >  -->
+												<!--  <DockPanel  -->
+												<!--  d:Visibility="Visible"  -->
+												<!--  Style="{StaticResource DpRow}"  -->
+												<!--  >  -->
+												<!-- 		<Border Style="{StaticResource BdrEditorStatus}"> -->
+												<!-- 			<Rectangle Style="{StaticResource RtEditStatus}" /> -->
+												<!-- 		</Border> -->
+												<!-- 		<DockPanel Style="{StaticResource DpItem}"> -->
+												<!--    -->
+												<!--  <Label  -->
+												<!--  Padding="2,2,0,0"  -->
+												<!--  VerticalContentAlignment="Top"  -->
+												<!--  Content="{Binding Path=Field.FieldDesc,  -->
+												<!--  FallbackValue='family list'}"  -->
+												<!--  Style="{StaticResource EditBDescField}"  -->
+												<!--  />  -->
+												<!--    -->
+												<!-- 			<Rectangle Style="{StaticResource RtFiller}" /> -->
+												<!--    -->
+												<!--  <ContentControl  -->
+												<!--  Content="{Binding Path=Wm.CurrSht.FamList.Count,  -->
+												<!--  ElementName=MainWin}"  -->
+												<!--  MaxHeight="240"  -->
+												<!--  ContentTemplateSelector="{StaticResource FamListTempSelect}"  -->
+												<!--  />  -->
+												<!--    -->
+												<!-- 		</DockPanel> -->
+												<!-- 	</DockPanel> -->
+												<!-- </DockPanel> -->
+
+
+												<!--  date created  -->
+												<DockPanel
+														DataContext="{Binding Path=DateCreatedField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='date created'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Rectangle Style="{StaticResource RtFiller}" />
+
+															<Label
+																	Content="{Binding Path=Wm.CurrSht.DateCreated,
+																										Mode=OneWay,
+																										ElementName=MainWin,
+																										FallbackValue='date created'}"
+																	Style="{StaticResource EditBValueField}"
+																	/>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  name modified  -->
+												<DockPanel
+														DataContext="{Binding Path=NameModifiedField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='name modified Description'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndo_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.NameModified,
+																									 ElementName=MainWin,
+																									 FallbackValue='name modified'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+														</DockPanel>
+													</DockPanel>
+
+												</DockPanel>
+
+												<!--  date modified  -->
+												<DockPanel
+														DataContext="{Binding Path=DateModifiedField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='date modified'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Rectangle Style="{StaticResource RtFiller}" />
+
+															<Label
+																	Content="{Binding Path=Wm.CurrSht.DateModified,
+																										ElementName=MainWin,
+																										Mode=OneWay,
+																										FallbackValue='date modified'}"
+																	Style="{StaticResource EditBValueField}"
+																	/>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  xl file path  -->
+												<DockPanel
+														DataContext="{Binding Path=XlFilePathField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='xl file path'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.XlFilePath,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='xl file path'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  xl sheet name  -->
+												<DockPanel
+														DataContext="{Binding Path=XlSheetNameField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='xl sheet name'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.XlSheetName,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='xl sheet name'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  op status  -->
+												<DockPanel
+														DataContext="{Binding Path=OpStatusField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='op status field'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.OpStatus,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='op status'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  op status  -->
+												<DockPanel
+														DataContext="{Binding Path=OpSequenceField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='op sequence field'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.OpSequence,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='op sequence'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  update rule  -->
+												<DockPanel
+														DataContext="{Binding Path=UpdateRuleField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='update rule field'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Wm.CurrSht.UpdateRule,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='update rule'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  update bypass  -->
+												<DockPanel
+														DataContext="{Binding Path=UpdateSkipField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='update bypass field'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndoSht_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.UpdateSkip,
+																									 ElementName=MainWin,
+																									 Mode=TwoWay,
+																									 FallbackValue='update bypass'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+
+												<!--  vendor id  -->
+												<DockPanel
+														DataContext="{Binding Path=VendorIdField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='vendor id desc'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Button
+																	Style="{StaticResource BtnUndo}"
+																	Click="BtnUndo_OnClick"
+																	/>
+
+															<Border Style="{StaticResource BdrEditStatus}">
+
+																<TextBox
+																		Text="{Binding Path=Wm.CurrSht.VendorId,
+																									 Mode=OneWay,
+																									 ElementName=MainWin,
+																									 FallbackValue='vendor id'}"
+																		Style="{StaticResource EditBValueFieldTbx}"
+																		/>
+
+															</Border>
+
+														</DockPanel>
+
+													</DockPanel>
+												</DockPanel>
+
+												<!--  schema version  -->
+												<DockPanel
+														DataContext="{Binding Path=SchemaVersionField,
+																									Mode=OneWay}"
+														DockPanel.Dock="Top"
+														>
+													<DockPanel
+															d:Visibility="Visible"
+															Style="{StaticResource DpRow}"
+															>
+														<Border Style="{StaticResource BdrEditorStatus}">
+															<Rectangle Style="{StaticResource RtEditStatus}" />
+														</Border>
+														<DockPanel Style="{StaticResource DpItem}">
+
+															<Label
+																	Content="{Binding Path=Field.FieldDesc,
+																										FallbackValue='schema version desc'}"
+																	Style="{StaticResource EditBDescField}"
+																	/>
+
+															<Rectangle Style="{StaticResource RtFiller}" />
+
+															<Label
+																	Content="{Binding Path=Wm.CurrSht.SchemaVersion,
+																										ElementName=MainWin,
+																										FallbackValue='schema version'}"
+																	Style="{StaticResource EditBValueField}"
+																	/>
+
+														</DockPanel>
+													</DockPanel>
+												</DockPanel>
+											</DockPanel>
+
+										</ScrollViewer>
+
+
+									</Grid>
+
+								</Border>
+
+							</Border>
+
+							<!--  row 4  -->
+							<DockPanel x:Name="DpFamAndTypeList"
+									Grid.Row="2"
+									Grid.Column="0"
+									Margin="0,5,0,0"
+									VerticalAlignment="Stretch"
+									DockPanel.Dock="Top"
+									>
+
+								<Label
+										Grid.Row="0"
+										Grid.Column="0"
+										Content="Families and Family Types List"
+										Margin="46,0,0,-16"
+										Width="200"
+										Padding="0"
+										HorizontalAlignment="Left"
+										Panel.ZIndex="10"
+										FontSize="14"
+										Foreground="White"
+										DockPanel.Dock="Top"
+										/>
+
+								<Border x:Name="BdrFamAndTypeist"
+										Grid.Row="1"
+										Grid.Column="0"
+										Margin="5,0,5,0"
+										Padding="0,5,0,0"
+										HorizontalAlignment="Stretch"
+										VerticalAlignment="Stretch"
+										BorderThickness="0,16,0,0"
+										BorderBrush="DimGray"
+										DockPanel.Dock="Top"
+										CornerRadius="20,0,0,0"
+										>
+
+									<Border
+											Margin="0,-5.5,0,0"
+											Padding="0,5,0,0"
+											HorizontalAlignment="Stretch"
+											BorderThickness="2,2.5,0,0"
+											BorderBrush="DimGray"
+											DockPanel.Dock="Top"
+											CornerRadius="10,0,0,0"
+											>
+
+										<Border
+												Margin="8,0,0,0"
+												HorizontalAlignment="Stretch"
+												VerticalAlignment="Stretch"
+												BorderThickness="0,1,0,1"
+												BorderBrush="Red"
+												>
+
+
+											<ListBox x:Name="LbxFamAndType"
+													DataContext="{Binding Path=Wm,
+																								ElementName=MainWin}"
+													Margin="0,4,0,4"
+													Padding="0"
+													VerticalAlignment="Top"
+													FontSize="14"
+													Background="Transparent"
+													IsSynchronizedWithCurrentItem="True"
+													d:ItemsSource="{d:SampleData ItemCount=3}"
+													DockPanel.Dock="Top"
+													SelectedValuePath="Key"
+													SelectedValue="{Binding Path=SelFamValue}"
+													SelectedItem="{Binding Path=SelFamilyTypeItem}"
+													ScrollViewer.VerticalScrollBarVisibility="Visible"
+													ScrollViewer.HorizontalScrollBarVisibility="Visible"
+													SelectedIndex="-2"
+													ItemsSource="{Binding CurrSht.FamListView}"
+													>
+
+												<ListBox.Resources>
+													<Style TargetType="{x:Type ScrollViewer}">
+														<Setter Property="Template" Value="{StaticResource CsScrollViewerCt}" />
+													</Style>
+
+												</ListBox.Resources>
+												<ListBox.Template>
+													<ControlTemplate>
+														<DockPanel HorizontalAlignment="Stretch">
+
+															<DockPanel x:Name="DpFamAndTypeListBox"
+																	Margin="0,0,0,0"
+																	DockPanel.Dock="Top"
+																	>
+
+																<Label
+																		Content=""
+																		Margin="2,0,0,4"
+																		Width="22"
+																		Padding="0,0,0,3"
+																		HorizontalAlignment="Center"
+																		VerticalAlignment="Center"
+																		HorizontalContentAlignment="Center"
+																		Background="Black"
+																		Foreground="DarkGray"
+																		/>
+
+																<Label
+																		Content="Family Name"
+																		Margin="2,0,0,4"
+																		Width="166"
+																		Padding="4,0,0,3"
+																		HorizontalAlignment="Left"
+																		VerticalAlignment="Center"
+																		Background="Black"
+																		Foreground="DarkGray"
+																		/>
+
+																<Label
+																		Content="Type Name"
+																		Margin="4,0,0,4"
+																		Width="202"
+																		Padding="4,0,0,3"
+																		HorizontalAlignment="Left"
+																		VerticalAlignment="Center"
+																		Background="Black"
+																		Foreground="DarkGray"
+																		/>
+
+																<Label
+																		Content="Properties"
+																		Margin="4,0,12,4"
+																		Padding="4,0,0,3"
+																		HorizontalAlignment="Stretch"
+																		VerticalAlignment="Center"
+																		Background="Black"
+																		Foreground="DarkGray"
+																		/>
+
+															</DockPanel>
+
+															<ScrollViewer
+																	MinHeight="40"
+																	Padding="0"
+																	VerticalAlignment="Top"
+																	DockPanel.Dock="Bottom"
+																	HorizontalScrollBarVisibility="Visible"
+																	VerticalScrollBarVisibility="Visible"
+																	Template="{StaticResource CsScrollViewerRedBdrCt}"
+																	>
+																<ScrollViewer.Style>
+																	<Style TargetType="ScrollViewer">
+																		<Setter Property="Visibility" Value="Visible" />
+																		<Style.Triggers>
+																			<DataTrigger Value="0" Binding="{Binding TargetNullValue='0', ElementName=LbxFamAndType, Path=Items.Count}">
+																				<Setter Property="Visibility" Value="Collapsed" />
+																			</DataTrigger>
+																		</Style.Triggers>
+																	</Style>
+																</ScrollViewer.Style>
+
+																<DockPanel>
+																	<ItemsPresenter
+																			Margin="0,0,0,0"
+																			DockPanel.Dock="Top"
+																			/>
+																</DockPanel>
+															</ScrollViewer>
+
+															<Label
+																	Content="Sorry, no family and types have been entered"
+																	Background="Transparent"
+																	Foreground="White"
+																	DockPanel.Dock="Top"
+																	>
+																<Label.Style>
+																	<Style TargetType="Label">
+																		<Setter Property="Visibility" Value="Collapsed" />
+																		<Style.Triggers>
+																			<DataTrigger Value="0" Binding="{Binding TargetNullValue='0', ElementName=LbxFamAndType, Path=Items.Count}">
+																				<Setter Property="Visibility" Value="Visible" />
+																			</DataTrigger>
+																		</Style.Triggers>
+																	</Style>
+																</Label.Style>
+
+															</Label>
+
+														</DockPanel>
+													</ControlTemplate>
+												</ListBox.Template>
+
+												<ListBox.ItemTemplate>
+													<DataTemplate>
+														<DockPanel Margin="0,2,0,3">
+
+															<Button
+																	Margin="-2,0,10,0"
+																	Width="16"
+																	Height="16"
+																	Padding="0"
+																	HorizontalContentAlignment="Center"
+																	VerticalContentAlignment="Center"
+																	Background="red"
+																	cs:CsButtons.ButtonCornerRadius="10"
+																	SnapsToDevicePixels="True"
+																	ToolTip="Delete"
+																	Command="{Binding ElementName=MainWin,
+																										Path=Wm.DeleteAFamilyListItem}"
+																	CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}},
+																														 Path=Content.Key}"
+																	>
+																<Button.Style>
+																	<Style
+																			TargetType="Button"
+																			BasedOn="{StaticResource Btn.Std}"
+																			>
+																		<Setter Property="BorderBrush" Value="Transparent">
+																		</Setter>
+																		<Setter Property="ContentTemplate">
+																			<Setter.Value>
+																				<DataTemplate>
+																					<ContentControl>
+																						<ContentControl.Content>
+																							<Path
+																									Margin="2,4,2,2"
+																									HorizontalAlignment="Center"
+																									VerticalAlignment="Center"
+																									Stretch="Uniform"
+																									>
+																								<Path.Style>
+																									<Style TargetType="Path">
+																										<Setter Property="Data" Value="{StaticResource Ic.HeavyX}" />
+																										<Setter Property="Fill" Value="White" />
+																										<Setter Property="SnapsToDevicePixels" Value="true" />
+
+																									</Style>
+																								</Path.Style>
+																							</Path>
+																						</ContentControl.Content>
+																					</ContentControl>
+																				</DataTemplate>
+																			</Setter.Value>
+																		</Setter>
+
+																	</Style>
+																</Button.Style>
+
+															</Button>
+
+															<TextBox
+																	Margin="-3,0,0,0"
+																	Width="166"
+																	Text="{Binding Path=Value.FamName,
+																								 Mode=TwoWay,
+																								 FallbackValue='family name'}"
+																	Style="{StaticResource TbxFamListEntryEx}"
+																	>
+
+															</TextBox>
+
+															<TextBox
+																	Margin="3,0,0,0"
+																	Width="210"
+																	Background="Transparent"
+																	Text="{Binding Path=Value.TypeName,
+																								 Mode=TwoWay,
+																								 FallbackValue='type name'}"
+																	Style="{StaticResource TbxFamListEntryEx}"
+																	>
+															</TextBox>
+															<TextBox
+																	Margin="0,0,0,0"
+																	Width="120"
+																	HorizontalAlignment="Stretch"
+																	Background="Transparent"
+																	Text="{Binding Path=Value.Properties,
+																								 Mode=TwoWay,
+																								 FallbackValue='props'}"
+																	Style="{StaticResource TbxFamListEntryEx}"
+																	>
+																<!--  Width="200"  -->
+															</TextBox>
+														</DockPanel>
+													</DataTemplate>
+												</ListBox.ItemTemplate>
+
+											</ListBox>
+
+										</Border>
+
+									</Border>
+
+								</Border>
+
+							</DockPanel>
+
+							<!-- </Grid> -->
+
+						</DockPanel>
+
+					</TabItem>
+
+					<!--#endregion-->
+
+				</TabControl>
+
+			</DockPanel>
+
+			<!--#endregion-->
+
+			<!--#region > legend - field edit level-->
+
+			<Border x:Name="field_edit_legend"
+					Grid.Row="3"
+					Grid.Column="0"
+					Margin="5,0,0,0"
+					HorizontalAlignment="Stretch"
+					BorderThickness="0,1,0,1"
+					BorderBrush="Red"
+					>
+
+				<Border
+						Margin="0,3,0,3"
+						HorizontalAlignment="Stretch"
+						BorderThickness="1,0,1,0"
+						BorderBrush="Red"
+						>
+
+					<Grid
+							Margin="0,0,0,0"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Bottom"
+							>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="96" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+
+						</Grid.ColumnDefinitions>
+
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+
+
+						</Grid.RowDefinitions>
+
+						<Label
+								Grid.Row="0"
+								Grid.Column="0"
+								Grid.RowSpan="2"
+								Style="{StaticResource LblContentStd}"
+								>
+							<Label.Content>
+								<StackPanel
+										Margin="0"
+										Width="110"
+										Orientation="Vertical"
+										>
+									<Label
+											Content="Field Edit"
+											Margin="0,-2,0,0"
+											Padding="0"
+											Foreground="White"
+											/>
+									<Label
+											Content="Class Legend"
+											Margin="0,-2,0,0"
+											Padding="0"
+											Foreground="White"
+											/>
+
+								</StackPanel>
+							</Label.Content>
+						</Label>
+
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="1"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+							<!--  advanced  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_ADVANCED},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_ADVANCED},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="2"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+
+							<!--  advanced view only  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_ADV_VIEW_ONLY},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_ADV_VIEW_ONLY},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+						</StackPanel>
+
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="3"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+							<!--  view only  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_VIEW_ONLY},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_VIEW_ONLY},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+
+						<StackPanel
+								Grid.Row="1"
+								Grid.Column="1"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+
+							<!--  basic  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_BASIC},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_BASIC},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+						</StackPanel>
+
+						<StackPanel
+								Grid.Row="1"
+								Grid.Column="2"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+							<!--  basic view only  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_BAS_VIEW_ONLY},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_BAS_VIEW_ONLY},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+
+						</StackPanel>
+
+						<StackPanel
+								Grid.Row="1"
+								Grid.Column="3"
+								Margin="0,0,5,0"
+								Orientation="Horizontal"
+								>
+
+							<!--  locked  -->
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_LOCKED},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_LOCKED},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+
+						</StackPanel>
+
+						<!--  debug only  -->
+						<StackPanel
+								Grid.Row="0"
+								Grid.Column="4"
+								Margin="0,0,5,0"
+								d:Visibility="Visible"
+								Orientation="Horizontal"
+								Visibility="Collapsed"
+								>
+							<Rectangle
+									Width="3"
+									HorizontalAlignment="Left"
+									VerticalAlignment="Stretch"
+									Fill="{Binding Source={x:Static exSys:FieldEditLevel.FEL_DEBUG},
+																 Converter={StaticResource Enum2Brush}}"
+									/>
+							<Label
+									Content="{Binding Source={x:Static exSys:FieldEditLevel.FEL_DEBUG},
+																		Converter={StaticResource FldEditLevel2Str},
+																		ConverterParameter='1'}"
+									Style="{StaticResource LblContentStd}"
+									/>
+
+						</StackPanel>
+
+
+					</Grid>
+				</Border>
+
+			</Border>
+
+			<!--#endregion-->
+
+		</Grid>
+
+		<!--#endregion-->
+
+		<!--#region control design-->
+
+		<Grid
+				Grid.Row="0"
+				Grid.Column="3"
+				Grid.RowSpan="2"
+				>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+
+
+			<StackPanel
+					Grid.Row="0"
+					Orientation="Horizontal"
+					>
+
+				<!--  title  -->
+				<StackPanel
+						Margin="5,0,0,0"
+						VerticalAlignment="Center"
+						Orientation="Vertical"
+						>
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="Button with"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="Icon Samples"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+				<!--  normal  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+
+
+					<Button>
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="normal"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="default: F"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+
+				<!--  disabled  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+					<Button IsEnabled="False">
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.Disabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="disabled"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="default: F"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+				<!--  mouse over  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+					<Button
+							Background="{StaticResource Btn.Bg.MouseOver}"
+							Foreground="{StaticResource Btn.Fg.MouseOver}"
+							BorderBrush="{StaticResource Btn.Bdr.MouseOver}"
+							>
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="mouse over"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="default: F"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+
+				<!--  pressed  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+					<Button
+							Background="{StaticResource Btn.Bg.Pressed}"
+							Foreground="{StaticResource Btn.Fg.Pressed}"
+							BorderBrush="{StaticResource Btn.Bdr.Pressed}"
+							>
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="pressed"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="default: F"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+
+
+				<!--  default  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+
+					<Button IsDefault="True">
+
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.IsEnabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="normal"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="default: T"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+				<!--  default + disabledr  -->
+				<StackPanel
+						Margin="2,0,0,0"
+						Orientation="Vertical"
+						>
+
+					<Button
+							IsEnabled="False"
+							IsDefault="true"
+							>
+						<Button.Resources>
+							<!-- <SolidColorBrush x:Key="Btn.Bg.Disabled" Color="Red" /> -->
+
+						</Button.Resources>
+
+						<Button.Style>
+							<Style
+									TargetType="Button"
+									BasedOn="{StaticResource BtnEditNameWithIcon}"
+									>
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path Stretch="UniformToFill">
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.Apply}" />
+																<Setter Property="Fill" Value="{DynamicResource Btn.Fill.Disabled}" />
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+						</Button.Style>
+					</Button>
+
+
+					<Label
+							Margin="0"
+							Padding="0"
+							>
+						<Label.Content>
+							<StackPanel Orientation="Vertical">
+								<Label
+										Content="Enabled: F"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+								<Label
+										Content="Default: T"
+										Style="{StaticResource LblCtrlSample}"
+										/>
+							</StackPanel>
+						</Label.Content>
+					</Label>
+
+				</StackPanel>
+
+			</StackPanel>
+
+
+		</Grid>
+
+		<!--#endregion-->
+
 	</Grid>
+
 </Window>
+
+<!--  C:\Users\jeffs\Documents\Programming\VisualStudioProjects\Settings.XamlStyler.json  -->

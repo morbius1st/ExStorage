@@ -9,7 +9,7 @@ using Autodesk.Revit.DB.ExtensibleStorage;
 
 using ExStoreTest2026;
 using ExStoreTest2026.DebugAssist;
-using ExStoreTest2026.ExStorSys;
+using ExStorSys;
 using ExStoreTest2026.Windows;
 
 using RevitLibrary;
@@ -27,132 +27,9 @@ using static ExStorSys.ValidateSchema;
 
 namespace ExStorSys
 {
-	/// <summary>
-	/// Ex Storage Element List Item of type (T) (schema or datastorage)<br/>
-	/// each item can have attributes:<br/>
-	/// version:   T == correct version (default) | F == wrong version<br/>
-	/// isvalid:   T == is valid (default) | F == is invalid<br/>
-	/// actoff:    T == activation is off | F activation is not off (default)<br/>
-	/// modelname: T == model name is correct (default) | F == model name is wrong
-	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class ExListItem<T> 
-		where T : class
-	{
-		public ExListItem(string name, T item, bool version = true,
-			bool isValid = true, bool actOff = false, 
-			bool modelName = true)
-		{
-			Name = name;
-			Item = item;
-			Version = version;
-			IsValid = isValid;
-			ActOff = actOff;
-			ModelName = modelName;
-			// VerString = String.Empty;
-		}
-
-		public T Item { get; set; }
-
-		public string Name { get; set; }
-
-		// public string VerString { get; set; }
-
-		/// <summary>
-		/// applied to sht ds and wbk ds<br/>
-		/// true, item has the correct version (default)<br/>
-		/// false, item has the wrong version
-		/// </summary>
-		public bool Version { get; private set; }
-
-		public bool SetWrongVersion() => Version = false;
-
-		// sht only
-		/// <summary>
-		/// sht only
-		/// true if valid (default)
-		/// false if not valid
-		/// </summary>
-		public bool IsValid { get; private set; }
-
-		public bool SetNotValid() => IsValid = false;
-		public bool SetValid() => IsValid = true;
-
-		/// <summary>
-		/// wbk ds only
-		/// true if activation is off (bad)
-		/// false if activation is not off (good) (default)
-		/// </summary>
-		public bool ActOff { get; private set; }
-
-		public bool SetActIsOff() => ActOff = true;
-
-		/// <summary>
-		/// wbk ds only
-		/// true if model name is good (default)
-		/// false if model name is not good 
-		/// </summary>
-		public bool ModelName { get; private set; }
-
-		public bool SetWrongModelName() => ModelName = false;
-	}
-
 	// will only be used with sheet ds - so will only be good or have wrong version or is invalid
 	// out of date does not apply as, if the number of fields change, the version
 	// must change and that will flat the issue
-	public class ExList<T> 
-		where T : class
-	{
-		public ExList()
-		{
-			GoodItems = new ();
-			AllItems = new ();
-			WrongVersionCount = 0;
-			InvalidCount = 0;
-		}
-
-		public int AllItemsCount => AllItems.Count;
-		public int GoodItemsCount => GoodItems.Count;
-
-		public bool GotOneGoodItem => GoodItems.Count == 1;
-
-		public int WrongVersionCount { get; set; }
-		public int InvalidCount { get; set; }
-
-		/// <summary>
-		/// true if wrong version count is greater than  0 or invalid count is greater than 0
-		/// </summary>
-		public bool GotNoGood => WrongVersionCount > 0 || InvalidCount > 0;
-
-		public Dictionary<string, ExListItem<T>> GoodItems { get; set; }
-		// public Dictionary<string, ExListItem<T>> NotBadItems { get; set; }
-		public Dictionary<string, ExListItem<T>> AllItems { get; set; }
-
-		public void Add(ExListItem<T> item)
-		{
-			bool result = true;
-
-			AllItems.Add(item.Name, item);
-
-			if (!item.Version)
-			{
-				WrongVersionCount++;
-			}
-			if (!item.IsValid)
-			{
-				InvalidCount++;
-				result = false;
-			}
-
-			if (item.ActOff) result = false;
-			if (!item.ModelName) result = false;
-
-			if (result) GoodItems.Add(item.Name, item);
-		}
-
-		public ExListItem<T>? GetGoodItem => GoodItems.Count > 0 ? GoodItems.First().Value : null;
-
-	}
 
 	public class ExStorLaunchMgr : APropChgdEvt
 	{
@@ -280,7 +157,7 @@ namespace ExStorSys
 		{
 			sendDebug = true;
 
-			writeLine($"\nA *** begin OnOpenDocLaunch *** [ {R.FileName} ]");
+			writeLine($"*** begin OnOpenDocLaunch *** [ {R.FileName} ]");
 			tabDepth++;
 
 			OnPropChgdRn(RunningStatus.RN_NA);
@@ -291,7 +168,7 @@ namespace ExStorSys
 
 			bool result = OnOpenDocLaunchVfy();
 
-			writeLineMid($"A OnOpenDocLaunchVfy result {result}", "\n");
+			writeLine($"*** OnOpenDocLaunchVfy result| {result}");
 
 			// showStatus();
 			//
@@ -315,11 +192,11 @@ namespace ExStorSys
 			}
 
 			// writeLine("\nafter resolve");
-			writeLine($"{" ".Repeat(26)}{"WbkDs",COL_A}\t{"WbkSc",COL_C}\t{"ShtDs",COL_B}\t{"ShtSc",COL_D} | {"ExSysStatus",COL_E}");
-			writeLine($"{"ignore LaunchCode",-26}{resultWbkDs,COL_A}\t{resultWbkSc,COL_C}\t{resultShtDs,COL_B}\t{resultShtSc, COL_D} | {_ExSysStatus,COL_E} | result {result}\n");
+			writeLine(             $"{" ".Repeat(26)}{"WbkSc",COL_C}\t{"WbkDs",COL_A}\t{"ShtSc",COL_D}\t{"ShtDs",COL_B} | {"ExSysStatus",COL_E}");
+			writeLine($"{"ignore LaunchCode",-26}{resultWbkSc,COL_C}\t{resultWbkDs,COL_A}\t{resultShtSc, COL_D}\t{resultShtDs,COL_B} | {_ExSysStatus,COL_E} | result {result}\n");
 			
 			tabDepth--;
-			writeLine("\nA *** complete OnOpenDocLaunch ***\n");
+			writeLine("*** complete OnOpenDocLaunch ***\n");
 		}
 
 		/// <summary>
@@ -343,9 +220,9 @@ namespace ExStorSys
 
 		private void onOpenDocLaunchVfy2Wbk()
 		{
-			xData.TempWbkDs = null;
+			xData.TempWbkDsEx = null;
 			xData.TempWbkDsList = null;
-			xData.TempWbkSchema = null;
+			xData.TempWbkSchemaEx = null;
 
 			resultWbkSc = VSC_MISSING;
 
@@ -355,9 +232,9 @@ namespace ExStorSys
 			resultWbkDs = findWbkDataStorage2();
 
 			// writeLine($"1a | resultWbkDs | {resultWbkDs} | got wbk ds | {xData.GotTempWbkDs}");
-
-			if (resultWbkDs == VDS_GOOD || resultWbkDs == VDS_WRONG_VER)
-			{
+			//
+			// if (resultWbkDs == VDS_GOOD || resultWbkDs == VDS_WRONG_VER)
+			// {
 				// only proceed if a valid ds is found - if no found, 
 				// any schema does not apply
 				
@@ -368,21 +245,26 @@ namespace ExStorSys
 				// the above can return missing, invalid, etc.
 				// if return is good or wrong version
 
-				if (resultWbkSc == VSC_GOOD || resultWbkSc == VSC_WRONG_VER)
+				if (resultWbkDs == VDS_GOOD || resultWbkDs == VDS_WRONG_VER)
 				{
-					// step 1c
-					ValidateDataStorage result = verifyWbkDataStorage2();
 
-					resultWbkDs = result == VDS_ACT_IGNORE ? VDS_ACT_IGNORE :
-						result == VDS_GOOD ? resultWbkDs : resultWbkDs == VDS_GOOD ? result : VDS_MULTIPLE;
+					if (resultWbkSc == VSC_GOOD || resultWbkSc == VSC_WRONG_VER)
+					{
+						// step 1c
+						ValidateDataStorage result = verifyWbkDataStorage2();
 
-					// writeLine($"1c | resultWbkDs | {resultWbkDs} | got wbk ds | {xData.GotTempWbkDs}");
+						resultWbkDs = result == VDS_ACT_IGNORE ? VDS_ACT_IGNORE :
+							result == VDS_GOOD ? resultWbkDs : resultWbkDs == VDS_GOOD ? result : VDS_MULTIPLE_MN_O;
+
+						// writeLine($"1c | resultWbkDs | {resultWbkDs} | got wbk ds | {xData.GotTempWbkDs}");
+					}
+					else
+					{
+						resultWbkDs = VDS_INVALID;
+					}
 				}
-				else
-				{
-					resultWbkDs = VDS_INVALID;
-				}
-			}
+
+			// }
 
 
 			OnPropChgdWsc(resultWbkSc);
@@ -391,9 +273,9 @@ namespace ExStorSys
 
 		private void onOpenDocLaunchVfy2Sht()
 		{
-			xData.TempShtDsExList = null;
+			xData.TempShtDsListEx = null;
 			xData.TempShtDsList = null;
-			xData.TempShtSchema = null;
+			xData.TempShtSchemaEx = null;
 
 			resultShtSc = VSC_MISSING;
 
@@ -403,27 +285,30 @@ namespace ExStorSys
 			resultShtDs = findShtDataStorage2();
 			// writeLine($"2a | resultShtDs | {resultShtDs} | got sht ds {xData.GotTempShtDs}");
 
-			if (resultShtDs == VDS_GOOD || resultShtDs == VDS_WRONG_VER)
-			{
+			// if (resultShtDs == VDS_GOOD || resultShtDs == VDS_WRONG_VER)
+			// {
 				// step 2b
 				resultShtSc = findAndVerifyShtSchema2();
 				// writeLine($"2b | resultShtSc | {resultShtSc} | got sht sc {xData.GotShtSchema}");
 
-				if (resultShtSc == VSC_GOOD || resultShtSc == VSC_WRONG_VER)
+				if (resultShtDs == VDS_GOOD || resultShtDs == VDS_WRONG_VER)
 				{
-					// step 2c
-					ValidateDataStorage result = verifyShtDataStorage2();
-					
-					resultShtDs = result == VDS_GOOD ? resultShtDs : 
-						resultShtDs == VDS_GOOD ? result : VDS_MULTIPLE;
+					if (resultShtSc == VSC_GOOD || resultShtSc == VSC_WRONG_VER)
+					{
+						// step 2c
+						ValidateDataStorage result = verifyShtDataStorage2();
 
-					// writeLine($"2c | resultShtDs | {resultShtDs} | got sht ds {xData.GotTempShtDs}");
+						resultShtDs = result == VDS_GOOD ? resultShtDs :
+							resultShtDs == VDS_GOOD ? result : VDS_MULTIPLE_MN_O;
+
+						// writeLine($"2c | resultShtDs | {resultShtDs} | got sht ds {xData.GotTempShtDs}");
+					}
+					else
+					{
+						resultShtDs = VDS_INVALID;
+					}
 				}
-				else
-				{
-					resultShtDs = VDS_INVALID;
-				}
-			}
+			// }
 
 
 			OnPropChgdSds(resultShtDs);
@@ -452,7 +337,7 @@ namespace ExStorSys
 
 			if (status != VDS_INVALID)
 			{
-				xData.TempWbkDs = dsx;
+				xData.TempWbkDsEx = dsx;
 				xData.TempWbkVersion = verStr;
 			}
 
@@ -470,7 +355,17 @@ namespace ExStorSys
 
 			if (!xMgr.FindAllWbkSchema(out scList)) return VSC_MISSING;
 
-			guids = xData.TempWbkDs!.Item.GetEntitySchemaGuids();
+			if (!xData.GotTempWbkDs)
+			{
+				// no data storage - cannot verify schema
+				// so must assume they are all good
+				// use the first one found
+
+				xData.TempWbkSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+				return VSC_GOOD;
+			}
+
+			guids = xData.TempWbkDsEx!.Item.GetEntitySchemaGuids();
 
 			foreach (Schema sc in scList)
 			{
@@ -482,20 +377,20 @@ namespace ExStorSys
 
 				if (!verifySchemaGuid(sc, guids)) continue;
 
-				if (xData.TempWbkSchema == null)
+				if (xData.TempWbkSchemaEx == null)
 				{
 					// found the first one
-					xData.TempWbkSchema = scx;
+					xData.TempWbkSchemaEx = scx;
 				}
 				else
 				{
 					// found a second one - fail
-					xData.TempWbkSchema = null;
+					xData.TempWbkSchemaEx = null;
 					return VSC_WRONG_COUNT;
 				}
 			}
 
-			return (xData.TempWbkSchema?.Version ?? false) ? VSC_GOOD : xData.TempWbkSchema == null ? VSC_MISSING : VSC_WRONG_VER;
+			return (xData.TempWbkSchemaEx?.Version ?? false) ? VSC_GOOD : xData.TempWbkSchemaEx == null ? VSC_MISSING : VSC_WRONG_VER;
 		}
 
 		/* 1c */
@@ -506,32 +401,46 @@ namespace ExStorSys
 		private ValidateDataStorage verifyWbkDataStorage2()
 		{
 			// gotten here - remove the initial not valid
-			// xData.TempWbkDs!.SetValid();
+			// xData.TempWbkDsEx!.SetValid();
 
 			ActivateStatus actStat;
-			string modelName;
+			// string modelName;
 
 			// initial verification done
 			ValidateDataStorage status = VDS_GOOD;
 
-			// validate activation and model name
-			actStat = xMgr.ReadActivationStatus(xData.TempWbkDs!.Item, xData.TempWbkSchema!.Item);
-
-			if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
-
-			if (actStat == ActivateStatus.AS_INACTIVE)
+			if (xMgr.VerifyActivationIgnore() != VDS_GOOD) return VDS_ACT_IGNORE;
+			if (xMgr.VerifyActivationOff() != VDS_GOOD)
 			{
 				status = VDS_ACT_OFF;
-				xData.TempWbkDs!.SetActIsOff();
+				xData.TempWbkDsEx!.SetActIsOff();
 			}
 
-			modelName = xMgr.ReadModelName(xData.TempWbkDs!.Item, xData.TempWbkSchema.Item) ?? "";
+			// validate activation and model name
+			// actStat = xMgr.ReadActivationStatus(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx!.Item);
+			//
+			// if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
+			//
+			// if (actStat == ActivateStatus.AS_INACTIVE)
+			// {
+			// 	status = VDS_ACT_OFF;
+			// 	xData.TempWbkDsEx!.SetActIsOff();
+			// }
 
-			if (!modelName.Equals(xMgr.Exid.Model_Name))
+			// modelName = xMgr.ReadModelName(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx.Item) ?? "";
+			//
+			// if (!modelName.Equals(xMgr.Exid.ModelName))
+			// {
+			// 	status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
+			// 	xData.TempWbkDsEx!.SetWrongModelName();
+			// }
+
+			if (xMgr.VerifyModelName() != VDS_GOOD)
 			{
-				status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE;
-				xData.TempWbkDs!.SetWrongModelName();
+				status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
+				xData.TempWbkDsEx!.SetWrongModelName();
 			}
+
 
 			return status;
 		}
@@ -552,7 +461,7 @@ namespace ExStorSys
 			if (!xMgr.FindAllShtDs(out dsList)) return VDS_MISSING;
 			if (dsList.Count == 0) return VDS_WRONG_COUNT;
 
-			xData.TempShtDsExList = new ();
+			xData.TempShtDsListEx = new ();
 
 			foreach (DataStorage ds in dsList)
 			{
@@ -563,12 +472,12 @@ namespace ExStorSys
 
 				if (status == VDS_INVALID) continue;
 
-				xData.TempShtDsExList.Add(dsx);
+				xData.TempShtDsListEx.Add(dsx);
 				xData.TempShtVersion = verStr;
 			}
 
 			if (result == VDS_GOOD && 
-				xData.TempShtDsExList.GoodItemsCount == 0) result = VDS_WRONG_COUNT;
+				xData.TempShtDsListEx.GoodItemsCount == 0) result = VDS_WRONG_COUNT;
 
 			return result;
 		}
@@ -582,7 +491,17 @@ namespace ExStorSys
 
 			if (!xMgr.FindAllShtSchema(out scList)) return VSC_MISSING;
 
-			guids = xData.TempShtDsExList!.GetGoodItem!.Item.GetEntitySchemaGuids();
+			if (!xData.GotTempShtDs || !xData.TempShtDsListEx!.GotOneGoodItem)
+			{
+				// no data storage - cannot verify schema
+				// so must assume they are all good
+				// use the first one found
+
+				xData.TempShtSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+				return VSC_GOOD;
+			}
+
+			guids = xData.TempShtDsListEx!.GetGoodItem!.Item.GetEntitySchemaGuids();
 
 			foreach (Schema sc in scList)
 			{
@@ -593,20 +512,20 @@ namespace ExStorSys
 
 				if (!verifySchemaGuid(sc, guids)) continue;
 
-				if (xData.TempShtSchema == null)
+				if (xData.TempShtSchemaEx == null)
 				{
 					// found the first one
-					xData.TempShtSchema = scx;
+					xData.TempShtSchemaEx = scx;
 				}
 				else
 				{
 					// found a second one - fail
-					xData.TempShtSchema = null;
+					xData.TempShtSchemaEx = null;
 					return VSC_WRONG_COUNT;
 				}
 			}
 
-			return xData.TempShtSchema!.Version ? VSC_GOOD : VSC_WRONG_VER;
+			return xData.TempShtSchemaEx!.Version ? VSC_GOOD : VSC_WRONG_VER;
 		}
 
 		/* 2c */
@@ -615,7 +534,7 @@ namespace ExStorSys
 			// ValidateDataStorage status = VDS_GOOD;
 			ValidateDataStorage result = VDS_GOOD;
 
-			// foreach ((string? key, ExListItem<DataStorage>? item) in xData.TempShtDsExList!.GoodItems)
+			// foreach ((string? key, ExListItem<DataStorage>? item) in xData.TempShtDsListEx!.GoodItems)
 			// {
 				// status = validateShtDataStorage();
 			//
@@ -624,7 +543,7 @@ namespace ExStorSys
 			// 	if (status != VDS_GOOD && result == VDS_GOOD) result = status;
 			// }
 
-			if ((xData.TempShtDsExList?.GoodItemsCount ?? 0) == 0) result = VDS_WRONG_COUNT;
+			if ((xData.TempShtDsListEx?.GoodItemsCount ?? 0) == 0) result = VDS_WRONG_COUNT;
 
 			return result;
 		}
@@ -669,22 +588,22 @@ namespace ExStorSys
 		//
 		// 	ValidateDataStorage status = VDS_GOOD;
 		//
-		// 	actStat = xMgr.ReadActivationStatus(xData.TempWbkDs!.Item, xData.TempWbkSchema!.Item);
+		// 	actStat = xMgr.ReadActivationStatus(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx!.Item);
 		//
 		// 	if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
 		//
 		// 	if (actStat == ActivateStatus.AS_INACTIVE)
 		// 	{
 		// 		status = VDS_ACT_OFF;
-		// 		xData.TempWbkDs!.SetActIsOff();
+		// 		xData.TempWbkDsEx!.SetActIsOff();
 		// 	}
 		//
-		// 	modelName = xMgr.ReadModelName(xData.TempWbkDs!.Item, xData.TempWbkSchema.Item) ?? "";
+		// 	modelName = xMgr.ReadModelName(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx.Item) ?? "";
 		//
-		// 	if (!modelName.Equals(xMgr.Exid.Model_Name))
+		// 	if (!modelName.Equals(xMgr.Exid.ModelName))
 		// 	{
-		// 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE;
-		// 		xData.TempWbkDs!.SetWrongModelName();
+		// 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
+		// 		xData.TempWbkDsEx!.SetWrongModelName();
 		// 	}
 		//
 		// 	return status;
@@ -759,8 +678,8 @@ namespace ExStorSys
 				codeSc = which1 == 0 ? resultWbkSc : resultShtSc; // if == 0, workbook
 
 				// either which 1 = 0 or 1 - wbk or sht
-				result = ExStorConst.ValidateSchemaDesc[codeSc].Item1;
-				resolve = ExStorConst.ValidateSchemaDesc[codeSc].Item2;
+				result = ExStorConst.ValidateSchemaDesc[codeSc].Item2;
+				resolve = ExStorConst.ValidateSchemaDesc[codeSc].Item3;
 
 				writeLineMid($"{whichF,-9} {whichB,-12}{msg1,-30}{codeSc}");
 				if (!basic) writeLineMid($"  {codeSc,-32} | {whichA, -6} {result} | resolve {resolve}");
@@ -769,8 +688,8 @@ namespace ExStorSys
 			{
 				codeDs = which1 == 0 ? resultWbkDs : resultShtDs; // if == 0, workbook
 
-				result = ExStorConst.ValidateDataStorageDesc[codeDs].Item1;
-				resolve = ExStorConst.ValidateDataStorageDesc[codeDs].Item2;
+				result = ExStorConst.ValidateDataStorageDesc[codeDs].Item2;
+				resolve = ExStorConst.ValidateDataStorageDesc[codeDs].Item3;
 
 				writeLineMid($"{whichF, -9} {whichB, -12}{msg1,-30}{codeDs}");
 				if (!basic) writeLineMid($"  {codeDs, -32} | {whichA, -6} {result} | resolve {resolve}");
@@ -803,7 +722,7 @@ namespace ExStorSys
 		{
 			if (sendDebug == true || !sendDebug.HasValue)
 			{
-				Debug.Write($"***| {msg}");
+				Debug.Write(!msg.IsVoid() && !msg.Trim().Equals("\n") ? $"***| {msg}" : $"{msg}");
 			}
 			else if (sendDebug == false || !sendDebug.HasValue)
 			{
@@ -829,7 +748,7 @@ namespace ExStorSys
 	// 	private void onOpenDocLaunchRslv2()
 	// 	{
 	// 		writeLineBeg("B *** BEGIN Launch Resolve ***", "\n");
-	// 		writeLineMid($"model name{xMgr.Exid.ModelName}");
+	// 		writeLineMid($"model name{xMgr.Exid.ModelTitle}");
 	//
 	// 		try
 	// 		{
@@ -905,26 +824,26 @@ namespace ExStorSys
 	// 	/// <summary>
 	// 	/// find all valid wbk schema<br/>
 	// 	/// return 0 == good - only one schema, 1 == none found, 2 == one+ bad, 3 == got multiple schema<br/>
-	// 	/// if a good schema is found, it is saved to TempWbkSchema
+	// 	/// if a good schema is found, it is saved to TempWbkSchemaEx
 	// 	/// </summary>
 	// 	private ValidateSchema findAndVerifyWbkSchema()
 	// 	{
 	// 		IList<Schema> scList;
 	//
-	// 		xData.TempWbkSchema = null;
+	// 		xData.TempWbkSchemaEx = null;
 	//
 	// 		bool status = xMgr.FindAllWbkSchema(out scList);
 	//
 	// 		if (!status || scList.Count != 1) return VSC_WRONG_COUNT;
 	//
-	// 		xData.TempWbkSchema = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+	// 		xData.TempWbkSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
 	// 		
 	// 		return VSC_GOOD;
 	// 	}
 	//
 	// 	// /// <summary>
 	// 	// /// find all valid workbook schema<br/>
-	// 	// /// if a good schema is found, it is saved to TempWbkSchema
+	// 	// /// if a good schema is found, it is saved to TempWbkSchemaEx
 	// 	// /// </summary>
 	// 	// private ValidateSchema findAndVerifyWbkSchema()
 	// 	// {
@@ -934,13 +853,13 @@ namespace ExStorSys
 	// 	// 		findAndVerifySchemaByName(xMgr.Exid.WbkSearchName, ExStorConst.EXS_VERSION_WBK, out exList);
 	// 	//
 	// 	// 	xData.TempWbkSchemaList = exList;
-	// 	// 	xData.TempWbkSchema = null;
+	// 	// 	xData.TempWbkSchemaEx = null;
 	// 	//
 	// 	// 	if (status == VSC_GOOD)
 	// 	// 	{
 	// 	// 		if (exList.Count == 1)
 	// 	// 		{
-	// 	// 			xData.TempWbkSchema = exList.First!.Item;
+	// 	// 			xData.TempWbkSchemaEx = exList.First!.Item;
 	// 	// 		}
 	// 	// 		else
 	// 	// 		{
@@ -957,7 +876,7 @@ namespace ExStorSys
 	// 	// /// <summary>
 	// 	// /// find all valid sheet schema<br/>
 	// 	// /// return 0 == good - only one schema, 1 == none found, 2 == one+ bad, 3 == got multiple schema<br/>
-	// 	// /// if a good schema is found, it is saved to TempShtSchema
+	// 	// /// if a good schema is found, it is saved to TempShtSchemaEx
 	// 	// /// </summary>
 	// 	// private ValidateSchema findAndVerifyShtSchema()
 	// 	// {
@@ -966,7 +885,7 @@ namespace ExStorSys
 	// 	// 	ValidateSchema status = findAndVerifySchemaByName(xMgr.Exid.ShtSearchName, out scList);
 	// 	//
 	// 	// 	xData.TempShtSchemaList = scList;
-	// 	// 	xData.TempShtSchema = null;
+	// 	// 	xData.TempShtSchemaEx = null;
 	// 	//
 	// 	// 	// 0 if all good, 1 if none found, 2 if one+ bad
 	// 	// 	if (status == VSC_GOOD)
@@ -982,7 +901,7 @@ namespace ExStorSys
 	// 	// 			}
 	// 	// 			else
 	// 	// 			{
-	// 	// 				xData.TempShtSchema = scList[0];
+	// 	// 				xData.TempShtSchemaEx = scList[0];
 	// 	// 			}
 	// 	// 		}
 	// 	// 		else
@@ -998,20 +917,20 @@ namespace ExStorSys
 	//
 	// 	/// <summary>
 	// 	/// find all valid sheet schema<br/>
-	// 	/// if a good schema is found, it is saved to TempShtSchema
+	// 	/// if a good schema is found, it is saved to TempShtSchemaEx
 	// 	/// </summary>
 	// 	private ValidateSchema findAndVerifyShtSchema()
 	// 	{
 	// 		IList<Schema> scList;
 	//
-	// 		xData.TempShtSchema = null;
+	// 		xData.TempShtSchemaEx = null;
 	//
 	// 		bool status = xMgr.FindAllShtSchema(out scList);
 	//
 	//
 	// 		if (!status || scList.Count != 1) return VSC_WRONG_COUNT;
 	//
-	// 		xData.TempShtSchema =  new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+	// 		xData.TempShtSchemaEx =  new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
 	//
 	// 		return VSC_GOOD;
 	// 	}
@@ -1024,13 +943,13 @@ namespace ExStorSys
 	// 	// /// </summary>
 	// 	// private ValidateDataStorage findAndVerifyWbkDataStorage()
 	// 	// {
-	// 	// 	xData.TempWbkDs = null;
-	// 	// 	xData.TempWbkDs = null;
+	// 	// 	xData.TempWbkDsEx = null;
+	// 	// 	xData.TempWbkDsEx = null;
 	// 	// 	// xData.TempModelCode = null;
 	// 	//
 	// 	// 	IList<DataStorage>? dsList;
 	// 	//
-	// 	// 	ValidateDataStorage status = findAndValidateWbkDs(xMgr.Exid.WbkSearchName, xMgr.Exid.Model_Name, out dsList);
+	// 	// 	ValidateDataStorage status = findAndValidateWbkDs(xMgr.Exid.WbkSearchName, xMgr.Exid.ModelName, out dsList);
 	// 	//
 	// 	// 	if (status == VDS_GOOD || status == VDS_ACT_OFF || status == VDS_ACT_IGNORE)
 	// 	// 	{
@@ -1042,11 +961,11 @@ namespace ExStorSys
 	// 	// 		}
 	// 	// 		else
 	// 	// 		{
-	// 	// 			xData.TempWbkDs = dsList[0];
+	// 	// 			xData.TempWbkDsEx = dsList[0];
 	// 	//
 	// 	// 			// if (xData.GotTempWbkSchema)
 	// 	// 			// {
-	// 	// 			// 	xData.TempModelCode = xMgr.ReadModelCode(xData.TempWbkDs, xData.TempWbkSchema);
+	// 	// 			// 	xData.TempModelCode = xMgr.ReadModelCode(xData.TempWbkDsEx, xData.TempWbkSchemaEx);
 	// 	// 			// }
 	// 	// 		}
 	// 	//
@@ -1059,13 +978,13 @@ namespace ExStorSys
 	// 	/// find and validate wbk data storage objects<br/>
 	// 	/// require only one to be found and used - more than one is invalid -> wrong count<br/>
 	// 	/// also, if wbk schema is not good / is not out of date, wbk ds is not good<br/>
-	// 	/// the final, "approved" ds is saved in xData.TempWbkDs
+	// 	/// the final, "approved" ds is saved in xData.TempWbkDsEx
 	// 	/// </summary>
 	// 	private ValidateDataStorage findAndVerifyWbkDataStorage()
 	// 	{
 	// 		// for wbk, can have only one ds - with or without the correct version
 	// 		// and, this cannot have the wrong version if the ds schema has the correct version
-	// 		// the final, "approved" ds is saved in xData.TempWbkDs
+	// 		// the final, "approved" ds is saved in xData.TempWbkDsEx
 	//
 	// 		ValidateDataStorage status = VDS_GOOD;
 	// 		ActivateStatus actStat;
@@ -1073,7 +992,7 @@ namespace ExStorSys
 	// 		string? verStrTst;
 	// 		IList<DataStorage> dsList;
 	//
-	// 		xData.TempWbkDs = null;
+	// 		xData.TempWbkDsEx = null;
 	//
 	// 		// test 1
 	// 		if (xMui.WbkScResCode == VSC_INVALID || xMui.WbkScResCode == VSC_MISSING) return VDS_INVALID;
@@ -1101,8 +1020,8 @@ namespace ExStorSys
 	//
 	// 		if (xMui.WbkScResCode == VSC_GOOD) 
 	// 		{
-	// 			modelName = xMgr.ReadModelName(ds, xData.TempWbkSchema.Item) ?? "";
-	// 			actStat = xMgr.ReadActivationStatus(ds, xData.TempWbkSchema.Item);
+	// 			modelName = xMgr.ReadModelName(ds, xData.TempWbkSchemaEx.Item) ?? "";
+	// 			actStat = xMgr.ReadActivationStatus(ds, xData.TempWbkSchemaEx.Item);
 	// 			
 	// 			// test 5
 	// 			if (actStat == ActivateStatus.AS_IGNORE)
@@ -1118,9 +1037,9 @@ namespace ExStorSys
 	// 			}
 	//
 	// 			// test 7
-	// 			if (!modelName.Equals(xMgr.Exid.Model_Name))
+	// 			if (!modelName.Equals(xMgr.Exid.ModelName))
 	// 			{
-	// 				status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE;
+	// 				status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
 	// 				exi.SetWrongModelName();
 	// 			}
 	// 		}
@@ -1137,7 +1056,7 @@ namespace ExStorSys
 	// 			}
 	// 		}
 	//
-	// 		xData.TempWbkDs = exi;
+	// 		xData.TempWbkDsEx = exi;
 	//
 	// 		return status;
 	// 	}
@@ -1177,7 +1096,7 @@ namespace ExStorSys
 	//
 	// 		if (status == VDS_GOOD)
 	// 		{
-	// 			xData.TempShtDsExList = exList;
+	// 			xData.TempShtDsListEx = exList;
 	// 		}
 	//
 	// 		return status;
@@ -1341,8 +1260,8 @@ namespace ExStorSys
 	// 	//
 	// 	// 		if (xMui.WbkScResCode == VSC_GOOD)
 	// 	// 		{
-	// 	// 			modelName = xMgr.ReadModelName(ds, xData.TempWbkSchema) ?? "";
-	// 	// 			actStat = xLib.ReadActStatus(ds, xData.TempWbkSchema);
+	// 	// 			modelName = xMgr.ReadModelName(ds, xData.TempWbkSchemaEx) ?? "";
+	// 	// 			actStat = xLib.ReadActStatus(ds, xData.TempWbkSchemaEx);
 	// 	//
 	// 	// 			if (actStat == ActivateStatus.AS_INACTIVE)
 	// 	// 			{
@@ -1468,7 +1387,7 @@ namespace ExStorSys
 	// 				// test 8
 	// 				if (verStrTst.IsVoid() || !ExStorConst.EXS_VERSION_SHT.Equals(verStrTst))
 	// 				{
-	// 					status = status == VDS_GOOD ? VDS_WRONG_VER : VDS_MULTIPLE;
+	// 					status = status == VDS_GOOD ? VDS_WRONG_VER : VDS_MULTIPLE_MN_O;
 	// 					exi.SetWrongVersion();
 	// 				}
 	// 			}
@@ -1950,7 +1869,7 @@ namespace ExStorSys
 		// /// <remarks>
 		// /// possible return values:<br/>
 		// /// VDS_GOOD, VDS_INVALID, VDS_MISSING, VDS_WRONG_COUNT,
-		// /// VDS_ACT_OFF, VDS_ACT_IGNORE, VDS_WRONG_MODEL_NAME, VDS_WRONG_VER, VDS_MULTIPLE<br/>
+		// /// VDS_ACT_OFF, VDS_ACT_IGNORE, VDS_WRONG_MODEL_NAME, VDS_WRONG_VER, VDS_MULTIPLE_MN_O<br/>
 		// /// the found ds, if any, is converted to an ExListItem and placed in xData
 		// /// </remarks>
 		// private ValidateDataStorage VerifyWbkDataStorage2()
@@ -1967,9 +1886,9 @@ namespace ExStorSys
 		// 	ExListItem<DataStorage> ds = new (dsList[0].Name, dsList[0]);
 		//
 		// 	if (!ds.Item.IsValidObject || ds.Item.GetEntitySchemaGuids().Count != 1) return VDS_INVALID;
-		// 	if (!(xData.TempWbkSchema?.IsValid ?? false)) return VDS_INVALID;
+		// 	if (!(xData.TempWbkSchemaEx?.IsValid ?? false)) return VDS_INVALID;
 		//
-		// 	actStat = xMgr.ReadActivationStatus(ds.Item, xData.TempWbkSchema.Item);
+		// 	actStat = xMgr.ReadActivationStatus(ds.Item, xData.TempWbkSchemaEx.Item);
 		// 	if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
 		//
 		// 	if (actStat == ActivateStatus.AS_INACTIVE)
@@ -1978,11 +1897,11 @@ namespace ExStorSys
 		// 		ds.SetActIsOff();
 		// 	}
 		//
-		// 	modelName = xMgr.ReadModelName(ds.Item, xData.TempWbkSchema.Item) ?? "";
+		// 	modelName = xMgr.ReadModelName(ds.Item, xData.TempWbkSchemaEx.Item) ?? "";
 		//
-		// 	if (!modelName.Equals(xMgr.Exid.Model_Name))
+		// 	if (!modelName.Equals(xMgr.Exid.ModelName))
 		// 	{
-		// 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE;
+		// 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
 		// 		ds.SetWrongModelName();
 		// 	}
 		//
@@ -1991,11 +1910,11 @@ namespace ExStorSys
 		// 	// test 8
 		// 	if (verStrTst.IsVoid() || !ExStorConst.EXS_VERSION_WBK.Equals(verStrTst))
 		// 	{
-		// 		status = status == VDS_GOOD ? VDS_WRONG_VER : VDS_MULTIPLE;
+		// 		status = status == VDS_GOOD ? VDS_WRONG_VER : VDS_MULTIPLE_MN_O;
 		// 		ds.SetWrongVersion();
 		// 	}
 		//
-		// 	xData.TempWbkDs = ds;
+		// 	xData.TempWbkDsEx = ds;
 		//
 		// 	return status;
 		// }

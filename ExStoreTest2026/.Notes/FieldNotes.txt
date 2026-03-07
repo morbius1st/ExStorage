@@ -1,71 +1,167 @@
 ﻿descriptions of the schema and the fields in the schema
 
 
-
-
 Fields, etc.
 * defines the fields of a schema
 
 type 1 data list (one schema for all?)
 
 > (voided) primary schema (name: CsCells_Primary_{model ID code}_20250101A)
-		: name suffix is date + revision letter
-	* purpose: used to validate the system.  that is, make sure 
-		that the original model is being used.
-	* process auto run (if / when activated) (on db open event)
-		: uses a array list of "rows" to process
-	* model ID code: random 6 character code. 
-		: specific for this model. used in the names of all schemas
-	* components
-		> [AD], [SD]
-			+ [MD]
+        : name suffix is date + revision letter
+    * purpose: used to validate the system.  that is, make sure 
+        that the original model is being used.
+    * process auto run (if / when activated) (on db open event)
+        : uses a array list of "rows" to process
+    * model ID code: random 6 character code. 
+        : specific for this model. used in the names of all schemas
+    * components
+        > [AD], [SD]
+            + [MD]
 
 
 > sheet schema (name: CsCells_Sheet_{model ID code}_20250101A)
 > (voided) sub-schema (rows) (name: CsCells_Row_{model ID code}_20250101A)
-		: name suffix is date + revision letter
-	* components
-		> [AD], [SD]
-			+ [ED], [OD], array list { [RD] }
+        : name suffix is date + revision letter
+    * components
+        > [AD], [SD]
+            + [ED], [OD], array list { [RD] }
 
 
 
 
 * schema components
 
-	* [AD] admin data
-		* description
-		* created date
-		* created by
-		* deleted (as in deleted but not purged from memory)
-		* modified date
-		* modified by
-		* model ID code
-		* last sheet DS ID
+    * [AD] admin data
+        * description
+        * created date
+        * created by
+        * deleted (as in deleted but not purged from memory)
+        * modified date
+        * modified by
+        * model ID code
+        * last sheet DS ID
 
-	* [SD] schema data
-		* schema version
-		* GUID
+    * [SD] schema data
+        * schema version
+        * GUID
 
-	* [MD] model data
-		* name of model
-		* (void) model (file) creation date+time
+    * [MD] model data
+        * name of model
+        * (void) model (file) creation date+time
 
 
-	* [AR] auto run data
-		* array list of "rows" to process
+    * [AR] auto run data
+        * array list of "rows" to process
 
-	* [ED] excel data
-		* excel file path
-		* sheet name
-			
-	* [OD] operation data
-		* active / inactive
-		* sequence code
-		* update rule: on demand / on db open (if possible) but only if given permission
-		* skip updating
+    * [ED] excel data
+        * excel file path
+        * sheet name
+            
+    * [OD] operation data
+        * active / inactive
+        * sequence code
+        * update rule: on demand / on db open (if possible) but only if given permission
+        * skip updating
 
-	* [RD] revit data
-		* linked family name
-		or
-		* linked family name + type name
+    * [RD] revit data
+        * linked family name
+        or
+        * linked family name + type name
+
+
+sheet
+                                                                                                                                                                     
+                                                                                                                                                                     |        |              | copy / duplicate when
+                                                                                                                                                                     |        | edit         | same model      | new
+                                                                                                                                                                     |        | clean        |         | dup   | dup   |
+                                                                                                                                                                     | can    | dirty        |         | for   | for   | 
+                                                                                                                                                                     | edit?  | cl - can chg | dup for | new   | new   | 
+                                                                                                                                                                     | Y1,2,D | ig - no chg  | template| ver   | model | count u's
+                                                                                                                                                                     | N1,2   |              | type 1  | type 2| type 4|              0     7     4     2     5 (14) -1
+                                                                                                                                                                     |        |              | y or u  | y or u| y or u|              0+0+0 1+2+4 0+0+4 0+2+0 1+0+4  .+.+.
+{RK_DS_NAME,              new (RK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                  , IU_S_AND_DS  , DL_DEBUG      , FS_CLEAN   , FC_ALWAYS    | N1     | ig           | u       | u     | u     | FC_ALWAYS          uuu                      
+{RK_AD_DESC,              new (RK_AD_DESC,              "Desc",             "Description",                , IU_S_AND_DS  , DL_BASIC      , FS_CLEAN   , FC_ALWAYS    | Y1     | cl           | y       | y     | y     | FC_NEVER     yyy                           
+{RK_AD_VENDORID,          new (RK_AD_VENDORID,          "VendorId",         "Vendor Id",                  , IU_S_AND_DS  , DL_DEBUG      , FS_CLEAN   , FC_ALWAYS    | YD     | cl           | y       | y     | y     | FC_NEVER     yyy                           
+
+{RK_AD_DATE_CREATED,      new (RK_AD_DATE_CREATED,      "CreateDate",       "Date Created",               , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | N1     | cl           | u       | y     | u     | FC_TYPE_14                            uyu   
+{RK_AD_NAME_CREATED,      new (RK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",             , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | N1     | cl           | u       | y     | u     | FC_TYPE_14                            uyu   
+{RK_AD_DATE_MODIFIED,     new (RK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",              , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | N1     | cl           | u       | u     | u     | FC_ALWAYS          uuu                      
+{RK_AD_NAME_MODIFIED,     new (RK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",            , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | N1     | cl           | u       | u     | u     | FC_ALWAYS          uuu                      
+
+{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",             , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | N1     | ig           | i       | i     | i     | FC_IGNORE                                    iii          
+
+{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name",            , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name",           , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status",           , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence",         , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule",                , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass",              , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+{RK_RD_FAMILY_LIST,       new (RK_RD_FAMILY_LIST,        "Rows",             "List of Families (& types)" , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN   , FC_ALWAYS    | Y2     | cl           | y       | y     | y     | FC_NEVER      yyy                           
+
+
+
+workbook
+                                                                                                                                                                               |        |              | copy / duplicate when
+                                                                                                                                                                               |        | edit         | same model      | new
+                                                                                                                                                                               |        | clean        |         | dup   | dup   |
+                                                                                                                                                                               | can    | dirty        |         | for   | for   | count u's
+                                                                                                                                                                               | edit?  | cl - can chg | dup for | new   | new   |                0     7     4     2     5 (14) -1
+                                                                                                                                                                               | Y1,2,D | ig - no chg  | template| ver   | model |                0+0+0 1+2+4 0+0+4 0+2+0 1+0+4  .+.+.
+                                                                                                                                                                               | N1,2   |              | type 1  | type 2| type 4|                                               
+                                                                                                                                                                               |        |              | 1 or 0  | 1 or 0| 1 or 0|    A    N                                     
+{PK_DS_NAME,              new (PK_DS_NAME,              KEY_DS_NAME,        KEY_DS_NAME,                       , IU_S_AND_DS  , DL_BASIC      , FS_IGNORE     , FC_NEVER       | N1     | ig           | u       | u     | u     |  FC_ALWAYS        uuu                      
+{PK_AD_DESC,              new (PK_AD_DESC,              "Desc",             "Description",                     , IU_S_AND_DS  , DL_BASIC      , FS_CLEAN      , FC_NEVER       | Y1     | cl           | y       | y     | y     |  FC_NEVER      yyy                            
+{PK_AD_STATUS,            new (PK_AD_STATUS,            "Status",           "Activate Status",                 , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN      , FC_COPY_C45    | Y2     | cl           | y       | y     | y     |  FC_NEVER      yyy                            
+{PK_AD_VENDORID,          new (PK_AD_VENDORID,          "VendorId",         "Vendor Id",                       , IU_S_AND_DS  , DL_DEBUG      , FS_IGNORE     , FC_COPY_C15    | YD     | cl           | y       | y     | y     |  FC_NEVER      yyy                            
+{PK_AD_DATE_CREATED,      new (PK_AD_DATE_CREATED,      "CreateDate",       "Date Created",                    , IU_S_AND_DS  , DL_MEDIUM     , FS_CLEAN      , FC_NEVER       | N1     | cl           | u       | y     | u     |  FC_TYPE_14                            uyu     
+{PK_AD_NAME_CREATED,      new (PK_AD_NAME_CREATED,      "CreateName",       "Creator's Name",                  , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN      , FC_NEVER       | N1     | cl           | u       | y     | u     |  FC_TYPE_14                            uyu     
+{PK_AD_DATE_MODIFIED,     new (PK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified",                   , IU_S_AND_DS  , DL_MEDIUM     , FS_CLEAN      , FC_NEVER       | N1     | cl           | u       | u     | u     |  FC_ALWAYS           uuu                      
+{PK_AD_NAME_MODIFIED,     new (PK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name",                 , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN      , FC_NEVER       | N1     | cl           | u       | u     | u     |  FC_ALWAYS           uuu                      
+{PK_AD_LAST_ID,           new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code",     , IU_S_AND_DS  , DL_DEBUG      , FS_CLEAN      , FC_COPY_C35    | YD     | cl           | y       | y     | u     |  FC_TYPE_4                 yyu                
+{PK_SD_SCHEMA_VERSION,    new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                  , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN      , FC_COPY_C25    | N2     | ig           | i       | i     | i     |  FC_IGNORE                                     iii          
+{PK_MD_MODEL_NAME,        new (PK_MD_MODEL_NAME,        "ModelName",        "Model Name",                      , IU_S_AND_DS  , DL_BASIC      , FS_CLEAN      , FC_COPY_C35    | N1     | cl           | y       | y     | u     |  FC_TYPE_4                 yyu                
+   
+copy / duplicate
+y - copy the original value
+u - update with new value
+i - ignore, skip (applies to fixed values)
+
+can edit
+1 = basic editor
+2 = advanced editor
+D = debug editor
+Y1, 2, D - viewing by 1+ & edit allowed by 1+, 2+, or D
+N1, 2,   - viewing allowed by 1+, or 2+ - editing allowed by D
+
+edit clean / dirty
+ig - does not change, cannot be clean or dirty
+cl - can change, can be clean or dirty
+
+
+copy
+A - always - as is
+N - never - always provide a new value
+1 - copy as is
+0 - provide a new value
+
+7 - copy always
+0 - copy never
+2 - copy when type 2
+3 - copy when type 1 or 2
+5 - copy when type 1 or 4
+
+current copy types
+A  type 1 - as a template - allows a new ds to be based on a prior ds
+B  type 2 - duplicate to update the version
+C  type 4 - duplicate to be used in a new model
+
+examples
+copy type 4
+copy all
+except update these
+7 (1+2+4), 6 (2+4), 5 (1+4), 4 (4)
+
+copy type 1
+copy 
+except update these
+7 (1+2+4), 5 (1+4), 3 (1+2)

@@ -1,0 +1,83 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/MasterColorList.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+
+
+
+
+	<!-- -->
+	<!-- <SolidColorBrush x:Key="Fg.Disabled.DkBg" Color="{StaticResource Blue.Gray.700}" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.Disabled.LtBg" Color="{StaticResource Blue.Gray.400}" /> -->
+	<SolidColorBrush x:Key="Fg.IsEnabled" Color="{StaticResource Blue.Gray.700}" />
+	<!-- <SolidColorBrush x:Key="Fg.IsSel" Color="White" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.IsSel.MouseOver" Color="White" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.IsEditing" Color="White" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.IsReadOnly" Color="{StaticResource Blue.Gray.600}" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.IsLocked" Color="{StaticResource Blue.Gray.600}" /> -->
+	<!-- <SolidColorBrush x:Key="Fg.IsLocked.Lv" Color="{StaticResource Blue.Gray.700}" /> -->
+	<!-- -->
+	<!-- -->
+	<!-- ~1~  needs to be trigger adjusted  @1@ -->
+	<!-- ~1~  combobox  @1@ -->
+	<!-- ~1~  combobox  bg  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.Disabled" Color="{StaticResource Cool.Blue.200}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsEnabled" Color="{StaticResource Cool.Blue.300}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsSel" Color="{StaticResource Cool.Blue.450}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsEditing" Color="{StaticResource Purple.400}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsReadOnly" Color="{StaticResource Cool.Blue.200}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsLocked" Color="{StaticResource Cool.Blue.150}" /> -->
+	<!-- ~1~  combobox  fg  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.Disabled" Color="{Binding Color, Source={StaticResource Fg.Disabled.DkBg}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsEnabled" Color="{Binding Color, Source={StaticResource Fg.IsEnabled}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsSel" Color="{Binding Color, Source={StaticResource Fg.IsSel}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsEditing" Color="{Binding Color, Source={StaticResource Fg.IsEditing}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsReadOnly" Color="{Binding Color, Source={StaticResource Fg.IsReadOnly}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsLocked" Color="{Binding Color, Source={StaticResource Fg.IsLocked}}" /> -->
+	<!-- ~1~  combobox  bdr  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.Disabled" Color="{Binding Color, Source={StaticResource Fg.Disabled.DkBg}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsEnabled" Color="{Binding Color, Source={StaticResource Fg.IsEnabled}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsSel" Color="{Binding Color, Source={StaticResource Fg.IsSel}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsEditing" Color="{Binding Color, Source={StaticResource Fg.IsEditing}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsReadOnly" Color="{Binding Color, Source={StaticResource Fg.IsReadOnly}}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsLocked" Color="{Binding Color, Source={StaticResource Fg.IsLocked}}" /> -->
+	<!-- ~1~  combobox  mo bg  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsEnabled.MouseOver" Color="{StaticResource Cool.Blue.350}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsSel.MouseOver" Color="{StaticResource Cool.Blue.350}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bg.IsEditing.MouseOver" Color="{StaticResource Deep.Purple.450}" /> -->
+	<!-- ~1~  combobox  mo fg  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsEnabled.MouseOver" Color="{StaticResource Cool.Blue.820}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsSel.MouseOver" Color="{StaticResource Cool.Blue.820}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Fg.IsEditing.MouseOver" Color="{Binding Color, Source={StaticResource Cool.Blue.760}}" /> -->
+	<!-- ~1~  combobox  mo bdr  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsEnabled.MouseOver" Color="{StaticResource Gray.800}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsSel.MouseOver" Color="{StaticResource Gray.800}" /> -->
+	<!-- <SolidColorBrush x:Key="Cbx.Bdr.IsEditing.MouseOver" Color="White" /> -->
+	<!-- ~1~  combobox  drop  @1@ -->
+	<!-- <SolidColorBrush x:Key="Cbx.DropDown.Bg.IsSel" Color="{StaticResource Deep.Purple.450}" /> -->
+	<!-- -->
+	<!-- -->
+	<!--  items in drop down list highlighting  -->
+	<!--  sel / mouse not over  -->
+
+
+	<SolidColorBrush x:Key="Cbx.DropDownBrush" Color="{StaticResource Gray.300}" />
+
+	<SolidColorBrush x:Key="Cbx.Ct.Mo.Bg" Color="{StaticResource Gray.200}" />
+	<SolidColorBrush x:Key="Cbx.Ct.Mo.Bdr" Color="Red" />
+	<SolidColorBrush x:Key="Cbx.Ct.Mo.Fg" Color="White" />
+
+
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bg.Sel" Color="#30FFFFFF" />
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bg.IsEnabled.MouseOver" Color="#2FFFFFFF" />
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bg.Sel.MouseOver" Color="#1AFFFFFF" />
+	<!--    -->
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bdr.Sel" Color="#BFFFFFFF" />
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bdr.IsEnabled.MouseOver" Color="#7FFFFFFF" />
+	<SolidColorBrush x:Key="Cbx.DropDownItem.Bdr.Sel.MouseOver" Color="#7FFFFFFF" />
+
+
+</ResourceDictionary>

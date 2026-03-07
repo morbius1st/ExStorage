@@ -37,8 +37,8 @@ namespace ExStorSys
 		{
 			RevitAddinsUtil.ReadManifest(CsUtilities.AssemblyName);
 
-			// ModelName = R.RvtDoc?.Title ?? "";
-			// Model_Name = ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
+			// ModelTitle = R.RvtDoc?.Title ?? "";
+			// ModelName = ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
 		}
 
 	#endregion
@@ -50,12 +50,12 @@ namespace ExStorSys
 		/// <summary>
 		/// Actual model name (title) (un-cleaned)
 		/// </summary>
-		public string ModelName => R.RvtDoc?.Title ?? "";
+		public string ModelTitle => R.RvtDoc?.Title ?? "";
 
 		/// <summary>
-		/// Cleaned actual model name (title)
+		/// Cleaned actual model name (title) (cleaned)
 		/// </summary>
-		public string Model_Name =>ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
+		public string ModelName =>ExStorLib.Instance.CleanName(R.RvtDoc?.Title);
 
 
 		/* ex stor names */
@@ -149,8 +149,8 @@ namespace ExStorSys
 		// }
 
 		/// <summary>
-		/// CsCells_Sht_{model code}_{ID}_v1_00 / example: CsCells_Sht_250101_16010_ABCD_v1_00<br/>
-		/// model code / id code reversed now
+		/// CsCells_Sht_{ID}_v1_00 / example: CsCells_Sht_ABCD_v1_00<br/>
+		/// model code removed, uses current version
 		/// </summary>
 		public string CreateShtDsName(string id)
 		{

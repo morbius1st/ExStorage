@@ -105,6 +105,7 @@ namespace ExStoreDev.Windows
 			set { MessageBoxText = value; }
 		}
 
+
 	#endregion
 
 	#region private properties
@@ -204,9 +205,12 @@ namespace ExStoreDev.Windows
 		{
 			shtd = mwModel.TestMakeDataSheetInitial(shtExid);
 
+			OnPropertyChange(nameof(ShtD));
+
 			mwModel.TestMakeDataRow3(shtExid, shtd);
 
 			mwModel.ShowSheetData(shtd);
+
 		}
 
 		// test clone
@@ -311,6 +315,11 @@ namespace ExStoreDev.Windows
 		private void BtnExp09_OnClick(object sender, RoutedEventArgs e)
 		{
 			mwModel.MakeIdTest();
+		}
+
+		private void BtnTbxClear_OnClick(object sender, RoutedEventArgs e)
+		{
+			MessageBoxText=string.Empty;
 		}
 	}
 }

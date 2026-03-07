@@ -1,15 +1,21 @@
 #region using
-using Autodesk.Revit.ApplicationServices;
-using Autodesk.Revit.DB.Events;
-using Autodesk.Revit.UI;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Markup;
+
+using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.DB.Architecture;
+using Autodesk.Revit.DB.Events;
+using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Events;
+
 using ExStoreTest2026.DebugAssist;
 using ExStoreTest2026.Windows;
+
 using ExStorSys;
+
 using RevitLibrary;
+
 using UtilityLibrary;
 
 #endregion
@@ -55,6 +61,7 @@ namespace ExStoreTest2026
 
 		private const string SMALLICON = "information16.png";
 		private const string LARGEICON = "information32.png";
+
 
 		internal UIApplication uiApp;
 
@@ -133,6 +140,7 @@ namespace ExStoreTest2026
 			app.DocumentOpening += AppOnDocumentOpening;
 			app.DocumentClosing += AppOnDocumentClosing;
 			
+			app.DocumentSavingAs += AppOnDocumentSavingAs;
 			app.DocumentSavedAs += AppOnDocumentSavedAs;
 			uiApp.ViewActivated += UiAppOnViewActivated;
 
@@ -188,18 +196,30 @@ namespace ExStoreTest2026
 			RemoveExStMgr(e.Document.Title);
 		}
 
+		private void AppOnDocumentSavingAs(object? sender, DocumentSavingAsEventArgs e)
+		{
+			// doc name is the original project | file is the path to the new project | R.RvtDoc is still the original project
+			// string docName = e?.Document.Title ?? "null";
+			// string file = Path.GetFileName(e?.PathName ?? "\\no file.txt");
+			// docStatus($"saving as | doc name {docName} | file {file}");
+
+			RemoveExStMgr(e.Document.Title);
+		}
+
 		private void AppOnDocumentSavedAs(object? sender, DocumentSavedAsEventArgs e)
 		{
+			ExStorMgr i = ExStorMgr.Instance;
+
 			// set the current documents
 			R.RvtUidoc = R.RvtUiApp!.ActiveUIDocument;
 			R.RvtDoc = R.RvtUidoc?.Document;
 
 			ExStorMgr.Instance?.xData.ResetAll();
 
-			Debug.WriteLine($"** model names | {ExStorMgr.Instance?.Exid.ModelName} | {ExStorMgr.Instance?.Exid.Model_Name}");
+			Debug.WriteLine($"** model names | {ExStorMgr.Instance?.Exid.ModelTitle} | {ExStorMgr.Instance?.Exid.ModelName}");
+
+			docViewJustOpened(e.Document.Title);
 		}
-
-
 
 		private void UiAppOnViewActivated(object? sender, ViewActivatedEventArgs e)
 		{
@@ -220,30 +240,32 @@ namespace ExStoreTest2026
 
 				if (docJustOpened)
 				{
-					docJustOpened = false;
+					docViewJustOpened(e.Document.Title);
 
-					// if (!AddExMgr(e.Document.Title)) return;
-					if (!AddExStMgr(e.Document.Title)) return;
-					// ExStorMgr.Instance = ExMgrs[e.Document.Title];
-					
-					ExStorStartMgr.Instance = stMgrs[e.Document.Title];
-
-					// ExStorStartMgr.Instance.Restore();
-					// ExStorMgr.Instance = ExStorStartMgr.Instance.xMgr;
-					// ExStorMgr.Instance.MessageCache = String.Empty;
-					// ExStorStartMgr.Instance.xMgr.MessageCache = String.Empty;
-
-					// ExStorMgr.Instance.StartWinUi();
-
-					ExStorLaunchMgr lMgr = ExStorLaunchMgr.Create();
-
-					// this sets the Launch Status in the Mui - then
-					// the main window checks this, upon source init
-					// and starts the start manager to determine
-					// the next steps / read the exstor data or not.
-					lMgr.OnOpenDocLaunch();
-
-					// lMgr.TestVfy1();
+					// docJustOpened = false;
+					//
+					// // if (!AddExMgr(e.Document.Title)) return;
+					// if (!AddExStMgr(e.Document.Title)) return;
+					// // ExStorMgr.Instance = ExMgrs[e.Document.Title];
+					//
+					// ExStorStartMgr.Instance = stMgrs[e.Document.Title];
+					//
+					// // ExStorStartMgr.Instance.Restore();
+					// // ExStorMgr.Instance = ExStorStartMgr.Instance.xMgr;
+					// // ExStorMgr.Instance.MessageCache = String.Empty;
+					// // ExStorStartMgr.Instance.xMgr.MessageCache = String.Empty;
+					//
+					// // ExStorMgr.Instance.StartWinUi();
+					//
+					// ExStorLaunchMgr lMgr = ExStorLaunchMgr.Create();
+					//
+					// // this sets the Launch Status in the Mui - then
+					// // the main window checks this, upon source init
+					// // and starts the start manager to determine
+					// // the next steps / read the exstor data or not.
+					// lMgr.OnOpenDocLaunch();
+					//
+					// // lMgr.TestVfy1();
 				}
 				else 
 				if (!docIsClosing)
@@ -280,6 +302,37 @@ namespace ExStoreTest2026
 				}
 			}
 		}
+
+
+		private void docViewJustOpened(string docTitle)
+		{
+			ExStorMgr xMgr;
+			ExStorStartMgr stMgr;
+
+			docJustOpened = false;
+
+			// if (!AddExMgr(e.Document.Title)) return;
+			if (!AddExStMgr(docTitle)) return;
+			// ExStorMgr.Instance = ExMgrs[e.Document.Title];
+				
+			ExStorStartMgr.Instance = stMgrs[docTitle];
+
+			// ExStorStartMgr.Instance.Restore();
+			// ExStorMgr.Instance = ExStorStartMgr.Instance.xMgr;
+			// ExStorMgr.Instance.MessageCache = String.Empty;
+			// ExStorStartMgr.Instance.xMgr.MessageCache = String.Empty;
+
+			// ExStorMgr.Instance.StartWinUi();
+
+			ExStorLaunchMgr lMgr = ExStorLaunchMgr.Create();
+
+			// this sets the Launch Status in the Mui - then
+			// the main window checks this, upon source init
+			// and starts the start manager to determine
+			// the next steps / read the exstor data or not.
+			lMgr.OnOpenDocLaunch();
+		}
+
 
 		private bool AddExStMgr(string? key)
 		{
@@ -327,13 +380,7 @@ namespace ExStoreTest2026
 
 		/* study only for now*/
 
-		private void AppOnDocumentSavingAs(object? sender, DocumentSavingAsEventArgs e)
-		{
-			// doc name is the original project | file is the path to the new project | R.RvtDoc is still the original project
-			string docName = e?.Document.Title ?? "null";
-			string file = Path.GetFileName(e?.PathName ?? "\\no file.txt");
-			docStatus($"saving as | doc name {docName} | file {file}");
-		}
+
 
 		private void AppOnDocumentSaved(object? sender, DocumentSavedEventArgs e)
 		{

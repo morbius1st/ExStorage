@@ -14,6 +14,56 @@ namespace ExStoreTest2026.DebugAssist
 {	
 	public static class DebugRoutines
 	{
+		public static void TestDynaValueChanges()
+		{
+			DynaValue dv10 = new DynaValue(10.0);
+			DynaValue dv20 = new DynaValue(20);
+
+			bool sd = Msgs.ShowDebug;
+			Msgs.ShowDebug = true;
+
+			Msgs.Col1Width = 34;
+
+			tstDyanValU(dv10, nameof(dv10));
+			tstDyanValU(dv20, nameof(dv20));
+
+			Msgs.ShowDebug = sd;
+		}
+
+		private static void tstDyanValU(DynaValue dv, string name)
+		{
+			dynamic dy = dv.Value;
+			double d = dv.IsDouble ? dv.Value : -1.0;
+			int i =	dv.IsInt ? dv.Value : -1;
+			string? s = dv.AsString();
+
+
+
+			Msgs.WriteLineSpaced($"{name} | original value", $"{dv.AsString()} | {dv.TypeIs.Name}");
+
+			dynamic dvx = dv.Value + 10;
+
+			dv.ChangeValue(dvx);
+
+			Msgs.WriteLineSpaced($"{name}'s add 10", $"{dv.AsString()} | {dv.TypeIs.Name} | is modified? {dv.ChangeQty}");
+			Msgs.WriteLineSpaced($"{name}'s prior value", $"{dv.PriorValue.ToString()} | is clean? {dv.IsClean} is dirty? {dv.IsDirty}");
+
+			dv.UndoChange();
+
+			Msgs.WriteLineSpaced($"{name} value un-done", $"{dv.AsString()} | {dv.TypeIs.Name} | is modified? {dv.ChangeQty}");
+			Msgs.WriteLineSpaced($"{name}'s prior value", $"{dv.PriorValue.ToString()} | is clean? {dv.IsClean} is dirty? {dv.IsDirty}");
+
+			dvx = dv.Value + 20;
+
+			dv.ChangeValue(dvx);
+			dv.ApplyChange();
+
+			Msgs.WriteLineSpaced($"{name}'s add 20 / apply change", $"{dv.AsString()} | {dv.TypeIs.Name} | is modified? {dv.ChangeQty}");
+			Msgs.WriteLineSpaced($"{name}'s prior value", $"{dv.PriorValue?.ToString() ?? "null"} | is clean? {dv.IsClean} is dirty? {dv.IsDirty}");
+
+
+		}
+
 		public static void ShowObjectId()
 		{
 			int i;
@@ -68,9 +118,9 @@ namespace ExStoreTest2026.DebugAssist
 				muiOid = MainWinModelUi.Instance?.ObjectId.ToString() ?? "null 2";
 			}
 
-			Msgs.WriteLineSpaced("\n\x1b[1;31m;**** object id's ***");
+			Msgs.WriteLineSpaced("\n**** object id's ***");
 
-			Msgs.WriteLineSpaced("\n\x9b33m** static objects");
+			Msgs.WriteLineSpaced("\n** static objects");
 			
 			Msgs.WriteLineSpaced("\nstatic / does not change");
 			Msgs.WriteLineSpaced($"lib id", xlibOid);
@@ -177,8 +227,8 @@ namespace ExStoreTest2026.DebugAssist
 
 			Msgs.WriteLine($"model names");
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"*** document name ***", ex.ModelName);
-			Msgs.WriteLineSpaced($"doc name", ex.Model_Name);
+			Msgs.WriteLineSpaced($"*** document name ***", ex.ModelTitle);
+			Msgs.WriteLineSpaced($"doc name", ex.ModelName);
 
 			Msgs.NewLine();
 			Msgs.WriteLine($"DS names");
@@ -238,9 +288,9 @@ namespace ExStoreTest2026.DebugAssist
 
 			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk)
 			{
-				dv = ExStorLib.Instance.ReadField(wbk.ExsEntity!, value);
+				dv = ExStorLib.Instance.ReadFieldDyn(wbk.ExsEntity!, value.Field!);
 
-				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(dv?.Value.ToString() ?? "null"),-40} | {dv.TypeIs, -20}  [{dv.RevitTypeIs}]");
+				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(dv?.ToString() ?? "null"),-40} | {dv.TypeIs, -20}  [{dv.RevitTypeIs}]");
 			}
 
 		}
@@ -259,10 +309,11 @@ namespace ExStoreTest2026.DebugAssist
 				return;
 			}		
 
-
 			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk)
 			{
-				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value.ToString() ?? "null"),-40} | {value.DyValue.TypeIs.BaseType, -20}  [{value.DyValue.RevitTypeIs.BaseType}]");
+				Msgs.WriteSpaced($"*** {key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value.ToString() ?? "null"),-34}");
+				Msgs.WriteLine($" | chgd? {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | clean? {value.DyValue.IsClean}");
+				// Msgs.WriteLine($" | modified {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | {value.DyValue.TypeIs.Name, -20}  [{value.DyValue.RevitTypeIs.Name}]");
 			}
 
 			showWorkBookInfo(wbk);
@@ -279,11 +330,14 @@ namespace ExStoreTest2026.DebugAssist
 				return;
 			}
 
-			foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.Sheets)
+			foreach ((string key, Sheet sht) in ExStorMgr.Instance.xData.Sheets)
 			{
+				//
+				// foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.SheetsList)
+				// {
 				Msgs.WriteLineSpaced($"\n*** sheet {count} ***\n");
 			
-				if (ExStorMgr.Instance.xData.GotShtDs(k))
+				if (ExStorMgr.Instance.xData.GotShtDs(sht.DsName))
 				{
 					ShowSheetFromMemory(sht);
 				}
@@ -310,11 +364,13 @@ namespace ExStoreTest2026.DebugAssist
 			
 			int count = 0;
 			
-			foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.Sheets)
+			foreach ((string key, Sheet sht) in ExStorMgr.Instance.xData.Sheets)
 			{
+				// foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.SheetsList)
+				// {
 				Msgs.WriteLineSpaced($"*** sheet {count} ***\n");
 			
-				if (ExStorMgr.Instance.xData.GotShtDs(k))
+				if (ExStorMgr.Instance.xData.GotShtDs(sht.DsName))
 				{
 					ShowSheet(sht);
 				}
@@ -356,8 +412,10 @@ namespace ExStoreTest2026.DebugAssist
 			{
 				Msgs.WriteLineSpaced($"sheets count", xd.Sheets.Count);
 
-				foreach ((string? key, Sheet? sht) in xd.Sheets)
+				foreach ((string key, Sheet sht) in xd.Sheets)
 				{
+					// foreach ((string? key, Sheet? sht) in xd.SheetsList)
+					// {
 					// Msgs.WriteLineSpaced($"\tsht | ds name", $"{sht.DsName} | is empty {sht.IsEmpty} | is invalid {sht.IsInvalid}");
 					Msgs.WriteLineSpaced($"\tsht | ds name", $"{sht.DsName} | is empty {sht.IsEmpty}");
 				}
@@ -450,7 +508,7 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.WriteLine("\n**** START - find and show all elements ****\n");
 
 			Msgs.NewLine();
-			Msgs.WriteLine($"\n\t** current model name {xMgr.Exid.Model_Name} [{xMgr.Exid.ModelName}] **\n");
+			Msgs.WriteLine($"\n\t** current model name {xMgr.Exid.ModelName} [{xMgr.Exid.ModelTitle}] **\n");
 
 			Msgs.WriteLine("\tWBK Schema (local)");
 			if (xMgr.xData.GotWbkSchema)
@@ -468,7 +526,7 @@ namespace ExStoreTest2026.DebugAssist
 			if (xMgr.xData.GotWbkDs)
 			{
 				name = xMgr.xData.WorkBook!.ExsDataStorage!.Name;
-				mn = xMgr.xData.WorkBook.Model_Name;
+				mn = xMgr.xData.WorkBook.ModelTitle;
 				// mc1 = xMgr.xData.WorkBook.ModelCode;
 				// mc2 = xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.WbkSearchName) ?? "is null";
 
@@ -499,12 +557,14 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.WriteLine("\tSHT DataStorage (local)");
 			if (xMgr.xData.GotAnySheets)
 			{
-				foreach ((string? key, Sheet? sht) in xMgr.xData.Sheets)
+				// foreach ((string? key, Sheet? sht) in xMgr.xData.SheetsList)
+				// {
+
+				foreach ((string key, Sheet sht) in xMgr.xData.Sheets)
 				{
 					if (sht.ExsDataStorage != null && sht.ExsDataStorage.IsValidObject)
 					{
-						name = sht.ExsDataStorage.Name;
-						// mc2 = xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.ShtSearchName) ?? "is null";
+						Msgs.NewLine();
 
 						Msgs.WriteLine($"\t\t{sht.ExsDataStorage.Name,-40} | valid {xMgr.xData.WorkBook!.ExsDataStorage!.IsValidObject,-8}");
 
@@ -514,7 +574,7 @@ namespace ExStoreTest2026.DebugAssist
 					}
 					else
 					{
-						Msgs.WriteLine($"\t\t** SHT datastorage {key} is null (local) **");
+						Msgs.WriteLine($"\t\t** SHT datastorage {sht.DsName} is null (local) **");
 					}
 				}
 			}
@@ -540,7 +600,7 @@ namespace ExStoreTest2026.DebugAssist
 
 				if (TempWbkSchemaList.Count == 1)
 				{
-					xMgr.xData.TempWbkSchema = new ExListItem<Schema>( TempWbkSchemaList[0].SchemaName,  TempWbkSchemaList[0]);
+					xMgr.xData.TempWbkSchemaEx = new ExListItem<Schema>( TempWbkSchemaList[0].SchemaName,  TempWbkSchemaList[0]);
 				}
 			}
 			else
@@ -559,10 +619,10 @@ namespace ExStoreTest2026.DebugAssist
 				{
 					name = ds.Name;
 
-					if (xMgr.xData.TempWbkSchema != null)
+					if (xMgr.xData.TempWbkSchemaEx != null)
 					{
-						mn = xMgr.ReadModelName(ds, xMgr.xData.TempWbkSchema.Item) ?? "is null";
-						// mc1 = xMgr.ReadModelCode(ds, xMgr.xData.TempWbkSchema) ?? "is null";
+						mn = xMgr.ReadModelName(ds, xMgr.xData.TempWbkSchemaEx.Item) ?? "is null";
+						// mc1 = xMgr.ReadModelCode(ds, xMgr.xData.TempWbkSchemaEx) ?? "is null";
 						// mc2 =  xMgr.xLib.ExtractModelCodeFromName(name, xMgr.Exid.WbkSearchName) ?? "is null";
 						temp = $"{mn,-12}";
 					}
@@ -573,7 +633,7 @@ namespace ExStoreTest2026.DebugAssist
 
 					Msgs.WriteLine($"\t\t{ds.Name,-40} | valid {ds.IsValidObject,-8} | {temp}");
 
-					guid = xMgr.xData?.TempWbkSchema.Item?.GUID ?? Guid.Empty;
+					guid = xMgr.xData?.TempWbkSchemaEx?.Item?.GUID ?? Guid.Empty;
 
 					matchDsSchemaGuids(ds, guid, ExStorConst.WbkSchemaGuid);
 				}
@@ -597,7 +657,7 @@ namespace ExStoreTest2026.DebugAssist
 
 				if (TempShtSchemaList.Count == 1)
 				{
-					xMgr.xData.TempShtSchema = new ExListItem<Schema>(TempShtSchemaList[0].SchemaName, TempShtSchemaList[0]);
+					xMgr.xData.TempShtSchemaEx = new ExListItem<Schema>(TempShtSchemaList[0].SchemaName, TempShtSchemaList[0]);
 				}
 			}
 			else
@@ -617,7 +677,7 @@ namespace ExStoreTest2026.DebugAssist
 					Msgs.NewLine();
 					Msgs.WriteLine($"\t\t{ds.Name,-40} | valid {ds.IsValidObject,-8}");
 
-					guid = xMgr.xData?.TempShtSchema?.Item.GUID ?? Guid.Empty;
+					guid = xMgr.xData?.TempShtSchemaEx?.Item.GUID ?? Guid.Empty;
 
 					matchDsSchemaGuids(ds, guid, ExStorConst.ShtSchemaGuid);
 				}
@@ -630,7 +690,6 @@ namespace ExStoreTest2026.DebugAssist
 			Msgs.NewLine();
 			Msgs.WriteLine("\n**** END - find and show all elements ****\n");
 		}
-
 
 		/* private */
 
@@ -659,36 +718,20 @@ namespace ExStoreTest2026.DebugAssist
 
 			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> value) in sht!)
 			{
-				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value?.ToString() ?? "null"),-40} | {value.DyValue?.TypeIs, -20}  [{value.DyValue?.RevitTypeIs}]");
-
 				if (key == SheetFieldKeys.RK_RD_FAMILY_LIST)
 				{
-					IList<string>? famsAndTypes = (IList<string>) value.DyValue.Value;
+					Msgs.WriteSpaced($"*** {key}", $"{value.Field.FieldName,-16} | {$"count| {(value.DyValue?.AsDictStringString().Count ?? -1)}",-34}");
+					Msgs.WriteLine($" | modified {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | clean? {value.DyValue.IsClean}");
+
+					IDictionary<string, string>? famsAndTypes = (IDictionary<string, string>) value.DyValue.Value;
 
 					showFamsAndTypes(famsAndTypes);
-
-					// if (famsAndTypes != null)
-					// {
-					// 	Msgs.WriteLineSpaced($"\tlist count > {famsAndTypes.Count.ToString()}");
-					//
-					// 	foreach (string ft in famsAndTypes)
-					// 	{
-					// 		int pos1 = ft.IndexOf('|');
-					//
-					// 		if (pos1 >= 0)
-					// 		{
-					// 			Msgs.WriteLineSpaced($"\t> {ft.Substring(0, pos1)}<  >{ft.Substring(pos1 + 1)}<");
-					// 		}
-					// 		else
-					// 		{
-					// 			Msgs.WriteLineSpaced($"\t> {ft}");
-					// 		}
-					// 	}
-					// }
-					// else
-					// {
-					// 	Msgs.WriteLineSpaced($"\tlist count > is null");
-					// }
+				}
+				else
+				{
+					Msgs.WriteSpaced($"*** {key}", $"{value.Field.FieldName,-16} | {(value.DyValue?.Value?.ToString() ?? "null"),-34}");
+					Msgs.WriteLine($" | modified {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | clean? {value.DyValue.IsClean}");
+					// Msgs.WriteLine($" | modified {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | {value.DyValue?.TypeIs.Name, -30}  [{value.DyValue?.RevitTypeIs.Name}]");
 				}
 			}
 
@@ -698,26 +741,28 @@ namespace ExStoreTest2026.DebugAssist
 		public static void ShowSheetFromMemory(Sheet? sht)
 		{
 			Msgs.Col1Width = 32;
-			DynaValue dv;
+			DynaValue? dv;
 
 			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> value) in sht!)
 			{
-				dv = ExStorLib.Instance.ReadField(sht.ExsEntity, value);
-
-				Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-20} | {(dv?.Value?.ToString() ?? "null"),-40} | {dv?.TypeIs, -20}  [{dv?.RevitTypeIs}]");
+				dv = ExStorLib.Instance.ReadFieldDyn(sht.ExsEntity!, value.Field!);
 
 				if (key == SheetFieldKeys.RK_RD_FAMILY_LIST)
 				{
-					IList<string>? famsAndTypes = (IList<string>) dv.Value;
+					IDictionary<string, string>? famsAndTypes = (IDictionary<string, string>) dv.Value;
 
 					showFamsAndTypes(famsAndTypes);
+				}
+				else
+				{
+					Msgs.WriteLineSpaced($"{key}", $"{value.Field.FieldName,-16} | {(dv?.Value?.ToString() ?? "null"),-34} | {dv?.TypeIs, -20}  [{dv?.RevitTypeIs}]");
 				}
 			}
 
 			showSheetInfo(sht);
 		}
 
-		private static void showFamsAndTypes(IList<string>? famsAndTypes)
+		private static void showFamsAndTypes(IDictionary<string, string>? famsAndTypes)
 		{
 			if (famsAndTypes == null || famsAndTypes.Count == 0)
 			{
@@ -727,18 +772,9 @@ namespace ExStoreTest2026.DebugAssist
 
 			Msgs.WriteLineSpaced($"\n** show fam types - START | list count > {famsAndTypes.Count.ToString()}");
 
-			foreach (string ft in famsAndTypes)
+			foreach ((string? key, string? value) in famsAndTypes)
 			{
-				int pos1 = ft.IndexOf('|');
-
-				if (pos1 >= 0)
-				{
-					Msgs.WriteLineSpaced($"\t> {ft.Substring(0, pos1)}<  >{ft.Substring(pos1 + 1)}<");
-				}
-				else
-				{
-					Msgs.WriteLineSpaced($"\t> {ft}");
-				}
+				Msgs.WriteLineSpaced($"\t>{key}<  >{value}<");
 			}
 
 			Msgs.WriteLineSpaced($"\n** show fam types - DONE\n");
@@ -751,37 +787,50 @@ namespace ExStoreTest2026.DebugAssist
 			// Msgs.NewLine();
 			// Msgs.WriteLineSpaced($"model code", wbk.ModelCode);
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"got ds", wbk.GotDs.ToString());
-			Msgs.WriteLineSpaced($"ex ds name", dsName);
-			Msgs.WriteLineSpaced($"ds name", wbk.DsName);
-			Msgs.WriteLineSpaced($"desc", wbk.Desc);
-			Msgs.WriteLineSpaced($"ds search name", wbk.DsSearchName);
+			Msgs.WriteLineSpaced($"*** is empty", wbk.IsEmpty);
+			Msgs.WriteLineSpaced($"*** got ds", wbk.GotDs.ToString());
+			Msgs.WriteLineSpaced($"*** ex ds name", dsName);
+			Msgs.WriteLineSpaced($"*** ds name", wbk.DsName);
+			Msgs.WriteLineSpaced($"*** desc", wbk.Desc);
+			Msgs.WriteLineSpaced($"*** ds search name", wbk.DsSearchName);
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"got entity", wbk.GotEntity.ToString());
+			Msgs.WriteLineSpaced($"*** got entity", wbk.GotEntity.ToString());
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"schema name", wbk.SchemaName);
-			Msgs.WriteLineSpaced($"schema desc", wbk.SchemaDesc);
-			Msgs.WriteLineSpaced($"schema guid", wbk.SchemaGuid.ToString());
+			Msgs.WriteLineSpaced($"*** schema name", wbk.SchemaName);
+			Msgs.WriteLineSpaced($"*** schema desc", wbk.SchemaDesc);
+			Msgs.WriteLineSpaced($"*** schema guid", wbk.SchemaGuid.ToString());
 		}
 
 		private static void showSheetInfo(Sheet sht)
 		{
 			Msgs.WriteLineSpaced($"\n** show sheet info - START\n");
 
-			string dsName = sht.ExsDataStorage!.Name;
+			string dsName = sht.ExsDataStorage?.Name ?? "is null";
 
 			Msgs.NewLine();
 
-			Msgs.WriteLineSpaced($"ex data storage", dsName);
-			Msgs.WriteLineSpaced($"ds name", sht.DsName);
-			Msgs.WriteLineSpaced($"desc", sht.Desc);
-			Msgs.WriteLineSpaced($"sht search name", sht.DsSearchName);
+			Msgs.WriteLineSpaced($"*** is empty", sht.IsEmpty);
+			Msgs.WriteLineSpaced($"*** ex data storage", dsName);
+			Msgs.WriteLineSpaced($"*** ds name", sht.DsName);
+			Msgs.WriteLineSpaced($"*** desc", sht.Desc);
+			Msgs.WriteLineSpaced($"*** sht search name", sht.DsSearchName);
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"got entity", sht.GotEntity.ToString());
+			Msgs.WriteLineSpaced($"*** got entity", sht.GotEntity.ToString());
+			Msgs.WriteLineSpaced($"*** got DS", sht.GotDs);
+			Msgs.WriteLineSpaced($"*** is empty", sht.IsEmpty);
+			// Msgs.WriteLineSpaced($"*** populated", sht.IsPopulated);
+
 			Msgs.NewLine();
-			Msgs.WriteLineSpaced($"schema name", sht.SchemaName);
-			Msgs.WriteLineSpaced($"schema desc", sht.SchemaDesc);
-			Msgs.WriteLineSpaced($"schema guid", sht.SchemaGuid.ToString());
+			Msgs.WriteLineSpaced($"*** schema name", sht.SchemaName);
+			Msgs.WriteLineSpaced($"*** schema desc", sht.SchemaDesc);
+			Msgs.WriteLineSpaced($"*** schema guid", sht.SchemaGuid.ToString());
+
+			// Msgs.NewLine();
+			// Msgs.WriteLineSpaced("text get values");
+			// Msgs.WriteLineSpaced($"***  get vendor id", sht.GetVendorId);
+			// Msgs.WriteLineSpaced($"***  get status", sht.GetStatus);
+			// Msgs.WriteLineSpaced($"***  get sequence", sht.GetSequence);
+			// Msgs.WriteLineSpaced($"***  get fam type row count", sht.GetFamilyTypeRowCount);
 
 			Msgs.WriteLineSpaced($"\n** show sheet info - DONE\n");
 		}

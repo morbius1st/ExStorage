@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExStorSys;
+using UtilityLibrary;
 using static ExStorSys.PropertyId;
 using static ExStorSys.ExSysStatus;
 using static ExStorSys.ValidateSchema;
@@ -15,7 +16,7 @@ using static ExStorSys.ValidateDataStorage;
 // user name: jeffs
 // created:   11/18/2025 11:58:19 PM
 
-namespace ExStoreTest2026.ExStorSys
+namespace ExStorSys
 {
 	public abstract class APropChgdEvt
 	{

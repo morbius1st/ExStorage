@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls.Primitives;
 using Autodesk.Revit.DB.ExtensibleStorage;
+using JetBrains.Annotations;
+using UtilityLibrary;
 
 
 // Solution:     ExStorage
@@ -14,12 +16,14 @@ using Autodesk.Revit.DB.ExtensibleStorage;
 
 namespace ExStorSys
 {
-	public abstract class ExStorDataObj<Te> : IEnumerable<KeyValuePair<Te, FieldData<Te>>>
+	public abstract class ExStorDataObj<Te> : IEnumerable<KeyValuePair<Te, FieldData<Te>>>, INotifyPropertyChanged
 		where Te : Enum
 	{
 		private DataStorage? exsDataStorage;
 		private Entity? exsEntity;
-		private bool populated;
+
+		protected Dictionary<Te, FieldData<Te>> rows;
+		// private bool isPopulated;
 
 		protected ExStorDataObj()
 		{
@@ -28,35 +32,11 @@ namespace ExStorSys
 
 		/* properties */
 
+		// use UpdateExsObjects to set this
+		/// <summary>
+		/// flags that the workbook has not been populated with data<br/>
+		/// </summary>
 		public bool IsEmpty { get; protected set; }
-
-		public bool Populated
-		{
-			get => populated;
-			set
-			{
-				populated = value;
-				updatePopulate();
-			}
-		}
-
-		private void updatePopulate()
-		{
-			IsEmpty = !populated || !GotDs || !GotEntity;
-		}
-
-		public abstract int WbkOrSht { get; }
-
-		// to use as a generic object
-		// saved in ds
-		// ds name
-		// wbk schema name
-		// sht schema name
-		// guid
-		// datastorage
-		// entity
-		// schema
-		// rows (got)
 
 		/* Data storage */
 
@@ -66,38 +46,42 @@ namespace ExStorSys
 			set
 			{
 				exsDataStorage = value;
-				updatePopulate();
+				// updatePopulate();
 			}
 		}
+
 		public Entity? ExsEntity
 		{
 			get => exsEntity;
 			set
 			{
 				exsEntity = value;
-				updatePopulate();
+				// updatePopulate();
 			}
 		}
+
+		public abstract bool IsModified { get; protected set; }
 
 		/* shortcuts */
 
 		public abstract string DsName { get; }
-		public abstract string Desc { get; }
+		public abstract string Desc { get; set; }
 
+		public abstract string DsSearchName { get; }
 		public abstract string SchemaName { get; }
 		public abstract string SchemaDesc { get; }
 		public abstract Guid SchemaGuid { get; }
-
-		public abstract string DsSearchName { get; }
-
-		public bool Ready => GotDs && GotEntity;
 
 		public bool GotDs => exsDataStorage != null && exsDataStorage.IsValidObject;
 		public bool GotEntity => ExsEntity != null && ExsEntity.IsValid();
 
 		/* rows */
 
-		protected Dictionary<Te, FieldData<Te>> Rows { get; set; }
+		protected Dictionary<Te, FieldData<Te>> Rows 
+		{
+			get => rows;
+			set => rows = value;
+		}
 
 		public IEnumerator<KeyValuePair<Te, FieldData<Te>>> GetEnumerator()
 		{
@@ -110,35 +94,108 @@ namespace ExStorSys
 			return GetEnumerator();
 		}
 
-		/* rows methods */
+
+		/* methods */
+
+		/// <summary>
+		/// update the DS & E objects (S to be removed)
+		/// </summary>
+		public bool UpdateExsObjects(DataStorage ds, Entity e, Schema s)
+		{
+			if (!IsEmpty) return false;
+
+			ExsDataStorage = ds;
+			ExsEntity = e;
+			// ExsSchema = s;
+
+			IsEmpty = false;
+
+			return true;
+		}
+
+		protected void ValidateChangeStatus()
+		{
+			bool isMod = false;
+
+			foreach ((Te? key, FieldData<Te>? fd) in rows)
+			{
+				if (fd.DyValue.IsChanged == true)
+				{
+					isMod = true;
+				}
+			}
+
+			IsModified = isMod;
+		}
+
+		public void ApplyChanges()
+		{
+			foreach ((Te? key, FieldData<Te>? fd) in rows)
+			{
+				if (fd.DyValue.IsChanged == true)
+				{
+					fd.DyValue.ApplyChange();
+				}
+			}
+
+			ValidateChangeStatus();
+		}
+
+		public void SetTrackChanges()
+		{
+			foreach ((Te? key, FieldData<Te>? value) in Rows)
+			{
+				value.DyValue!.SetTrackChanges();
+			}
+		}
 
 		public int RowCount => Rows.Count;
 
-		private bool addRow(Te key, Dictionary<Te, FieldDef<Te>>? fields, DynaValue? dv = null)
+		public void UndoValueChange(FieldData<Te> fd)
 		{
-			if (Rows.ContainsKey(key)) return false;
+			fd.DyValue.UndoChange();
 
-			FieldDef<Te> field = fields![key];
-
-			Rows.Add(key, new (field, dv ?? field.FieldDefValue));
-
-			return true;
+			if (fd.DyValue.TrackChanges)
+			{
+				ValidateChangeStatus();
+			}
 		}
 
-		public bool UpdateRow(Te key, DynaValue? value)
+		public bool SetInitValueDym(Te key, dynamic dv)
 		{
 			if (!(Rows?.ContainsKey(key) ?? false)) return false;
 
-			FieldData<Te> row = Rows[key];
+			FieldData<Te> field = Rows[key];
 
-			row.DyValue = value;
+			if (field.DyValue.TrackChanges) 
+				throw new InvalidOperationException($"Use {nameof(SetNewValueDym)}() to change the field's value");
+			
+			field.DyValue.ChangeValue(dv!);
 
-			Rows[key] = row;
+			Rows[key] = field;
 
 			return true;
 		}
 
-		public FieldData<Te> getRow(Te key)
+		public bool SetNewValueDym(Te key, dynamic dv)
+		{
+			if (!(Rows?.ContainsKey(key) ?? false)) return false;
+
+			FieldData<Te> field = Rows[key];
+
+			if (!field.DyValue.TrackChanges) 
+				throw new InvalidOperationException($"Use {nameof(SetInitValueDym)}() to set the field's value");
+			
+			field.DyValue.ChangeValue(dv!);
+
+			Rows[key] = field;
+
+			ValidateChangeStatus();
+
+			return true;
+		}
+
+		public FieldData<Te> GetField(Te key)
 		{
 			if (!(Rows?.ContainsKey(key) ?? false)) return FieldData<Te>.Empty();
 
@@ -147,9 +204,18 @@ namespace ExStorSys
 
 		public DynaValue? GetValue(Te key)
 		{
-			FieldData<Te> row = getRow(key);
+			FieldData<Te> row = GetField(key);
 
 			return row.DyValue;
+		}
+
+		private void addValue(Te key, FieldDef<Te> field, dynamic? dy = null)
+		{
+			if (Rows.ContainsKey(key)) return;
+
+			if (dy != null && !dy.GetType() != field.FieldType) return;
+
+			Rows.Add(key, new (field, dy ?? field.FieldDefValue.Value));
 		}
 
 		/* initialize row data */
@@ -160,9 +226,19 @@ namespace ExStorSys
 
 			foreach ((Te? key, FieldDef<Te>? value) in f)
 			{
-				addRow(key, f);
+				// addValue(key, f);
+
+				addValue(key, value);
 			}
 		}
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		[DebuggerStepThrough]
+		[NotifyPropertyChangedInvocator]
+		protected void OnPropertyChanged([CallerMemberName] string memberName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+		}
 	}
 }

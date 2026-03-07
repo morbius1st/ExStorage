@@ -1,0 +1,644 @@
+﻿<ResourceDictionary
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:cs="clr-namespace:ExStoreTest2026.Windows"
+		>
+
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/MasterColorList.xaml" />
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CyberStudioSkin.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+
+	<!-- <ResourceDictionary.MergedDictionaries> -->
+	<!-- <ResourceDictionary Source="/Windows/ResourceFiles/XamlResources/MasterColorList.xaml" /> -->
+	<!-- <ResourceDictionary Source="/Windows/Skin/CyberStudioSkin.xaml" /> -->
+	<!-- </ResourceDictionary.MergedDictionaries> -->
+	<!-- <cs:AddThicknessConverter x:Key="AddThicknessConverter" /> -->
+	<!-- <cs:AddParameterConverter x:Key="AddParameterConverter" /> -->
+
+	<!--  cs:CsCheckBoxAp.CheckBoxBoxSize  -->
+	<!--  cs:CsCheckBoxAp.CheckBoxBoxMargin  -->
+	<!--  cs:CsCheckBoxAp.CheckBoxCheckMargin  -->
+	<!--  cs:CsCheckBoxAp.CheckBoxContentMargin  -->
+	<!--  cs:CsCheckBoxAp.OptionMarkFillBrush  -->
+	<!--  cs:CsCheckBoxAp.IndeterminantMarkFillBrush  -->
+
+
+	<Style x:Key="OptionMarkFocusVisual">
+		<Setter Property="Control.Template">
+			<Setter.Value>
+				<ControlTemplate>
+					<Rectangle
+							Margin="14,0,0,0"
+							SnapsToDevicePixels="true"
+							Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+							StrokeDashArray="1 2"
+							StrokeThickness="1"
+							/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="CkbxFocusVisual">
+		<Setter Property="Control.Template">
+			<Setter.Value>
+				<ControlTemplate>
+					<Rectangle
+							Margin="2"
+							SnapsToDevicePixels="true"
+							Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+							StrokeDashArray="1 2"
+							StrokeThickness="1"
+							/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="CheckboxStyle1"
+			TargetType="{x:Type CheckBox}"
+			>
+		<!-- <Setter Property="IsEnabled" Value="True" /> -->
+		<!-- <Setter Property="Padding" Value="2,0,0,0" /> -->
+		<!-- <Setter Property="Margin" Value="8,-2,8,2" /> -->
+		<Setter Property="FocusVisualStyle" Value="{StaticResource CkbxFocusVisual}" />
+		<Setter Property="Background" Value="{StaticResource Ckbx.Bg.Static}" />
+		<Setter Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Static}" />
+		<Setter Property="Foreground" Value="{StaticResource Fg.IsSel}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type CheckBox}">
+					<Border x:Name="checkBoxControlBorder"
+							Margin="0"
+							Padding="0"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							CornerRadius="6"
+							>
+						<!--  Margin="{TemplateBinding Margin}"  -->
+						<!--  BorderBrush="Transparent"  -->
+
+						<Grid x:Name="templateRoot"
+								Margin="0"
+								HorizontalAlignment="Left"
+								Background="Transparent"
+								SnapsToDevicePixels="True"
+								>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+
+							<Border x:Name="checkBoxBorder"
+									Grid.Column="0"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxMargin)}"
+									Width="{Binding RelativeSource={RelativeSource Self},
+																	Path=ActualHeight}"
+									VerticalAlignment="Stretch"
+									Background="{TemplateBinding Background}"
+									BorderThickness="1"
+									BorderBrush="{TemplateBinding BorderBrush}"
+									>
+								<!--  BorderBrush="{TemplateBinding BorderBrush}"  -->
+								<!--  Margin="{Binding RelativeSource={RelativeSource Self},Path=(cs:CsCheckBoxAp.CheckBoxBoxMargin)}"  -->
+
+							</Border>
+
+							<Grid x:Name="markGrid"
+									Grid.Column="0"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxMargin)}"
+									VerticalAlignment="Center"
+									>
+								<!--  Height="{Binding ElementName=checkBoxBorder, Path=ActualHeight}"  -->
+								<!--  Width="{Binding ElementName=checkBoxBorder, Path=ActualWidth}"  -->
+								<!--  Fill="{StaticResource Ckbx.Glyph.Static}"  -->
+								<Path x:Name="optionMark"
+										Grid.Column="0"
+										Margin="{Binding RelativeSource={RelativeSource Self},
+																		 Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"
+										VerticalAlignment="Center"
+										Data="F0 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z "
+										Fill="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.OptionMarkFillBrush)}"
+										Opacity="0"
+										Stretch="Uniform"
+										Stroke="White"
+										StrokeThickness="0.3"
+										/>
+								<!--  Margin="{Binding RelativeSource={RelativeSource Self}, Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"  -->
+								<Rectangle x:Name="indeterminateMark"
+										Grid.Column="0"
+										Margin="2"
+										VerticalAlignment="Stretch"
+										Fill="{StaticResource Ckbx.Indeterminant.Fill}"
+										SnapsToDevicePixels="True"
+										Opacity="0"
+										/>
+
+								<!--  Height="{Binding ElementName=checkBoxBorder, Path=ActualHeight,  -->
+								<!--  Converter={StaticResource AddParameterConverter}, ConverterParameter='-1.5'}"  -->
+								<!--  Width="{Binding ElementName=checkBoxBorder, Path=ActualWidth,  -->
+								<!--  Converter={StaticResource AddParameterConverter}, ConverterParameter='-1.5'}"  -->
+
+
+								<!--  Margin="{Binding RelativeSource={RelativeSource Self}, Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin),  -->
+								<!--  Converter={StaticResource AddThicknessConverter}, ConverterParameter='-0.5'}"  -->
+
+							</Grid>
+
+
+
+							<ContentPresenter x:Name="contentPresenter"
+									Grid.Column="1"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxContentMargin)}"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Focusable="False"
+									RecognizesAccessKey="True"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+									/>
+
+						</Grid>
+
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger Property="HasContent" Value="true">
+							<Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}" />
+						</Trigger>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="checkBoxControlBorder" Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.MouseOver}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.MouseOver}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.MouseOver}" />
+							<Setter Property="Background" Value="{StaticResource Ckbx.Bg.MouseOver}" />
+						</Trigger>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="Foreground" Value="{StaticResource Fg.IsEnabled}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Disabled}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Disabled}" />
+							<Setter Property="Background" Value="{StaticResource Ckbx.Bg.Disabled}" />
+							<Setter Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Disabled}" />
+						</Trigger>
+						<Trigger Property="IsPressed" Value="true">
+							<Setter TargetName="checkBoxBorder" Property="Background" Value="{StaticResource Ckbx.Bg.Pressed}" />
+							<Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Pressed}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Pressed}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Pressed}" />
+						</Trigger>
+						<!-- <Trigger Property="IsChecked" Value="false"> -->
+						<Trigger Property="IsChecked" Value="true">
+							<Setter TargetName="optionMark" Property="Opacity" Value="1" />
+							<Setter TargetName="indeterminateMark" Property="Opacity" Value="0" />
+						</Trigger>
+						<!-- <Trigger Property="IsChecked" Value="true"> -->
+						<Trigger Property="IsChecked" Value="{x:Null}">
+							<Setter TargetName="optionMark" Property="Opacity" Value="0" />
+							<Setter TargetName="indeterminateMark" Property="Opacity" Value="1" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="CheckboxStyle2"
+			TargetType="{x:Type CheckBox}"
+			>
+		<!-- <Setter Property="IsEnabled" Value="True" /> -->
+		<!-- <Setter Property="Padding" Value="2,0,0,0" /> -->
+		<!-- <Setter Property="Margin" Value="8,-2,8,2" /> -->
+		<Setter Property="FocusVisualStyle" Value="{StaticResource CkbxFocusVisual}" />
+		<Setter Property="Background" Value="{StaticResource Ckbx.Bg.Static}" />
+		<Setter Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Static}" />
+		<Setter Property="Foreground" Value="{StaticResource Fg.IsSel}" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type CheckBox}">
+					<Border x:Name="checkBoxControlBorder"
+							Margin="0"
+							Padding="0"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							CornerRadius="{StaticResource Ckbx.CornerRadius}"
+							>
+
+						<Grid x:Name="templateRoot"
+								Margin="0"
+								HorizontalAlignment="Left"
+								Background="Transparent"
+								SnapsToDevicePixels="True"
+								>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+
+
+							<Grid x:Name="checkBoxGrid"
+									Grid.Column="0"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxMargin)}"
+									Width="{Binding RelativeSource={RelativeSource Self},
+																	Path=(cs:CsCheckBoxAp.CheckBoxBoxSize)}"
+									Height="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxSize)}"
+									VerticalAlignment="Stretch"
+									>
+
+								<Border x:Name="checkBoxBorder"
+										Grid.Column="0"
+										Width="{Binding RelativeSource={RelativeSource Self},
+																		Path=ActualHeight}"
+										VerticalAlignment="Stretch"
+										Background="{TemplateBinding Background}"
+										BorderThickness="1.5"
+										BorderBrush="{TemplateBinding BorderBrush}"
+										>
+								</Border>
+
+								<Path x:Name="optionMark"
+										Grid.Column="0"
+										Margin="{Binding RelativeSource={RelativeSource Self},
+																		 Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"
+										VerticalAlignment="Stretch"
+										Data="F0 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z "
+										Fill="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.OptionMarkFillBrush)}"
+										Opacity="0"
+										Stretch="Uniform"
+										Stroke="{StaticResource Ckbx.GlyphStroke.Static}"
+										StrokeThickness="1.0"
+										/>
+
+								<Rectangle x:Name="indeterminateMark"
+										Grid.Column="0"
+										Margin="3"
+										VerticalAlignment="Stretch"
+										Fill="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.IndeterminantMarkFillBrush)}"
+										SnapsToDevicePixels="True"
+										Opacity="0"
+										/>
+							</Grid>
+
+							<ContentPresenter x:Name="contentPresenter"
+									Grid.Column="1"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxContentMargin)}"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Focusable="False"
+									RecognizesAccessKey="True"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+									/>
+
+						</Grid>
+
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger Property="HasContent" Value="true">
+							<Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}" />
+						</Trigger>
+
+						<!-- <Trigger Property="IsMouseOver" Value="False"> -->
+						<Trigger Property="IsMouseOver" Value="True">
+							<!--  default  -->
+							<Setter TargetName="checkBoxControlBorder" Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.MouseOver}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.MouseOver}" />
+							<Setter TargetName="optionMark" Property="Stroke" Value="{StaticResource Ckbx.GlyphStroke.MouseOver}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.MouseOver}" />
+							<Setter Property="Background" Value="{StaticResource Ckbx.Bg.MouseOver}" />
+
+						</Trigger>
+
+						<!--  isenabled == false is the default  -->
+						<Trigger Property="IsEnabled" Value="False">
+							<!--  default  -->
+							<Setter Property="Foreground" Value="{StaticResource Fg.Disabled.DkBg}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Disabled}" />
+							<Setter TargetName="optionMark" Property="Stroke" Value="{StaticResource Ckbx.GlyphStroke.Disabled}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Disabled}" />
+							<Setter Property="Background" Value="{StaticResource Ckbx.Bg.Disabled}" />
+							<Setter Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Disabled}" />
+						</Trigger>
+
+						<!-- <Trigger Property="IsPressed" Value="false"> -->
+						<Trigger Property="IsPressed" Value="true">
+							<!--  default  -->
+							<Setter TargetName="checkBoxBorder" Property="Background" Value="{StaticResource Ckbx.Bg.Pressed}" />
+							<Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Pressed}" />
+							<Setter TargetName="optionMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Pressed}" />
+							<Setter TargetName="optionMark" Property="Stroke" Value="{StaticResource Ckbx.GlyphStroke.Pressed}" />
+							<Setter TargetName="indeterminateMark" Property="Fill" Value="{StaticResource Ckbx.Glyph.Pressed}" />
+						</Trigger>
+
+						<!-- <Trigger Property="IsChecked" Value="false"> -->
+						<Trigger Property="IsChecked" Value="true">
+							<!--  default  -->
+							<Setter TargetName="optionMark" Property="Opacity" Value="1" />
+							<Setter TargetName="indeterminateMark" Property="Opacity" Value="0" />
+						</Trigger>
+
+						<!-- <Trigger Property="IsChecked" Value="null"> -->
+						<Trigger Property="IsChecked" Value="{x:Null}">
+							<!--  default  -->
+							<Setter TargetName="optionMark" Property="Opacity" Value="0" />
+							<Setter TargetName="indeterminateMark" Property="Opacity" Value="1" />
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+
+
+	
+	<DataTemplate x:Key="DtLt">
+		<TextBlock
+				Text="Left"
+				VerticalAlignment="Top"
+
+		>
+			<TextBlock.Style>
+				<Style TargetType="TextBlock" >
+					<Setter Property="Foreground" Value="White"/>
+					<Style.Triggers>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Foreground" Value="DarkBlue"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</TextBlock.Style>
+		</TextBlock>
+	</DataTemplate>
+
+	<DataTemplate x:Key="DtRt">
+		<TextBlock
+				Text="Right"
+				VerticalAlignment="Top"
+
+		>
+			<TextBlock.Style>
+				<Style TargetType="TextBlock">
+					<Setter Property="Foreground" Value="White"/>
+					<Style.Triggers>
+						<Trigger Property="IsEnabled" Value="False">
+							<Setter Property="Foreground" Value="DarkGreen"/>
+						</Trigger>
+					</Style.Triggers>
+				</Style>
+			</TextBlock.Style>
+		</TextBlock>
+	</DataTemplate>
+
+
+
+
+	<Style x:Key="ToggleSwitch1"
+			TargetType="{x:Type CheckBox}"
+			>
+		<Setter Property="FocusVisualStyle" Value="{StaticResource CkbxFocusVisual}" />
+		<!-- <Setter Property="IsEnabled" Value="True" /> -->
+		<!-- <Setter Property="Padding" Value="2,0,0,0" /> -->
+		<!-- <Setter Property="Margin" Value="8,-2,8,2" /> -->
+		<!-- <Setter Property="Background" Value="{StaticResource Ckbx.Bg.Static}" /> -->
+		<!-- <Setter Property="BorderBrush" Value="{StaticResource Ckbx.Bdr.Static}" /> -->
+		<!-- <Setter Property="BorderThickness" Value="1" /> -->
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type CheckBox}">
+					<Border x:Name="toggleSwitchOutterBorder"
+							Margin="0"
+							Padding="0"
+							Background="{TemplateBinding Background}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							CornerRadius="{Binding RelativeSource={RelativeSource Self},
+																		 Path=(cs:CsCheckBoxAp.ToggleOutterCornerRadius)}"
+							>
+
+						<Grid x:Name="templateRoot"
+								Margin="0"
+								HorizontalAlignment="Left"
+								SnapsToDevicePixels="True"
+								>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="Auto" />
+
+							</Grid.ColumnDefinitions>
+
+							<ContentPresenter x:Name="contentPresenterLt"
+									Grid.Column="0"
+									Content="{Binding RelativeSource={RelativeSource Self},
+																		Path=(cs:CsCheckBoxAp.ToggleSwitchLeftContent)}"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxContentMargin)}"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Focusable="False"
+									RecognizesAccessKey="True"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+									ContentTemplate="{Binding RelativeSource={RelativeSource Self},
+																		Path=(cs:CsCheckBoxAp.ToggleLeftContentTemplate)}"
+									/>
+
+
+							<Border x:Name="toggleSwitchInnerBorder"
+									Grid.Column="1"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxMargin)}"
+									Width="{Binding RelativeSource={RelativeSource Self},
+																	Path=(cs:CsCheckBoxAp.CheckBoxBoxWidth)}"
+									Height="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxBoxSize)}"
+									Padding="0"
+									VerticalAlignment="Stretch"
+									BorderThickness="{DynamicResource Togg.Innr.Bdr.Thk}"
+									BorderBrush="{DynamicResource Togg.Innr.Bdr.Static}"
+									CornerRadius="{Binding RelativeSource={RelativeSource Self},
+																				 Path=(cs:CsCheckBoxAp.ToggleInnerCornerRadius)}"
+									Opacity="1"
+									>
+								<Border.Style>
+									<Style TargetType="Border">
+										<Setter Property="Background" Value="{StaticResource Togg.Innr.Bg.Rt.Static}" />
+									</Style>
+								</Border.Style>
+
+								<Grid x:Name="toggleGrid"
+										Margin="0"
+										Width="{Binding RelativeSource={RelativeSource Self},
+																		Path=(cs:CsCheckBoxAp.CheckBoxBoxWidth)}"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Stretch"
+										>
+
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+
+									<!--  checked is true  -->
+									<Border x:Name="toggleSwitchLt"
+											Grid.Column="0"
+											Margin="{Binding RelativeSource={RelativeSource Self},
+																			 Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"
+											Width="{Binding RelativeSource={RelativeSource Self},
+																		Path=(cs:CsCheckBoxAp.ToggleSwitchWidth)}"
+											HorizontalAlignment="Left"
+											VerticalAlignment="Stretch"
+											Background="{DynamicResource Togg.Sw.Lt.Bg.Static}"
+											BorderThickness="{DynamicResource Togg.Sw.Bdr.Thk}"
+											BorderBrush="{DynamicResource Togg.Sw.Lt.Bdr.Static}"
+											CornerRadius="{Binding RelativeSource={RelativeSource Self},
+																						 Path=(cs:CsCheckBoxAp.ToggleSwitchCornerRadius)}"
+											SnapsToDevicePixels="True"
+											Opacity="1"
+											Visibility="Collapsed"
+											/>
+
+									<!--  checked is null / default state  -->
+									<Border x:Name="toggleSwitchInd"
+											Grid.Column="1"
+											Margin="{Binding RelativeSource={RelativeSource Self},
+																			 Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"
+											Width="{Binding RelativeSource={RelativeSource Self},
+																Path=(cs:CsCheckBoxAp.ToggleSwitchWidth)}"
+											HorizontalAlignment="Center"
+											VerticalAlignment="Stretch"
+											Background="{DynamicResource Togg.Sw.Ind.Bg.Static}"
+											BorderThickness="{StaticResource Togg.Sw.Bdr.Thk}"
+											BorderBrush="{StaticResource Togg.Sw.Ind.Bdr.Static}"
+											CornerRadius="{Binding RelativeSource={RelativeSource Self},
+																						 Path=(cs:CsCheckBoxAp.ToggleSwitchCornerRadius)}"
+											SnapsToDevicePixels="True"
+											Opacity="1"
+											Visibility="Collapsed"
+											/>
+
+									<!--  checked is false - default  -->
+									<Border x:Name="toggleSwitchRt"
+											Grid.Column="2"
+											Margin="{Binding RelativeSource={RelativeSource Self},
+																			 Path=(cs:CsCheckBoxAp.CheckBoxCheckMargin)}"
+											Width="{Binding RelativeSource={RelativeSource Self},
+																Path=(cs:CsCheckBoxAp.ToggleSwitchWidth)}"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Stretch"
+											Background="{StaticResource Togg.Sw.Rt.Bg.Static}"
+											BorderThickness="{StaticResource Togg.Sw.Bdr.Thk}"
+											BorderBrush="{StaticResource Togg.Sw.Rt.Bdr.Static}"
+											CornerRadius="{Binding RelativeSource={RelativeSource Self},
+																						 Path=(cs:CsCheckBoxAp.ToggleSwitchCornerRadius)}"
+											SnapsToDevicePixels="True"
+											Opacity="1"
+											Visibility="Visible"
+											/>
+
+								</Grid>
+
+							</Border>
+
+
+							<ContentPresenter x:Name="contentPresenterRt"
+									Grid.Column="2"
+									Margin="{Binding RelativeSource={RelativeSource Self},
+																	 Path=(cs:CsCheckBoxAp.CheckBoxContentMargin)}"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Focusable="False"
+									RecognizesAccessKey="True"
+									SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+									ContentTemplate="{Binding RelativeSource={RelativeSource Self},
+																			Path=(cs:CsCheckBoxAp.ToggleRightContentTemplate)}"
+									/>
+
+						</Grid>
+
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger Property="HasContent" Value="true">
+							<Setter Property="FocusVisualStyle" Value="{StaticResource OptionMarkFocusVisual}" />
+						</Trigger>
+
+
+
+						<Trigger Property="IsChecked" Value="false">
+							<Setter TargetName="contentPresenterLt" Property="IsEnabled" Value="False" />
+						</Trigger>
+
+						<Trigger Property="IsChecked" Value="true">
+							<Setter TargetName="toggleSwitchInnerBorder" Property="Background" Value="{StaticResource Togg.Innr.Bg.Lt.Static}" />
+							<Setter TargetName="toggleSwitchRt" Property="Visibility" Value="Collapsed" />
+							<Setter TargetName="toggleSwitchLt" Property="Visibility" Value="Visible" />
+							<Setter TargetName="contentPresenterRt" Property="IsEnabled" Value="False" />
+						</Trigger>
+				
+
+						<Trigger Property="IsChecked" Value="{x:Null}">
+							<Setter TargetName="toggleSwitchInd" Property="Visibility" Value="Visible" />
+							<Setter TargetName="toggleSwitchRt" Property="Visibility" Value="Collapsed" />
+							<Setter TargetName="contentPresenterLt" Property="IsEnabled" Value="False" />
+							<Setter TargetName="contentPresenterRt" Property="IsEnabled" Value="False" />
+							<Setter TargetName="toggleSwitchInnerBorder" Property="Background" Value="{StaticResource Togg.Innr.Bg.Ind.Static}" />
+						</Trigger>
+
+						<Trigger Property="IsEnabled" Value="False">
+
+							<Setter Property="Background" Value="{StaticResource Togg.Bg.Disabled}" />
+							<Setter Property="BorderBrush" Value="{StaticResource Togg.Bdr.Disabled}" />
+
+							<Setter TargetName="toggleSwitchInnerBorder" Property="Background" Value="{StaticResource Togg.Innr.Bg.Disabled}" />
+							<Setter TargetName="toggleSwitchInnerBorder" Property="BorderBrush" Value="{StaticResource Togg.Innr.Bdr.Disabled}" />
+
+							<Setter TargetName="toggleSwitchOutterBorder" Property="Background" Value="{StaticResource Togg.Outr.Bg.Disabled}" />
+							<Setter TargetName="toggleSwitchOutterBorder" Property="BorderBrush" Value="{StaticResource Togg.Outr.Bdr.Disabled}" />
+
+							<Setter TargetName="toggleSwitchRt" Property="BorderBrush" Value="{StaticResource Togg.Sw.Rt.Bdr.Disabled}" />
+							<Setter TargetName="toggleSwitchRt" Property="Background" Value="{StaticResource Togg.Sw.Rt.Bg.Disabled}" />
+
+							<Setter TargetName="toggleSwitchLt" Property="BorderBrush" Value="{StaticResource Togg.Sw.Lt.Bdr.Disabled}" />
+							<Setter TargetName="toggleSwitchLt" Property="Background" Value="{StaticResource Togg.Sw.Lt.Bg.Disabled}" />
+
+							<Setter TargetName="toggleSwitchInd" Property="BorderBrush" Value="{StaticResource Togg.Sw.Ind.Bdr.Disabled}" />
+							<Setter TargetName="toggleSwitchInd" Property="Background" Value="{StaticResource Togg.Sw.Ind.Bg.Disabled}" />
+
+						</Trigger>
+
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="toggleSwitchInnerBorder" Property="Background" Value="{StaticResource Togg.Innr.Bg.MouseOver}" />
+						</Trigger>
+
+						<Trigger Property="IsPressed" Value="true">
+							<Setter TargetName="toggleSwitchInnerBorder" Property="Background" Value="{StaticResource Togg.Innr.Bg.Pressed}" />
+						</Trigger>
+
+
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+
+</ResourceDictionary>
+

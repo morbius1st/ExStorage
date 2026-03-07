@@ -1,0 +1,521 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwinmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwinmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:2:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:2:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwinmodelui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwinmodelui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\dataobjects\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\dataobjects\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\dataobjects\\exstordataobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\dataobjects\\exstordataobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\exstorstartmgr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\exstorstartmgr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:1:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:1:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\mainwindow.xaml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\support\\valueconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\support\\valueconverters.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\support\\csbuttons.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\support\\csbuttons.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\dataobjects\\sheet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\dataobjects\\sheet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\exstorlib.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\exstorlib.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\exstormgr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\exstormgr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\dataobjects\\workbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\dataobjects\\workbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\exstorsys\\dataobjects\\fielddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\exstorsys\\dataobjects\\fielddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\.notes\\exstoretest2026.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\.notes\\exstoretest2026.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\exstoretest2026\\windows\\support\\relaycommand.cs||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B3605D3E-6353-4AEB-B71B-0FC8CDC836A8}|ExStoreTest2026\\ExStoreTest2026.csproj|solutionrelative:exstoretest2026\\windows\\support\\relaycommand.cs||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 418,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{37fe8527-01e7-45dc-b1ef-5a8b12618770}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3da7753e-51d7-52a4-886a-c3f408fc504e}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{401f80a9-c289-52a9-a9cf-7efc659073ee}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{778b5376-ad77-4751-acdc-f3d18343f8dd}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{92f432fc-a0cd-5087-a713-2e44878d2f25}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{dcca5c53-7a37-4f9b-be15-e1063d061497}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{ca8cc5c7-0231-406a-95cd-aa5ed6ac0190}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b03e7fb9-8379-52db-b904-eb2479499478}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{59862695-e342-45e5-b59c-bd9eadf0e94b}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 502,
+          "SelectedChildIndex": 12,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{ecb7191a-597b-41f5-9843-03a4cf275dde}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e8868fee-d2f2-5e1b-967f-50e1f9ad5d0e}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "CsButtons.xaml",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\CsButtons.xaml",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\Support\\CsButtons.xaml",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\CsButtons.xaml",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\Support\\CsButtons.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-25T03:13:33.407Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml.cs",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWindow.xaml.cs",
+              "ViewState": "AgIAACUAAAAAAAAAAAAtwEEAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T07:27:20.887Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-22T07:25:03.529Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 116,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{8f167ce3-b6b9-446c-9c22-7da52a102d41}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ExStorStartMgr.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorStartMgr.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\ExStorStartMgr.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorStartMgr.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\ExStorStartMgr.cs",
+              "ViewState": "AgIAAIoAAAAAAAAAAAAmwLIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T03:37:27.398Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainWinModelUi.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWinModelUi.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWinModelUi.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWinModelUi.cs",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWinModelUi.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8CAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T03:13:27.562Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "RelayCommand.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\RelayCommand.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\Support\\RelayCommand.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\RelayCommand.cs",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\Support\\RelayCommand.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-25T04:14:14.253Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "85580785-108a-4798-ae9d-4fbc73efd411",
+        "Display": 1,
+        "X": 38,
+        "Y": 86,
+        "Width": 2865,
+        "Height": 1508,
+        "WindowState": 0
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 377,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWinModel.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWinModel.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWinModel.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWinModel.cs",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWinModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPAEAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T15:45:47.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ValueConverters.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\ValueConverters.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\Support\\ValueConverters.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\Support\\ValueConverters.cs",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\Support\\ValueConverters.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAABDwEQAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-25T04:31:08.911Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAxwBgAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-24T03:45:58.352Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ExStorMgr.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorMgr.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\ExStorMgr.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorMgr.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\ExStorMgr.cs",
+              "ViewState": "AgIAAKsBAAAAAAAAAAAmwMEFAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T02:14:40.114Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "WorkBook.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\WorkBook.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\DataObjects\\WorkBook.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\WorkBook.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\DataObjects\\WorkBook.cs",
+              "ViewState": "AgIAADMBAAAAAAAAAAAuwG0BAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-22T07:22:55.725Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 198,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Sheet.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\Sheet.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\DataObjects\\Sheet.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\Sheet.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\DataObjects\\Sheet.cs",
+              "ViewState": "AgIAABYCAAAAAAAAAAAywEwCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T01:41:04.645Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ExStoreTest2026.xml",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\.Notes\\ExStoreTest2026.xml",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\.Notes\\ExStoreTest2026.xml",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\.Notes\\ExStoreTest2026.xml",
+              "RelativeToolTip": "ExStoreTest2026\\.Notes\\ExStoreTest2026.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2026-02-09T01:09:42.559Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "RelativeToolTip": "ExStoreTest2026\\Windows\\MainWindow.xaml",
+              "ViewState": "AgIAAK4PAAAAAAAAAAAawM4PAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-02-07T03:10:01.826Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ExStorData.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorData.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorData.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorData.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorData.cs",
+              "ViewState": "AgIAAJQBAAAAAAAAAABDwKEBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-03T03:15:27.281Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ExStorLib.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorLib.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\ExStorLib.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\ExStorLib.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\ExStorLib.cs",
+              "ViewState": "AgIAAG0DAAAAAAAAAABDwEgEAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-25T02:14:39.84Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 223,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "FieldData.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\FieldData.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\DataObjects\\FieldData.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\FieldData.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\DataObjects\\FieldData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-09T02:15:30.503Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ExStorDataObj.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorDataObj.cs",
+              "RelativeDocumentMoniker": "ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorDataObj.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorDataObj.cs",
+              "RelativeToolTip": "ExStoreTest2026\\ExStorSys\\DataObjects\\ExStorDataObj.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-24T07:37:42.691Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

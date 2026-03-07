@@ -1,10 +1,17 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+
 using Autodesk.Revit.DB.ExtensibleStorage;
+
 using ExStoreTest2026;
 using ExStoreTest2026.Windows;
+
+using JetBrains.Annotations;
+
 using UtilityLibrary;
+
 using static ExStorSys.ExSysStatus;
 
 // projname: $projectname$
@@ -14,7 +21,7 @@ using static ExStorSys.ExSysStatus;
 
 namespace ExStorSys
 {
-	public class ExStorData  //: INotifyPropertyChanged
+	public class ExStorData : INotifyPropertyChanged
 	{
 		public int ObjectId;
 
@@ -30,7 +37,7 @@ namespace ExStorSys
 
 		// cannot be null
 		private WorkBook wbk;
-		private Dictionary<string, Sheet> sheets;
+		private ObservableDictionary<string, Sheet> sheetsList;
 
 		private Schema? wbkSchema;
 		private Schema? shtSchema;
@@ -39,6 +46,8 @@ namespace ExStorSys
 
 		private bool? restartRequired;
 		private ExSysStatus exStorStatus;
+		// private Sheet? currentSheet;
+		private string? selectSheet;
 
 	#endregion
 
@@ -66,9 +75,23 @@ namespace ExStorSys
 			// ObjectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorData)) ?? -1;
 			WorkBook = WorkBook.CreateEmptyWorkBook();
+			
+			Debug.WriteLine("*** before reset sheets");
+
+			sheetsList = new ObservableDictionary<string, Sheet>();
 			ResetSheets();
 
+			Debug.WriteLine("*** after reset sheets");
+
+			// configure the sheets list and provide a placeholder sheet
+			Sheet sht = Sheet.PlaceHolder();
+			sheetsList.Add(sht.DsName, sht);
+
+			Debug.WriteLine("*** after add sheet to sheet list");
+
 			xMui = MainWinModelUi.Instance;
+
+			Debug.WriteLine("*** at end of xData init");
 		}
 
 		public void Restore()
@@ -78,7 +101,7 @@ namespace ExStorSys
 
 	#endregion
 
-	#region public objects and properties
+	#region general propertries
 
 		public ExSysStatus ExStorStatus
 		{
@@ -108,8 +131,11 @@ namespace ExStorSys
 				ExStorStatus = ES_RESTART_REQD;
 			}
 		}
+		
 
-		/* utility */
+	#endregion
+
+	#region reset
 
 		/* reset */
 
@@ -140,9 +166,9 @@ namespace ExStorSys
 		// ReSharper disable once UnusedMember.Global
 		public void ResetSheet(string name)
 		{
-			if (name.IsVoid() || !sheets.TryGetValue(name, out Sheet? sheet)) return;
+			if (name.IsVoid() || !sheetsList.TryGetValue(name, out Sheet? sheet)) return;
 
-			sheets[name] = Sheet.CreateEmptySheet(name);
+			sheetsList[name] = Sheet.CreateEmptySheet(name);
 		}
 
 		/// <summary>
@@ -166,7 +192,16 @@ namespace ExStorSys
 		/// </summary>
 		public void ResetSheets()
 		{
-			sheets = new Dictionary<string, Sheet>();
+			sheetsList.Clear();
+			SelectSheet = null;
+		}
+		
+		/// <summary>
+		/// clear the sheets list
+		/// </summary>
+		public void ClearSheets()
+		{
+			sheetsList.Clear();
 		}
 
 		/// <summary>
@@ -175,18 +210,21 @@ namespace ExStorSys
 		public void ResetTemp()
 		{
 			TempWbkVersion = string.Empty;
-			TempWbkSchema  = null;
-			TempWbkDs      = null;
-			TempWbkEntity  = null;			
+			TempWbkSchemaEx  = null;
+			TempWbkDsEx      = null;
+			TempWbkEntity  = null;
 			TempWbkDsList  = new List<DataStorage>();
 
 			TempShtVersion = string.Empty;
-			TempShtSchema  = null;
-			TempShtDsExList= new ();
+			TempShtSchemaEx  = null;
+			TempShtDsListEx = new ();
 			TempShtEntity  = null;
 			TempShtDsList  = new  List<DataStorage>();
 		}
 
+	#endregion
+
+	#region workbook ops
 
 		/* workbook OPS */
 
@@ -222,10 +260,14 @@ namespace ExStorSys
 
 		/* workbook */
 
-		// public void DeleteWbkDs()
-		// {
-		// 	wbk.ExsDataStorage = null;
-		// }
+		/// <summary>
+		/// Enables change tracking in the workbook
+		/// </summary>
+		public void WbkEnableTrackChanges()
+		{
+			if (!GotWorkBook) return;
+			wbk.SetTrackChanges();
+		}
 
 		/// <summary>
 		/// the workbook object<br/>
@@ -257,6 +299,23 @@ namespace ExStorSys
 			return WorkBook.CreateEmptyWorkBook();
 		}
 
+		// public FieldData<WorkBookFieldKeys> GetWbkFieldData2(WorkBookFieldKeys key)
+		// {
+		// 	FieldDef<WorkBookFieldKeys> a = Fields.WorkBookFields[key];
+		//
+		// 	// if (!GotWorkBook) return FieldData<WorkBookFieldKeys>.Empty();
+		//
+		// 	return WorkBook.GetField(key);
+		// }
+
+		// public FieldDef<WorkBookFieldKeys> GetWbkFieldDef(WorkBookFieldKeys key)
+		// {
+		// 	return Fields.WorkBookFields[key];
+		// }
+
+	#endregion
+
+	#region Sheet Ops
 
 		/* sheet OPS */
 
@@ -265,7 +324,8 @@ namespace ExStorSys
 		/// <summary>
 		/// the sheet schema object<br/>
 		/// can only be set to a schema once<br/>
-		/// but can be set to null - which triggers the ResetRequired event
+		/// but can be set to null - which triggers the ResetRequired event<br/>
+		/// and, if set to null, can then be set
 		/// </summary>
 		public Schema? SheetSchema
 		{
@@ -284,6 +344,7 @@ namespace ExStorSys
 				{
 					ExStorStatus = ES_SHT_SCHEMA_CREATED;
 				}
+
 				OnPropChgd(PropertyId.PI_XDATA_SHT_SC, GotShtSchema);
 			}
 		}
@@ -291,12 +352,26 @@ namespace ExStorSys
 		/* sheet */
 
 		/// <summary>
+		/// enable change tracking in all sheets
+		/// </summary>
+		public void ShtsEnableTrackChanges()
+		{
+			if (!GotAnySheets) return;
+
+			foreach ((string? key, Sheet? value) in sheetsList)
+			{
+				if (value.IsEmpty) continue;
+				value.SetTrackChanges();
+			}
+		}
+
+		/// <summary>
 		/// find and return a sheet by its name<br/>
 		/// return invalid sheet if not found
 		/// </summary>
 		public Sheet GetSheet(string name)
 		{
-			if (name.IsVoid() || !sheets.TryGetValue(name, out Sheet? sheet)) return Sheet.Invalid();
+			if (name.IsVoid() || !sheetsList.TryGetValue(name, out Sheet? sheet)) return Sheet.Invalid();
 
 			return sheet;
 		}
@@ -313,8 +388,32 @@ namespace ExStorSys
 				return false;
 			}
 
-			sht = sheets[name];
+			sht = sheetsList[name];
 			return true;
+		}
+
+		/// <summary>
+		/// find a sheet by name<br/>
+		/// if not found, return the first sheet in the list, if any<br/>
+		/// else return null
+		/// </summary>
+		public bool? TryGetSheetEx(string name, out Sheet? sht)
+		{
+			if (GotSheet(name))
+			{
+				sht= sheetsList[name];
+				return true;
+			}
+
+			if (sheetsList.Count > 0)
+			{
+				sht = sheetsList.First().Value;
+				return null;
+			}
+
+			sht = null;
+			return false;
+
 		}
 
 		/// <summary>
@@ -322,26 +421,87 @@ namespace ExStorSys
 		/// </summary>
 		public bool GotSheet(string name)
 		{
-			return sheets.ContainsKey(name);
+			if (name.IsVoid()) return false;
+			return sheetsList.ContainsKey(name);
 		}
 
 		/// <summary>
 		/// does the named sheet have a DS
 		/// </summary>
-		public bool GotShtDs(string dsName)
+		public bool GotShtDs(string name)
 		{
 			Sheet sht;
-			if (!TryGetSheet(dsName, out sht) /*|| sht.IsInvalid*/ ) return false;
+			if (!TryGetSheet(name, out sht) /*|| sht.IsInvalid*/ ) return false;
 
 			return sht.GotDs;
+		}
+
+		/// <summary>
+		/// Retrieves the data for a specified field from a sheet with the given name.
+		/// </summary>
+		public FieldData<SheetFieldKeys> GetShtFieldData(string name, SheetFieldKeys key)
+		{
+			if (!GotAnySheets) return FieldData<SheetFieldKeys>.Empty();
+
+			Sheet sht = GetSheet(name);
+
+			if (sht.IsEmpty) return FieldData<SheetFieldKeys>.Empty();
+
+			return sht.GetField(key);
 		}
 
 		/* sheet list */
 
 		/// <summary>
-		/// return the sheets list
+		/// the currently selected sheet
 		/// </summary>
-		public Dictionary<string, Sheet> Sheets => sheets;
+		// public Sheet? CurrentSheetx
+		// {
+		// 	get => currentSheet;
+		// 	set
+		// 	{
+		// 		if (Equals(value, currentSheet)) return;
+		// 		currentSheet = value;
+		// 		OnPropertyChanged();
+		// 	}
+		// }
+
+		public Sheet? CurrentSheet
+		{
+			get
+			{
+				if (selectSheet!.IsVoid()) return null;
+				return !sheetsList.ContainsKey(selectSheet!) ? null : sheetsList[selectSheet!];
+			}
+		}
+
+		public string? SelectSheet
+		{
+			get => selectSheet;
+			set
+			{
+				if ((value ?? "").Equals(selectSheet)) return;
+				
+				selectSheet = value;
+
+				Debug.WriteLine("*** @ C");
+				OnPropertyChanged();
+				Debug.WriteLine("*** @ D");
+				OnPropertyChanged(nameof(CurrentSheet));
+				Debug.WriteLine("*** @ E");
+				// Sheet? temp;
+				//
+				// if (!sheetsList.TryGetValue(value, out temp)) return;
+				//
+				// CurrentSheet = temp;
+			}
+		}
+
+		/// <summary>
+		/// return the sheets list values
+		/// </summary>
+		// public Dictionary<string, Sheet>.ValueCollection? Sheets => sheetsList.Values;
+		public ObservableDictionary<string, Sheet>? Sheets => sheetsList;
 
 		/// <summary>
 		/// add a sheet to the sheets list<br/>
@@ -349,11 +509,23 @@ namespace ExStorSys
 		/// </summary>
 		public void AddSheet(Sheet sht)
 		{
-			if (sheets.TryAdd(sht.DsName, sht))
+			if (sheetsList.TryAdd(sht.DsName, sht))
 			{
+				Debug.WriteLine("*** before sht config");
+				sht.Config();
+				Debug.WriteLine("*** after sht config");
 				ExStorStatus = ES_SHT_CREATED;
+				Debug.WriteLine("*** @ A");
 				OnPropChgd(PropertyId.PI_XDATA_SHT, GotAnySheets);
+
+				Debug.WriteLine("*** @ B");
+				if (CurrentSheet == null) SelectSheet = sht.DsName;
+
+				Debug.WriteLine("*** change sheet dsname");
+				return;
 			}
+
+			sht = null;
 		}
 
 		/// <summary>
@@ -363,9 +535,9 @@ namespace ExStorSys
 		// ReSharper disable once UnusedMember.Global
 		public bool UpdateSheet(Sheet sht)
 		{
-			if (!sheets.ContainsKey(sht.DsName)) return false;
+			if (!sheetsList.ContainsKey(sht.DsName)) return false;
 
-			sheets[sht.DsName] = sht;
+			sheetsList[sht.DsName] = sht;
 
 			return true;
 		}
@@ -377,10 +549,9 @@ namespace ExStorSys
 		// ReSharper disable once UnusedMember.Global
 		public bool RemoveSheet(Sheet sht)
 		{
+			if (!sheetsList.ContainsKey(sht.DsName)) return false;
 
-			if (!sheets.ContainsKey(sht.DsName)) return false;
-
-			sheets.Remove(sht.DsName);
+			sheetsList.Remove(sht.DsName);
 
 			return true;
 		}
@@ -388,8 +559,11 @@ namespace ExStorSys
 		/// <summary>
 		/// return the number of sheets in the list
 		/// </summary>
-		public int SheetsCount => sheets.Count;
+		public int SheetsCount => sheetsList.Count;
 
+	#endregion
+
+	#region status
 
 		/* status */
 
@@ -431,8 +605,11 @@ namespace ExStorSys
 		/// <summary>
 		/// does the sheets list have any sheets
 		/// </summary>
-		public bool GotAnySheets => sheets.Count > 0;
+		public bool GotAnySheets => sheetsList.Count > 0;
 
+	#endregion
+
+	#region temp objects
 
 		/* temp objects */
 
@@ -443,31 +620,30 @@ namespace ExStorSys
 
 		public string TempWbkVersion { get; set; }
 
-		public ExListItem<Schema>? TempWbkSchema { get; set; }
+		public ExListItem<Schema>? TempWbkSchemaEx { get; set; }
 
 		// single item
-		public ExListItem<DataStorage>? TempWbkDs { get; set; }
+		public ExListItem<DataStorage>? TempWbkDsEx { get; set; }
 		public Entity? TempWbkEntity { get; set; }
 
 		// not used for validation but for lib routines
 		public IList<DataStorage>? TempWbkDsList { get; set; }
-		
+
 
 		/* sheet */
 
 		public string TempShtVersion { get; set; }
 
-		public ExListItem<Schema>? TempShtSchema { get; set; }
+		public ExListItem<Schema>? TempShtSchemaEx { get; set; }
 
 		// list of items
-		public ExList<DataStorage>? TempShtDsExList { get; set; }
-		
+		public ExList<DataStorage>? TempShtDsListEx { get; set; }
+
 		public Entity? TempShtEntity { get; set; }
 
 		// todo fix name
 		// not used for validation but for lib routines
 		public IList<DataStorage>? TempShtDsList { get; set; }
-
 
 
 		// public bool GotTempModelCode => !TempModelCode!.IsVoid();
@@ -479,12 +655,12 @@ namespace ExStorSys
 		/// <summary>
 		/// temp workbook schema is not null and is valid
 		/// </summary>
-		public bool GotTempWbkSchema => (TempWbkSchema != null && TempWbkSchema.Item.IsValidObject);
-		
+		public bool GotTempWbkSchema => (TempWbkSchemaEx != null && TempWbkSchemaEx.Item.IsValidObject);
+
 		/// <summary>
 		/// temp workbook DS is not null and is valid
 		/// </summary>
-		public bool GotTempWbkDs => (TempWbkDs!= null && TempWbkDs.Item.IsValidObject);
+		public bool GotTempWbkDs => (TempWbkDsEx != null && TempWbkDsEx.Item.IsValidObject);
 
 		/// <summary>
 		/// temp entity is not null and is valid
@@ -503,12 +679,12 @@ namespace ExStorSys
 		/// <summary>
 		/// temp sheet schema is not null and is valid
 		/// </summary>
-		public bool GotTempShtSchema => (TempShtSchema != null && TempShtSchema.Item.IsValidObject);
+		public bool GotTempShtSchema => (TempShtSchemaEx != null && TempShtSchemaEx.Item.IsValidObject);
 
 		/// <summary>
 		/// temp sheet DS is not null and is valid
 		/// </summary>
-		public bool GotTempShtDs => TempShtDsExList != null;
+		public bool GotTempShtDs => TempShtDsListEx != null;
 
 		/// <summary>
 		/// temp entity is not null and is valid
@@ -523,23 +699,24 @@ namespace ExStorSys
 		/// <summary>
 		/// Exlist is not null and has > 0 elements
 		/// </summary>
-		public bool GotTempAnySheetsEx => (TempShtDsExList != null && TempShtDsExList.GoodItemsCount > 0);
+		public bool GotTempAnySheetsEx => (TempShtDsListEx != null && TempShtDsListEx.GoodItemsCount > 0);
 
-		#endregion
+	#endregion
 
-		#region event consuming
+	#region event consuming
 
-		#endregion
+	#endregion
 
-		#region event publishing
+	#region event publishing
 
-		// public event PropertyChangedEventHandler? PropertyChanged;
-		//
-		// [DebuggerStepThrough]
-		// private void OnPropertyChanged([CallerMemberName] string memberName = "")
-		// {
-		// 	PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
-		// }
+		public event PropertyChangedEventHandler? PropertyChanged;
+		
+		[DebuggerStepThrough]
+		[NotifyPropertyChangedInvocator]
+		private void OnPropertyChanged([CallerMemberName] string memberName = "")
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
+		}
 
 		public delegate void PropChgdEventHandler(object sender, PropChgEvtArgs e);
 
@@ -556,7 +733,6 @@ namespace ExStorSys
 		}
 
 
-
 		// public delegate void  ExStorStatusChangedEventHandler(object sender);
 		//
 		// public event ExStorData.ExStorStatusChangedEventHandler  ExStorStatusChanged;
@@ -565,7 +741,6 @@ namespace ExStorSys
 		// {
 		// 	ExStorStatusChanged?.Invoke(this);
 		// }
-
 
 
 		public delegate void RestartRequiredEventHandler(object sender, bool? e);
@@ -583,11 +758,12 @@ namespace ExStorSys
 
 		public override string ToString()
 		{
-			string w = $"{wbk.DsName} [{wbk.Model_Name}]";
-			string s = sheets.Count > 0 ? sheets.ToArray()[0].Key : "empty";
+			string w = $"{wbk.DsName} [{wbk.ModelTitle}]";
+			string s = sheetsList.Count > 0 ? sheetsList.ToArray()[0].Key : "empty";
 			return $"WBK| {w} | SHT| {s}";
 		}
 
 	#endregion
+
 	}
 }

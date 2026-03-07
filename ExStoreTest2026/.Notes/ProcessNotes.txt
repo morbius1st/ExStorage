@@ -1,5 +1,5 @@
 ﻿
-model code creation / usage / storage
+(void) model code creation / usage / storage
 	* stored in workbook as "model code"
 	* created whe workbook created
 	* used when workbook created

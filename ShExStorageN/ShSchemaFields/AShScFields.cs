@@ -143,7 +143,7 @@ namespace ShExStorageN.ShSchemaFields
 		}
 
 
-		protected Dictionary<TKey, TField> Fields { get; set; }
+		public Dictionary<TKey, TField> Fields { get; set; }
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{

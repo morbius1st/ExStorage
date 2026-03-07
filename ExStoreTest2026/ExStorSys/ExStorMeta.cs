@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using ExStoreTest2026.Windows;
 using RevitLibrary;
 using UtilityLibrary;
@@ -30,6 +31,7 @@ namespace ExStorSys
 		N_NEG_IC = -99,
 		N_DB = -10,
 
+		N_NEG_THREE= -3,
 		N_NEG_TWO = -2,
 		N_NEG_ONE = -1,
 
@@ -144,16 +146,16 @@ namespace ExStorSys
 	/* property system */
 
 	/* property classes */
-	public enum PropertyOwner  // that is, who generated the property event - not always the owner class
-	{
-		PO_GEN  = 0, 
-		PO_XSYS    ,
-		PO_XMGR    ,
-		PO_STMGR   ,
-		PO_XDATA   ,
-		PO_EXO     ,
-		PO_LMGR    ,
-	}
+	// public enum PropertyOwner  // that is, who generated the property event - not always the owner class
+	// {
+	// 	PO_GEN  = 0, 
+	// 	PO_XSYS    ,
+	// 	PO_XMGR    ,
+	// 	PO_STMGR   ,
+	// 	PO_XDATA   ,
+	// 	PO_EXO     ,
+	// 	PO_LMGR    ,
+	// }
 
 	/* property identifiers */
 	public enum PropertyId
@@ -193,14 +195,16 @@ namespace ExStorSys
 	public enum ValidateSchema
 	{
 		VSC_DEBUG				= N_DB,        //
-		VSC_VRFY_UNTESTED		= N_NEG_TWO ,  //
+		VSC_VRFY_UNTESTED		= N_NEG_THREE,  //
+		VSC_NG					= N_NEG_TWO ,  //
 		VSC_NA					= N_NEG_ONE ,  //
 		VSC_DEFAULT				= N_ZERO ,	   //
-		VSC_GOOD				= N_GOOD ,	   //
+
+		VSC_GOOD				= N_GOOD ,	   // 30
+		
 		VSC_MISSING				= N_ONE,	   //  1
 		VSC_WRONG_COUNT			= N_TWO,	   //  2
 		VSC_INVALID				= N_THREE,     //  3
-		                                       // 
 		VSC_WRONG_VER			= N_SIX,       //  6
 
 		// invalid & wrong ver can occur at the same time in any combination
@@ -214,21 +218,24 @@ namespace ExStorSys
 	public enum ValidateDataStorage
 	{
 		VDS_DEBUG				= N_DB,        //
-		VDS_VRFY_UNTESTED		= N_NEG_TWO ,  //
+		VDS_VRFY_UNTESTED		= N_NEG_THREE,  //
+		VDS_NG					= N_NEG_TWO ,  //
 		VDS_NA					= N_NEG_ONE ,  //
 		VDS_DEFAULT				= N_ZERO ,	   //
+		
 		VDS_GOOD				= N_GOOD ,	   //
+
 		VDS_MISSING				= N_ONE,	   //  1
 		VDS_WRONG_COUNT			= N_TWO,	   //  2
 		VDS_INVALID				= N_THREE,     //  3
 											   //
 		VDS_WRONG_VER			= N_SIX,       //  6
 											   //
-		VDS_ACT_OFF            	= N_SEVEN,	   //  7
-		VDS_ACT_IGNORE         	= N_EIGHT,	   //  8
 		VDS_WRONG_MODEL_NAME	= N_NINE,	   //  9
 		
-		VDS_MULTIPLE			= N_TWENTY     // 99 
+		VDS_ACT_IGNORE         	= N_TWENTY + N_ZERO,	// 20
+		VDS_ACT_OFF            	= N_TWENTY + N_ONE,		// 21
+		VDS_MULTIPLE_MN_O		= N_TWENTY + N_TWO,     // 22 - MN (model name) O (act off) 
 
 		// voided
 		// VDS_INVALID_N_WRONG_VER	= N_ONEOHFOUR,
@@ -236,18 +243,62 @@ namespace ExStorSys
 		// VDS_NOT_BAD			,	// VOID
 	}
 
-
-
-
 	/* various enums */
 
 
-	public enum FieldEditLevel
+	/* fields */
+
+	/// <summary>
+	/// controls who can access the field.  
+	/// that is, a user's security level us used and the user
+	/// can access a field if the field's edit level matches
+	/// their security level or is a larger number.<br/>
+	/// also, NONE, -1, cannot access anything
+	/// </summary>
+	public enum FieldEditLevel 
 	{
-		DL_DEBUG			= -1,
-		DL_BASIC			= 0,
-		DL_MEDIUM			= 1,
-		DL_ADVANCED			= 2
+		FEL_LOCKED			= -1,
+		FEL_UNASSIGNED		= 0,
+		FEL_VIEW_ONLY		= 5,
+		FEL_DEBUG			= 10,
+		FEL_ADVANCED		= 40,
+		FEL_ADV_VIEW_ONLY	= FEL_ADVANCED + FelSubCat.FESC_VIEWONLY,
+		FEL_BASIC			= 60,
+		FEL_BAS_VIEW_ONLY	= FEL_BASIC + FelSubCat.FESC_VIEWONLY,
+	}
+
+	public enum FelSubCat
+	{
+		FESC_VIEWONLY	=1,
+	}
+
+	public enum FieldEditStatus
+	{
+		FES_NONE		= -1,
+		FES_CAN_VIEW	=  0,
+		FES_CAN_EDIT	=  1,
+	}
+
+	public enum FieldStatus
+	{
+		FS_DIRTY  = -1,
+		FS_IGNORE = 0,
+		FS_CLEAN  = 1,
+	}
+
+	[Flags]
+	public enum FieldCopyType
+	{
+		FC_IGNORE   = -1,
+		FC_NEVER    = 0, // none
+		FC_ALWAYS   = 7, // 1, 2, & 4
+		FC_TYPE_1   = 1,
+		FC_TYPE_2   = 2,
+		FC_TYPE_12  = 3,
+		FC_TYPE_4   = 4,
+		FC_TYPE_14  = 5,
+		FC_TYPE_15  = 6,
+		
 	}
 
 	public enum ItemUsage
@@ -258,10 +309,32 @@ namespace ExStorSys
 		IU_WBK,
 		IU_SHT
 	}
-		
 
+	/*family / type enums */
 
+	public enum FamTypeCategories
+	{
+		PROCESS,
+	}
 
+	public enum FamTypeRequirement
+	{
+		REQUIRED,
+		OPTIONAL
+	}
+
+	// for these enums, the enum name will be converted to 
+	// string for presentation to the user.  the name will get
+	// converted to proper case and underscores will be converted
+	// to spaces
+	public enum FamTypeProcessProp
+	{
+		ACTIVE,
+		INACTIVE,
+		AT_OPEN,
+		AT_CLOSE
+	}
+	
 	/* enums saved into a DS / Entity via a schema
 	 * privide a default value in the cost class below
 	 */
@@ -280,7 +353,8 @@ namespace ExStorSys
 		SS_GOOD,
 		SS_SKIP,
 		SS_HOLD,
-		SS_DELETE
+		SS_DELETE,
+		SS_NA		= N_NEG_ONE,
 	}
 
 	public enum UpdateRules
@@ -289,7 +363,7 @@ namespace ExStorSys
 		UR_NEVER        = 0,
 		UR_AS_NEEDED    = 1,
 		UR_UPON_REQUEST = 2,
-		UR_COUNT        = 3
+
 	}
 
 	// key information
@@ -356,11 +430,14 @@ namespace ExStorSys
 
 		public const string K_NOT_DEFINED_TYPE = "";
 		public const string K_NOT_DEFINED_STR = "<not defined>";
+		public const string K_FAM_LIST_INIT_ENTRY = "<Undefined|Unset>";
+		public const string K_FAM_LIST_INIT_ENTRY_OLD = "Undefined|Unset";
 
 		public const string PRIMARY_SCHEMA_DESC = "Cells Primary DataStorage";
 
-		public static List<string> K_ARRAY = new () { K_NOT_DEFINED_STR };
-
+		// public static List<string> K_DICT = new () {K_FAM_LIST_INIT_ENTRY };
+		public static Dictionary<string, string> K_DICT = new () { {K_FAM_LIST_INIT_ENTRY, K_NOT_DEFINED_STR } };
+		
 		/* info names*/
 
 		public static string UserName => CsUtilities.UserName;
@@ -393,19 +470,20 @@ namespace ExStorSys
 
 		public const string APP_CODE = "CsCells";
 		public const string EXS_SCHEMA_NAME_CODE = "Schema";
-		public const string EXS_WKB_NAME_CODE = "WKB";
 		// public const string EXS_WKB_ID = "9999"; // last possible value
 		public const string EXS_SHT_FIRST_ID_CODE = "AAAA"; // first possible value
 
+		/* workbook version information */
+		public const string EXS_WKB_NAME_CODE = "WKB";
 		public const string EXS_VERSION_WBK = "v1_00";
-		public const string EXS_VERSION_SHT = "v1_00";
-
-		public const string EXS_SHT_NAME_CODE = "SHT";
-
-		/* const schema GUIDs */
-		
+		// next version, adjust to include the version number per the current sheet guid
 		public static readonly Guid WbkSchemaGuid = new Guid("A35D2205-CFFA-4EE0-ACED-DECADE20250A" );
-		public static readonly Guid ShtSchemaGuid = new Guid("A35D2205-CFFA-4EE0-ACED-DECADE20250B" );
+
+		/* sheet version information */
+		public const string EXS_SHT_NAME_CODE = "SHT";
+		public const string EXS_VERSION_SHT = "v1_10";
+		public static readonly Guid ShtSchemaGuid = new Guid("A35D2205-CFFA-0110-ACED-DECADE20260B" );
+
 
 		// const names
 		// workbook schema name == WbkSchemaName          == CsCells_WBK_Schema_v1_00
@@ -567,41 +645,129 @@ namespace ExStorSys
 		
 		};
 
-		public static Dictionary<ValidateSchema, Tuple<string, string, string>> ValidateSchemaDesc = new ()
+		//                                           issue                  test /
+		// 0 = ignore | 1 = add to main desc     reporting   issue   issue  verify 
+		// 2 = add to ext desc                      code v  desc v   fix v  code v
+		//                                               v       v       v       v
+		public static Dictionary<ValidateSchema, Tuple<int, string, string, string>> ValidateSchemaDesc = new ()
 		{
-			{VSC_DEBUG			     , new ("For Debugging"					           , "debug only"       , "db" ) }, //
-			{VSC_VRFY_UNTESTED       , new ("Validation Cannot be Performed"           , "n/a"              , "ut" ) }, //
-			{VSC_NA				     , new ("N/A value, Unset"	                       , "n/a"              , "na" ) }, // 
-			{VSC_DEFAULT		     , new ("Default value, Unset"	                   , "default"          , "df" ) }, // 
-			{VSC_GOOD			     , new ("schema good"                              , "n/a"              , "gd" ) }, //
-			{VSC_MISSING		     , new ("no schema found"                          , "Create New"       , "ms" ) }, // 
-			{VSC_WRONG_COUNT		 , new ("one+ good schema found"                   , "n/a cannot happen", "wc" ) }, // 
-			{VSC_INVALID		     , new ("schema invalid"                           , "n/a cannot happen", "iv" ) }, // 
-			{VSC_WRONG_VER	         , new ("schema has the Wrong Version"             , "need to upgrade"  , "wv" ) }, // 
+			{VSC_DEBUG			     , new (0, "For Debugging"					  , "debug only"                      , "db" ) }, //
+			{VSC_VRFY_UNTESTED       , new (0, "Validation Cannot be Performed"   , "n/a"                             , "ut" ) }, //
+			{VSC_NG				     , new (0, "Not good value"	                  , "n/a"                             , "na" ) }, // 
+			{VSC_NA				     , new (0, "N/A value, Unset"	              , "n/a"                             , "na" ) }, // 
+			{VSC_DEFAULT		     , new (0, "Default value, Unset"	          , "default"                         , "df" ) }, // 
+			{VSC_GOOD			     , new (0, "schema good"                      , "n/a"                             , "gd" ) }, //
+			
+			{VSC_MISSING		     , new (2, "No Schema was found"              , "The system must be created new"  , "ms" ) }, // 
+			{VSC_WRONG_COUNT		 , new (0, "one+ good schema found"           , "n/a cannot happen"               , "wc" ) }, // 
+			{VSC_INVALID		     , new (2, "The Schema is invalid"            , "The system must be created new"  , "iv" ) }, // 
+			{VSC_WRONG_VER	         , new (1, "The Schema has the Wrong Version" , "The System must be updated"      , "wv" ) }, // 
 								     
 			// voided
 			// {VSC_INVALID_OR_WRONG_VER , new ("schema is invalid or has wrong version"  , "need to upgrade") },	// 
 		};
 
-		public static Dictionary<ValidateDataStorage,  Tuple<string, string, string>> ValidateDataStorageDesc = new ()
+		public static Dictionary<ValidateDataStorage,  Tuple<int, string, string, string>> ValidateDataStorageDesc = new ()
 		{
-			{VDS_DEBUG			     , new ("For Debugging"						       , "debug only"                         , "db" ) }, //
-			{VDS_VRFY_UNTESTED       , new ("Validation Cannot be Performed"           , "n/a"                                , "ut" ) }, //
-			{VDS_NA	                 , new ("N/A value, Unset"			               , "n/a"                                , "na" ) }, //
-			{VDS_DEFAULT		     , new ("Default value, Unset"				       , "default"                            , "df" ) }, // 
-			{VDS_GOOD                , new ("datastorage good"                         , "n/a"                                , "gd" ) }, //
-			{VDS_MISSING             , new ("no datastorage found"                     , "Create New"                         , "ms" ) }, //
-			{VDS_WRONG_COUNT         , new ("one+ good datastorage found"              , "Delete Until Only One Valid Remains", "wc" ) }, //
-			{VDS_INVALID             , new ("datastorage invalid"                      , "Delete Until Only One Valid Remains", "iv" ) }, //
-			{VDS_WRONG_VER			 , new ("datastorage has the Wrong Version"        , "Request to Fix"                     , "wv" ) }, //
-			{VDS_ACT_OFF             , new ("ExSystem has been deactivated"            , "Request to Fix"                     , "ao" ) }, //
-			{VDS_ACT_IGNORE          , new ("ExSystem has been disabled"               , "ignore"                             , "ai" ) }, //
-			{VDS_WRONG_MODEL_NAME    , new ("datastorage has the Wrong Model Name"     , "Request to Fix"                     , "mn" ) }, //
-			{VDS_MULTIPLE            , new ("datastorage multiple issues"              , "some, Request to Fix"               , "mu" ) }, //
+			{VDS_DEBUG			     , new (0, "For Debugging"						              , "debug only"                             , "db" ) }, //
+			{VDS_VRFY_UNTESTED       , new (0, "Validation Cannot be Performed"                   , "n/a"                                    , "ut" ) }, //
+			{VDS_NG	                 , new (0, "Not good value"			                          , "n/a"                                    , "na" ) }, //
+			{VDS_NA	                 , new (0, "N/A value, Unset"			                      , "n/a"                                    , "na" ) }, //
+			{VDS_DEFAULT		     , new (0, "Default value, Unset"				              , "default"                                , "df" ) }, // 
+			{VDS_GOOD                , new (0, "datastorage good"                                 , "n/a"                                    , "gd" ) }, //
+			
+			{VDS_MISSING             , new (2, "The DataStorage object was NOT found"             , "The system must be created new"         , "ms" ) }, //
+			{VDS_WRONG_COUNT         , new (0, "one+ good datastorage found"                      , "Delete Until Only One Valid Remains"    , "wc" ) }, //
+			{VDS_INVALID             , new (2, "The DataStorage object is invalid"                , "The system must be created new"         , "iv" ) }, //
+			{VDS_WRONG_VER			 , new (1, "The DataStorage has the Wrong Version"            , "The System must be updated"             , "wv" ) }, //
+			{VDS_ACT_OFF             , new (1, "ExStorSystem has been deactivated"                , "The System must be re-activated"        , "ao" ) }, //
+			{VDS_ACT_IGNORE          , new (1, "ExStorSystem has been disabled"                   , "The System must be re-activated"        , "ai" ) }, //
+			{VDS_WRONG_MODEL_NAME    , new (1, "The DataStorage object has the Wrong Model Name"  , "The System must be updated"             , "mn" ) }, //
+			{VDS_MULTIPLE_MN_O       , new (0, "datastorage multiple issues"                      , "some, Request to Fix"              , "mu" ) }, //
 
 			// voided
 			// {VDS_WRONG_MODEL_CODE  , new ("datastorage has the Wrong Model Code"  , "Request to Fix") },	//
 			// {VDS_INVALID_N_WRONG_VER , new ("datastorage is invalid and has wrong version" , "need to upgrade") },   //
+		};
+
+		public static Dictionary<FieldEditLevel, Tuple<string, string, SolidColorBrush>> FieldEditLevelDesc = new ()
+		{
+			{ FieldEditLevel.FEL_LOCKED         , new ("Locked",               "User is not known / Has no permissions"    , Brushes.Red) },
+			{ FieldEditLevel.FEL_DEBUG          , new ("Debug (Only)",         "Editable by Debugging Users"               , Brushes.LawnGreen) },
+			{ FieldEditLevel.FEL_ADVANCED       , new ("Advanced",             "Editable by Advanced Users"                , Brushes.Blue) },
+			{ FieldEditLevel.FEL_ADV_VIEW_ONLY  , new ("Advanced (View Only)", "Viewable by Advanced Users"                , Brushes.DodgerBlue) },
+			{ FieldEditLevel.FEL_BASIC          , new ("Basic",                "Editable by Basic Users"                   , Brushes.DarkViolet) },
+			{ FieldEditLevel.FEL_BAS_VIEW_ONLY  , new ("Basic (View Only)",    "Viewable by Users"                         , Brushes.MediumPurple) },
+			{ FieldEditLevel.FEL_VIEW_ONLY      , new ("View Only",            "Can only be viewed"                        , Brushes.Yellow) },
+			{ FieldEditLevel.FEL_UNASSIGNED     , new ("Unassigned",           "Edit level not assigned"                   , Brushes.OrangeRed) },
+		};
+
+		public static Dictionary<FieldStatus, Tuple<string, string, SolidColorBrush>> FieldStatusDesc = new ()
+		{
+			{ FieldStatus.FS_IGNORE , new ("Ignore",     "Field is fixed / cannot be changed"                       , Brushes.White) },
+			{ FieldStatus.FS_CLEAN  , new ("Unmodified", "Field has not been changed"                               , Brushes.White) },
+			{ FieldStatus.FS_DIRTY  , new ("Revised",    "Field has been changed"                                   , Brushes.White) },
+		};
+
+		public static Dictionary<UserSecutityLevel, Tuple<string, string, SolidColorBrush>> UsserSecurityLevelDesc = new ()
+		{
+			{ UserSecutityLevel.SL_DEBUG    , new ("Debug (Only)", "Unrestricted access"                            , Brushes.LawnGreen) },
+			{ UserSecutityLevel.SL_ADVANCED , new ("Advanced",   "Advanced access"                                  , Brushes.Blue) },
+			{ UserSecutityLevel.SL_BASIC    , new ("Basic",      "Limited, basic access"                            , Brushes.DarkViolet) },
+			{ UserSecutityLevel.SL_LIMITED  , new ("Limited",    "Limited to viewing basic view only fields"        , Brushes.Fuchsia) },
+			{ UserSecutityLevel.SL_VIEW_ONLY, new ("View Only",  "Limited to viewing basic fields"                  , Brushes.Yellow) },
+			{ UserSecutityLevel.SL_UNASSIGNED,new ("Unassigned", "No access permitted"								, Brushes.Violet) },
+			{ UserSecutityLevel.SL_NONE     , new ("None", "No access permitted"									, Brushes.MediumSeaGreen) },
+		};
+
+		public static Dictionary<UpdateRules, Tuple<string, string, SolidColorBrush>> UpdateRulesDesc = new ()
+		{
+			{ UpdateRules.UR_UNDEFINED     , new ("Not Assigned", "Not Assigned"                         , Brushes.White) },
+			{ UpdateRules.UR_AS_NEEDED     , new ("As Needed"   , "Automatic, when Needed"               , Brushes.Blue) },
+			{ UpdateRules.UR_UPON_REQUEST  , new ("Upon Request", "Not Until Requested"                  , Brushes.LawnGreen) },
+			{ UpdateRules.UR_NEVER         , new ("Never"       , "Never Update"                         , Brushes.Red) },
+		};
+
+		public static Dictionary<SheetOpStatus, Tuple<string, string, SolidColorBrush>> SheetOpStatusDesc = new ()
+		{
+			{ SheetOpStatus.SS_NA,     new ("Not Assigned",   "Not Assigned"                             , Brushes.White) },
+			{ SheetOpStatus.SS_HOLD,   new ("Hold",   "Hold for this Session"                            , Brushes.Blue) },
+			{ SheetOpStatus.SS_DELETE, new ("Delete", "Delete and remove all operations"                 , Brushes.Red) },
+			{ SheetOpStatus.SS_GOOD,   new ("Good",   "Good, proceed normal"                             , Brushes.LawnGreen) },
+			{ SheetOpStatus.SS_SKIP,   new ("Skip",   "Skip these operations for until reset"            , Brushes.Yellow) },
+
+		};
+
+		public static Dictionary<ActivateStatus, Tuple<string, string, SolidColorBrush>> ActiveStatusDesc = new ()
+		{
+			{ ActivateStatus.AS_NA       , new ("Not Assigned", "Not Assigned"               , Brushes.White) },
+			{ ActivateStatus.AS_DEFAULT  , new ("Unassigned"  , "Activation Not Set"         , Brushes.Red) },
+			{ ActivateStatus.AS_IGNORE   , new ("Ignore"      , "Ignore this item"           , Brushes.Blue) },
+			{ ActivateStatus.AS_INACTIVE , new ("Inactive"    , "Activation Disabled"        , Brushes.Yellow) },
+			{ ActivateStatus.AS_ACTIVE   , new ("Active"      , "Activation Enabled"         , Brushes.LawnGreen) },
+
+		};
+
+		public static Dictionary<ActivateStatus, Tuple<string, string, SolidColorBrush>> ActiveStatusDescUi = new ()
+		{
+			{ ActivateStatus.AS_ACTIVE, ActiveStatusDesc[ActivateStatus.AS_ACTIVE] },
+			{ ActivateStatus.AS_INACTIVE, ActiveStatusDesc[ActivateStatus.AS_INACTIVE] },
+			{ ActivateStatus.AS_IGNORE, ActiveStatusDesc[ActivateStatus.AS_IGNORE] },
+		};
+
+		public static Dictionary<FamTypeCategories, Tuple<List<Tuple<Enum, string, SolidColorBrush>>, 
+			FamTypeRequirement, Enum, 
+			string, SolidColorBrush>> FamilyAndTypeProperties = new ()
+		{
+			{FamTypeCategories.PROCESS, new (new ()
+			{
+				new ( FamTypeProcessProp.ACTIVE,   "Process this item normally", Brushes.LawnGreen), 
+				new ( FamTypeProcessProp.INACTIVE, "Never process this item", Brushes.OrangeRed),
+				new ( FamTypeProcessProp.AT_OPEN,  "Process this item once when the model is opened", Brushes.Blue),
+				new ( FamTypeProcessProp.AT_CLOSE, "Process this item once when the model is opened", Brushes.DarkGray),
+			} , 
+				FamTypeRequirement.REQUIRED, FamTypeProcessProp.ACTIVE,// is this property required and which setting is the default
+				"Determines how to process this Family Type", Brushes.White) }
 		};
 
 		/* restart const's*/
@@ -640,11 +806,13 @@ namespace ExStorSys
 		// PK_SD_SHT_SCHEMA_NAME     = K_SHT_SCHEMA_NAME,
 		// PK_SD_SCHEMA_GUID         = K_SCHEMA_GUID,
 
-		PK_MD_MODEL_NAME          ,
+		PK_MD_MODEL_TITLE          ,
 	}
 
 	public enum SheetFieldKeys
 	{
+		RK_MGMT_FAM_COUNT		  = -1,
+
 		RK_DS_NAME                = K_DS_NAME,
 		RK_AD_DESC                = K_DESCRIPTION,
 		RK_AD_VENDORID            = K_VENDORID,
@@ -668,7 +836,7 @@ namespace ExStorSys
 		RK_OD_UPDATE_RULE         ,
 		RK_OD_UPDATE_SKIP         ,
 		
-		RK_RD_FAMILY_LIST            ,
+		RK_RD_FAMILY_LIST          ,
 	}
 
 
