@@ -8,6 +8,7 @@
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsScrollViewer.xaml" />
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsComboBox.xaml" />
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsScrollBar.xaml" />
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsLabels.xaml" />
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsButtons.xaml" />
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CsCheckBox.xaml" />
 	</ResourceDictionary.MergedDictionaries>

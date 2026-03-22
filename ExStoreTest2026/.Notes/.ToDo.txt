@@ -1,0 +1,24 @@
+﻿
+
+
+
+
+* (sheets tab) if sheets list (no deleted) == 0, hide sheets list, add message, no sheets
+* (sheets tab) if sheet selected is null, hide sheets fields, add message, no sheet selected
+
+* (workbook tab) rename to workbook and sheets list
+* (workbook tab) remove undo ability for last DS id code
+* (workbook tab) clear the sheets list == set all to deleted
+* (workbook tab) restore, set all to prior status
+* (workbook tab) sheets list, add button, make new item have a sequence one greater than the last last item
+
+* both tabs, make sheets list look the same
+* both tabs, sheets list. center fam count
+* both tabs, sheets list. fam count, make wider, change cnt to count
+* both tabs, sheets list. make status larger
+
+* all, make buttons work
+
+* all, move buttons to above the prime object, make slimmer, add icon, reduce text - e.g. "add a sheet" to jsut "+ Add"  and "Clear the sheets list" to "() Clear", etc.
+
+

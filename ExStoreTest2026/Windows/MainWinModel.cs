@@ -66,7 +66,7 @@ namespace ExStoreTest2026.Windows
 
 		private void init()
 		{
-			// ObjectId = AppRibbon.ObjectIdx++;
+			// Debug.WriteLine($"\n*** MainWinModel init | begin");
 
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWinModel)) ?? -1;
 
@@ -77,15 +77,28 @@ namespace ExStoreTest2026.Windows
 			xData = ExStorData.Instance;
 			xData.PropertyChanged += Xdata_OnPropertyChanged;
 
+			// command initialization
+
+			CmdResetWorkbook = new RelayCommand(cmdResetWorkbookExe,cmdResetWorkbookCanExe);
+			CmdSaveWorkbook = new RelayCommand(cmdSaveWorkbookExe,cmdSaveWorkbookCanExe);
+
+			CmdResetSheet = new RelayCommand(cmdResetSheetExe,cmdResetSheetCanExe);
+			CmdSaveSheet = new RelayCommand(cmdSaveSheetExe,cmdSaveSheetCanExe);
 
 			CmdResetFamList = new RelayCommand(CmdResetFamListExe,CmdResetFamListCanExe);
+			CmdSaveFamList = new RelayCommand(CmdSaveFamListExe,CmdSaveFamListCanExe);
 			
 			SaveNewFamilyListItem = new RelayCommand(SaveNewFamItemExe,SaveNewFamItemCanExe);
 			ClearNewFamilyListItem = new RelayCommand(ClearNewFamItemExe,ClearNewFamItemCanExe);
+			DeleteAFamilyListItem = new RelayCommandAlwaysCanExecute(deleteAFamItemExe);
 			
-			DeleteAFamilyListItem = new RelayCommandAlwaysExecute(deleteAFamItemExe);
+			CmdSheetAdd = new RelayCommand(cmdAddSheetExe, cmdAddSheetCanExe);
+			CmdSheetDelete = new RelayCommand(cmdDeleteSheetExe, cmdDeleteSheetCanExe);
+			CmdSheetUndo = new RelayCommand(cmdUndoSheetExe, cmdUndoSheetCanExe);
+			CmdSheetListRestore = new RelayCommand(cmdResetSheetListExe, cmdResetSheetListCanExe);
+			CmdSheetListCommit = new RelayCommand(cmdCommitSheetListExe, cmdCommitSheetListCanExe);
 
-
+			// Debug.WriteLine($"\n*** MainWinModel init | exit ({ObjectId})");
 		}
 
 	#endregion
@@ -111,17 +124,13 @@ namespace ExStoreTest2026.Windows
 				return true;
 			}
 
-			Msgs.WriteLine($"*** FAILED to create workbook schema (may already exist) ***");
-
 			return false;
 		}
 
 		// just makes - no write
 		public void MakeWorkBook()
 		{
-			Msgs.WriteLine("\n****  Make WorkBook ****\n");
 			xMgr.MakeWorkBook();
-			Msgs.WriteLine("****  Done Make WorkBook ****\n");
 		}
 
 		public void MakeEmptyWorkBook()
@@ -132,9 +141,7 @@ namespace ExStoreTest2026.Windows
 				return;
 			}
 
-			Msgs.WriteLine("\n****  Make Empty WorkBook ****\n");
 			xMgr.MakeEmptyWorkBook();
-			Msgs.WriteLine("****  Done Make Empty WorkBook ****\n");
 		}
 
 		public void MakeAndWriteWorkBook()
@@ -304,8 +311,6 @@ namespace ExStoreTest2026.Windows
 
 		public void AddFamilyAndType()
 		{
-			Msgs.WriteLine("\n**** add family and type ****\n");
-
 			bool result = false;
 
 			string fam = "mt";
@@ -323,22 +328,18 @@ namespace ExStoreTest2026.Windows
 				idx++;
 			}
 
-			if (!result)
-			{
-				Msgs.WriteLine($"*** FAILED  ({result} / {idx}) ***");
-			}
-			else
-			{
-				Msgs.WriteLine($"*** WORKED  ({fam} | {type}) ***");
-			}
-
-			Msgs.WriteLine("****  Done add family and type ****\n");
+			// if (!result)
+			// {
+			// 	Msgs.WriteLine($"*** FAILED  ({result} / {idx}) ***");
+			// }
+			// else
+			// {
+			// 	Msgs.WriteLine($"*** WORKED  ({fam} | {type}) ***");
+			// }
 		}
 
 		public void RemoveFamliyAndType()
 		{
-			Msgs.WriteLine("\n**** remove family and type ****\n");
-
 			bool result = false;
 
 			if (idx > 0 && idx <= idxMax)
@@ -355,8 +356,6 @@ namespace ExStoreTest2026.Windows
 			{
 				Msgs.WriteLine($"*** WORKED  ({testFamAndTypes[idx, 0]} | {testFamAndTypes[idx, 1]}) ***");
 			}
-
-			Msgs.WriteLine("****  Done remove family and type ****\n");
 		}
 
 		public void AddFamilyAndType2()
@@ -394,171 +393,42 @@ namespace ExStoreTest2026.Windows
 			}
 		}
 
-		public void DeleteShtDs(bool onlyOne = false)
-		{
-			if (!xMgr.xData.GotTempAnySheets)
-			{
-				Msgs.WriteLine("cannot delete SHT Ds - no list");
-				return;
-			}
+		// public void DeleteShtDs(bool onlyOne = false)
+		// {
+		// 	if (!xMgr.xData.GotTempAnySheets)
+		// 	{
+		// 		Msgs.WriteLine("cannot delete SHT Ds - no list");
+		// 		return;
+		// 	}
+		//
+		// 	if (xMgr.DeleteDsList(xMgr.xData.TempShtDsList, onlyOne))
+		// 	{
+		// 		Msgs.WriteLine("SHT ds deleted");
+		// 	}
+		// 	else
+		// 	{
+		// 		Msgs.WriteLine("SHT ds not deleted");
+		// 	}
+		// }
+		//
+		// public void DeleteFirstShtDs(bool onlyOne = false)
+		// {
+		// 	DeleteShtDs(true);
+		// }
+		
+		/* misc */
 
-			if (xMgr.DeleteDsList(xMgr.xData.TempShtDsList, onlyOne))
-			{
-				Msgs.WriteLine("SHT ds deleted");
-			}
-			else
-			{
-				Msgs.WriteLine("SHT ds not deleted");
-			}
+		public void ShowWbkFromMemory()
+		{
+			WorkBook? wbk;
+			ObservableDictionary<string, Sheet>? shts;
+			
+			if (!xMgr.ReadWorkBookViaTempInfo(out wbk, out shts)) return;
+
+			DebugRoutines.ShowAWorkBook(wbk);
+			DebugRoutines.ShowSheets(shts);
 		}
 
-		public void DeleteFirstShtDs(bool onlyOne = false)
-		{
-			DeleteShtDs(true);
-		}
-
-		// public void DeleteWbkSc()
-		// {
-		// 	if (!xMgr.xData.GotTempWbkSchemaList)
-		// 	{
-		// 		Msgs.WriteLine("cannot delete WBK Schema - no list");
-		// 		return;
-		// 	}
-		//
-		// 	// if (xMgr.DeleteWbkSchema())
-		// 	if (xMgr.EraseScList(xMgr.xData.TempWbkSchemaList))
-		// 	{
-		// 		Msgs.WriteLine("WBK schema deleted");
-		// 	}
-		// 	else
-		// 	{	
-		// 		Msgs.WriteLine("WBK schema not deleted");
-		// 	}
-		// }
-		//
-		// public void DeleteShtSc()
-		// {
-		// 	if (!xMgr.xData.GotTempShtSchemaList)
-		// 	{
-		// 		Msgs.WriteLine("cannot delete SHT Schema - no list");
-		// 		return;
-		// 	}
-		//
-		// 	if (xMgr.EraseScList(xMgr.xData.TempShtSchemaList))
-		// 	{
-		// 		Msgs.WriteLine("SHT schema deleted");
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("SHT schema not deleted");
-		// 	}
-		// }
-
-		/* read */
-		//
-		// public void ClearAndReadWorkBook()
-		// {
-		// 	DataStorage? ds;
-		// 	Entity? e;
-		// 	Schema? s;
-		//
-		// 	Msgs.Col1Width = 32;
-		//
-		// 	Msgs.WriteLine("\n****  Read WorkBook ****\n");
-		//
-		// 	if (!xMgr.xData.ResetWorkBook())
-		// 	{
-		// 		Msgs.WriteLine("\n****  cannot reset WorkBook ****\n");
-		// 		return;
-		// 	}
-		//
-		// 	Msgs.WriteLine("\tconfirming objects are null");
-		// 	Msgs.WriteLine($"\twbk is null? {xMgr.xData.WorkBook == null}");
-		//
-		// 	if (xMgr.CreateWorkBookSchema())
-		// 	{
-		// 		Msgs.WriteLine("\t**** WORKED workbook schema made ****\n");
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("\t**** FAILED workbook schema not made (may already exist) ****\n");
-		// 	}
-		//
-		//
-		// 	Msgs.WriteLine("\tconfirming workbook found");
-		//
-		// 	if (xMgr.FindWorkBookDs(out ds, out e, out s))
-		// 	{
-		// 		Msgs.WriteLine("\t**** FOUND ****\n");
-		//
-		// 		MakeEmptyWorkBook();
-		//
-		// 		Msgs.WriteLine("\tconfirming workbook is empty");
-		// 		Msgs.WriteLine($"\twbk is empty? {xMgr.xData.WorkBook!.IsEmpty}");
-		//
-		// 		DebugRoutines.ShowWorkBook();
-		//
-		// 		if (xMgr.ReadWorkBook(e))
-		// 		{
-		// 			Msgs.WriteLine("\t**** WORKED ****\n");
-		//
-		// 			xMgr.xData.WorkBook.UpdateExsObjects(ds, e, s);
-		//
-		// 			DebugRoutines.ShowWorkBook();
-		// 		}
-		// 		else
-		// 		{
-		// 			Msgs.WriteLine("\t**** FAILED ****\n");
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("\t**** NOT FOUND ****\n");
-		// 	}
-		//
-		// 	Msgs.NewLine();
-		// 	Msgs.WriteLine("****  Done read WorkBook ****\n");
-		// }
-		//
-		// public void ClearAndReadAll()
-		// {
-		// 	Msgs.WriteLine("\n****  Find all sheets DS's****\n");
-		//
-		// 	xMgr.xData.ResetSheets();
-		//
-		// 	Msgs.WriteLine("\tconfirming sheets are empty");
-		// 	Msgs.WriteLine($"\tshts is empty? {xMgr.xData.GotAnySheets}");
-		//
-		// 	Msgs.WriteLine("\tclear and read workbook");
-		// 	ClearAndReadWorkBook();
-		//
-		// 	if (xMgr.CreateSheetSchema())
-		// 	{
-		// 		Msgs.WriteLine("\t**** WORKED sheet schema made ****\n");
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("\t**** FAILED sheet schema not made (may already exist) ****\n");
-		// 	}
-		//
-		// 	IList<DataStorage> dsList;
-		//
-		// 	Msgs.WriteLine("\tgot sheets");
-		// 	if (xMgr.ReadSheets())
-		// 	{
-		// 		Msgs.WriteLine("\t**** WORKED ****\n");
-		//
-		// 		DebugRoutines.ShowSheets();
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("\t**** FAILED ****\n");
-		// 		return;
-		// 	}
-		//
-		// 	Msgs.NewLine();
-		// 	Msgs.WriteLine("\n****  Done Find all sheets DS's ****\n");
-		// }
 
 		/// <summary>
 		/// read the current information and save into ExStorData<br/>
@@ -619,44 +489,6 @@ namespace ExStoreTest2026.Windows
 
 			Msgs.WriteLine("****  Read all done - WORKED ****\n");
 		}
-
-		/* find */
-
-		// public void FindAllSheetDs()
-		// {
-		// 	Msgs.WriteLine("\n****  Find all sheets DS's (and clear & read wbk) ****\n");
-		//
-		// 	xMgr.xData.ResetSheets();
-		//
-		// 	Msgs.WriteLine("\tconfirming sheets are empty");
-		// 	Msgs.WriteLine($"\tshts is empty? {xMgr.xData.GotAnySheets}");
-		//
-		// 	Msgs.WriteLine("\tclear and read workbook");
-		// 	ClearAndReadWorkBook();
-		//
-		// 	IList<DataStorage> dsList;
-		//
-		// 	Msgs.WriteLine("\tgot sheets");
-		// 	if (xMgr.FindSheetsDs(out dsList))
-		// 	{
-		// 		Msgs.WriteLine("\t**** WORKED ****\n");
-		//
-		// 		Msgs.WriteLine($"\tDS's found | {dsList.Count}");
-		//
-		// 		foreach (DataStorage ds in dsList)
-		// 		{
-		// 			Msgs.WriteLine($"\tDS found | {ds.Name}");
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		Msgs.WriteLine("\t**** FAILED ****\n");
-		// 		return;
-		// 	}
-		//
-		// 	Msgs.NewLine();
-		// 	Msgs.WriteLine("\n****  Done Find all sheets DS's ****\n");
-		// }
 
 		public void FindWorkBookDs()
 		{
@@ -1319,6 +1151,202 @@ namespace ExStoreTest2026.Windows
 
 	#region commands
 
+	#region sheet list commands
+
+		// add a sheet command
+
+		public RelayCommand CmdSheetAdd {get; private set;}
+
+		private void cmdAddSheetExe(object? parameter)
+		{
+			Sheet sht =
+				xMgr.CreateNewSheet(new SheetCreationData("<un-assigned>", "<un-assigned>"));
+
+			xData.AddSheet(sht);
+		}
+
+		private bool cmdAddSheetCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+		
+		// delete a sheet command
+
+		public RelayCommand CmdSheetDelete {get; private set;}
+
+		private void cmdDeleteSheetExe(object? parameter)
+		{
+			xData.RemoveCurrentSheet((string) parameter!);
+		}
+
+		private bool cmdDeleteSheetCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+		
+		// undo a sheet command
+
+		public RelayCommand CmdSheetUndo {get; private set;}
+
+		private void cmdUndoSheetExe(object? parameter)
+		{
+			xData.UndoRemoveCurrentSheet((string) parameter!);
+		}
+
+		private bool cmdUndoSheetCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+
+		// reset sheet list command
+
+		public RelayCommand CmdSheetListRestore {get; private set;}
+
+		private void cmdResetSheetListExe(object? parameter)
+		{
+		}
+
+		private bool cmdResetSheetListCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+
+		// Commit sheet list command
+
+		public RelayCommand CmdSheetListCommit {get; private set;}
+
+		private void cmdCommitSheetListExe(object? parameter)
+		{
+		}
+
+		private bool cmdCommitSheetListCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+
+		// Clear sheet list command
+
+		public RelayCommand CmdSheetListClear {get; private set;}
+
+		private void cmdClearSheetListExe(object? parameter)
+		{
+		}
+
+		private bool cmdClearSheetListCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return true;
+		}
+
+
+	#endregion
+
+
+
+	#region workbook commands
+		
+		// reset workbook command
+
+		public RelayCommand CmdResetWorkbook {get; private set;}
+
+		private void cmdResetWorkbookExe(object? parameter)
+		{
+			Wbk.UndoChangeWorkbook();
+		}
+
+		private bool cmdResetWorkbookCanExe(object? parameter)
+		{
+			// parameter is currWorkbook.ismodified
+			return (bool) (parameter ?? false);
+		}
+
+		// save workbook command
+
+		public RelayCommand CmdSaveWorkbook {get; private set;}
+
+		private void cmdSaveWorkbookExe(object? parameter)
+		{
+			Wbk.CommitWorkbook();
+		}
+
+		private bool cmdSaveWorkbookCanExe(object? parameter)
+		{
+			// if (Wbk == null) return false;
+
+			return (bool) (parameter ?? false);
+
+		}
+
+
+
+	#endregion
+
+	#region sheet commands
+
+		// reset sheet command
+
+		public RelayCommand CmdResetSheet {get; private set;}
+
+		private void cmdResetSheetExe(object? parameter)
+		{
+			CurrSht?.UndoChangeSheet();
+		}
+
+		private bool cmdResetSheetCanExe(object? parameter)
+		{
+			// parameter is currSheet.ismodified
+			return (bool) (parameter ?? false);
+		}
+
+
+		// save sheet command
+
+		public RelayCommand CmdSaveSheet {get; private set;}
+
+		/// <summary>
+		/// command to save a sheet
+		/// </summary>
+		/// <param name="parameter"></param>
+		private void cmdSaveSheetExe(object? parameter)
+		{
+			CurrSht?.CommitSheet();
+
+			// if (!CurrSht?.CommitSheet() == true)
+			// {
+			// 	Debug.WriteLine("** worked **");
+			// }
+			// else
+			// {
+			// 	Debug.WriteLine("** failed **");
+			//
+			// }
+		}
+
+		/// <summary>
+		/// determine if the current sheet can be saved<br/>
+		/// linked parameter is| currsht is modified
+		/// </summary>
+		private bool cmdSaveSheetCanExe(object? parameter)
+		{
+			if (CurrSht == null) return false;
+
+			return (bool) (parameter ?? false);
+
+		}
+
+	#endregion
+
+	#region family list commands
 
 		// reset family list command
 
@@ -1328,19 +1356,33 @@ namespace ExStoreTest2026.Windows
 
 		public void CmdResetFamListExe(object? parameter)
 		{
-			Debug.WriteLine($"*** got reset fam list command | {parameter}");
-
-			CurrSht?.ClearFamAndTypeList();
+			// CurrSht?.ClearFamAndTypeList();
+			CurrSht?.ResetFamAndTypeList();
 		}
-
+		
 		public bool CmdResetFamListCanExe(object? parameter)
 		{
-			if (parameter == null) return false;
-
-			Debug.WriteLine($"**\tgot reset fam list can exe | {parameter}");
-
-			return (int) parameter > 0;
+			return (bool) (parameter ?? false);
 		}
+
+
+		// save family list command
+
+		public RelayCommand CmdSaveFamList {get; private set;}
+
+		public void CmdSaveFamListExe(object? parameter)
+		{
+			CurrSht?.CommitFamAndType();
+		}
+
+		public bool CmdSaveFamListCanExe(object? parameter)
+		{
+			if (CurrSht == null) return false;
+
+			return CurrSht.IsModifiedFamList;
+			// return CurrSht.FamListNewViewSourceCount > 0 || CurrSht.FamListModViewSourceCount > 0;
+		}
+
 
 
 		// save new family name and type
@@ -1351,8 +1393,6 @@ namespace ExStoreTest2026.Windows
 		{
 			if (tempFamilyName.IsVoid()) return;
 
-			// Debug.WriteLine($"*** got new family item command | {TempFamilyName ?? "is void"}");
-
 			xMgr.AddSheetFamily(tempFamilyName, tempFamilyType ?? "", (tempProps ?? ""));
 
 			TempProps = null;
@@ -1362,8 +1402,6 @@ namespace ExStoreTest2026.Windows
 
 		public bool SaveNewFamItemCanExe(object? parameter)
 		{
-			// Debug.WriteLine($"**\tgot new family item can exe | {TempFamilyName ?? "is void"}");
-
 			return !TempFamilyName!.IsVoid();
 		}
 
@@ -1376,8 +1414,6 @@ namespace ExStoreTest2026.Windows
 		{
 			if (tempFamilyName.IsVoid()) return;
 
-			// Debug.WriteLine($"*** got clear family item command | {TempFamilyName ?? "is void"}");
-
 			TempProps = null;
 			TempFamilyType = null;
 			TempFamilyName = null;
@@ -1385,34 +1421,24 @@ namespace ExStoreTest2026.Windows
 
 		public bool ClearNewFamItemCanExe(object? parameter)
 		{
-			// Debug.WriteLine($"**\tgot clear new family item can exe | fam name {TempFamilyName ?? "is void"} / parameter {parameter ?? "is void"}");
-
 			return true;
 		}
 
 
 		// delete a family name and type
 
-		public RelayCommandAlwaysExecute DeleteAFamilyListItem {get; private set;}
+		public RelayCommandAlwaysCanExecute DeleteAFamilyListItem {get; private set;}
 
 		private void deleteAFamItemExe(object? parameter)
 		{
 			if (((string) parameter!).IsVoid()) return;
 
-			// Debug.WriteLine($"*** got delete a family item command | {parameter ?? "is null"}");
-
 			CurrSht.RemoveFamAndType(((string) parameter!));
 		}
 
-		// public bool DeleteAFamItemCanExe(object? parameter)
-		// {
-		// 	// Debug.WriteLine($"**\tgot delete new family item can exe  | {parameter ?? "is null"}");
-		//
-		// 	return true;
-		// }
-
 	#endregion
 
+	#endregion
 
 	}
 }

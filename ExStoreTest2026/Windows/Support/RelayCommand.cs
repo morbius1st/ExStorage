@@ -35,12 +35,12 @@ namespace ExStoreTest2026.Windows
 		}
 	}
 
-	public class RelayCommandAlwaysExecute : ICommand
+	public class RelayCommandAlwaysCanExecute : ICommand
 	{
 		private readonly Action<object> _execute;
 
 
-		public RelayCommandAlwaysExecute(Action<object> execute)
+		public RelayCommandAlwaysCanExecute(Action<object> execute)
 		{
 			_execute = execute ?? throw new ArgumentNullException(nameof(execute));
 		}

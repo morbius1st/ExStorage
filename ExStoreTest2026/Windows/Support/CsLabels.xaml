@@ -1,0 +1,57 @@
+﻿<ResourceDictionary
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		>
+
+
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/MasterColorList.xaml" />
+		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/CyberStudioSkin.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+
+
+	<Style x:Key="Lbl.InButton"
+			TargetType="Label"
+			>
+		<Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=Foreground}" />
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Padding" Value="0"/>
+		<Setter Property="HorizontalAlignment" Value="Center"></Setter>
+		<!-- <Setter Property="Padding" Value="{TemplateBinding Padding}" /> -->
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="VerticalContentAlignment" Value="Top" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Label">
+					<Border
+							Padding="{TemplateBinding Padding}"
+							Background="{TemplateBinding Background}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							SnapsToDevicePixels="true"
+							>
+						<ContentPresenter
+								HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+								VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+								RecognizesAccessKey="True"
+								SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+								/>
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsEnabled" Value="false">
+							<Setter Property="Foreground" Value="{StaticResource Lbl.Fg.Disabled}" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style x:Key="Lbl.InButton.Top" TargetType="Label" BasedOn="{StaticResource Lbl.InButton}">
+	<Setter Property="Margin" Value="0,-1,0,1"/>
+	</Style>
+	<Style x:Key="Lbl.InButton.Bottom" TargetType="Label" BasedOn="{StaticResource Lbl.InButton}">
+	<Setter Property="Margin" Value="0,-3,0,-1"/>
+	</Style>
+
+
+</ResourceDictionary>

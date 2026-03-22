@@ -12,6 +12,7 @@ using static ExStorSys.ExStorConst;
 
 namespace ExStoreTest2026.DebugAssist
 {	
+	
 	public static class DebugRoutines
 	{
 		public static void TestDynaValueChanges()
@@ -271,6 +272,31 @@ namespace ExStoreTest2026.DebugAssist
 
 		}
 
+		public static void ShowAWorkBook(WorkBook? wbk)
+		{
+			if (wbk == null) return;
+
+			Msgs.WriteLineSpaced("\n*** workbook values ***\n");
+
+			Msgs.Col1Width = 32;
+
+			if (!ExStorMgr.Instance.xData.GotWbkDs)
+			{
+				Msgs.WriteLineSpaced("*** workbook is null or invalid ***\n");
+				return;
+			}		
+
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> value) in wbk)
+			{
+				Msgs.WriteSpaced($"*** {key}", $"{value.Field.FieldName,-20} | {(value.DyValue?.Value.ToString() ?? "null"),-34}");
+				Msgs.WriteLine($" | chgd? {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | clean? {value.DyValue.IsClean}");
+				// Msgs.WriteLine($" | modified {value.DyValue.IsChanged?.ToString() ?? "not enabled",-14} | {value.DyValue.TypeIs.Name, -20}  [{value.DyValue.RevitTypeIs.Name}]");
+			}
+
+			showWorkBookInfo(wbk);
+		}
+
+
 		public static void ShowWorkBookFromMemory()
 		{
 			Msgs.Col1Width = 32;
@@ -356,7 +382,39 @@ namespace ExStoreTest2026.DebugAssist
 			
 			Msgs.WriteLineSpaced("\n*** exid sheets list values ***\n");
 			
-			if (ExStorMgr.Instance.xData.Sheets.Count == 0)
+			ShowSheets(ExStorMgr.Instance.xData.Sheets);
+
+
+			// if (ExStorMgr.Instance.xData.Sheets.Count == 0)
+			// {
+			// 	Msgs.WriteLineSpaced("*** no sheets ***\n");
+			// 	return;
+			// }
+			//
+			// int count = 0;
+			//
+			// foreach ((string key, Sheet sht) in ExStorMgr.Instance.xData.Sheets)
+			// {
+			// 	// foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.SheetsList)
+			// 	// {
+			// 	Msgs.WriteLineSpaced($"*** sheet {count} ***\n");
+			//
+			// 	if (ExStorMgr.Instance.xData.GotShtDs(sht.DsName))
+			// 	{
+			// 		ShowSheet(sht);
+			// 	}
+			// 	else
+			// 	{
+			// 		Msgs.WriteLineSpaced("*** sheet is null or invalid ***\n");
+			// 	}
+			// }
+		}
+
+		public static void ShowSheets(ObservableDictionary<string, Sheet>? shts)
+		{
+			if (shts == null) return;
+
+			if (shts.Count == 0)
 			{
 				Msgs.WriteLineSpaced("*** no sheets ***\n");
 				return;
@@ -364,7 +422,7 @@ namespace ExStoreTest2026.DebugAssist
 			
 			int count = 0;
 			
-			foreach ((string key, Sheet sht) in ExStorMgr.Instance.xData.Sheets)
+			foreach ((string key, Sheet sht) in shts)
 			{
 				// foreach ((string? k, Sheet? sht) in ExStorMgr.Instance.xData.SheetsList)
 				// {
@@ -446,10 +504,10 @@ namespace ExStoreTest2026.DebugAssist
 			// Msgs.WriteLineSpaced($"got temp wbk schema list", xd.GotTempWbkSchemaList);
 			Msgs.WriteLineSpaced($"got temp wbk entity"     , xd.GotTempWbkEntity);
 			Msgs.WriteLineSpaced($"got temp sht ds"         , xd.GotTempShtDs);
-			Msgs.WriteLineSpaced($"got temp sht dslist"     , xd.GotTempAnySheets);
+			// Msgs.WriteLineSpaced($"got temp sht dslist"     , xd.GotTempAnySheets);
 			Msgs.WriteLineSpaced($"got temp sht schema"     , xd.GotTempShtSchema);
 			// Msgs.WriteLineSpaced($"got temp sht schema list", xd.GotTempShtSchemaList);
-			Msgs.WriteLineSpaced($"got temp sht entity"     , xd.GotTempShtEntity);
+			// Msgs.WriteLineSpaced($"got temp sht entity"     , xd.GotTempShtEntity);
 
 			Msgs.WriteLineSpaced("\n*** end ExStorData properties ***\n");
 		}

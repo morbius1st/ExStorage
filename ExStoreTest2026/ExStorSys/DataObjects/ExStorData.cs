@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
-
+using System.Windows.Data;
 using Autodesk.Revit.DB.ExtensibleStorage;
 
 using ExStoreTest2026;
+using ExStoreTest2026.DebugAssist;
 using ExStoreTest2026.Windows;
 
 using JetBrains.Annotations;
@@ -45,9 +47,11 @@ namespace ExStorSys
 		private MainWinModelUi xMui;
 
 		private bool? restartRequired;
-		private ExSysStatus exStorStatus;
+
 		// private Sheet? currentSheet;
 		private string? selectSheet;
+
+		private bool isModifiedShtsList;
 
 	#endregion
 
@@ -72,26 +76,28 @@ namespace ExStorSys
 
 		private void init()
 		{
+			// Debug.WriteLine($"\n*** ExStorData init | begin");
+
 			// ObjectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorData)) ?? -1;
 			WorkBook = WorkBook.CreateEmptyWorkBook();
 			
-			Debug.WriteLine("*** before reset sheets");
-
 			sheetsList = new ObservableDictionary<string, Sheet>();
+			
 			ResetSheets();
-
-			Debug.WriteLine("*** after reset sheets");
-
-			// configure the sheets list and provide a placeholder sheet
-			Sheet sht = Sheet.PlaceHolder();
-			sheetsList.Add(sht.DsName, sht);
-
-			Debug.WriteLine("*** after add sheet to sheet list");
+			InitSheets();
+			IsModifiedShtsList = false;
 
 			xMui = MainWinModelUi.Instance;
 
-			Debug.WriteLine("*** at end of xData init");
+			SheetsViewSource = new CollectionViewSource {Source = Sheets};
+			SheetsViewSource.SortDescriptions.Add(new SortDescription("Value.OpSequence", ListSortDirection.Ascending));
+
+			SheetsNoDeletedViewSource = new CollectionViewSource {Source = Sheets};
+			SheetsViewSource.SortDescriptions.Add(new SortDescription("Value.OpSequence", ListSortDirection.Ascending));
+			SheetsNoDeletedViewSource.Filter += SheetsViewSourceOnFilter;
+
+			// Debug.WriteLine($"\n*** ExStorData | exit ({ObjectId})");
 		}
 
 		public void Restore()
@@ -105,14 +111,8 @@ namespace ExStorSys
 
 		public ExSysStatus ExStorStatus
 		{
-			get => exStorStatus;
-			private set
-			{
-				exStorStatus = value;
-				// RaiseExStorStatusChangedEvent();
-
-				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XSYS_STATUS, value));
-			}
+			get => xMui.ExSysStatus;
+			private set => OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XSYS_STATUS, value));
 		}
 
 		/// <summary>
@@ -144,8 +144,11 @@ namespace ExStorSys
 			ResetWorkBook();
 			ResetWorkBookSchemaSilent();
 			ResetSheets();
+			InitSheets();
 			ResetSheetSchemaSilent();
 			ResetTemp();
+
+			IsModifiedShtsList = false;
 		}
 
 		/// <summary>
@@ -188,23 +191,6 @@ namespace ExStorSys
 		}
 
 		/// <summary>
-		/// initialize sheets to an empty list
-		/// </summary>
-		public void ResetSheets()
-		{
-			sheetsList.Clear();
-			SelectSheet = null;
-		}
-		
-		/// <summary>
-		/// clear the sheets list
-		/// </summary>
-		public void ClearSheets()
-		{
-			sheetsList.Clear();
-		}
-
-		/// <summary>
 		/// reset all temp objects to null or empty
 		/// </summary>
 		public void ResetTemp()
@@ -218,8 +204,8 @@ namespace ExStorSys
 			TempShtVersion = string.Empty;
 			TempShtSchemaEx  = null;
 			TempShtDsListEx = new ();
-			TempShtEntity  = null;
-			TempShtDsList  = new  List<DataStorage>();
+			// TempShtEntity  = null;
+			// TempShtDsList  = new  List<DataStorage>();
 		}
 
 	#endregion
@@ -450,22 +436,11 @@ namespace ExStorSys
 			return sht.GetField(key);
 		}
 
-		/* sheet list */
+
 
 		/// <summary>
-		/// the currently selected sheet
+		/// the currently selected sheet from the Sheets list
 		/// </summary>
-		// public Sheet? CurrentSheetx
-		// {
-		// 	get => currentSheet;
-		// 	set
-		// 	{
-		// 		if (Equals(value, currentSheet)) return;
-		// 		currentSheet = value;
-		// 		OnPropertyChanged();
-		// 	}
-		// }
-
 		public Sheet? CurrentSheet
 		{
 			get
@@ -475,6 +450,9 @@ namespace ExStorSys
 			}
 		}
 
+		/// <summary>
+		/// the selected sheet in a UI list
+		/// </summary>
 		public string? SelectSheet
 		{
 			get => selectSheet;
@@ -484,18 +462,52 @@ namespace ExStorSys
 				
 				selectSheet = value;
 
-				Debug.WriteLine("*** @ C");
 				OnPropertyChanged();
-				Debug.WriteLine("*** @ D");
+
 				OnPropertyChanged(nameof(CurrentSheet));
-				Debug.WriteLine("*** @ E");
-				// Sheet? temp;
-				//
-				// if (!sheetsList.TryGetValue(value, out temp)) return;
-				//
-				// CurrentSheet = temp;
 			}
 		}
+
+
+	#endregion
+
+	#region Sheet List
+
+		/* sheet list */
+
+		/* sheet list properties */
+
+		public CollectionViewSource SheetsViewSource {get; private set;}
+		public CollectionViewSource SheetsNoDeletedViewSource {get; private set;}
+
+		private void updateSheetsListProps()
+		{
+			SheetsViewSource.View.Refresh();
+			OnPropertyChanged(nameof(SheetsViewSource));
+
+			SheetsNoDeletedViewSource.View.Refresh();
+			OnPropertyChanged(nameof(SheetsNoDeletedViewSource));
+		}
+
+		/// <summary>
+		/// flag that the sheets list has been modified<br/>
+		/// but only after initialization (tracking turned on)
+		/// </summary>
+		public bool IsModifiedShtsList
+		{
+			get => isModifiedShtsList;
+			private set
+			{
+				if (value == isModifiedShtsList) return;
+				isModifiedShtsList = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// return the number of sheets in the list
+		/// </summary>
+		public int SheetsCount => sheetsList.Count;
 
 		/// <summary>
 		/// return the sheets list values
@@ -503,29 +515,33 @@ namespace ExStorSys
 		// public Dictionary<string, Sheet>.ValueCollection? Sheets => sheetsList.Values;
 		public ObservableDictionary<string, Sheet>? Sheets => sheetsList;
 
+
 		/// <summary>
-		/// add a sheet to the sheets list<br/>
-		/// but only if creationstation > 0
+		/// add a sheet to the sheets list - before system initialized
+		/// </summary>
+		public void AddSheetPreInit(Sheet sht)
+		{
+			sht.SheetStatus = SheetStatus.SS_EXISTING;
+			addSheet(sht);
+
+			updateSheetsListProps();
+		}
+
+		/// <summary>
+		/// add a sheet to the sheets list - after system initialized<br/>
+		/// i.e., sets is modified
 		/// </summary>
 		public void AddSheet(Sheet sht)
 		{
-			if (sheetsList.TryAdd(sht.DsName, sht))
-			{
-				Debug.WriteLine("*** before sht config");
-				sht.Config();
-				Debug.WriteLine("*** after sht config");
-				ExStorStatus = ES_SHT_CREATED;
-				Debug.WriteLine("*** @ A");
-				OnPropChgd(PropertyId.PI_XDATA_SHT, GotAnySheets);
+			sht.SheetStatus = SheetStatus.SS_NEW;
+			addSheet(sht);
 
-				Debug.WriteLine("*** @ B");
-				if (CurrentSheet == null) SelectSheet = sht.DsName;
+			IsModifiedShtsList = true;
 
-				Debug.WriteLine("*** change sheet dsname");
-				return;
-			}
+			updateSheetsListProps();
 
-			sht = null;
+			// must follow update props
+			SelectSheet = sht.DsName;
 		}
 
 		/// <summary>
@@ -539,6 +555,9 @@ namespace ExStorSys
 
 			sheetsList[sht.DsName] = sht;
 
+			IsModifiedShtsList = true;
+			updateSheetsListProps();
+
 			return true;
 		}
 
@@ -547,19 +566,120 @@ namespace ExStorSys
 		/// but only if creationstation less than 5
 		/// </summary>
 		// ReSharper disable once UnusedMember.Global
-		public bool RemoveSheet(Sheet sht)
+		public bool RemoveCurrentSheet(string name)
 		{
-			if (!sheetsList.ContainsKey(sht.DsName)) return false;
+			sheetsList[name].SheetStatus = SheetStatus.SS_DELETED;
 
-			sheetsList.Remove(sht.DsName);
+			// SelectSheet = null;
+
+			IsModifiedShtsList = true;
+			
+			updateSheetsListProps();
+
+			// must follow update props
+			setSelectedSheet();
 
 			return true;
 		}
 
 		/// <summary>
-		/// return the number of sheets in the list
+		/// revert a deleted sheet to active (restores its prior status)
+		/// </summary> 
+		public void UndoRemoveCurrentSheet(string name)
+		{
+			sheetsList[name].UndoSheetStatus();
+
+			// SelectSheet = null;
+
+			validateSheetsListStatus();
+			updateSheetsListProps();
+
+			// must follow update props
+			setSelectedSheet();
+		}
+
+		private void validateSheetsListStatus()
+		{
+			bool isMod = false;
+
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				if (sht.SheetStatus != SheetStatus.SS_EXISTING)
+				{
+					isMod = true;
+					break;
+				}
+			}
+
+			IsModifiedShtsList = isMod;
+		}
+
+		private void setSelectedSheet()
+		{
+			string? selSht = null;
+
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				if (sht.SheetStatus != SheetStatus.SS_DELETED)
+				{
+					selSht = sht.DsName;
+					break;
+				}
+			}
+
+			SelectSheet = selSht;
+		}
+
+		/// <summary>
+		/// initialize a sheet by adding a place holder sheet
 		/// </summary>
-		public int SheetsCount => sheetsList.Count;
+		public void InitSheets([CallerFilePath] string path = "", [CallerMemberName] string name = "")
+		{
+			Sheet sht = Sheet.PlaceHolder();
+			sheetsList.TryAdd(sht.DsName, sht);
+		}
+
+		/// <summary>
+		/// remove the temporary, place holder sheet, if it exists
+		/// </summary>
+		public void RemovePlaceHolderSheet()
+		{
+			// if (sheetsList.Count == 0) return;
+			sheetsList.Remove(ExStorConst.K_SHT_PLACE_HOLDER_NAME);
+		}
+		
+		/// <summary>
+		/// initialize sheets to an empty list, flag as NOT modified,
+		/// and add a placeholder sheet - use this pre-initialize
+		/// </summary>
+		public void ResetSheets()
+		{
+			sheetsList.Clear();
+
+			// InitSheets();
+		}
+
+
+		/* private sheet list */
+
+		private void addSheet(Sheet sht)
+		{
+			if (!sheetsList.TryAdd(sht.DsName, sht)) return;
+
+			sht.Config();
+
+			ExStorStatus = ES_SHT_CREATED;
+
+			OnPropChgd(PropertyId.PI_XDATA_SHT, GotAnySheets);
+
+			if (CurrentSheet == null) SelectSheet = sht.DsName;
+		}
+
+
+		/*  NOTES
+		 * save sheet list
+		 */ // xMgr.write sheets ()
+
 
 	#endregion
 
@@ -592,7 +712,6 @@ namespace ExStorSys
 		/// </summary>
 		public bool GotWbkDs => wbk.GotDs;
 
-
 		/// <summary>
 		/// true if the named sheet is flagged as empty
 		/// </summary>
@@ -618,35 +737,57 @@ namespace ExStorSys
 
 		/* workbook */
 
+		/// <summary>
+		/// temp wbk version
+		/// </summary>
 		public string TempWbkVersion { get; set; }
 
+		/// <summary>
+		/// temp ExListItem for a schema data storage
+		/// </summary>
 		public ExListItem<Schema>? TempWbkSchemaEx { get; set; }
 
 		// single item
+		/// <summary>
+		/// temp ExListItem for a workbook data storage
+		/// </summary>
 		public ExListItem<DataStorage>? TempWbkDsEx { get; set; }
+		
+		/// <summary>
+		/// temp workbook entity
+		/// </summary>
 		public Entity? TempWbkEntity { get; set; }
 
 		// not used for validation but for lib routines
+		/// <summary>
+		/// temp list of workbook datastorages<br/>
+		/// not used for validation but for lib routines
+		/// </summary>
 		public IList<DataStorage>? TempWbkDsList { get; set; }
 
 
 		/* sheet */
 
+		/// <summary>
+		/// temp sht version
+		/// </summary>
 		public string TempShtVersion { get; set; }
 
+		/// <summary>
+		/// temp schema ExListItem
+		/// </summary>
 		public ExListItem<Schema>? TempShtSchemaEx { get; set; }
 
-		// list of items
+		/// <summary>
+		/// temp list of ExListItems\DataStorage\
+		/// </summary>
 		public ExList<DataStorage>? TempShtDsListEx { get; set; }
 
-		public Entity? TempShtEntity { get; set; }
-
-		// todo fix name
-		// not used for validation but for lib routines
-		public IList<DataStorage>? TempShtDsList { get; set; }
-
-
-		// public bool GotTempModelCode => !TempModelCode!.IsVoid();
+		// // public Entity? TempShtEntity { get; set; }
+		//
+		// // todo fix name
+		// // not used for validation but for lib routines
+		// public IList<DataStorage>? TempShtDsList { get; set; }
 
 		/* workbook */
 
@@ -686,15 +827,15 @@ namespace ExStorSys
 		/// </summary>
 		public bool GotTempShtDs => TempShtDsListEx != null;
 
-		/// <summary>
-		/// temp entity is not null and is valid
-		/// </summary>
-		public bool GotTempShtEntity => (TempShtEntity != null && TempShtEntity.IsValid());
+		// /// <summary>
+		// /// temp entity is not null and is valid
+		// /// </summary>
+		// public bool GotTempShtEntity => (TempShtEntity != null && TempShtEntity.IsValid());
 
-		/// <summary>
-		/// list is not null and has > 0 elements
-		/// </summary>
-		public bool GotTempAnySheets => (TempShtDsList != null && TempShtDsList.Count > 0);
+		// /// <summary>
+		// /// list is not null and has > 0 elements
+		// /// </summary>
+		// public bool GotTempAnySheets => (TempShtDsList != null && TempShtDsList.Count > 0);
 
 		/// <summary>
 		/// Exlist is not null and has > 0 elements
@@ -764,6 +905,18 @@ namespace ExStorSys
 		}
 
 	#endregion
+
+		private void SheetsViewSourceOnFilter(object sender, FilterEventArgs e)
+		{
+			if (e.Item is KeyValuePair<string, Sheet> kvp)
+			{
+				e.Accepted = kvp.Value.SheetStatus != SheetStatus.SS_DELETED;
+			}
+
+			else e.Accepted = false;
+		}
+
+
 
 	}
 }

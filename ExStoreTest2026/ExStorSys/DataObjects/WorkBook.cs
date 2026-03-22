@@ -23,18 +23,17 @@ using static ExStorSys.ActivateStatus;
 
 namespace ExStorSys
 {
-
 	/// <summary>
 	/// the primary data object stored in the data storage object 
 	/// </summary>
-	public class WorkBook : ExStorDataObj<WorkBookFieldKeys> 
+	public class WorkBook : ExStorDataObj<WorkBookFieldKeys>
 	{
 		// private WorkBookIo wbkIo;
 
 		public int ObjectId;
-		
-		private Schema? exsSchema;
-		private bool? isEmpty;
+
+		// private Schema? exsSchema;
+		// private bool? isEmpty;
 		private bool isModified;
 
 		private WorkBook()
@@ -69,7 +68,6 @@ namespace ExStorSys
 				isModified = value;
 				OnPropertyChanged();
 			}
-
 		}
 
 		/// <summary>
@@ -195,7 +193,6 @@ namespace ExStorSys
 		// }
 
 
-
 		/* workbook row properties */
 
 		// access abilities
@@ -230,6 +227,7 @@ namespace ExStorSys
 		/// access to the name for the data storage object.  assigned when the workbook is created
 		/// </summary>
 		public override string DsName => DsNameField.DyValue!.Value;
+
 		public FieldData<WorkBookFieldKeys> DsNameField => Rows[PK_DS_NAME];
 
 
@@ -239,24 +237,28 @@ namespace ExStorSys
 		/// access to the model title (name) for this workbook
 		/// </summary>
 		public string ModelTitle  => ModelTitleField.DyValue!.Value;
+
 		public FieldData<WorkBookFieldKeys> ModelTitleField => Rows[PK_MD_MODEL_TITLE];
 
 		/// <summary>
 		/// access to the date created for this workbook
 		/// </summary>
 		public string DateCreated  => DateCreatedField.DyValue!.Value;
+
 		public FieldData<WorkBookFieldKeys> DateCreatedField => Rows[PK_AD_DATE_CREATED];
 
 		/// <summary>
 		/// access to the date created for this workbook
 		/// </summary>
 		public string DateModified  => DateModifiedField.DyValue!.Value;
+
 		public FieldData<WorkBookFieldKeys> DateModifiedField => Rows[PK_AD_DATE_MODIFIED];
 
 		/// <summary>
 		/// access to the date created for this workbook
 		/// </summary>
 		public string SchemaVersion  => SchemaVersionField.DyValue!.Value;
+
 		public FieldData<WorkBookFieldKeys> SchemaVersionField => Rows[PK_SD_SCHEMA_VERSION];
 
 
@@ -271,10 +273,11 @@ namespace ExStorSys
 			set
 			{
 				if (!SetNewValueDym(PK_AD_DESC, value)) return;
-				
+
 				OnPropertyChanged();
 			}
 		}
+
 		public FieldData<WorkBookFieldKeys> DescField => Rows[PK_AD_DESC];
 
 		/// <summary>
@@ -290,10 +293,11 @@ namespace ExStorSys
 				OnPropertyChanged();
 			}
 		}
+
 		public FieldData<WorkBookFieldKeys> StatusField => Rows[PK_AD_STATUS];
 
-		public Dictionary<ActivateStatus, Tuple<string, string, SolidColorBrush>>
-			ActviateStatusDesc => ExStorConst.ActiveStatusDescUi;
+		// public Dictionary<ActivateStatus, Tuple<string, string, SolidColorBrush>>
+		// 	ActviateStatusDesc => ExStorConst.ActiveStatusDescUi;
 
 
 		/* limited editing ability */
@@ -310,8 +314,9 @@ namespace ExStorSys
 				OnPropertyChanged();
 			}
 		}
+
 		public FieldData<WorkBookFieldKeys> NameCreatedField => Rows[PK_AD_NAME_CREATED];
-		
+
 		/// <summary>
 		/// access to the Name modified
 		/// </summary>
@@ -321,10 +326,11 @@ namespace ExStorSys
 			set
 			{
 				if (!SetNewValueDym(PK_AD_NAME_MODIFIED, value)) return;
-				
+
 				OnPropertyChanged();
 			}
 		}
+
 		public FieldData<WorkBookFieldKeys> NameModifiedField => Rows[PK_AD_NAME_MODIFIED];
 
 
@@ -341,10 +347,10 @@ namespace ExStorSys
 				if (!SetNewValueDym(PK_AD_LAST_ID, value)) return;
 				OnPropertyChanged();
 			}
-
 		}
+
 		public FieldData<WorkBookFieldKeys> LastIdField => Rows[PK_AD_LAST_ID];
-		
+
 		/// <summary>
 		/// access to the vendor id in the workbook
 		/// </summary>
@@ -357,14 +363,54 @@ namespace ExStorSys
 				OnPropertyChanged();
 			}
 		}
+
 		public FieldData<WorkBookFieldKeys> VendorIdField => Rows[PK_AD_VENDORID];
 
 
+		/* undo processing */
 
 		public void UndoChange(FieldData<WorkBookFieldKeys> fd)
 		{
 			UndoValueChange(fd);
 			OnPropertyChanged(fd.Field.FieldPropName);
 		}
+
+		/* undo workbook */
+
+		/// <summary>
+		/// undo a whole workbook
+		/// </summary>
+		public void UndoChangeWorkbook()
+		{
+			// ReSharper disable once UnusedVariable
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> field) in rows)
+			{
+				if ((field.DyValue?.IsDirty ?? false))
+				{
+					UndoChange(field);
+				}
+			}
+
+			IsModified = false;
+		}
+
+		public bool CommitWorkbook()
+		{
+			if (!IsModified) return false;
+
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> fd) in this)
+			{
+				if ((fd.DyValue?.IsDirty ?? false))
+				{
+					ExStorMgr.Instance?.UpdateWbkEntityField(key, fd.DyValue);
+					fd.DyValue.ApplyChange();
+				}
+			}
+
+			IsModified = false;
+
+			return true;
+		}
+
 	}
 }

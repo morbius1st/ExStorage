@@ -2,12 +2,13 @@
 using System.Diagnostics;
 
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+
+using Autodesk.Revit.DB.ExtensibleStorage;
 
 using ExStoreTest2026.DebugAssist;
 
@@ -23,15 +24,15 @@ namespace ExStoreTest2026.Windows
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, INotifyPropertyChanged, IWin
+	public partial class MainWindow : INotifyPropertyChanged, IWin
 	{
 		public int ObjectId;
 
 		private MainWinModelUi mui ; // = MainWinModelUi.Instance;
 		private ExStorData xData;
-		private ExStorStartMgr? stMgr;
+		// private ExStorStartMgr? stMgr;
 
-		private Window win = new Window();
+		private readonly Window _win = new ();
 		private Window rvtWin;
 
 		private string message;
@@ -55,6 +56,8 @@ namespace ExStoreTest2026.Windows
 
 		private void init()
 		{
+			// Debug.WriteLine($"\n*** main window init | begin");
+
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWindow)) ?? -1;
 
 			// ui dependant objects must be connected before InitializeComponent elsewise
@@ -76,7 +79,11 @@ namespace ExStoreTest2026.Windows
 			// save this
 			// configTitleWindow();
 
-			win.Owner = rvtWin;
+			_win.Owner = rvtWin;
+
+			// Debug.WriteLine($"\n*** main window init | begin");
+
+			DebugRoutines.ShowObjectId();
 		}
 
 		/* message text box */
@@ -143,11 +150,11 @@ namespace ExStoreTest2026.Windows
 
 		private void RvtWinOnLocationChanged(object? sender, EventArgs e)
 		{
-			if (win.Visibility == Visibility.Visible)
+			if (_win.Visibility == Visibility.Visible)
 			{
-				win.Top = rvtWin.Top;
-				win.Left = rvtWin.Left;
-				win.Width = rvtWin.Width;
+				_win.Top = rvtWin.Top;
+				_win.Left = rvtWin.Left;
+				_win.Width = rvtWin.Width;
 			}
 		}
 
@@ -169,6 +176,12 @@ namespace ExStoreTest2026.Windows
 
 		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
 		{
+			Msgs.WriteLine($"\n*** window loaded | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.ModelTitle ?? "null"}");
+
+			// statusReport("win loaded", 0);
+			//
+			// DebugRoutines.ShowObjectId();
+
 			// this.Visibility = Visibility.Collapsed;
 			//
 			// Msgs.SetTab2Depth(0);
@@ -204,8 +217,96 @@ namespace ExStoreTest2026.Windows
 
 			Msgs.WriteLine($"\n*** window activated | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.ModelTitle ?? "null"}");
 
+			// statusReport("win activated");
+
 			Wm.ShowMsgCache();
 		}
+
+		private void statusReport(string title, int which = 1)
+		{
+			ExStorMgr? xm = ExStorMgr.Instance;
+			ExStorLib? xl = ExStorLib.Instance;
+
+
+			if (which == 0)
+			{
+				string xdStat = xData == null ? "is null" : "good";
+				string wmStat = Wm == null ? "is null" : "good";
+				string muiStat = Mui == null ? "is null" : "good";
+			
+				string xmStat = xm == null ?  "is null" : "good";
+				string xlStat = xl == null ?  "is null" : "good";
+
+				string wbkStat = xData.WorkBook == null ? "is null" : "is good";
+				string shtStat = xData.CurrentSheet == null ? "is null" : "is good";
+				string shtLstStat = xData.Sheets == null ? "is null" : "is good";
+
+				string wbkModStat = (xData.WorkBook?.IsModified ?? false) ? "is modified" : "not modified";
+				string shtModStat = (xData.CurrentSheet?.IsModified ?? false) ? "is modified" : "not modified";
+				string shtLstModStat = xData.IsModifiedShtsList  ? "is modified" : "not modified";
+
+				string shtLstCount = (xData.Sheets?.Count ?? -1).ToString();
+				// string shtLstTmpCount = (xData.TempShtDsList?.Count ?? -1).ToString();
+				string shtLstTmpCountExGood = (xData.TempShtDsListEx?.GoodItemsCount ?? -1).ToString();
+				string shtLstTmpCountExAll = (xData.TempShtDsListEx?.AllItemsCount ?? -1).ToString();
+
+
+				Msgs.WriteLine($"** {title} | data object status");
+				Msgs.WriteLine($"** {title} | win model status     | {wmStat}");
+				Msgs.WriteLine($"** {title} | win mod ui status    | {muiStat}");
+				Msgs.WriteLine($"** {title} | xMgr status          | {xmStat}");
+				Msgs.WriteLine($"** {title} | xLib status          | {xlStat}");
+				Msgs.WriteLine($"** {title} | xD status            | {xdStat}");
+				Msgs.WriteLine($"** {title} | xD wbk status        | {wbkStat}");
+				Msgs.WriteLine($"** {title} | xD wbk mod           |     {wbkModStat}");
+				Msgs.WriteLine($"** {title} | xD sht status        | {shtStat}");
+				Msgs.WriteLine($"** {title} | xD sht mod           |     {shtModStat}");
+				Msgs.WriteLine($"** {title} | xD sht lst status    | {shtLstStat}");
+				Msgs.WriteLine($"** {title} | xD sht lst mod       |     {shtLstModStat}");
+				Msgs.WriteLine($"** {title} | xD sht lst mod       |     {shtLstModStat}");
+				Msgs.WriteLine($"** {title} | xD sht lst cnt       |     {shtLstCount}");
+				// Msgs.WriteLine($"** {title} | xD sht lst tmp cnt   |     {shtLstTmpCount}");
+				Msgs.WriteLine($"** {title} | xD sht lst tmp ex gd |     {shtLstTmpCountExGood}");
+				Msgs.WriteLine($"** {title} | xD sht lst tmp ex all|     {shtLstTmpCountExAll}");
+				showLists();
+				Msgs.WriteLine($"\n");
+			}
+
+			Msgs.WriteLine($"** {title} | xm.ExSysStatus {xm?.ExSysStatus}");
+			Msgs.WriteLine($"** {title} | xm.restart? {xm?.RestartRequired}");
+			Msgs.WriteLine($"** {title} | xd.ExStorStatus {xData?.ExStorStatus}");
+			Msgs.WriteLine($"** {title} | xd.restart? {xData?.RestartRequired}");
+			Msgs.WriteLine($"** {title} | Mui.ExSysStatus {Mui?.ExSysStatus}");
+			Msgs.WriteLine($"** {title} | Mui.restart status {Mui?.RestartStatus}");
+			Msgs.WriteLine($"** {title} | Mui.run status {Mui?.SystemRunningStatus}");
+
+		}
+
+		private void showLists()
+		{
+			Msgs.WriteLine("\nsheets");
+
+			foreach ((string key, Sheet value) in xData.Sheets)
+			{
+				Msgs.WriteLine($"*** {key} | {value.DsName}");
+			}
+
+			Msgs.WriteLine("\nall items");
+
+			foreach ((string key, ExListItem<DataStorage> value) in xData.TempShtDsListEx.AllItems)
+			{
+				Msgs.WriteLine($"*** {key} | {value.Item.Name}");
+			}
+
+			Msgs.WriteLine("\ngood items");
+
+			foreach ((string key, ExListItem<DataStorage> value) in xData.TempShtDsListEx.GoodItems)
+			{
+				Msgs.WriteLine($"*** {key} | {value.Item.Name}");
+			}
+
+		}
+
 
 		// private void MainWin_SourceInitialized(object sender, EventArgs e)
 		// {
@@ -290,9 +391,13 @@ namespace ExStoreTest2026.Windows
 
 			// Mui.Wbk.Rows[WorkBookFieldKeys.PK_AD_DESC].DyValue!.ChangeValue(dv);
 
-			
+			ExStorData xd = xData;
+			ExStorMgr? xm = ExStorMgr.Instance;
+			ExStorLib xl = ExStorLib.Instance;
 
-
+			WorkBook wbk = xd.WorkBook;
+			Sheet? shtCurr = xd.CurrentSheet;
+			Sheet? sht2 = Wm.CurrSht;
 			
 			string a = R.RvtDoc?.Title ?? String.Empty;
 		}
@@ -408,10 +513,12 @@ namespace ExStoreTest2026.Windows
 
 		private List<Tuple<string, string>> tempUser = new ()
 		{
-			{new ( "johns", "John S (Co)") },
-			{new ("jimmys","Jimmy S (Co)") },
-			{new ( "jacks", "Jack S (Co)") },
-			{new ( "jeffs", "Jeff S (Co)") },
+			{new ( "johns"  , "John S (Co)") },
+			{new ( "jimmys" , "Jimmy S (Co)") },
+			{new ( "jacks"  , "Jack S (Co)") },
+			{new ( "jackieo", "Jackie O (Co)") },
+			{new ( "jamesb" , "James B (Co)") },
+			{new ( "jeffs"  , "Jeff S (Co)") },
 			
 		};
 
@@ -480,7 +587,7 @@ namespace ExStoreTest2026.Windows
 		{
 			SecurityMgr.Instance.Init(tempUser[secIdx].Item1, tempUser[secIdx++].Item2);
 			Wm.UpdateData();
-			if (secIdx > 3) secIdx = 0;
+			if (secIdx >= tempUser.Count) secIdx = 0;
 		}
 
 		// tests end
@@ -541,6 +648,14 @@ namespace ExStoreTest2026.Windows
 			Wm.ShowWbk();
 		}
 
+		
+		private void BtnShowWbkFromMemory_OnClick(object sender, RoutedEventArgs e)
+		{
+			Wm.ShowWbkFromMemory();
+		}
+
+		
+
 		private void BtnMakeSht_OnClick(object sender, RoutedEventArgs e)
 		{
 			Wm.MakeSheet();
@@ -550,11 +665,6 @@ namespace ExStoreTest2026.Windows
 		{
 			Wm.MakeAndWriteWorkBook();
 		}
-
-		// private void BtnClearAndReadbk_OnClick(object sender, RoutedEventArgs e)
-		// {
-		// 	Wm.ClearAndReadWorkBook();
-		// }
 
 		private void BtnMakeEmptySht_OnClick(object sender, RoutedEventArgs e)
 		{
@@ -671,25 +781,25 @@ namespace ExStoreTest2026.Windows
 				// win.BorderThickness = new Thickness(0);
 				// win.ResizeMode = ResizeMode.NoResize;
 
-				win.Top = top;
-				win.Left = left + 1;
-				win.Height = height;
-				win.Width = width - 2;
+				_win.Top = top;
+				_win.Left = left + 1;
+				_win.Height = height;
+				_win.Width = width - 2;
 
 				if (test++ % 2 == 0)
 				{
 					if (!winShown)
 					{
-						win.Show();
+						_win.Show();
 						winShown = true;
-						this.Owner = win;
+						this.Owner = _win;
 					}
 
-					win.Visibility = Visibility.Visible;
+					_win.Visibility = Visibility.Visible;
 				}
 				else
 				{
-					win.Visibility = Visibility.Collapsed;
+					_win.Visibility = Visibility.Collapsed;
 				}
 			}
 		}
@@ -705,13 +815,13 @@ namespace ExStoreTest2026.Windows
 			tb.HorizontalAlignment = HorizontalAlignment.Center;
 			tb.VerticalAlignment = VerticalAlignment.Center;
 
-			win.Visibility = Visibility.Collapsed;
-			win.WindowStyle = WindowStyle.None;
-			win.Background = Brushes.DarkOrange;
-			win.Content = tb;
-			win.BorderBrush = Brushes.Transparent;
-			win.BorderThickness = new Thickness(0);
-			win.ResizeMode = ResizeMode.NoResize;
+			_win.Visibility = Visibility.Collapsed;
+			_win.WindowStyle = WindowStyle.None;
+			_win.Background = Brushes.DarkOrange;
+			_win.Content = tb;
+			_win.BorderBrush = Brushes.Transparent;
+			_win.BorderThickness = new Thickness(0);
+			_win.ResizeMode = ResizeMode.NoResize;
 		}
 
 		private void MainWin_Closing(object sender, CancelEventArgs e)
@@ -750,15 +860,15 @@ namespace ExStoreTest2026.Windows
 		// 	Wm.DeleteShtSc();
 		// }
 
-		private void BtnDeleteOneSht_OnClick(object sender, RoutedEventArgs e)
-		{
-			Wm.DeleteFirstShtDs();
-		}
-
-		private void BtnDeleteShts_OnClick(object sender, RoutedEventArgs e)
-		{
-			Wm.DeleteShtDs();
-		}
+		// private void BtnDeleteOneSht_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	Wm.DeleteFirstShtDs();
+		// }
+		//
+		// private void BtnDeleteShts_OnClick(object sender, RoutedEventArgs e)
+		// {
+		// 	Wm.DeleteShtDs();
+		// }
 
 		private void BtnDeleteWbk_OnClick(object sender, RoutedEventArgs e)
 		{
@@ -801,19 +911,14 @@ namespace ExStoreTest2026.Windows
 			// TextBox tbx = (TextBox) btn.Tag;
 			FieldData<SheetFieldKeys> fd = (FieldData<SheetFieldKeys>) btn.Tag;
 
-			Wm.CurrSht.UndoChange(fd);
+			Wm.CurrSht?.UndoChange(fd);
 		}
-
-		private void BtnUndo_OnClick(object sender, RoutedEventArgs e)
-		{
-			Debug.WriteLine("\t** got undo button");
-		}
-
 
 		private void BtnAddSht_OnClick(object sender, RoutedEventArgs e)
 		{
 
 		}
+		
 		private void BtnRemoveSht_OnClick(object sender, RoutedEventArgs e)
 		{
 
@@ -843,6 +948,60 @@ namespace ExStoreTest2026.Windows
 		{
 			Wm.AddFamilyAndType2();
 		}
+
+		private Control getNextControl(Control sender)
+		{
+			Control ctrl1 = sender;
+			Control ctrl2 = (Control) ctrl1.Tag;
+
+			for (int i = 0; i < 4; i++)
+			{
+				if (ctrl2.IsEnabled)
+				{
+					ctrl1 = ctrl2;
+					break;
+				}
+				ctrl2 = (Control) ctrl2.Tag;
+			}
+
+			return ctrl1;
+		}
+
+		private void OnPreviewKeyDown(object? sender, KeyEventArgs? e)
+		{
+			if (sender == null) return;
+
+			if (e.Key == Key.Tab || e.Key == Key.Return)
+			{
+				e.Handled = true;
+				setNextControl((Control) sender);
+			}
+		}
+
+
+		private void Cbx_OnDropDownClosed(object sender, EventArgs e)
+		{
+			setNextControl((Control) sender);
+		}
+
+
+		private void setNextControl(Control ctrl1)
+		{
+			Control ctrl = getNextControl(ctrl1);
+
+			if (ctrl is TextBox)
+			{
+				((TextBox) ctrl).CaretIndex = ((TextBox) ctrl).Text.Length;
+			}
+			// else if (ctrl is ComboBox)
+			// {
+			// 	((ComboBox) ctrl).IsDropDownOpen = true;
+			// }
+
+			ctrl.Focus();
+
+		}
+
 	}
 
 

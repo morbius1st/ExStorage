@@ -52,7 +52,7 @@ namespace ExStoreTest2026
 		{
 			// objectId = AppRibbon.ObjectIdx++;
 
-			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(Command)) ?? -1;
+			ObjectId = ExStorStartMgr.Instance?.AddObjId() ?? -1;
 
 			R.RvtUiApp = commandData.Application;
 			R.RvtUidoc = R.RvtUiApp.ActiveUIDocument;

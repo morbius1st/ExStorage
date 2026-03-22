@@ -12,7 +12,7 @@ using static ExStorSys.ItemUsage;
 using static ExStorSys.UpdateRules;
 using static ExStorSys.ActivateStatus;
 using static ExStorSys.ExStorConst;
-using static ExStorSys.FieldStatus;
+// using static ExStorSys.FieldStatus;
 using static ExStorSys.FieldCopyType;
 
 using UtilityLibrary;
@@ -112,7 +112,7 @@ namespace ExStorSys
  			{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version"              , null,   new DynaValue("1.0")                   , IU_S_AND_DS  , FEL_LOCKED          , FC_IGNORE  )} , // fixed value - never changed per version
  			{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name"             , null,   new DynaValue(K_NOT_DEFINED_STR)       , IU_S_AND_DS  , FEL_ADVANCED        , FC_NEVER   )} , // xlpath
 			{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name"            , null,   new DynaValue(K_NOT_DEFINED_STR)       , IU_S_AND_DS  , FEL_ADVANCED        , FC_NEVER   )} , // xl sheet
- 			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status"            , null,   new DynaValue(SheetOpStatus.SS_GOOD)   , IU_S_AND_DS  , FEL_BAS_VIEW_ONLY   , FC_NEVER   )} , // op status
+ 			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status"            , null,   new DynaValue(SheetOpStatus.SOS_GOOD)  , IU_S_AND_DS  , FEL_BAS_VIEW_ONLY   , FC_NEVER   )} , // op status
 			{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence"          , null,   new DynaValue("A00")                   , IU_S_AND_DS  , FEL_BAS_VIEW_ONLY   , FC_NEVER   )} , // sequence
 			{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule"                 , null,   new DynaValue(UR_UNDEFINED)            , IU_S_AND_DS  , FEL_BAS_VIEW_ONLY   , FC_NEVER   )} , // update rule
 			{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass"               , null,   new DynaValue(false)                   , IU_S_AND_DS  , FEL_BAS_VIEW_ONLY   , FC_NEVER   )} , // skip

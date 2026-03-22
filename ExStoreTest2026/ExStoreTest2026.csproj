@@ -28,7 +28,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".Notes\Sequence Notes.txt" />
+    <Content Include=".Notes\.ToDo.txt" />
+    <Content Include=".Notes\StartupAndEndNotes.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".Notes\SequenceNotes.txt" />
     <None Include=".Notes\ExStoreTest2026.xml" />
     <None Include=".Notes\OperationNotes.txt" />
     <None Include=".Notes\ObjectNotes.txt" />

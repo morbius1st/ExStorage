@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
-
+using ExStoreTest2026.DebugAssist;
 using ExStorSys;
 using RevitLibrary;
 using UtilityLibrary;
@@ -74,6 +74,8 @@ namespace ExStoreTest2026.Windows
 
 		public void Init()
 		{
+			// Debug.WriteLine($"\n*** MainWinModelUi init | begin");
+
 			// objectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWinModelUi)) ?? -1;
 			Instance = this;
@@ -91,6 +93,8 @@ namespace ExStoreTest2026.Windows
 
 			// CmdResetFamList = new RelayCommand(CmdResetFamListExe,CmdResetFamListCanExe);
 			// SaveNewFamilyListItem = new RelayCommand(SaveNewFamItemExe,SaveNewFamItemCanExe);
+
+			// Debug.WriteLine($"\n*** MainWinModelUi init | exit ({ObjectId})");
 		}
 
 
@@ -404,7 +408,6 @@ namespace ExStoreTest2026.Windows
 				return;
 			}
 
-
 			if (e.PropId == (PI_XSYS_STATUS))
 			{
 				// Debug.WriteLine($"got {PI_XSYS_STATUS} event");
@@ -454,25 +457,25 @@ namespace ExStoreTest2026.Windows
 			RestartStatus = e;
 		}
 
-		/// <summary>
-		/// property change from manager & data objects
-		/// </summary>
-		private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-		{
-			switch (e.PropertyName)
-			{
-			case nameof(xMgr.ExSysStatus):
-				{
-					ExSysStatus = xMgr.ExSysStatus;
-					break;
-				}
-			case nameof(xData.WorkBookSchema):
-				{
-					WorkBookSchemaStatus = xData.GotWbkSchema;
-					break;
-				}
-			}
-		}
+		// /// <summary>
+		// /// property change from manager & data objects
+		// /// </summary>
+		// private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+		// {
+		// 	switch (e.PropertyName)
+		// 	{
+		// 	case nameof(xMgr.ExSysStatus):
+		// 		{
+		// 			ExSysStatus = xMgr.ExSysStatus;
+		// 			break;
+		// 		}
+		// 	case nameof(xData.WorkBookSchema):
+		// 		{
+		// 			WorkBookSchemaStatus = xData.GotWbkSchema;
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
 
 		/* event publishing */
@@ -505,175 +508,12 @@ namespace ExStoreTest2026.Windows
 
 		/* workbook */
 
-		public KeyValuePair<ActivateStatus, Tuple<string, string, SolidColorBrush>> AsValuePair =>
-			new (ActivateStatus.AS_ACTIVE, ActiveStatusDesc[ActivateStatus.AS_ACTIVE]);
+		// public KeyValuePair<ActivateStatus, Tuple<string, string, SolidColorBrush>> AsValuePair =>
+		// 	new (ActivateStatus.AS_ACTIVE, ActiveStatusDesc[ActivateStatus.AS_ACTIVE]);
 
-		// public void UpdateData()
-		// {
-		// 	OnPropertyChanged(nameof(Wbk));
-		// 	OnPropertyChanged(nameof(CurrSht));
-		// 	OnPropertyChanged(nameof(XData));
-		//
-		// }
-
-		// private void Xdata_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-		// {
-		// 	if ((e.PropertyName ?? "").Equals(nameof(XData.CurrentSheet)))
-		// 		OnPropertyChanged(nameof(CurrSht));
-		// }
-
-		// public WorkBook Wbk => xData.WorkBook;
-		// public Sheet? CurrSht => xData.CurrentSheet;
-		// public ExStorData XData => xData;
-
-		// private void TabItem_Initialized(object sender, EventArgs e)
-		// {
-		//
-		// }
-
-		// public static Tuple<int, Dictionary<FieldEditLevel, Tuple<string, string, SolidColorBrush>>> FieldEditLevelData1 =
-		// 	new (1, ExStorConst.FieldEditLevelDesc);
-		//
-		// public static Tuple<int, Dictionary<FieldEditLevel, Tuple<string, string, SolidColorBrush>>> FieldEditLevelData2 =
-		// 	new (2, ExStorConst.FieldEditLevelDesc);
-
-
-		// public IEnumerator<KeyValuePair<WorkBookFieldKeys, FieldData<WorkBookFieldKeys>>> WbkFields => Wbk.GetEnumerator();
-
-		/* family list */
-
-		// public string SelValue
-		// {
-		// 	get => selValue;
-		// 	set
-		// 	{
-		// 		if (value == selValue) return;
-		// 		selValue = value;
-		//
-		// 		Debug.WriteLine($"got selected value (key)| {value ?? "is null"}");
-		//
-		// 		OnPropertyChanged();
-		//
-		// 		if (value != null && 
-		// 			value.Equals(Sheet.AddNewKey))
-		// 		{
-		// 			selValue = CurrSht?.UpdateTempNewFamAndTypeEntry();
-		// 			OnPropertyChanged();
-		// 		}
-		// 	}
-		// }
-		//
-		// public KeyValuePair<string, FamAndType>? SelFamilyTypeItem
-		// {
-		// 	get => selFamilyTypeItem;
-		// 	set
-		// 	{
-		// 		selFamilyTypeItem = value;
-		// 		OnPropertyChanged();
-		//
-		// 		SaveNewFamilyListItem.RaiseCanExecuteChange(null);
-		// 	}
-		// }
-		//
-		// public string? TempFamilyName
-		// {
-		// 	get => tempFamilyName;
-		// 	set
-		// 	{
-		// 		if (value == tempFamilyName) return;
-		// 		tempFamilyName = value;
-		// 		OnPropertyChanged();
-		//
-		// 		SaveNewFamilyListItem.RaiseCanExecuteChange(null);
-		// 	}
-		// }
-		//
-		// public string? TempFamilyType
-		// {
-		// 	get => tempFamilyType;
-		// 	set
-		// 	{
-		// 		if (value == tempFamilyType) return;
-		// 		tempFamilyType = value;
-		// 		OnPropertyChanged();
-		// 	}
-		// }
-		//
-		// public string? TempProps	
-		// {
-		// 	get => tempProps;
-		// 	set
-		// 	{
-		// 		if (value == tempProps) return;
-		// 		tempProps = value;
-		// 		OnPropertyChanged();
-		// 	}
-		// }
-
-		// private void processSelFamilyType(string selected)
-		// {
-		// 	string? famName;
-		// 	string? famTypeName;
-		//
-		// 	if (ExStorLib.Instance.DivideFamAndType(selected, out famName, out famTypeName)) return;
-		//
-		// 	if (!famName.Equals(Sheet.AddNewKey)) return;
-		//
-		// 	// adding a new item
-		//
-		//
-		//
-		// }
 
 	#region commands
 
-		/*
-		// reset family list command
-
-		public RelayCommand CmdResetFamList {get; private set;}
-
-		public int FamListCount => CurrSht?.FamList?.Count ?? 0;
-
-		public void CmdResetFamListExe(object? parameter)
-		{
-			Debug.WriteLine($"*** got reset fam list command | {parameter}");
-		}
-
-		public bool CmdResetFamListCanExe(object? parameter)
-		{
-			if (parameter == null) return false;
-
-			Debug.WriteLine($"**\tgot reset fam list can exe | {parameter}");
-
-			return (int) parameter > 0;
-		}
-
-
-		// apply new family name and type
-
-		public RelayCommand SaveNewFamilyListItem {get; private set;}
-
-		public void SaveNewFamItemExe(object? parameter)
-		{
-			if (tempFamilyName.IsVoid()) return;
-
-			Debug.WriteLine($"*** got new family item command | {TempFamilyName ?? "is void"}");
-
-			xMgr.AddSheetFamily(tempFamilyName, tempFamilyType ?? "", (tempProps ?? ""));
-
-			TempProps = null;
-			TempFamilyType = null;
-			TempFamilyName = null;
-		}
-
-		public bool SaveNewFamItemCanExe(object? parameter)
-		{
-			Debug.WriteLine($"**\tgot new family item can exe | {TempFamilyName ?? "is void"}");
-
-			return !TempFamilyName!.IsVoid();
-		}
-
-		*/
 	#endregion
 	}
 }

@@ -645,7 +645,7 @@ namespace ExStorSys
 		// 	{
 		// 		SheetOpStatus k;
 		// 		bool result = Enum.TryParse(enumName, out k);
-		// 		if (!result) k = SheetOpStatus.SS_HOLD;
+		// 		if (!result) k = SheetOpStatus.SOS_HOLD;
 		// 		dv = new DynaValue(k);
 		// 	}
 		//
@@ -1093,14 +1093,14 @@ namespace ExStorSys
 			return CsStringUtil.RegexCleanString(name ?? "", ExStorConst.DOC_NAME_REPL_STRING[0], ExStorConst.DOC_NAME_REPL_STRING[1]) ?? "";
 		}
 
-		public string FormatFamAndType(string famName, string typeName)
+		public static string FormatFamAndType(string famName, string? typeName)
 		{
 			string key = $"{famName}|{typeName}";
 
 			return key;
 		}
 
-		public bool DivideFamAndType(string? famAndType, out string? family, out string? famType)
+		public static bool DivideFamAndType(string? famAndType, out string? family, out string? famType)
 		{
 			family = null;
 			famType = null;
@@ -1111,11 +1111,11 @@ namespace ExStorSys
 			pos = famAndType.IndexOf('|');
 
 			// false if not there, or at begining, or at end
-			if (pos == -1 || pos == 0 || pos == famAndType.Length-1) return false;
+			if (pos == -1 || pos == 0 /*|| pos == famAndType.Length-1* - removed - empty type name is ok */) return false;
 
 			// family is from start to the dividing charater but not including the dividing charagter
 			family = famAndType.Substring(0, pos);
-			famType = famAndType.Substring(pos+1, famAndType.Length - pos);
+			famType = famAndType.Substring(pos+1, famAndType.Length - (pos+1));
 
 			return true;
 		}

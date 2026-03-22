@@ -13,13 +13,11 @@ using System.Windows.Media;
 using ExStorSys;
 
 
-
 // user name: jeffs
 // created:   12/28/2025 8:24:39 PM
 
 namespace ExStoreTest2026.Windows
 {
-
 /* debug converters */
 
 #region pass-through converter
@@ -70,7 +68,7 @@ namespace ExStoreTest2026.Windows
 
 /* string converters */
 
-#region pass-through converter
+#region StringVoidToBool converter
 
 	// verify if the input string is "void"
 	// that is, is either null of empty
@@ -159,7 +157,36 @@ namespace ExStoreTest2026.Windows
 #endregion
 
 
-/* enum converters */
+	/* enum converters */
+
+
+#region UserSecurityEnumToBool
+
+	/// <summary>
+	/// converts a user's security level to bool<br/>
+	/// that is, sl_none & sl_unassigned are false;  all others are true
+	/// </summary>
+	[ValueConversion(typeof(Enum), typeof(bool))]
+	public class UserSecurityEnumToBool : IValueConverter
+	{
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+		{
+			if (value == null) return false;
+			if (!(value is UserSecutityLevel)) return false;
+
+			UserSecutityLevel usl = (UserSecutityLevel) value;
+
+			return usl != UserSecutityLevel.SL_NONE && usl != UserSecutityLevel.SL_UNASSIGNED;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+#endregion
+
 
 #region UserSecurityEnumToStrConverter
 
@@ -215,9 +242,9 @@ namespace ExStoreTest2026.Windows
 				SecurityMgr.ValidateFieldEditing((FieldEditLevel) values[1], (UserSecutityLevel) values[0]);
 
 			bool b = false;
-			if (parameter.Equals(1)) 
+			if (parameter.Equals(1))
 				b = fes == FieldEditStatus.FES_CAN_EDIT || fes == FieldEditStatus.FES_CAN_VIEW;
-			else 
+			else
 				b = fes == FieldEditStatus.FES_CAN_EDIT;
 
 			return b;
@@ -233,6 +260,9 @@ namespace ExStoreTest2026.Windows
 
 #region FieldAccessToEditibilityConverter
 
+	/// <summary>
+	/// converts an enum + user security level to bool<br/>
+	/// </summary>
 	[ValueConversion(typeof(Enum), typeof(bool))]
 	public class FieldAccessToEditibilityConverter : IMultiValueConverter
 	{
@@ -261,6 +291,8 @@ namespace ExStoreTest2026.Windows
 
 #endregion
 
+
+
 #region EnumToColorConverter
 
 	/// <summary>
@@ -282,21 +314,60 @@ namespace ExStoreTest2026.Windows
 
 			if (value == null) return answer;
 
-			// if (parameter != null && (FieldEditLevel )parameter != FieldEditLevel.FEL_LOCKED)
-			// {
-			// 	if ((FieldEditLevel) value <= (FieldEditLevel) parameter)
-			// 	{
-			// 		result = (FieldEditLevel) parameter == FieldEditLevel.FEL_DEBUG ? 3 :
-			// 			(FieldEditLevel) parameter == FieldEditLevel.FEL_ADVANCED ? 2 :
-			// 				(FieldEditLevel) parameter == FieldEditLevel.FEL_BASIC ? 1 : 0;
-			// 	}
-			// 	else
-			// 	{
-			// 		result = 0;
-			// 	}
-			//
-			// }
-			// else
+			if (value is FieldEditLevel)
+			{
+				answer = ExStorConst.FieldEditLevelDesc[(FieldEditLevel) value].Item3;
+			}
+			else if (value is UserSecutityLevel)
+			{
+				answer = ExStorConst.UsserSecurityLevelDesc[(UserSecutityLevel) value].Item3;
+			}
+			else if (value is ActivateStatus)
+			{
+				answer = ExStorConst.ActiveStatusDesc[(ActivateStatus) value].Brush;
+			}
+
+			// if (result == 0) answer = Brushes.SlateGray;
+			// else if (result == 1) answer = Brushes.Yellow;
+			// else if (result == 2) answer = Brushes.DeepSkyBlue;
+			// else if (result == 3) answer = Brushes.Chartreuse;
+
+
+			return answer;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+#endregion
+
+
+
+/*
+#region EnumToColorConverter
+
+	/// <summary>
+	/// convert an enum into a color brush based on the data passed<br/>
+	/// value = enum value to convert<br/>
+	/// parameter = (is not used)
+	/// </summary>
+	[ValueConversion(typeof(Enum), typeof(SolidColorBrush))]
+	public class EnumToColorConverter2 : IValueConverter
+	{
+		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+		{
+			SolidColorBrush answer = Brushes.Red;
+
+			if (!(value is Enum)) return answer;
+			if (parameter != null && !(parameter is Enum)) return answer;
+
+			int result = 0;
+
+			if (value == null) return answer;
+
 			if (value is FieldEditLevel)
 			{
 				answer = ExStorConst.FieldEditLevelDesc[(FieldEditLevel) value].Item3;
@@ -326,6 +397,8 @@ namespace ExStoreTest2026.Windows
 	}
 
 #endregion
+*/
+
 
 #region FieldEditLevelEnumToStrConverter
 
@@ -363,6 +436,7 @@ namespace ExStoreTest2026.Windows
 
 #endregion
 
+	/*
 #region FieldStatusEnumToStrConverter
 
 	[ValueConversion(typeof(Enum), typeof(string))]
@@ -399,7 +473,7 @@ namespace ExStoreTest2026.Windows
 
 #endregion
 
-#region FieldStatusEnumToStrConverter
+#region FieldStatusEnumToBoolConverter
 
 	[ValueConversion(typeof(Enum), typeof(bool))]
 	public class FieldStatusEnumToBoolConverter : IValueConverter
@@ -420,6 +494,7 @@ namespace ExStoreTest2026.Windows
 	}
 
 #endregion
+	*/
 
 #region FieldAccessToBool
 
@@ -463,13 +538,16 @@ namespace ExStoreTest2026.Windows
 // value = field key enum value 
 // parameter = sheet data object
 
-#region UserSecurityEnumToStrConverter
+#region SheetFieldEnumToStringConverter
 
 	[ValueConversion(typeof(Enum), typeof(string))]
 	public class SheetFieldEnumToStringConverter : IValueConverter
 	{
 		public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
 		{
+			// Debug.WriteLine($"*** value     | type {value?.GetType().Name ?? "is null"}");
+			// Debug.WriteLine($"*** parameter | type {parameter?.GetType().Name ?? "is null"} | {parameter?.ToString() ?? "is null"}");
+
 			if (parameter == null || !(parameter is Enum)) return "bad value";
 			if (value == null || !(value is Sheet)) return "bad parameter";
 
@@ -483,9 +561,11 @@ namespace ExStoreTest2026.Windows
 			}
 			else if (key == SheetFieldKeys.RK_OD_STATUS)
 			{
-				result = ExStorConst.SheetOpStatusDesc[(SheetOpStatus) (sht.GetValue(key)?.AsEnum() ?? SheetOpStatus.SS_NA)].Item2;
+				result = ExStorConst.ShtOpStatusDesc[(SheetOpStatus) (sht.GetValue(key)?.AsEnum() ?? SheetOpStatus.SOS_NA)].Desc;
 			}
 			else result = sht.GetValue(key)?.AsString() ?? "null";
+
+			// Debug.WriteLine($"**  key {key} | result | {result}");
 
 			return result;
 		}

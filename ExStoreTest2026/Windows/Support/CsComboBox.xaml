@@ -83,7 +83,7 @@
 						<ControlTemplate TargetType="{x:Type ToggleButton}">
 							<Grid Margin="0">
 								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="16" />
+									<ColumnDefinition Width="12" />
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
 
@@ -105,19 +105,37 @@
 								<!--  Background="Transparent"  -->
 								<Path x:Name="Arrow"
 										Grid.Column="0"
-										Margin="0,1.5,0,0"
-										HorizontalAlignment="Center"
+										Margin="2,2.5,0,0.0"
+										HorizontalAlignment="Left"
 										VerticalAlignment="Center"
-										Data="M 0,0 4,8 8,0 z"
+										Data="M 0,0 5,10 10,0 z"
 										Fill="red"
-										RenderTransformOrigin="0.5,0.5"
+										RenderTransformOrigin="0.5,0.3"
 										>
+									<!-- Data="M 0,0 4,8 8,0 z" -->
 									<Path.RenderTransform>
 										<TransformGroup>
 											<RotateTransform Angle="-90" />
 										</TransformGroup>
 									</Path.RenderTransform>
 								</Path>
+								<!-- <Path  -->
+								<!-- 		Grid.Column="0" -->
+								<!-- 		Margin="0,1.5,0,1" -->
+								<!-- 		HorizontalAlignment="right" -->
+								<!-- 		VerticalAlignment="Center" -->
+								<!-- 		Data="M 0,0 5,10 10,0 z" -->
+								<!-- 		Fill="red" -->
+								<!-- 		RenderTransformOrigin="0.5,0.5" -->
+								<!-- > -->
+								<!-- 	~1~ Data="M 0,0 4,8 8,0 z" @1@ -->
+								<!-- 	<Path.RenderTransform> -->
+								<!-- 		<TransformGroup> -->
+								<!-- 			<RotateTransform Angle="0" /> -->
+								<!-- 		</TransformGroup> -->
+								<!-- 	</Path.RenderTransform> -->
+								<!-- </Path> -->
+								
 							</Grid>
 							<ControlTemplate.Triggers>
 								<Trigger Property="IsChecked" Value="true">
@@ -229,7 +247,6 @@
 					</Border>
 				</Popup>
 
-
 				<VisualStateManager.VisualStateGroups>
 					<VisualStateGroup x:Name="CommonStates">
 						<VisualState x:Name="Normal" />
@@ -275,6 +292,7 @@
 						<VisualState x:Name="Uneditable" />
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
+
 			</Grid>
 		</Border>
 

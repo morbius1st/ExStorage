@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.DirectoryServices;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Media;
 using ExStoreTest2026.Windows;
 using RevitLibrary;
@@ -54,7 +56,6 @@ namespace ExStorSys
 		// N_ONEOHFOUR = 104,
 	}
 
-
 	public enum RunningStatus
 	{
 		RN_DEBUG				= -10,
@@ -68,7 +69,6 @@ namespace ExStorSys
 		RN_RUNNING_NORMAL		,
 	}
 
-	
 	public enum LaunchCode
 	{
 		LC_DEBUG			= -10,
@@ -90,7 +90,6 @@ namespace ExStorSys
 		LC_DONE_GOOD		    ,
 		LC_DONE_FAIL		    ,
 	}
-
 
 	public enum ExSysStatus
 	{
@@ -245,6 +244,16 @@ namespace ExStorSys
 
 	/* various enums */
 
+	/* sheet */
+
+	public enum SheetStatus
+	{
+		SS_CREATED,
+		SS_EXISTING,
+		SS_NEW,
+		SS_DELETED,
+		SS_MODIFIED,
+	}
 
 	/* fields */
 
@@ -350,11 +359,11 @@ namespace ExStorSys
 
 	public enum SheetOpStatus
 	{
-		SS_GOOD,
-		SS_SKIP,
-		SS_HOLD,
-		SS_DELETE,
-		SS_NA		= N_NEG_ONE,
+		SOS_GOOD,
+		SOS_SKIP,
+		SOS_HOLD,
+		SOS_DELETE,
+		SOS_NA		= N_NEG_ONE,
 	}
 
 	public enum UpdateRules
@@ -366,6 +375,28 @@ namespace ExStorSys
 
 	}
 
+	public struct EnumData<T>
+		where T: Enum
+	{
+		public string Order {get;}
+		public bool Visible {get;}
+		public T Key {get; }
+		public string Name {get; }
+		public string Desc {get;}
+		public SolidColorBrush Brush {get; }
+
+		public EnumData(string order, T key, string name, 
+			string desc, SolidColorBrush brush, bool visible)
+		{
+			Order = order;
+			Key = key;
+			Name = name;
+			Desc = desc;
+			Brush = brush;
+			Visible = visible;
+		}
+	}
+
 	// key information
 
 	public static class ExStorConst
@@ -375,7 +406,7 @@ namespace ExStorSys
 
 		public const UpdateRules DEFAULT_UPDATE_RULE = UpdateRules.UR_NEVER;
 		public const ActivateStatus DEFAULT_ACTIVATE_STATUS = ActivateStatus.AS_INACTIVE;
-		public const SheetOpStatus DEFAULT_SHEET_OP_STATUS = SheetOpStatus.SS_GOOD;
+		public const SheetOpStatus DEFAULT_SHEET_OP_STATUS = SheetOpStatus.SOS_GOOD;
 
 
 		public static readonly string[,]  NAME_REPL_STRING =  new [,] {{ ".", "_"} } ;
@@ -386,9 +417,52 @@ namespace ExStorSys
 			CompanyId = CsStringUtil.CleanString(CsUtilities.CompanyName, NAME_REPL_STRING) ?? "";
 			VendorId = CsStringUtil.CleanString((RevitAddinsUtil.GetVendorId() ?? "missing"), NAME_REPL_STRING) ?? "";
 			AppId = (RevitAddinsUtil.GetAppId() ?? "missing").ToLower();
+
+			// configShtOpStatView();
+			// configActiveStatView();
+			// configUpdateRulesView();
+			//
+			// ShtOpStatusDescView = ConfigEnumDesc(ShtOpStatusDesc);
+			// ActiveStatusDescView = ConfigEnumDesc(ActiveStatusDesc);
 		}
 
 		/* methods */
+
+		private static ICollectionView ConfigEnumDesc<T>(Dictionary<T, EnumData<T>> data)
+			where T : Enum
+		{
+			ICollectionView iv = CollectionViewSource.GetDefaultView(data);
+			iv.Filter = o => ((KeyValuePair<T, EnumData<T>>) o).Value.Visible;
+			iv.SortDescriptions.Add(new SortDescription("Value.Order", ListSortDirection.Ascending));
+			iv.Refresh();
+			return iv;
+		}
+
+
+
+		private static void configShtOpStatView()
+		{
+			ShtOpStatusDescView = CollectionViewSource.GetDefaultView(ShtOpStatusDesc);
+			ShtOpStatusDescView.Filter = o => ((KeyValuePair<SheetOpStatus, EnumData<SheetOpStatus>>) o).Value.Visible;
+			ShtOpStatusDescView.SortDescriptions.Add(new SortDescription("Value.Order", ListSortDirection.Ascending));
+			ShtOpStatusDescView.Refresh();
+		}
+
+		private static void configActiveStatView()
+		{
+			ActiveStatusDescView = CollectionViewSource.GetDefaultView(ActiveStatusDesc);
+			ActiveStatusDescView.Filter = o => ((KeyValuePair<ActivateStatus, EnumData<ActivateStatus>>) o).Value.Visible;
+			ActiveStatusDescView.SortDescriptions.Add(new SortDescription("Value.Order", ListSortDirection.Ascending));
+			ActiveStatusDescView.Refresh();
+		}
+
+		private static void configUpdateRulesView()
+		{
+			UpdateRulesDescView = CollectionViewSource.GetDefaultView(UpdateRulesDesc);
+			UpdateRulesDescView.Filter = o => ((KeyValuePair<UpdateRules, EnumData<UpdateRules>>) o).Value.Visible;
+			UpdateRulesDescView.SortDescriptions.Add(new SortDescription("Value.Order", ListSortDirection.Ascending));
+			UpdateRulesDescView.Refresh();
+		}
 
 		// /// <summary>
 		// /// the model code is a unique value that is associated with a specific model but<br/>
@@ -425,6 +499,13 @@ namespace ExStorSys
 
 			return new string(c);
 		}
+
+		
+		/* sheet info constants */
+
+		public const string K_SHT_PLACE_HOLDER_NAME = "Place Holder";
+		public const string K_SHT_PLACE_HOLDER_DESC = "Place Holder Sheet Waiting for Sheets to be added";
+		public const string K_SHT_INVALID_NAME = "Invalid";
 
 		/* field type constants */
 
@@ -483,7 +564,6 @@ namespace ExStorSys
 		public const string EXS_SHT_NAME_CODE = "SHT";
 		public const string EXS_VERSION_SHT = "v1_10";
 		public static readonly Guid ShtSchemaGuid = new Guid("A35D2205-CFFA-0110-ACED-DECADE20260B" );
-
 
 		// const names
 		// workbook schema name == WbkSchemaName          == CsCells_WBK_Schema_v1_00
@@ -565,7 +645,7 @@ namespace ExStorSys
 		 * assignments are saved as secondary so they can report back to the primary
 		 *
 		 */
-
+		
 		public static Dictionary<ExSysStatus, string> ExStorStatDesc = new()
 		{
 			{ES_DEFAULT             , "Default value, UnSet"}                       ,
@@ -573,7 +653,7 @@ namespace ExStorSys
 			{ES_STARTED             , "Started & Configured"}                       ,
 			
 			/* verify */
-
+		
 			{ES_VRFY_INIT_GOOD		, "Verify, Init Good"}                          ,
 			{ES_VRFY_INIT_FAIL		, "Verify, Init Fail"}                          ,
 			
@@ -596,29 +676,29 @@ namespace ExStorSys
 			{ES_VRFY_DONE_BAD_VER		, "Verify Done, element is out of date"}        ,
 			{ES_VRFY_DONE_INVALID_OR_BAD_VER	, "Verify Done, element is invalid and has wrong version"} ,
 			{ES_VRFY_DONE_GOOD		, "Verify Done and Good, but nothing read"}     , // all went well, proceed, read data
-
+		
 			/* initialization */
-
+		
 			{ES_WBK_SCHEMA_CREATED  , "WorkBook Schema Created"}                    ,
 			{ES_SHT_SCHEMA_CREATED  , "Sheet Schema Created"}                       ,
 			{ES_WBK_STARTED         , "WorkBook Complete"}                          ,
 			{ES_SHT_STARTED         , "Sheet(s) Complete"}                          ,
 			{ES_WBK_CREATED         , "WorkBook Complete"}                          ,
 			{ES_SHT_CREATED         , "Sheet(s) Complete"}                          ,
-
+		
 			/* start status */
-
+		
 			{ES_START_DONE_GOOD     , "Start Done; Ready"}                          ,
 			{ES_START_DONE_DEACTIVATE, "Start Done; Processing Deactivated"}        ,
 			{ES_START_DONE_FAIL     , "Start Done; Failed"}                         ,
 			{ES_START_DONE_EXIT     , "Start Done; User Chose to Exit"}             ,
-
+		
 			/* issues */
-
+		
 			{ES_RESTART_REQD        , "Restart Required"}                           ,
 			{ES_WBK_DELETED         , "WorkBook Deleted"}                           ,
 			{ES_SHT_DELETED         , "Sheet Deleted"}                              ,
-
+		
 			// no ... schema deleted - once either is deleted, restart is required
 		};
 
@@ -690,6 +770,9 @@ namespace ExStorSys
 			// {VDS_INVALID_N_WRONG_VER , new ("datastorage is invalid and has wrong version" , "need to upgrade") },   //
 		};
 
+		/// <summary>
+		/// descriptions of the field level editing security
+		/// </summary>
 		public static Dictionary<FieldEditLevel, Tuple<string, string, SolidColorBrush>> FieldEditLevelDesc = new ()
 		{
 			{ FieldEditLevel.FEL_LOCKED         , new ("Locked",               "User is not known / Has no permissions"    , Brushes.Red) },
@@ -702,13 +785,9 @@ namespace ExStorSys
 			{ FieldEditLevel.FEL_UNASSIGNED     , new ("Unassigned",           "Edit level not assigned"                   , Brushes.OrangeRed) },
 		};
 
-		public static Dictionary<FieldStatus, Tuple<string, string, SolidColorBrush>> FieldStatusDesc = new ()
-		{
-			{ FieldStatus.FS_IGNORE , new ("Ignore",     "Field is fixed / cannot be changed"                       , Brushes.White) },
-			{ FieldStatus.FS_CLEAN  , new ("Unmodified", "Field has not been changed"                               , Brushes.White) },
-			{ FieldStatus.FS_DIRTY  , new ("Revised",    "Field has been changed"                                   , Brushes.White) },
-		};
-
+		/// <summary>
+		/// descriptions of the user's security level
+		/// </summary>
 		public static Dictionary<UserSecutityLevel, Tuple<string, string, SolidColorBrush>> UsserSecurityLevelDesc = new ()
 		{
 			{ UserSecutityLevel.SL_DEBUG    , new ("Debug (Only)", "Unrestricted access"                            , Brushes.LawnGreen) },
@@ -720,6 +799,61 @@ namespace ExStorSys
 			{ UserSecutityLevel.SL_NONE     , new ("None", "No access permitted"									, Brushes.MediumSeaGreen) },
 		};
 
+
+
+		/* enum description data */
+		// need 
+
+		/// <summary>
+		/// the rule for updating an item
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
+		public static Dictionary<UpdateRules, EnumData<UpdateRules>> UpdateRulesDesc = new ()
+		{
+			{ UpdateRules.UR_UNDEFINED     , new ("1", UpdateRules.UR_UNDEFINED     , "Not Assigned", "Not Assigned"           , Brushes.White    , true) },
+			{ UpdateRules.UR_AS_NEEDED     , new ("1", UpdateRules.UR_AS_NEEDED     , "As Needed"   , "Automatic, when Needed" , Brushes.Blue     , true) },
+			{ UpdateRules.UR_UPON_REQUEST  , new ("1", UpdateRules.UR_UPON_REQUEST  , "Upon Request", "Not Until Requested"    , Brushes.LawnGreen, true) },
+			{ UpdateRules.UR_NEVER         , new ("1", UpdateRules.UR_NEVER         , "Never"       , "Never Update"           , Brushes.Red      , true) },
+		};
+
+		public static ICollectionView UpdateRulesDescView = ConfigEnumDesc(UpdateRulesDesc);
+
+		/// <summary>
+		/// the operation status for a row
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
+		public static Dictionary<SheetOpStatus, EnumData<SheetOpStatus>> ShtOpStatusDesc = new ()
+		{ 
+			{ SheetOpStatus.SOS_GOOD,   new ("4", SheetOpStatus.SOS_GOOD  , "Good"        ,   "Good, proceed normal"                  , Brushes.LawnGreen, true) },
+			{ SheetOpStatus.SOS_SKIP,   new ("5", SheetOpStatus.SOS_SKIP  , "Skip"        ,   "Skip these operations for until reset" , Brushes.Yellow   , true) },
+			{ SheetOpStatus.SOS_DELETE, new ("2", SheetOpStatus.SOS_DELETE, "Delete"      ,   "Delete and remove all operations"      , Brushes.Red      , true) },
+			{ SheetOpStatus.SOS_HOLD,   new ("3", SheetOpStatus.SOS_HOLD  , "Hold"        ,   "Hold for this Session"                 , Brushes.Blue     , true) },
+			{ SheetOpStatus.SOS_NA,     new ("1", SheetOpStatus.SOS_NA    , "Not Assigned",   "Not Assigned"                          , Brushes.White    , false) },
+		};
+
+		public static ICollectionView ShtOpStatusDescView = ConfigEnumDesc(ShtOpStatusDesc);
+		
+		/// <summary>
+		/// the active status for a row
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
+		public static Dictionary<ActivateStatus, EnumData<ActivateStatus>> ActiveStatusDesc = new ()
+		{
+			{ ActivateStatus.AS_NA       , new ("99", ActivateStatus.AS_NA       , "Not Assigned", "Not Assigned"               , Brushes.White     , false) },
+			{ ActivateStatus.AS_DEFAULT  , new ("99", ActivateStatus.AS_DEFAULT  , "Unassigned"  , "Activation Not Set"         , Brushes.Red       , false) },
+			{ ActivateStatus.AS_IGNORE   , new ("3",  ActivateStatus.AS_IGNORE   , "Ignore"      , "Ignore this item"           , Brushes.Blue      , true) },
+			{ ActivateStatus.AS_INACTIVE , new ("2",  ActivateStatus.AS_INACTIVE , "Inactive"    , "Activation Disabled"        , Brushes.Yellow    , true) },
+			{ ActivateStatus.AS_ACTIVE   , new ("1",  ActivateStatus.AS_ACTIVE   , "Active"      , "Activation Enabled"         , Brushes.LawnGreen , true) },
+		};
+
+		public static ICollectionView ActiveStatusDescView = ConfigEnumDesc(ActiveStatusDesc);
+
+
+		/*
+		/// <summary>
+		/// the rule for updating an item
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
 		public static Dictionary<UpdateRules, Tuple<string, string, SolidColorBrush>> UpdateRulesDesc = new ()
 		{
 			{ UpdateRules.UR_UNDEFINED     , new ("Not Assigned", "Not Assigned"                         , Brushes.White) },
@@ -727,17 +861,25 @@ namespace ExStorSys
 			{ UpdateRules.UR_UPON_REQUEST  , new ("Upon Request", "Not Until Requested"                  , Brushes.LawnGreen) },
 			{ UpdateRules.UR_NEVER         , new ("Never"       , "Never Update"                         , Brushes.Red) },
 		};
+		*/
 
+		/*
+		/// <summary>
+		/// the operation status for a sheet
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
 		public static Dictionary<SheetOpStatus, Tuple<string, string, SolidColorBrush>> SheetOpStatusDesc = new ()
 		{
-			{ SheetOpStatus.SS_NA,     new ("Not Assigned",   "Not Assigned"                             , Brushes.White) },
-			{ SheetOpStatus.SS_HOLD,   new ("Hold",   "Hold for this Session"                            , Brushes.Blue) },
-			{ SheetOpStatus.SS_DELETE, new ("Delete", "Delete and remove all operations"                 , Brushes.Red) },
-			{ SheetOpStatus.SS_GOOD,   new ("Good",   "Good, proceed normal"                             , Brushes.LawnGreen) },
-			{ SheetOpStatus.SS_SKIP,   new ("Skip",   "Skip these operations for until reset"            , Brushes.Yellow) },
+			{ SheetOpStatus.SOS_NA,     new ("Not Assigned",   "Not Assigned"                             , Brushes.White) },
+			{ SheetOpStatus.SOS_HOLD,   new ("Hold",   "Hold for this Session"                            , Brushes.Blue) },
+			{ SheetOpStatus.SOS_DELETE, new ("Delete", "Delete and remove all operations"                 , Brushes.Red) },
+			{ SheetOpStatus.SOS_GOOD,   new ("Good",   "Good, proceed normal"                             , Brushes.LawnGreen) },
+			{ SheetOpStatus.SOS_SKIP,   new ("Skip",   "Skip these operations for until reset"            , Brushes.Yellow) },
 
 		};
+		*/
 
+		/*
 		public static Dictionary<ActivateStatus, Tuple<string, string, SolidColorBrush>> ActiveStatusDesc = new ()
 		{
 			{ ActivateStatus.AS_NA       , new ("Not Assigned", "Not Assigned"               , Brushes.White) },
@@ -754,7 +896,13 @@ namespace ExStorSys
 			{ ActivateStatus.AS_INACTIVE, ActiveStatusDesc[ActivateStatus.AS_INACTIVE] },
 			{ ActivateStatus.AS_IGNORE, ActiveStatusDesc[ActivateStatus.AS_IGNORE] },
 		};
+		*/
 
+		/*
+		/// <summary>
+		/// family type categories
+		/// </summary>
+		/// <remarks>this is a user choice list</remarks>
 		public static Dictionary<FamTypeCategories, Tuple<List<Tuple<Enum, string, SolidColorBrush>>, 
 			FamTypeRequirement, Enum, 
 			string, SolidColorBrush>> FamilyAndTypeProperties = new ()
@@ -769,17 +917,34 @@ namespace ExStorSys
 				FamTypeRequirement.REQUIRED, FamTypeProcessProp.ACTIVE,// is this property required and which setting is the default
 				"Determines how to process this Family Type", Brushes.White) }
 		};
+		*/
+
 
 		/* restart const's*/
 
 		public static string[] RestartStatDesc = ["No Restart Needed", "Restart Required", "System Not Active"];
 
-		/* validation const's*/
+		/* voided */
 
+
+		/*
 		public static string[] DataClassAbbrevUc = ["WBK", "SHT"];
 		public static string[] DataClassAbbrevTc = ["Wbk", "Sht"];
 		public static string[] DataClassFull =     ["WorkBook", "Sheet"];
 		public static string[] DataContainerFull = ["Schema", "DataStorage"];
+		*/
+
+
+		/*
+		 public static Dictionary<FieldStatus, Tuple<string, string, SolidColorBrush>> FieldStatusDesc = new ()
+		{
+		{ FieldStatus.FS_IGNORE , new ("Ignore",     "Field is fixed / cannot be changed"                       , Brushes.White) },
+		{ FieldStatus.FS_CLEAN  , new ("Unmodified", "Field has not been changed"                               , Brushes.White) },
+		{ FieldStatus.FS_DIRTY  , new ("Revised",    "Field has been changed"                                   , Brushes.White) },
+		};
+		*/
+
+
 	}
 
 	// ds field names
@@ -839,8 +1004,6 @@ namespace ExStorSys
 		RK_RD_FAMILY_LIST          ,
 	}
 
-
-	
 	// public enum OpState 
 	// {
 	// 	OS_DELETE_SHT	= -4,

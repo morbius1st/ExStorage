@@ -29,7 +29,7 @@ namespace UtilityLibrary
 			dynValue = value;
 			ApplyChange();
 
-			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorLib)) ?? -1;
+			// ObjectId = ExStorStartMgr.Instance?.AddObjId() ?? -1;
 			IsChanged = null;
 
 			dynamic a = test;
@@ -462,6 +462,12 @@ namespace UtilityLibrary
 			
 		}
 
+
+		private void showDyValues(string title)
+		{
+			Debug.WriteLine($"** {title, -15} | value {dynValue?.ToString() ?? "is null"} | prior {dynValuePrior?.ToString() ?? "is null"}");
+		}
+
 		/// <summary>
 		/// update the value if the type matches<br/>
 		/// save the prior value if clean<br/>
@@ -470,6 +476,17 @@ namespace UtilityLibrary
 		public bool ChangeValue(dynamic value)
 		{
 			if (!(value.GetType().Equals(TypeIs))) return false;
+
+			// showDyValues("CV - begin");
+
+			if (value.Equals(dynValuePrior))
+			{
+				UndoChange();
+				OnPropertyChanged(nameof(Value));
+
+				// showDyValues("CV - end 2");
+				return true;
+			}
 
 			// type matches
 			// save prior value
@@ -492,21 +509,36 @@ namespace UtilityLibrary
 
 			OnPropertyChanged(nameof(Value));
 
+			// showDyValues("CV - end 1");
+
 			return true;
 		}
 
+		/// <summary>
+		/// undo the last n changes. currently only the last
+		/// change is saved and can be undone.  multi-level undo
+		/// has not been implemented
+		/// </summary>
 		public void UndoChange(int qty = 1)
 		{
 			if (qty < 1) return;
+
+			// showDyValues("UC - begin");
+
 			if (dynValuePrior == null) return;
 			// restore prior value
 			// clear prior value
 			// clear "dirty" flag
 			// set last value returned flag to false
 
-			(dynValue, dynValuePrior) = (dynValuePrior, dynValue);
+			// (dynValue, dynValuePrior) = (dynValuePrior, dynValue);
+
+			dynValue = dynValuePrior;
+			dynValuePrior = null;
 
 			applyChange();
+
+			// showDyValues("UC - end");
 		}
 
 		public void ApplyChange()
@@ -517,7 +549,9 @@ namespace UtilityLibrary
 
 		private void applyChange()
 		{
+			// must use the field and not the property
 			changeQty = 0;
+
 			IsChanged = false;
 			LastValueReturnedIsValid = false;
 		}

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Markup;
 
 using Autodesk.Revit.DB.ExtensibleStorage;
+using Autodesk.Revit.UI;
 
 using ExStoreTest2026;
 using ExStoreTest2026.DebugAssist;
@@ -30,13 +31,22 @@ namespace ExStorSys
 {
 
 	/// <summary>
-	/// Storage Manager - controls the primary admin operations
+	/// Storage Manager - controls the primary admin operations<br/>
+	/// and will be the status controller
 	/// </summary>
 	public class ExStorMgr : APropChgdEvt  // : INotifyPropertyChanged
 	{
 		public int ObjectId;
 
 	#region objects
+
+		// ExStorData must report here for its status
+		//	> status reported
+		//		* need to restart
+		//		* xData.sheets list is modified
+		//
+
+
 
 		public MainWinModelUi Mui { get; set; }
 
@@ -46,15 +56,9 @@ namespace ExStorSys
 		// ReSharper disable once InconsistentNaming
 		public ExStorLib xLib;
 
-		private bool systemRunning;
+		// private bool systemRunning;
 
 		private bool? restartRequired;
-		private ExSysStatus exSysStatus;
-
-		// private int resultWbkSc;
-		// private int resultWbkDs;
-		// private int resultShtSc;
-		// private int resultShtDs;
 
 	#endregion
 
@@ -81,6 +85,8 @@ namespace ExStorSys
 
 		private void init()
 		{
+			// Debug.WriteLine($"\n*** ExStorMgr init | begin");
+
 			// ObjectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorMgr)) ?? -1;
 			xLib = ExStorLib.Instance;
@@ -91,6 +97,8 @@ namespace ExStorSys
 			xData.RestartRequiredChanged += XDataOnRestartRequiredChanged;
 
 			RestartRequired = null;
+
+			// Debug.WriteLine($"\n*** ExStorMgr init | exit  ({ObjectId})");
 		}
 
 		public void Restore()
@@ -133,14 +141,9 @@ namespace ExStorSys
 		/// </summary>
 		public ExSysStatus ExSysStatus
 		{
-			get => exSysStatus;
-			set
-			{
-				exSysStatus = value;
-				OnPropChgd(new PropChgEvtArgs(PI_XSYS_STATUS, value));
-			}
+			get => Mui.ExSysStatus;
+			set => OnPropChgd(new PropChgEvtArgs(PI_XSYS_STATUS, value));
 		}
-
 
 	#endregion
 
@@ -173,10 +176,9 @@ namespace ExStorSys
 		public void ResetData()
 		{
 			xData.ResetSheets();
+			xData.InitSheets();
 			xData.ResetWorkBook();
-
 			xData.ResetWorkBookSchemaSilent();
-
 			xData.ResetSheetSchemaSilent();
 		}
 
@@ -410,22 +412,46 @@ namespace ExStorSys
 
 		/* sheets */
 
+		/// <summary>
+		/// create a new, basically empty, sheet using the sheet creation data<br/>
+		/// and sets initial values<br/>
+		/// the sheet status is flagged as SS_NEW
+		/// </summary>
+		public Sheet CreateNewSheet(SheetCreationData sd)
+		{
+			if (!xData.GotShtSchema) return null;
+
+			string nextShtName = Exid.CreateShtDsName(getId());
+
+			if (xData.GotSheet(nextShtName)) return null;
+
+			Sheet? sht = Sheet.CreateSheet(nextShtName, sd);
+
+			if (sht == null) return null;
+
+			sht.SheetStatus = SheetStatus.SS_NEW;
+
+			return sht;
+		}
+
+		// test routine
 		public bool WriteSheets()
 		{
 			if (!xData.GotShtSchema) return false;
-
+		
 			ExStoreRtnCode rtnCode = ExStoreRtnCode.XRC_GOOD;
-
+		
 			foreach ((string key, Sheet sht) in xData.Sheets)
 			{
 				rtnCode = xLib.WriteSheet(sht, xData.SheetSchema);
-
+		
 				if (rtnCode != ExStoreRtnCode.XRC_GOOD) break;
 			}
-
+		
 			return rtnCode == ExStoreRtnCode.XRC_GOOD;
 		}
 
+		// test routine
 		public bool WriteSheet(string dsName)
 		{
 			Sheet sht;
@@ -449,6 +475,7 @@ namespace ExStorSys
 			return rtnCode == ExStoreRtnCode.XRC_GOOD;
 		}
 
+		// test routine
 		public string? MakeSheet(SheetCreationData sd)
 		{
 			if (!xData.GotShtSchema) return null;
@@ -461,11 +488,12 @@ namespace ExStorSys
 
 			if (sht == null) return null;
 
-			xData.AddSheet(sht);
+			xData.AddSheetPreInit(sht);
 
 			return sht.DsName;
 		}
 
+		// test routine
 		public Sheet MakeEmptySheet()
 		{
 			// gotta have a workbook - full not empty
@@ -478,12 +506,14 @@ namespace ExStorSys
 			return sht;
 		}
 
+		// test routine
 		public bool AddSheetFamily(string fam, string type, string props)
 		{
 			return xData.CurrentSheet != null 
 				&& xData.CurrentSheet.AddFamAndType(fam, type, props);
 		}
 
+		// test routine
 		public bool RemoveSheetFamily(string fam, string type)
 		{
 			return xData.CurrentSheet != null 
@@ -767,30 +797,76 @@ namespace ExStorSys
 
 		/* read */
 
-		// public bool readWorkBook()
+		// public bool ReadWorkBook(out WorkBook? wbk)
 		// {
-		// 	return readWorkBook(xData.WorkBook.ExsEntity);
+		// 	wbk = WorkBook.CreateEmptyWorkBook();
+		//
+		// 	if (!xData.GotWbkSchema) return false;
+		// 	if (!xData.GotTempWbkEntity) return false;
+		//
+		// 	if (xLib.ReadEntityFields(xData.WorkBook.ExsEntity, wbk) != ExStoreRtnCode.XRC_GOOD) return false;
+		//
+		// 	wbk.ExsEntity = xData.WorkBook.ExsEntity;
+		// 	wbk.ExsDataStorage = xData.WorkBook.ExsDataStorage;
+		//
+		// 	ExStorData exd = ExStorData.Instance;
+		// 	return true;
 		// }
 
-		/// <summary>
-		/// read a workbook from the DS into the locak workbook<br/>
-		/// the locak workbook must have the DS, Entity, and Schema configured
-		/// </summary>
-		private bool readWorkBook()
+		public bool ReadWorkBookViaTempInfo(out WorkBook? wbk, out ObservableDictionary<string, Sheet>? shts)
 		{
-			bool result = false;
+			wbk = WorkBook.CreateEmptyWorkBook();
+			shts = new ObservableDictionary<string, Sheet>();
+			Sheet sht;
 
-			if (!xData.GotWbkSchema) return result;
+			Entity shtE;
 
-			if (!xData.WorkBook.IsEmpty) return false;
+			if (!xData.GotTempShtSchema || 
+				!xData.GotTempWbkEntity ||
+				!xData.GotTempWbkDs) return false;
 
-			if (xLib.ReadEntityFields(xData.WorkBook.ExsEntity, xData.WorkBook) == ExStoreRtnCode.XRC_GOOD)
+
+			if (xLib.ReadEntityFields(xData.TempWbkEntity, wbk) != ExStoreRtnCode.XRC_GOOD) return false;
+			wbk.UpdateExsObjects(xData.TempWbkDsEx!.Item, xData.TempWbkEntity!, xData.TempWbkSchemaEx!.Item);
+
+			if (!xData.GotShtSchema || 
+				!xData.GotTempShtDs) return false;
+
+			foreach ((string? key, ExListItem<DataStorage>? value) in xData.TempShtDsListEx.GoodItems)
 			{
-				result = true;
+				if (!xLib.GetEntity(value.Item, xData.TempShtSchemaEx!.Item, out shtE)) continue;
+
+				if (readSheet(value.Item, xData.TempShtSchemaEx!.Item, out sht))
+				{
+					if (shts.TryAdd(key, sht))
+					{
+						sht.Config();
+					}
+				}
 			}
 
-			return result;
+			return true;
 		}
+
+		// /// <summary>
+		// /// read a workbook from the DS into the locak workbook<br/>
+		// /// the locak workbook must have the DS, Entity, and Schema configured
+		// /// </summary>
+		// private bool readWorkBook()
+		// {
+		// 	bool result = false;
+		//
+		// 	if (!xData.GotWbkSchema) return result;
+		//
+		// 	if (!xData.WorkBook.IsEmpty) return false;
+		//
+		// 	if (xLib.ReadEntityFields(xData.WorkBook.ExsEntity, xData.WorkBook) == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		result = true;
+		// 	}
+		//
+		// 	return result;
+		// }
 
 		private bool readWorkBook(DataStorage? ds, Schema? s)
 		{
@@ -871,7 +947,7 @@ namespace ExStorSys
 
 	#endregion
 
-	#region launch, start, and validation routines
+	#region launch, start, initialization, and validation routines
 
 		/* launch, start, and validation routines */
 
@@ -895,11 +971,7 @@ namespace ExStorSys
 			// Ut - transfer sht schema
 			if (!transTempShtSchemaToXdata()) return false;
 
-			Debug.WriteLine("*** before clear sheets");
-
-			xData.ClearSheets();
-
-			Debug.WriteLine("*** before TransTempExSheetsToXdata");
+			xData.ResetSheets();
 
 			// Vt - transfer sht ds - if applies
 			return TransTempExSheetsToXdata();
@@ -979,6 +1051,8 @@ namespace ExStorSys
 			Sheet? oldSheet;
 			Sheet? newSheet;
 
+			xData.RemovePlaceHolderSheet();
+
 			foreach ((string? key, ExListItem<DataStorage>? exItemOld) in xData.TempShtDsListEx!.GoodItems)
 			{
 				dsOld = exItemOld.Item;
@@ -993,7 +1067,7 @@ namespace ExStorSys
 				
 				// xData.SheetsList.Add(newSheet!.DsName, newSheet);
 
-				xData.AddSheet(newSheet);
+				xData.AddSheetPreInit(newSheet);
 			}
 
 			return true;
@@ -1273,38 +1347,36 @@ namespace ExStorSys
 
 			if (!xData.GotTempAnySheetsEx) return null;
 
-			Debug.WriteLine("*** before add sheets");
+			xData.RemovePlaceHolderSheet();
 
 			foreach ((string? key, ExListItem<DataStorage>? value) in xData.TempShtDsListEx.GoodItems)
 			{
 				if (readSheet(value.Item, xData.SheetSchema!, out sht!))
 				{
-					xData.AddSheet(sht!);
+					xData.AddSheetPreInit(sht!);
 				}
 			}
-
-			Debug.WriteLine("*** at end of TransTempExSheetsToXdata");
 
 			return xData.GotAnySheets ? true : null;
 		}
 
-		/// <summary>
-		/// prep for sheets - transfer the sheet schema and reset the sheets list.<br/>
-		/// does not make any sheets.  returns false only if unable to <br/>
-		/// create a missing sheet schema
-		/// </summary>
-		/// <returns></returns>
-		private bool setupSheets()
-		{
-			if (!transTempShtSchemaToXdata())
-			{
-				if (!CreateSheetSchema()) return false;
-			}
-
-			xData.ResetSheets();
-
-			return true;
-		}
+		// /// <summary>
+		// /// prep for sheets - transfer the sheet schema and reset the sheets list.<br/>
+		// /// does not make any sheets.  returns false only if unable to <br/>
+		// /// create a missing sheet schema
+		// /// </summary>
+		// /// <returns></returns>
+		// private bool setupSheets()
+		// {
+		// 	if (!transTempShtSchemaToXdata())
+		// 	{
+		// 		if (!CreateSheetSchema()) return false;
+		// 	}
+		//
+		// 	xData.ResetSheets();
+		//
+		// 	return true;
+		// }
 		
 
 	#endregion
@@ -1402,8 +1474,7 @@ namespace ExStorSys
 		// }
 
 
-
-	#endregion
+	#endregion methods
 
 	#region event consuming
 

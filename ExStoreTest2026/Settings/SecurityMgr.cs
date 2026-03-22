@@ -61,10 +61,12 @@ namespace ExStorSys
 			UserName = userName!;
 			UserName2 = rvtUsderName;
 
-			if (tempAccess.TryGetValue(userName, out userSecurityLevel))
+			if (!(tempAccess.TryGetValue(userName, out userSecurityLevel)))
 			{
-				OnPropertyChanged(nameof(UserSecurityLevel));
+				userSecurityLevel = UserSecutityLevel.SL_UNASSIGNED;
 			}
+
+			OnPropertyChanged(nameof(UserSecurityLevel));
 
 		}
 
@@ -194,6 +196,7 @@ namespace ExStorSys
 		{
 			{ "johns", UserSecutityLevel.SL_BASIC},
 			{ "jimmys",UserSecutityLevel.SL_NONE},
+			{ "jackieo",UserSecutityLevel.SL_LIMITED},
 			{ "jacks", UserSecutityLevel.SL_ADVANCED},
 			{ "jeffs", UserSecutityLevel.SL_DEBUG },
 			

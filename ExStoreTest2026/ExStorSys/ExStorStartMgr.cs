@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using Autodesk.Revit.UI;
@@ -138,11 +140,11 @@ namespace ExStorSys
 			Msgs.ShowDebug = true;
 			// DebugRoutines.ShowObjectId(-1, -1);
 
-			Msgs.CWriteLine($"\n\n*** Start Operator - Begin *** [ {R.FileName} ]");
+			// Msgs.CWriteLine($"\n\n*** Start Operator - Begin *** [ {R.FileName} ]");
 
-			showStatus2("init status");
-			showStatus1("status before switchboard");
-			ShowStatus3("data status before switchboard");
+			// showStatus2("init status");
+			// showStatus1("status before switchboard");
+			// ShowStatus3("data status before switchboard");
 
 			// testStart();
 			// return;
@@ -173,19 +175,21 @@ namespace ExStorSys
 			}
 			else
 			{
-				Msgs.CWriteLine($"2nd + times through - just show window");
+				// Msgs.CWriteLine($"2nd + times through - just show window");
 				result = true;
 			}
 
-			showStatus1("status after switchboard");
-			showStatus2();
+			// showStatus1("status after switchboard");
+			// showStatus2();
 
 			publishStatus();
 			Mw.Wm.UpdateData();
 
-			if (result) winOpen2ndPlus();
+			// Msgs.CWriteLine($"\n*** Start Operator - End\n");
 			
-			Msgs.CWriteLine($"\n*** Start Operator - End\n\n");
+			if (result) winOpen2ndPlus();
+
+			// Msgs.CWriteLine($"\n*** Start Operator - Exit\n\n");
 		}
 
 		// ReSharper disable once InconsistentNaming
@@ -229,7 +233,7 @@ namespace ExStorSys
 				string opt = procIndex[key].Item1;
 				string id = procIndex[key].Item3;
 
-				Msgs.CWriteLine($"\n** at switchboard - procedures | {key} | {id} = {opt} {(navProc2.IsVoid() ? "" : $"/ {navProc2}")}");
+				// Msgs.CWriteLine($"\n** at switchboard - procedures | {key} | {id} = {opt} {(navProc2.IsVoid() ? "" : $"/ {navProc2}")}");
 
 				switch (opt)
 				{
@@ -241,8 +245,6 @@ namespace ExStorSys
 						// xData.ResetSheets();
 
 						sbResult = proc_sn();
-
-						Msgs.CWriteLine($"after proc_sn");
 
 						if (sbResult == SB_ALL_GOOD)
 						{
@@ -378,7 +380,7 @@ namespace ExStorSys
 			}
 			else
 			{
-				Msgs.CWriteLine($"\n** at switchboard - key not found for key {key}");
+				// Msgs.CWriteLine($"\n** at switchboard - key not found for key {key}");
 				ShowStatus5();
 			}
 			
@@ -430,7 +432,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_sn()
 		{
-			Msgs.CWriteLine("\n**at proc_sn (start normal)");
+			// Msgs.CWriteLine("\n**at proc_sn (start normal)");
 
 			SbResult res = SB_OTHER_FAIL;
 
@@ -453,7 +455,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_nw()
 		{
-			Msgs.CWriteLine("\n** at proc_nw (start activate)");
+			// Msgs.CWriteLine("\n** at proc_nw (start activate)");
 
 			SbResult res = SB_OTHER_FAIL;
 
@@ -476,7 +478,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_cs()
 		{
-			Msgs.CWriteLine("\n** at proc_c (startFixShtVersion)");
+			// Msgs.CWriteLine("\n** at proc_c (startFixShtVersion)");
 
 			SbResult res = SB_OTHER_FAIL;
 
@@ -499,7 +501,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_d()
 		{
-			Msgs.CWriteLine("\n** at proc_d (startFixModelName)");
+			// Msgs.CWriteLine("\n** at proc_d (startFixModelName)");
 
 			SbResult res = SB_FAIL_NEED_NEW;
 
@@ -522,7 +524,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_b()
 		{
-			Msgs.CWriteLine("\n** at proc_b (create workbook)");
+			// Msgs.CWriteLine("\n** at proc_b (create workbook)");
 
 			SbResult res = SB_FAIL_NEED_NEW;
 
@@ -530,7 +532,7 @@ namespace ExStorSys
 
 			if (navProc2.Equals("A"))
 			{
-				Msgs.CWriteLine("** at start activate - A");
+				// Msgs.CWriteLine("** at start activate - A");
 				if (!deleteExistWbkDs()) return res;
 			}
 
@@ -560,7 +562,7 @@ namespace ExStorSys
 		/// </summary>
 		private SbResult proc_o()
 		{
-			Msgs.CWriteLine("\n** at proc_o (reactivate)");
+			// Msgs.CWriteLine("\n** at proc_o (reactivate)");
 
 			SbResult res = SB_OTHER_FAIL;
 			bool? result;
@@ -612,15 +614,11 @@ namespace ExStorSys
 
 			result = xMgr.ProcTransWbk();
 
-			Msgs.CWriteLine($"after ProcTransWbk");
-
 			if (result != false)
 			{
 				// return value does not matter
 				// it is ok if there are no sheets to process
 				xMgr.ProcTransSht();
-
-				Msgs.CWriteLine($"after ProcTransSht");
 			}
 
 			return result != false;
@@ -635,13 +633,13 @@ namespace ExStorSys
 
 			if (navProc2.Equals("A"))
 			{
-				Msgs.CWriteLine("** at start activate - A");
+				// Msgs.CWriteLine("** at start activate - A");
 
 				if (!deleteExistWbkDs()) return false;
 			}
 			else if (navProc2.Equals("B"))
 			{
-				Msgs.CWriteLine("** at start activate - B");
+				// Msgs.CWriteLine("** at start activate - B");
 
 				IList<DataStorage> dsList;
 				if (!xMgr.FindAllShtDs(out dsList)) return false;
@@ -1140,18 +1138,20 @@ namespace ExStorSys
 
 		/* utilities */
 
+	#region show info
+
 		private void pMsg(string msg1, string msg2 = "")
 		{
-			Msgs.CWriteLine($"\n****** {msg1} ********", msg2);
+			// Msgs.CWriteLine($"\n****** {msg1} ********", msg2);
 		}
 
 		private void showStatus1(string prefix = "", string suffix = "")
 		{
 			if (!prefix.IsVoid())  Msgs.CWriteLine($"\n** {prefix}");
 
-			Msgs.CWriteLine($"\n\t*** {xMui.WbkScResCode,-20} {$"[{xMui.WbkScResDesc}]",-60} | {xMui.WbkDsResCode, -12} [{xMui.WbkDsResDesc}]");
+			// Msgs.CWriteLine($"\n\t*** {xMui.WbkScResCode,-20} {$"[{xMui.WbkScResDesc}]",-60} | {xMui.WbkDsResCode, -12} [{xMui.WbkDsResDesc}]");
 
-			Msgs.CWriteLine($"\t*** {xMui.ShtScResCode,-20} {$"[{xMui.ShtScResDesc}]",-60} | {xMui.ShtDsResCode, -12} [{xMui.ShtDsResDesc}]");
+			// Msgs.CWriteLine($"\t*** {xMui.ShtScResCode,-20} {$"[{xMui.ShtScResDesc}]",-60} | {xMui.ShtDsResCode, -12} [{xMui.ShtDsResDesc}]");
 
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"**  {suffix}\n");
 		}
@@ -1159,8 +1159,8 @@ namespace ExStorSys
 		private void showStatus2(string prefix = "", string suffix = "")
 		{
 			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n** {prefix}");
-			Msgs.CWriteLine($"\t*** {xMui.ExSysStatus,-20} [{xMui.ExSysStatusDesc}]");
-			Msgs.CWriteLine($"\t*** {xMui.SystemRunningStatus, -20} [{xMui.SystemRunningStatusDesc}]");
+			// Msgs.CWriteLine($"\t*** {xMui.ExSysStatus,-20} [{xMui.ExSysStatusDesc}]");
+			// Msgs.CWriteLine($"\t*** {xMui.SystemRunningStatus, -20} [{xMui.SystemRunningStatusDesc}]");
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"{suffix}\n");
 		}
 
@@ -1170,11 +1170,11 @@ namespace ExStorSys
 			Msgs.ShowDebug = true;
 
 			if (!prefix.IsVoid()) Msgs.CWriteLine($"\n** {prefix}");
-			Msgs.CWriteLine(  $"\t*** WBK got schema      | {xData.GotWbkSchema, -7    }| got ds          | {xData.GotWbkDs,-7}| got workbook  | {xData.GotWorkBook}");
-			Msgs.CWriteLine(  $"\t*** SHT got schema      | {xData.GotShtSchema, -7    }| got any ds      | {xData.GotAnySheets}");
+			// Msgs.CWriteLine(  $"\t*** WBK got schema      | {xData.GotWbkSchema, -7    }| got ds          | {xData.GotWbkDs,-7}| got workbook  | {xData.GotWorkBook}");
+			// Msgs.CWriteLine(  $"\t*** SHT got schema      | {xData.GotShtSchema, -7    }| got any ds      | {xData.GotAnySheets}");
 
-			Msgs.CWriteLine($"\n\t*** WBK got temp schema | {xData.GotTempWbkSchema, -7}| got temp ds     | {xData.GotTempWbkDs}");
-			Msgs.CWriteLine(  $"\t*** SHT got temp schema | {xData.GotTempShtSchema, -7}| got temp any ds | {xData.GotTempAnySheetsEx}");
+			// Msgs.CWriteLine($"\n\t*** WBK got temp schema | {xData.GotTempWbkSchema, -7}| got temp ds     | {xData.GotTempWbkDs}");
+			// Msgs.CWriteLine(  $"\t*** SHT got temp schema | {xData.GotTempShtSchema, -7}| got temp any ds | {xData.GotTempAnySheetsEx}");
 
 			if (!suffix.IsVoid()) Msgs.CWriteLine($"{suffix}\n");
 
@@ -1192,8 +1192,8 @@ namespace ExStorSys
 			bool saved = Msgs.ShowDebug;
 			Msgs.ShowDebug = true;
 
-			Msgs.CWriteLine($"{" ".Repeat(26)}{"WbkSc",COL_A}\t{"WbkDs",COL_C}\t{"ShtSc",COL_B}\t{"ShtDs",COL_D}");
-			Msgs.CWriteLine($"{"ignore LaunchCode",-26}{xMui.WbkScResCode,COL_A}\t{xMui.WbkDsResCode,COL_C}\t{xMui.ShtScResCode,COL_B}\t{xMui.ShtDsResCode, COL_D}\n");
+			// Msgs.CWriteLine($"{" ".Repeat(26)}{"WbkSc",COL_A}\t{"WbkDs",COL_C}\t{"ShtSc",COL_B}\t{"ShtDs",COL_D}");
+			// Msgs.CWriteLine($"{"ignore LaunchCode",-26}{xMui.WbkScResCode,COL_A}\t{xMui.WbkDsResCode,COL_C}\t{xMui.ShtScResCode,COL_B}\t{xMui.ShtDsResCode, COL_D}\n");
 
 			Msgs.ShowDebug = saved;
 
@@ -1204,13 +1204,12 @@ namespace ExStorSys
 			bool saved = Msgs.ShowDebug;
 			Msgs.ShowDebug = true;
 
-			Msgs.CWriteLine($"\t***{"WbkSc",-8}{xMui.WbkScResCode,-12} | {"WbkDs",-8}{xMui.WbkDsResCode,-12} | {"ShtSc",-8}{xMui.ShtScResCode,-12} | {"ShtDs",-8}{xMui.ShtDsResCode, -12}");
+			// Msgs.CWriteLine($"\t***{"WbkSc",-8}{xMui.WbkScResCode,-12} | {"WbkDs",-8}{xMui.WbkDsResCode,-12} | {"ShtSc",-8}{xMui.ShtScResCode,-12} | {"ShtDs",-8}{xMui.ShtDsResCode, -12}");
 
 			Msgs.ShowDebug = saved;
 		}
 
-
-
+	#endregion
 
 
 		// private void showStatus2(ExSysStatus status, string prefix = "", string suffix = "")
@@ -1513,15 +1512,34 @@ namespace ExStorSys
 
 	#region object id list management
 
-		public int AddObjId(string who)
+		public int AddObjId([CallerFilePath] string path = "")
 		{
+			string who = path;
+
+			if (!path.IsVoid())
+			{
+				try
+				{
+					who = Path.GetFileNameWithoutExtension(path);
+				}
+				catch 
+				{
+					who = path;
+				}
+			}
+
+
+			// }
+			//
+			// public int AddObjId(string who)
+			// {
 			int id = AppRibbon.objectIdx++;
 
 			List<int>? objIds;
 
 			if (ObjectIdList.TryGetValue(who, out objIds))
 			{
-				if (objIds.Count < 5)
+				if (objIds.Count < 10)
 				{
 					objIds.Add(id);
 					ObjectIdList[who] = objIds;

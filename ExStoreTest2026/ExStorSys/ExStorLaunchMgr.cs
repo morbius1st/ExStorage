@@ -1,26 +1,16 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows.Documents;
-using System.Windows.Markup;
-using System.Xml.Linq;
-
+﻿using System.Diagnostics;
 using Autodesk.Revit.DB.ExtensibleStorage;
-
-using ExStoreTest2026;
-using ExStoreTest2026.DebugAssist;
-using ExStorSys;
 using ExStoreTest2026.Windows;
 
 using RevitLibrary;
 
 using UtilityLibrary;
-
-using static ExStorSys.ExSysStatus;
-using static ExStorSys.LaunchCode;
-
 using static ExStorSys.ValidateDataStorage;
 using static ExStorSys.ValidateSchema;
+// ReSharper disable ArrangeAccessorOwnerBody
+
+
+#pragma warning disable CS8604 // Possible null reference argument.
 
 // username: jeffs
 // created:  10/26/2025 7:40:36 AM
@@ -40,7 +30,7 @@ namespace ExStorSys
 
 	#region private fields
 
-		private const string SP = "    ";
+		// private const string SP = "    ";
 
 		// private ExStorLib xLib;
 		private ExStorMgr xMgr;
@@ -49,14 +39,14 @@ namespace ExStorSys
 
 		// private ExSysStatus exSysStatusLocal;
 
-		private LaunchCode lCode;
+		// private LaunchCode lCode;
 
 		private ValidateSchema resultWbkSc;
 		private ValidateDataStorage resultWbkDs;
 		private ValidateSchema resultShtSc;
 		private ValidateDataStorage resultShtDs;
 
-		private int tabDepth;
+		// private int tabDepth;
 
 		private bool? sendDebug = false;
 
@@ -64,10 +54,10 @@ namespace ExStorSys
 			private const int COL_B = -20;
 			private const int COL_C = -20;
 			private const int COL_D = -20;
-			private const int COL_L = -18;
+			// private const int COL_L = -18;
 			private const int COL_E = -26;
-			private const int COL_F = -16;
-			private const int COL_G = -8;
+			// private const int COL_F = -16;
+			// private const int COL_G = -8;
 
 	#endregion
 
@@ -94,10 +84,10 @@ namespace ExStorSys
 
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorLaunchMgr)) ?? -1;
 
-			Restore();
+			restore();
 		}
 
-		public void Restore()
+		private void restore()
 		{
 			xMgr = ExStorMgr.Instance!;
 			// xLib = ExStorLib.Instance;
@@ -115,10 +105,10 @@ namespace ExStorSys
 
 		private	LaunchCode _LaunchCode
 		{
-			get => lCode;
+			// get => lCode;
 			set
 			{
-				lCode = value;
+				// lCode = value;
 				xMgr.Mui.LaunchCode = value;
 			}
 		}
@@ -135,14 +125,14 @@ namespace ExStorSys
 
 		public void Reset()
 		{
-			lCode = LaunchCode.LC_NA;
+			// lCode = LaunchCode.LC_NA;
 
 			resultWbkSc = VSC_NA;
 			resultWbkDs = VDS_NA;
 			resultShtSc = VSC_NA;
 			resultShtDs = VDS_NA;
 
-			tabDepth = 0;
+			// tabDepth = 0;
 		}
 
 		/* process drivers */
@@ -158,7 +148,7 @@ namespace ExStorSys
 			sendDebug = true;
 
 			writeLine($"*** begin OnOpenDocLaunch *** [ {R.FileName} ]");
-			tabDepth++;
+			// tabDepth++;
 
 			OnPropChgdRn(RunningStatus.RN_NA);
 
@@ -166,9 +156,9 @@ namespace ExStorSys
 			_ExSysStatus = ExSysStatus.ES_NA;
 			_LaunchCode = LaunchCode.LC_NA;
 
-			bool result = OnOpenDocLaunchVfy();
+			bool result = onOpenDocLaunchVfy();
 
-			writeLine($"*** OnOpenDocLaunchVfy result| {result}");
+			writeLine($"*** onOpenDocLaunchVfy result| {result}");
 
 			// showStatus();
 			//
@@ -195,7 +185,7 @@ namespace ExStorSys
 			writeLine(             $"{" ".Repeat(26)}{"WbkSc",COL_C}\t{"WbkDs",COL_A}\t{"ShtSc",COL_D}\t{"ShtDs",COL_B} | {"ExSysStatus",COL_E}");
 			writeLine($"{"ignore LaunchCode",-26}{resultWbkSc,COL_C}\t{resultWbkDs,COL_A}\t{resultShtSc, COL_D}\t{resultShtDs,COL_B} | {_ExSysStatus,COL_E} | result {result}\n");
 			
-			tabDepth--;
+			// tabDepth--;
 			writeLine("*** complete OnOpenDocLaunch ***\n");
 		}
 
@@ -207,7 +197,7 @@ namespace ExStorSys
 		/// the code -1 is returned when a validation is not performed because a prior<br/>
 		/// failed and testing cannot continue
 		/// </summary>
-		public	bool OnOpenDocLaunchVfy()
+		private bool onOpenDocLaunchVfy()
 		{
 			/* verify wbk */
 			onOpenDocLaunchVfy2Wbk();
@@ -274,7 +264,7 @@ namespace ExStorSys
 		private void onOpenDocLaunchVfy2Sht()
 		{
 			xData.TempShtDsListEx = null;
-			xData.TempShtDsList = null;
+			// xData.TempShtDsList = null;
 			xData.TempShtSchemaEx = null;
 
 			resultShtSc = VSC_MISSING;
@@ -324,7 +314,7 @@ namespace ExStorSys
 		private ValidateDataStorage findWbkDataStorage2()
 		{
 			string verStr;
-			ValidateDataStorage status = VDS_GOOD;
+			ValidateDataStorage status; // = VDS_GOOD;
 			IList<DataStorage> dsList;
 			ExListItem<DataStorage> dsx;
 			
@@ -403,7 +393,7 @@ namespace ExStorSys
 			// gotten here - remove the initial not valid
 			// xData.TempWbkDsEx!.SetValid();
 
-			ActivateStatus actStat;
+			// ActivateStatus actStat;
 			// string modelName;
 
 			// initial verification done
@@ -454,7 +444,7 @@ namespace ExStorSys
 		{
 			string verStr;
 			ValidateDataStorage result = VDS_GOOD;
-			ValidateDataStorage status = VDS_GOOD;
+			ValidateDataStorage status; // = VDS_GOOD;
 			IList<DataStorage> dsList;
 			ExListItem<DataStorage> dsx;
 			
@@ -569,7 +559,7 @@ namespace ExStorSys
 
 			verStr = xMgr.ExtractVersionFromName(ds.Name)!;
 			
-			if (verStr.IsVoid() || !verStr!.Equals(verTestStr))
+			if (verStr.IsVoid() || !verStr.Equals(verTestStr))
 			{
 				dsx.SetWrongVersion();
 				status = VDS_WRONG_VER;
@@ -623,7 +613,8 @@ namespace ExStorSys
 
 			string? verStrTst = xMgr.ExtractVersionFromName(sc.SchemaName);
 
-			if (verStrTst.IsVoid() || !verStrTst!.Equals(verStr))
+
+			if (verStrTst.IsVoid() || !verStrTst.Equals(verStr))
 			{
 				scx.SetWrongVersion();
 				status = VSC_WRONG_VER;
@@ -650,72 +641,72 @@ namespace ExStorSys
 
 	#region private utility methods
 
-		private void showStatus()
-		{
-			showStatus(0, 0, true); // wbk, schema
-			showStatus(0, 1, true); // wbk, ds
-			showStatus(1, 0, true); // sht, schema
-			showStatus(1, 1, true); // sht, ds
-
-			writeLineMid($"{"ExSysStatus",-21}value {xMui.ExSysStatus} [{xMui.ExSysStatusDesc}] - should be n/a");
-		}
-
-		private void showStatus(int which1, int which2, bool basic = false )//, ValidateSchema codeSc, ValidateDataStorage codeDs)
-		{
-			string whichA = ExStorConst.DataClassAbbrevUc[which1]; // which 1 == 0 wbk, 1 sht
-			string whichF = ExStorConst.DataClassFull[which1];     // which 1 == 0 workbook, 1 sheet
-			string whichB = ExStorConst.DataContainerFull[which2]; // which 2 == 0 schema, 1 datastorage
-			string result;
-			string resolve;
-
-			ValidateSchema codeSc;
-			ValidateDataStorage codeDs;
-
-			string msg1 = "| has issues | status code ";
-
-			if (which2 == 0) // schema
-			{
-				codeSc = which1 == 0 ? resultWbkSc : resultShtSc; // if == 0, workbook
-
-				// either which 1 = 0 or 1 - wbk or sht
-				result = ExStorConst.ValidateSchemaDesc[codeSc].Item2;
-				resolve = ExStorConst.ValidateSchemaDesc[codeSc].Item3;
-
-				writeLineMid($"{whichF,-9} {whichB,-12}{msg1,-30}{codeSc}");
-				if (!basic) writeLineMid($"  {codeSc,-32} | {whichA, -6} {result} | resolve {resolve}");
-			}
-			else // ds
-			{
-				codeDs = which1 == 0 ? resultWbkDs : resultShtDs; // if == 0, workbook
-
-				result = ExStorConst.ValidateDataStorageDesc[codeDs].Item2;
-				resolve = ExStorConst.ValidateDataStorageDesc[codeDs].Item3;
-
-				writeLineMid($"{whichF, -9} {whichB, -12}{msg1,-30}{codeDs}");
-				if (!basic) writeLineMid($"  {codeDs, -32} | {whichA, -6} {result} | resolve {resolve}");
-			}
-		}
+		// private void showStatus()
+		// {
+		// 	showStatus(0, 0, true); // wbk, schema
+		// 	showStatus(0, 1, true); // wbk, ds
+		// 	showStatus(1, 0, true); // sht, schema
+		// 	showStatus(1, 1, true); // sht, ds
+		//
+		// 	writeLineMid($"{"ExSysStatus",-21}value {xMui.ExSysStatus} [{xMui.ExSysStatusDesc}] - should be n/a");
+		// }
+		//
+		// private void showStatus(int which1, int which2, bool basic = false )//, ValidateSchema codeSc, ValidateDataStorage codeDs)
+		// {
+		// 	string whichA = ExStorConst.DataClassAbbrevUc[which1]; // which 1 == 0 wbk, 1 sht
+		// 	string whichF = ExStorConst.DataClassFull[which1];     // which 1 == 0 workbook, 1 sheet
+		// 	string whichB = ExStorConst.DataContainerFull[which2]; // which 2 == 0 schema, 1 datastorage
+		// 	string result;
+		// 	string resolve;
+		//
+		// 	ValidateSchema codeSc;
+		// 	ValidateDataStorage codeDs;
+		//
+		// 	string msg1 = "| has issues | status code ";
+		//
+		// 	if (which2 == 0) // schema
+		// 	{
+		// 		codeSc = which1 == 0 ? resultWbkSc : resultShtSc; // if == 0, workbook
+		//
+		// 		// either which 1 = 0 or 1 - wbk or sht
+		// 		result = ExStorConst.ValidateSchemaDesc[codeSc].Item2;
+		// 		resolve = ExStorConst.ValidateSchemaDesc[codeSc].Item3;
+		//
+		// 		writeLineMid($"{whichF,-9} {whichB,-12}{msg1,-30}{codeSc}");
+		// 		if (!basic) writeLineMid($"  {codeSc,-32} | {whichA, -6} {result} | resolve {resolve}");
+		// 	}
+		// 	else // ds
+		// 	{
+		// 		codeDs = which1 == 0 ? resultWbkDs : resultShtDs; // if == 0, workbook
+		//
+		// 		result = ExStorConst.ValidateDataStorageDesc[codeDs].Item2;
+		// 		resolve = ExStorConst.ValidateDataStorageDesc[codeDs].Item3;
+		//
+		// 		writeLineMid($"{whichF, -9} {whichB, -12}{msg1,-30}{codeDs}");
+		// 		if (!basic) writeLineMid($"  {codeDs, -32} | {whichA, -6} {result} | resolve {resolve}");
+		// 	}
+		// }
 
 	#endregion
 
 	#region private methods
 
-		private void writeLineBeg(string msg, string preface = "")
-		{
-			writeLine($"{preface}{SP.Repeat(++tabDepth)}{msg}");
-		}
-
-		private void writeLineMid(string msg, string preface = "")
-		{
-			writeLine($"{preface}{SP.Repeat(tabDepth + 1)}{msg}");
-		}
-
-		private void writeLineEnd(string msg, string preface = "")
-		{
-			writeLine($"{preface}{SP.Repeat(tabDepth--)}{msg}");
-			
-			tabDepth = tabDepth < 0 ? 0 : tabDepth;
-		}
+		// private void writeLineBeg(string msg, string preface = "")
+		// {
+		// 	writeLine($"{preface}{SP.Repeat(++tabDepth)}{msg}");
+		// }
+		//
+		// private void writeLineMid(string msg, string preface = "")
+		// {
+		// 	writeLine($"{preface}{SP.Repeat(tabDepth + 1)}{msg}");
+		// }
+		//
+		// private void writeLineEnd(string msg, string preface = "")
+		// {
+		// 	writeLine($"{preface}{SP.Repeat(tabDepth--)}{msg}");
+		// 	
+		// 	tabDepth = tabDepth < 0 ? 0 : tabDepth;
+		// }
 
 		// ReSharper disable once InconsistentNaming
 		private void write(string msg)
@@ -798,7 +789,7 @@ namespace ExStorSys
 	// 		_ExSysStatus = ExSysStatus.ES_NA;
 	// 		_LaunchCode = LaunchCode.LC_NA;
 	//
-	// 		writeLineBeg("E *** begin OnOpenDocLaunchVfy ***", "\n");
+	// 		writeLineBeg("E *** begin onOpenDocLaunchVfy ***", "\n");
 	//
 	// 		/* verify */
 	//
@@ -814,7 +805,7 @@ namespace ExStorSys
 	// 		resultShtDs = findAndVerifyShtDataStorage();
 	// 		OnPropChgdSds(resultShtDs);
 	//
-	// 		writeLineEnd("E *** end OnOpenDocLaunchVfy ***\n", "\n");
+	// 		writeLineEnd("E *** end onOpenDocLaunchVfy ***\n", "\n");
 	//
 	// 		return xMui.ValidateStatus();
 	// 	}

@@ -1,0 +1,128 @@
+﻿
+notes about 
+the start of the system after start manager and
+before termination is allowed
+
+ExStorMgr will be the keeper of the modification status
+
+* create a single control panel
+	> btn: save workbook
+	> btn: reset workbook (does this also reset sheets?)
+	> btn: save sheet(s)
+	> btn: reset sheet(s)
+	> btn: remove system
+	> sheets list is independant
+	> family and type list is independant
+
+
+Status to be reported
+
+* needs to be restarted
+* ExStorData / Sheets List is modified
+* Workbook is modified
+* Sheet (1+) is modified
+*	which includes the family & type list being modified
+* ExStorMgr - remove ExStor from model
+
+consequences / procedures
+
+* system status
+	> enum
+	> has changes
+	> no changes
+	> needs restart
+
+* workbook is modified
+	> only if sys status <= has changes (else = disabled)
+	> cannot leave system until changes resolved
+	> commit changes
+	> vacate changes
+
+* sheet is modified
+	> only if sys status <= has changes (else = disabled)
+	> cannot leave system until changes resolved
+	> includes family & type list
+	> commit changes
+	> vacate changes
+
+* family list is modified
+	> part of sheet is modified - cannot leave sheet until changes are resolved
+	> commit changes
+	> vacate changes
+
+* sheets list
+	> can only modify when system status != needs restart
+	> adding a sheet = has changes (when sys status != needs restart) (else disabled)
+	> deleting a sheet = needs restart (but not has changes) (when sys status = no changes) (else disabled)
+
+
+
+
+
+
+
+
+
+
+initialization sequence
+
+*** ExStorMgr init | begin
+
+*** ExStorData init | begin
+
+*** ExStorData | exit
+
+*** ExStorMgr init | exit
+
+*** MainWinModelUi init | begin
+
+*** MainWinModelUi init | exit
+
+*** MainWinModel init | begin
+
+*** MainWinModel init | exit
+
+*** main window init | begin
+
+
+status upon startup - from a completly setup model
+
+*** window activated | model is ExStorageTest26-w-ESb | model name | ExStorageTest26wESb
+** win activated | xm.ExSysStatus ES_DEFAULT
+** win activated | xm.restart? 
+** win activated | xd.ExStorStatus ES_SHT_CREATED
+** win activated | xd.restart? 
+** win activated | Mui.ExSysStatus ES_START_DONE_GOOD
+** win activated | Mui.restart status False
+
+*** window loaded | model is ExStorageTest26-w-ESb | model name | ExStorageTest26wESb
+** win loaded | data object status
+** win loaded | win model status     | good
+** win loaded | win mod ui status    | good
+** win loaded | xMgr status          | good
+** win loaded | xLib status          | good
+** win loaded | xData status         | good
+** win loaded | xData wbk status     | is good
+** win loaded | xData wbk mod        |     not modified
+** win loaded | xData sht status     | is good
+** win loaded | xData sht mod        |     not modified
+** win loaded | xData sht lst status | is good
+** win loaded | xData sht lst mod    |     not tracked yet
+
+
+** win loaded | xm.ExSysStatus ES_DEFAULT
+** win loaded | xm.restart? 
+** win loaded | xd.restart? 
+** win loaded | Mui.ExSysStatus ES_START_DONE_GOOD
+** win loaded | Mui.restart status False
+
+
+status when window is re-activated
+
+*** window activated | model is ExStorageTest26-w-ESb | model name | ExStorageTest26wESb
+** win activated | xm.ExSysStatus ES_DEFAULT
+** win activated | xm.restart? 
+** win activated | xd.ExStorStatus ES_SHT_CREATED
+** win activated | xd.restart? 
+** win activated | Mui.ExSysStatus ES_START_DONE_GOOD
+** win activated | Mui.restart status False

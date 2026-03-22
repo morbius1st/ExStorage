@@ -5,7 +5,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		xmlns:cs="clr-namespace:ExStoreTest2026.Windows"
-		x:Shared="False"
+		
 		mc:Ignorable="po"
 		>
 	<!--  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  -->
@@ -17,8 +17,6 @@
 		<ResourceDictionary Source="pack://Application:,,,/ExStoreTest2026;component/Windows/Support/MasterColorList.xaml"/>
 
 	</ResourceDictionary.MergedDictionaries>
-
-
 
 	<!--#region numerical values-->
 
@@ -755,27 +753,17 @@
 
 	<!--#endregion-->
 
-
 	<!--  not verified colors  -->
+
+	<!--#region > labels-->
+
+	<SolidColorBrush x:Key="Lbl.Fg.Disabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
+
+	<!--#endregion-->
 
 	<!--#region > buttons-->
 
-	<!-- po:Freeze="true" -->
-
-	<SolidColorBrush x:Key="Btn.Fill.IsEnabled" Color="{StaticResource Green.400}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Fill.Disabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>
-
-	<!-- is enabled   -->
-	<SolidColorBrush x:Key="Btn.Fg.IsEnabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>	
-	<SolidColorBrush x:Key="Btn.Bg.IsEnabled" Color="{StaticResource Gray.400}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bdr.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bdr.Inner.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
-
-	<!-- disabled    -->
-	<SolidColorBrush x:Key="Btn.Fg.Disabled" Color="{StaticResource Gray.550}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bg.Disabled" Color="{StaticResource Gray.200}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bdr.Disabled" Color="{StaticResource Gray.400}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bdr.Inner.Disabled" Color="{StaticResource Blue.500}" po:Freeze="true"/>
+	<!-- standard buttons -->
 
 	<!-- isselected    -->
 	<SolidColorBrush x:Key="Btn.Fg.IsSel" Color="{StaticResource Gray.220}" po:Freeze="true"/>
@@ -783,18 +771,73 @@
 	<SolidColorBrush x:Key="Btn.Bdr.IsSel" Color="{StaticResource Gray.730}" po:Freeze="true"/>	
 	<SolidColorBrush x:Key="Btn.Bdr.Inner.IsSel" Color="{StaticResource Blue.500}" po:Freeze="true"/>	
 
+	<!-- disabled    -->
+	<SolidColorBrush x:Key="Btn.Fg.Disabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Bg.Disabled" Color="{StaticResource Gray.350}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Bdr.Disabled" Color="{StaticResource Gray.600}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Bdr.Inner.Disabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
+
+	<!-- is enabled   -->
+	<!-- <SolidColorBrush x:Key="Btn.Fg.IsEnabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>	 -->
+	<!-- <SolidColorBrush x:Key="Btn.Bg.IsEnabled" Color="{StaticResource Gray.400}" po:Freeze="true"/> -->
+	<!-- <SolidColorBrush x:Key="Btn.Bdr.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/> -->
+	<!-- <SolidColorBrush x:Key="Btn.Bdr.Inner.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/> -->
+
 	<!-- pressed   -->
 	<!-- <SolidColorBrush x:Key="Btn.Fg.Pressed" Color="{Binding Color, Source={StaticResource Btn.Fg.IsSel}}" po:Freeze="true"/> -->
-	<SolidColorBrush x:Key="Btn.Fg.Pressed" Color="{StaticResource Gray.220}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Fg.Pressed" Color="{StaticResource Gray.600}" po:Freeze="true"/>
 	<SolidColorBrush x:Key="Btn.Bg.Pressed" Color="{StaticResource Blue.300}" po:Freeze="true"/>
 	<SolidColorBrush x:Key="Btn.Bdr.Pressed" Color="{StaticResource Light.Blue.500}" po:Freeze="true"/>
 	<SolidColorBrush x:Key="Btn.Bdr.Inner.Pressed" Color="{StaticResource Light.Blue.300}" po:Freeze="true"/>
 
 	<!--  mouse over  -->
 	<!-- <SolidColorBrush x:Key="Btn.Fg.MouseOver" Color="{Binding Color, Source={StaticResource Btn.Fg.IsSel}}" po:Freeze="true"/> -->
-	<SolidColorBrush x:Key="Btn.Fg.MouseOver" Color="{StaticResource Gray.220}" po:Freeze="true"/>
-	<SolidColorBrush x:Key="Btn.Bg.MouseOver" Color="{StaticResource Gray.200}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Fg.MouseOver" Color="{StaticResource Gray.970}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Bg.MouseOver" Color="{StaticResource Gray.400}" po:Freeze="true"/>
 	<SolidColorBrush x:Key="Btn.Bdr.MouseOver" Color="{StaticResource Light.Blue.700}" po:Freeze="true"/>
+
+
+	<!-- icon button -->
+
+	<SolidColorBrush x:Key="Btn.Fill.IsEnabled" Color="{StaticResource Green.400}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Fill.Disabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>
+
+
+	<SolidColorBrush x:Key="Btn.Ic.Fill.IsEnabled" Color="{StaticResource Green.400}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Ic.Fill.Disabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>
+
+	<!-- is enabled   -->
+	<SolidColorBrush x:Key="Btn.Ic.Fg.IsEnabled" Color="{StaticResource Gray.500}" po:Freeze="true"/>	
+	<SolidColorBrush x:Key="Btn.Ic.Bg.IsEnabled" Color="{StaticResource Gray.400}" po:Freeze="true"/>
+	<SolidColorBrush x:Key="Btn.Ic.Bdr.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.Inner.IsEnabled" Color="{StaticResource Gray.700}" po:Freeze="true"/>
+
+	<!-- disabled    -->
+			<SolidColorBrush x:Key="Btn.Ic.Fg.Disabled" Color="{StaticResource Gray.550}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bg.Disabled" Color="{StaticResource Gray.200}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.Disabled" Color="{StaticResource Gray.400}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.Inner.Disabled" Color="{StaticResource Blue.500}" po:Freeze="true"/>
+
+	<!-- isselected    -->
+		<SolidColorBrush x:Key="Btn.Ic.Fg.IsSel" Color="{StaticResource Gray.220}" po:Freeze="true"/>
+		<SolidColorBrush x:Key="Btn.Ic.Bg.IsSel" Color="{StaticResource Gray.970}" po:Freeze="true"/>	
+		<SolidColorBrush x:Key="Btn.Ic.Bdr.IsSel" Color="{StaticResource Gray.730}" po:Freeze="true"/>	
+	<SolidColorBrush x:Key="Btn.Ic.Bdr.Inner.IsSel" Color="{StaticResource Blue.500}" po:Freeze="true"/>	
+
+	<!-- pressed   -->
+	<!-- <SolidColorBrush x:Key="Btn.Ic.Fg.Pressed" Color="{Binding Color, Source={StaticResource Btn.Ic.Fg.IsSel}}" po:Freeze="true"/> -->
+			<SolidColorBrush x:Key="Btn.Ic.Fg.Pressed" Color="{StaticResource Gray.220}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bg.Pressed" Color="{StaticResource Blue.300}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.Pressed" Color="{StaticResource Light.Blue.500}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.Inner.Pressed" Color="{StaticResource Light.Blue.300}" po:Freeze="true"/>
+
+	<!--  mouse over  -->
+	<!-- <SolidColorBrush x:Key="Btn.Ic.Fg.MouseOver" Color="{Binding Color, Source={StaticResource Btn.Ic.Fg.IsSel}}" po:Freeze="true"/> -->
+			<SolidColorBrush x:Key="Btn.Ic.Fg.MouseOver" Color="{StaticResource Gray.220}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bg.MouseOver" Color="{StaticResource Gray.200}" po:Freeze="true"/>
+			<SolidColorBrush x:Key="Btn.Ic.Bdr.MouseOver" Color="{StaticResource Light.Blue.700}" po:Freeze="true"/>
+
+
 
 	<!--#endregion-->
 

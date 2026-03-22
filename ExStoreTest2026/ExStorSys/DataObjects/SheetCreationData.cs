@@ -25,7 +25,7 @@ public struct SheetCreationData
 	public string? XlFilePath { get; set; }
 	public string? XlSheetName { get; set; }
 
-	public SheetOpStatus OpStatus { get; set; } = SheetOpStatus.SS_GOOD;
+	public SheetOpStatus OpStatus { get; set; } = SheetOpStatus.SOS_GOOD;
 	public string Sequence { get; set; } = "A00";
 
 	public UpdateRules UpdateRule { get; set; } = UpdateRules.UR_UPON_REQUEST;

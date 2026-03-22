@@ -68,7 +68,7 @@ namespace ExStorSys
 		public abstract string Desc { get; set; }
 
 		public abstract string DsSearchName { get; }
-		public abstract string SchemaName { get; }
+		public abstract string? SchemaName { get; }
 		public abstract string SchemaDesc { get; }
 		public abstract Guid SchemaGuid { get; }
 
@@ -177,7 +177,7 @@ namespace ExStorSys
 			return true;
 		}
 
-		public bool SetNewValueDym(Te key, dynamic dv)
+		public bool SetNewValueDym(Te key, dynamic dv, bool validate = true)
 		{
 			if (!(Rows?.ContainsKey(key) ?? false)) return false;
 
@@ -190,7 +190,7 @@ namespace ExStorSys
 
 			Rows[key] = field;
 
-			ValidateChangeStatus();
+			if (validate) ValidateChangeStatus();
 
 			return true;
 		}
