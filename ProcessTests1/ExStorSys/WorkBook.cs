@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
-using Autodesk.Revit.DB.ExtensibleStorage;
+using UtilityLibrary;
 using static ExStorSys.WorkBookFieldKeys;
 using static ExStorSys.ActivateStatus;
+using static ExStorSys.ExStorConstFaux;
 
 
 // user name: jeffs
@@ -26,9 +27,9 @@ namespace ExStorSys
 		{
 			// ObjectId = AppRibbon.ObjectIdx++;
 
-			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(WorkBook)) ?? -1;
+			// ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(WorkBook)) ?? -1;
 
-			FieldSrcArraySize = ExStorConst.FS_FLDSRC_SIZE_WBK;
+			// FieldSrcArraySize = ExStorConst.FS_FLDSRC_SIZE_WBK;
 
 			rows = new ();
 			init(Fields.WorkBookFields);
@@ -52,6 +53,7 @@ namespace ExStorSys
 			get => isModifiedExo;
 			set
 			{
+				R.AddRoute($"setting to {value}", 1, true);
 				if (value == isModifiedExo) return;
 				isModifiedExo = value;
 				OnPropertyChanged();
@@ -60,16 +62,19 @@ namespace ExStorSys
 			}
 		}
 
+		public override SourceId DateModSrcId => DateModifiedField.ChgSrcId;
+		public override SourceId NameModSrcId => NameModifiedField.ChgSrcId;
+
 		/// <summary>
 		/// the root name for searching for the actual DS - does not include
 		/// model code or thereafter.
 		/// </summary>
 		public override string DsSearchName => ExStorConst.EXS_WBK_NAME_SEARCH;
 
-		/// <summary>
-		/// the name for the workbook schema. fixed value.  assigned when the workbook is created
-		/// </summary>
-		public override string SchemaName => ExStorMgr.Instance.Exid.WbkSchemaName;
+		// /// <summary>
+		// /// the name for the workbook schema. fixed value.  assigned when the workbook is created
+		// /// </summary>
+		// public override string SchemaName => ExStorMgr.Instance.Exid.WbkSchemaName;
 
 		/// <summary>
 		/// the description for the workbook schema
@@ -131,7 +136,8 @@ namespace ExStorSys
 			// SetValue(PK_SD_WBK_SCHEMA_NAME, new DynaValue(ExStorConst.WbkSchemaName));
 			// SetValue(PK_SD_SHT_SCHEMA_NAME, new DynaValue(ExStorConst.ShtSchemaName));
 
-			SetInitValueDym(PK_MD_MODEL_TITLE, ExStorMgr.Instance.Exid.ModelTitle);
+			// SetInitValueDym(PK_MD_MODEL_TITLE, ExStorMgr.Instance.Exid.ModelTitle);
+			SetInitValueDym(PK_MD_MODEL_TITLE, FAUX_MODEL_TITLE);
 
 			// set to active status
 			SetInitValueDym(PK_AD_STATUS, AS_ACTIVE);
@@ -142,17 +148,20 @@ namespace ExStorSys
 		/// </summary>
 		private void updateWithCurrentData()
 		{
+			
 			IsEmpty = false;
 
-			// must be first
+			// must be first   
 			// SetValue(PK_AD_MODEL_CODE, new DynaValue(modelCode));
 
-			SetInitValueDym(PK_DS_NAME, ExStorMgr.Instance.Exid.CreateWbkDsName());
-			SetInitValueDym(PK_AD_DESC, $"Workbook for {ExStorMgr.Instance.Exid.ModelTitle}");
-			SetInitValueDym(PK_AD_DATE_CREATED  , DateTime.Now.ToString("s"));
-			SetInitValueDym(PK_AD_NAME_CREATED  , ExStorConst.UserName);
-			SetInitValueDym(PK_AD_DATE_MODIFIED , DateTime.Now.ToString("s"));
-			SetInitValueDym(PK_AD_NAME_MODIFIED , ExStorConst.UserName);
+			SetInitValueDym(PK_DS_NAME, ExStorConstFaux.CreateWbkDsName());
+			SetInitValueDym(PK_AD_DESC, $"Workbook for {FAUX_MODEL_TITLE}");
+			// SetInitValueDym(PK_AD_DATE_CREATED  , DateTime.Now.ToString("s"));
+			SetInitValueDym(PK_AD_DATE_CREATED  , "2026-01-01T08:10:18");
+			SetInitValueDym(PK_AD_NAME_CREATED  , FauxUserName);
+			// SetInitValueDym(PK_AD_DATE_MODIFIED , DateTime.Now.ToString("s"));
+			SetInitValueDym(PK_AD_DATE_MODIFIED, "2026-01-01T08:10:18");
+			SetInitValueDym(PK_AD_NAME_MODIFIED , FauxUserName);
 
 			updateWithInitialData();
 		}
@@ -253,12 +262,12 @@ namespace ExStorSys
 		public FieldData<WorkBookFieldKeys> SchemaVersionField => Rows[PK_SD_SCHEMA_VERSION];
 
 
-		/* view only but modified by an alt soruce*/
+		/* view only but modified by an alt soruce */
 		
 		/// <summary>
 		/// access to the date created for this workbook
 		/// </summary>
-		public override string DateModifiedByUser
+		public override string DateModified
 		{
 			get => DateModifiedField.DyValue!.Value;
 			set
@@ -266,13 +275,9 @@ namespace ExStorSys
 				// SetNewValueDym(PK_AD_DATE_MODIFIED, value);
 				SetNewValueDym(DateModifiedField, value);
 
-				Debug.WriteLine($"YOU SHOULD NOT SEE THIS | value {value?.ToString() ?? "is null"}");
+				DateModifiedField.ChgSrcId = SourceId.SI_SRC_MOD;
 
-				// no need, update date does this
-				// if (DateModifiedField.DyValue!.IsDirty)
-				// {
-				// 	DateModifiedField.SetChgSource(0);
-				// }
+				Debug.WriteLine($"YOU SHOULD NOT SEE THIS | value {value?.ToString() ?? "is null"}");
 
 				// do not include this - stack overflow
 				// ValidateChangeStatus();
@@ -280,19 +285,18 @@ namespace ExStorSys
 			}
 		}
 
-		public override void SetDateModifiedByAltSrc(string value,int src)
+		public override void SetDateModifiedBySrc(string value, SourceId srcIdIn)
 		{
+			// R.AddRoute(srcIdIn, msg: true);
+
 			// SetNewValueDym(PK_AD_DATE_MODIFIED, value);
 			SetNewValueDym(DateModifiedField, value);
 
-			if (DateModifiedField.DyValue!.IsDirty)
-			{
-				DateModifiedField.SetChgSource(src);
-			}
+			DateModifiedField.ChgSrcId = srcIdIn;
 
 			// do not include this - stack overflow
 			// ValidateChangeStatus();
-			OnPropertyChanged(nameof(DateModifiedByUser));
+			OnPropertyChanged(nameof(DateModified));
 		}
 
 		public override FieldData<WorkBookFieldKeys> DateModifiedField => Rows[PK_AD_DATE_MODIFIED];
@@ -311,12 +315,12 @@ namespace ExStorSys
 			get => DescField.DyValue!.Value;
 			set
 			{
+				R.AddRoute();
+
 				// if (!SetNewValueDym(PK_AD_DESC, value)) return;
 				if (!SetNewValueDym(DescField, value)) return;
 
-				Debug.WriteLine($"** SHOULD NOT SEE THIS? ** track changes {DateModifiedField.DyValue.TrackChanges} | is dirty {DateModifiedField.IsModified()}");
-
-				UpdateUsrChgSrc(DescField);
+				DescField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -337,7 +341,7 @@ namespace ExStorSys
 				// if (!SetNewValueDym(PK_AD_STATUS, value)) return;
 				if (!SetNewValueDym(StatusField, value)) return;
 
-				UpdateUsrChgSrc(StatusField);
+				StatusField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -368,7 +372,7 @@ namespace ExStorSys
 				// if (!SetNewValueDym(PK_AD_NAME_CREATED, value)) return;
 				if (!SetNewValueDym(NameCreatedField, value)) return;
 
-				UpdateUsrChgSrc(NameCreatedField);
+				NameCreatedField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -386,9 +390,18 @@ namespace ExStorSys
 			get => NameModifiedField.DyValue!.Value;
 			set
 			{
-				if (!SetNewValueDym(NameModifiedField, value)) return;
+				R.AddRoute();
 
-				UpdateUsrChgSrc(NameModifiedField);
+				R.WriteLine($"\tNAME MODIFIED_SET | was name {NameModifiedField.DyValue.Value} vs. new name {value}");
+				R.WriteLine($"\tNAME MODIFIED_SET | prior {NameModifiedField.DyValue.PriorValue}");
+
+				// if (!SetNewValueDym(NameModifiedField, value)) return;
+				//
+				// NameModifiedField.ChgSrcId = SourceId.SI_SRC;
+
+				UpdateModifiedName(SourceId.SI_SRC_MOD);
+
+				R.WriteLine($"\tNAME MODIFIED_SET | chgSrcId changed to [si_src] | is dirty? {NameModifiedField.IsDirty()}\n");
 
 				ValidateChangeStatus();
 
@@ -396,7 +409,26 @@ namespace ExStorSys
 			}
 		}
 
-		public FieldData<WorkBookFieldKeys> NameModifiedField => Rows[PK_AD_NAME_MODIFIED];
+		public override void SetNameModifiedBySrc(string value, SourceId srcIdIn)
+		{
+			R.AddRoute(srcIdIn, msg: true);
+
+			R.WriteLine($"\tSET NAME MODIFIED() | was name {NameModifiedField.DyValue.Value} vs. new name {value}");
+			R.WriteLine($"\tSET NAME MODIFIED() | prior {NameModifiedField.DyValue.PriorValue}");
+
+			// SetNewValueDym(PK_AD_DATE_MODIFIED, value);
+			SetNewValueDym(NameModifiedField, value);
+
+			NameModifiedField.ChgSrcId = srcIdIn;
+
+			R.WriteLine($"\tSET NAME MODIFIED() | chgSrcId changed to [si_src] | is dirty? {NameModifiedField.IsDirty()}\n");
+
+			// do not include this - stack overflow
+			// ValidateChangeStatus();
+			OnPropertyChanged(nameof(NameModified));
+		}
+
+		public override FieldData<WorkBookFieldKeys> NameModifiedField => Rows[PK_AD_NAME_MODIFIED];
 
 	#endregion
 
@@ -412,32 +444,41 @@ namespace ExStorSys
 			get => LastIdField.DyValue!.Value;
 			set
 			{
+				R.AddRouteEnter(null, true);
 				// if (!SetNewValueDym(PK_AD_LAST_ID, value)) return;
 				if (!SetNewValueDym(LastIdField, value)) return;
 
-				if (LastIdField.DyValue!.IsDirty)
-				{
-					// todo - add logic
-					// LastIdField.Field!.SetFcFlagViaIuFlag(ItemUsage.IU_IS_ALT_SRC_A);
-				}
+				LastIdField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
+
+				R.AddRouteExit();
 			}
+		}
+
+		internal void SetLastIdStealth(string value)
+		{
+			R.AddRouteEnter(null, true);
+			LastIdField.DyValue!.SetValue(value);
+
+			R.AddRouteExit();
 		}
 		
 		internal void SetLastId(string value)
 		{
+			R.AddRouteEnter(null, true);
+
 			if (!SetNewValueDym(LastIdField, value)) return;
 
-			// if (!LastIdField.DyValue!.ChangeValue(value)) return;
-
-			UpdateUsrChgSrc(LastIdField);
+			LastIdField.ChgSrcId = SourceId.SI_DEST_MOD;
 
 			ValidateChangeStatus();
 
 			OnPropertyChanged(nameof(LastId));
+
+			R.AddRouteExit();
 		}
 
 		public FieldData<WorkBookFieldKeys> LastIdField => Rows[PK_AD_LAST_ID];
@@ -461,7 +502,7 @@ namespace ExStorSys
 			{
 				if (!SetNewValueDym(VendorIdField, value)) return;
 
-				UpdateUsrChgSrc(VendorIdField);
+				VendorIdField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -471,7 +512,28 @@ namespace ExStorSys
 
 		public FieldData<WorkBookFieldKeys> VendorIdField => Rows[PK_AD_VENDORID];
 
-	#endregion
+		#endregion
+
+
+		public string GetId()
+		{
+			string lastId = LastId;
+			string nextId = ExStorConst.CreateNextIdCode(lastId);
+
+			SetLastId(nextId);
+
+			return nextId;
+		}
+
+		public string GetIdStealth()
+		{
+			string lastId = LastId;
+			string nextId = ExStorConst.CreateNextIdCode(lastId);
+
+			SetLastIdStealth(nextId);
+
+			return nextId;
+		}
 
 		// private void CommitAndApplyChange(FieldData<WorkBookFieldKeys> fd, Schema sc)
 		// {
@@ -488,10 +550,10 @@ namespace ExStorSys
 		// /// <summary>
 		// /// undo a single field change
 		// /// </summary>
-		// public void UndoChange(FieldData<WorkBookFieldKeys> fd)
+		// public void UndoChange(SourceId srcIdIn, FieldData<WorkBookFieldKeys> fd)
 		// {
-		// 	UndoValueChange(fd);
-		// 	OnPropertyChanged(fd.Field.FieldPropName);
+		// 	UndoValueChange(srcIdIn, fd);
+		// 	// OnPropertyChanged(fd.Field.FieldPropName);
 		// }
 
 		/* undo workbook */
@@ -513,11 +575,11 @@ namespace ExStorSys
 		//
 		// 	ValidateChangeStatus();
 		// }
-
+		//
 		public delegate void OnPropChgdEventHandler(object sender, PropChgEvtArgs e);
-
+		
 		public static event OnPropChgdEventHandler PropChgd;
-
+		
 		protected virtual void OnPropChgd(PropChgEvtArgs e)
 		{
 			PropChgd?.Invoke(this, e);

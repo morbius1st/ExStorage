@@ -201,7 +201,7 @@ namespace ExStoreTest2026.DebugAssist
 
 			Msgs.WriteLineSpaced("\n*** workbook fields ***\n");
 
-			foreach ((WorkBookFieldKeys key, FieldDef<WorkBookFieldKeys>? value) in Fields.WorkBookFields)
+			foreach ((WorkBookFieldKeys key, FieldDef<WorkBookFieldKeys> value) in Fields.WorkBookFields)
 			{
 				Msgs.WriteLineSpaced($"field {key}", $"{value.FieldName, -15} | desc {value.FieldDesc}");
 			}
@@ -213,7 +213,7 @@ namespace ExStoreTest2026.DebugAssist
 
 			Msgs.WriteLineSpaced("\n*** sheet fields ***\n");
 
-			foreach ((SheetFieldKeys key, FieldDef<SheetFieldKeys>? value) in Fields.SheetFields)
+			foreach ((SheetFieldKeys key, FieldDef<SheetFieldKeys> value) in Fields.SheetFields)
 			{
 				Msgs.WriteLineSpaced($"field {key}", $"{value.FieldName, -15} | desc {value.FieldDesc}");
 			}

@@ -1,2 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram /> 
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ExStorSys.ExStorLib">
+    <Position X="2" Y="1.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>RICIRgEARggAEACEMACBABACQABIAEARQAAAAgYAEQQ=</HashCode>
+      <FileName>ExStorSys\ExStorLib.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ExStorSys.ExStorMgr">
+    <Position X="5.5" Y="1.5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>SiGAQIAomAgICACFKCaCCB5CGIpAJGo0ZAAAAwOoNIA=</HashCode>
+      <FileName>ExStorSys\ExStorMgr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="10" />
+</ClassDiagram>

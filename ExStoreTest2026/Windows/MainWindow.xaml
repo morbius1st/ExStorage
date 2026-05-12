@@ -106,6 +106,7 @@
 			<sys:Int32 x:Key="CanEditOrView">1</sys:Int32>
 			<sys:Int32 x:Key="CanEditOnly">2</sys:Int32>
 
+			<!-- <sys:Boolean x:Key="test">false</sys:Boolean> -->
 
 			<SolidColorBrush x:Key="DisabledFieldForeGround" Color="{StaticResource Gray.600}" />
 			<SolidColorBrush x:Key="DisabledFieldForeGround.Tbx" Color="{StaticResource Gray.800}" />
@@ -328,7 +329,7 @@
 				<Setter Property="BorderBrush" Value="Red" />
 				<Style.Triggers>
 					<DataTrigger Value="True" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
-						<Setter Property="BorderBrush" Value="DimGray" />
+						<Setter Property="BorderBrush" Value="DarkGray" />
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>
@@ -345,10 +346,13 @@
 				</Setter>
 				<Style.Triggers>
 					<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
-						<Setter Property="BorderBrush" Value="DarkGray" />
+						<Setter Property="BorderBrush" Value="White" />
 						<Setter Property="Background" Value="#222222" />
-						<Setter Property="BorderThickness" Value=".5,.5,.5,0" />
+						<Setter Property="BorderThickness" Value=".75,.75,.75,0" />
 					</DataTrigger>
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Background" Value="#000000"/>
+					</Trigger>
 				</Style.Triggers>
 			</Style>
 
@@ -356,11 +360,15 @@
 					TargetType="TextBlock"
 					>
 				<Setter Property="Foreground" Value="DarkGray" />
+
 				<Style.Triggers>
 					<DataTrigger Value="True" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=IsSelected}">
 						<Setter Property="Foreground" Value="White">
 						</Setter>
 					</DataTrigger>
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Foreground" Value="#666666"/>
+					</Trigger>
 				</Style.Triggers>
 			</Style>
 
@@ -628,7 +636,7 @@
 					TargetType="Rectangle"
 					>
 				<Setter Property="Fill" Value="#333333" />
-				<Setter Property="Margin" Value="6,0,17,0" />
+				<Setter Property="Margin" Value="6,0,0,0" />
 				<Setter Property="Height" Value="18" />
 				<Setter Property="Width" Value="18" />
 			</Style>
@@ -826,6 +834,13 @@
 				</Style.Triggers>
 			</Style>
 
+			<Style x:Key="NoEditValueField"
+					TargetType="Label"
+					BasedOn="{StaticResource EditBValueField}"
+					>
+				<Setter Property="Margin" Value="16,0,0,0"></Setter>
+			</Style>
+
 			<Style x:Key="EditBValueFieldTbx"
 					TargetType="TextBox"
 					BasedOn="{StaticResource EditBValueField}"
@@ -865,7 +880,7 @@
 					TargetType="TextBox"
 					BasedOn="{StaticResource TbxFamListEntry}"
 					>
-				<Setter Property="Width" Value="167" />
+				<!-- <Setter Property="Width" Value="167" /> -->
 				<Setter Property="Focusable" Value="false" />
 				<Style.Triggers>
 					<!-- <DataTrigger Value="{x:Static exSys:Sheet.AddNewKey}" Binding="{Binding Path=Key}"> -->
@@ -1477,9 +1492,9 @@
 							/>
 
 					<Button
-							Content="Add Sheet"
+							Content="Add Sheet (void)"
 							Style="{StaticResource BtnStyleBase}"
-							Click="BtnAddSht_OnClick"
+							
 							/>
 
 					<Button
@@ -2062,6 +2077,7 @@
 				>
 
 			<Grid.RowDefinitions>
+				<RowDefinition Height="30"/>
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
@@ -2069,10 +2085,90 @@
 
 			</Grid.RowDefinitions>
 
+			<StackPanel
+					Grid.Column="0"
+					Grid.Row="0"
+					Background="#555555"
+					HorizontalAlignment="Stretch"
+					Orientation="Horizontal"
+					Margin="5,0,5,0"
+					
+					>
+			<Label
+					DockPanel.Dock="Left"
+					HorizontalAlignment="Left"
+					Foreground="White"
+					Content="Cells Data Stored Within the Model"
+					FontSize="16"
+					/>
+
+			<Rectangle
+					DockPanel.Dock="Right"
+					HorizontalAlignment="Right"
+					Width="12"
+					Height="12"
+					Margin="10,0,0,0"
+					ToolTip="Overall Modification Status"
+					>
+				<Rectangle.Style>
+					<Style TargetType="Rectangle">
+						<Setter Property="Fill" Value="LawnGreen"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=XData.NeedsSaving}" Value="true">
+								<Setter Property="Fill" Value="Red"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Rectangle.Style>
+			</Rectangle>
+
+			<Rectangle
+					DockPanel.Dock="Right"
+					HorizontalAlignment="Right"
+					Width="12"
+					Height="12"
+					Margin="5,0,0,0"
+					DataContext="{Binding Path=XData.WorkBook}"
+					ToolTip="Workbook Modification Status"
+					>
+				<Rectangle.Style>
+					<Style TargetType="Rectangle">
+						<Setter Property="Fill" Value="LawnGreen"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=IsModifiedExo}" Value="true">
+								<Setter Property="Fill" Value="Red"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Rectangle.Style>
+			</Rectangle>
+
+			<Rectangle
+					DockPanel.Dock="Right"
+					HorizontalAlignment="Right"
+					Width="12"
+					Height="12"
+					Margin="5,0,0,0"
+					ToolTip="Sheets List Modification&#013;Status (changed, added, deleted)"
+					>
+				<Rectangle.Style>
+					<Style TargetType="Rectangle">
+						<Setter Property="Fill" Value="LawnGreen"/>
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Path=XData.IsModifiedSheetsList}" Value="true">
+								<Setter Property="Fill" Value="Red"/>
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Rectangle.Style>
+			</Rectangle>
+
+			</StackPanel>
+
 			<!--#region > editor header-->
 
 			<StackPanel
-					Grid.Row="0"
+					Grid.Row="1"
 					Grid.Column="0"
 					Margin="5,5,0,5"
 					DockPanel.Dock="Top"
@@ -2157,7 +2253,7 @@
 			<!--#region > upper legend - user security level-->
 
 			<Border
-					Grid.Row="1"
+					Grid.Row="2"
 					Grid.Column="0"
 					Margin="5,0,6,4"
 					HorizontalAlignment="Stretch"
@@ -2400,7 +2496,7 @@
 			<!--#region > editor tab control-->
 
 			<DockPanel
-					Grid.Row="2"
+					Grid.Row="3"
 					Grid.Column="0"
 					VerticalAlignment="Stretch"
 					>
@@ -2418,24 +2514,22 @@
 						Style="{DynamicResource TabControlStyle1}"
 						>
 
-					<TabControl.Resources>
-						<Style TargetType="TabItem">
-							<Setter Property="Template">
-								<Setter.Value>
-									<ControlTemplate TargetType="TabItem">
-
-										<ContentPresenter x:Name="ContentSite"
-												Margin="0,0,3,0"
-												HorizontalAlignment="Center"
-												VerticalAlignment="Center"
-												ContentSource="Header"
-												/>
-
-									</ControlTemplate>
-								</Setter.Value>
-							</Setter>
-						</Style>
-					</TabControl.Resources>
+					<!-- <TabControl.Resources> -->
+					<!-- 	<Style TargetType="TabItem"> -->
+					<!-- 		<Setter Property="Template"> -->
+					<!-- 			<Setter.Value> -->
+					<!-- 				<ControlTemplate TargetType="TabItem"> -->
+					<!-- 					<ContentPresenter x:Name="ContentSite" -->
+					<!-- 							Margin="0,0,3,0" -->
+					<!-- 							HorizontalAlignment="Center" -->
+					<!-- 							VerticalAlignment="Center" -->
+					<!-- 							ContentSource="Header" -->
+					<!-- 							/> -->
+					<!-- 				</ControlTemplate> -->
+					<!-- 			</Setter.Value> -->
+					<!-- 		</Setter> -->
+					<!-- 	</Style> -->
+					<!-- </TabControl.Resources> -->
 
 					<!--#region  workbook tab-->
 
@@ -2447,12 +2541,35 @@
 							Background="DimGray"
 							>
 
+						<TabItem.Style>
+							<Style TargetType="TabItem">
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="TabItem">
+											<ContentPresenter x:Name="ContentSite"
+													Margin="0,0,3,0"
+													HorizontalAlignment="Center"
+													VerticalAlignment="Center"
+													ContentSource="Header"
+											/>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+										<Setter Property="IsEnabled" Value="True"/>
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding ElementName=MainWin, Path=Wm.CurrSht.IsModifiedExo}" Value="True">
+												<Setter Property="IsEnabled" Value="False"/>
+											</DataTrigger>
+										</Style.Triggers>
+							</Style>
+						</TabItem.Style>
+
 						<TabItem.Header>
 							<Border Style="{StaticResource TbBdrHdrOuter}">
 								<Border Style="{StaticResource TbBdrHdrInner}">
 
 									<TextBlock
-											Text="Workbook"
+											Text="Workbook and Sheets List"
 											Style="{StaticResource TbHdrTblk}"
 											>
 									</TextBlock>
@@ -2523,7 +2640,7 @@
 														<Style TargetType="Rectangle">
 															<Setter Property="Fill" Value="LawnGreen" />
 															<Style.Triggers>
-																<DataTrigger Value="true" Binding="{Binding Path=IsModified}">
+																<DataTrigger Value="true" Binding="{Binding Path=IsModifiedExo}">
 																	<Setter Property="Fill" Value="Red" />
 																</DataTrigger>
 															</Style.Triggers>
@@ -2568,7 +2685,7 @@
 																Content="{Binding Path=Wm.Wbk.DsName,
 																									ElementName=MainWin,
 																									FallbackValue='ds name'}"
-																Style="{StaticResource EditBValueField}"
+																Style="{StaticResource NoEditValueField}"
 																/>
 
 													</DockPanel>
@@ -2756,7 +2873,7 @@
 																Content="{Binding Path=Wm.Wbk.ModelTitle,
 																									ElementName=MainWin,
 																									FallbackValue='model title'}"
-																Style="{StaticResource EditBValueField}"
+																Style="{StaticResource NoEditValueField}"
 																/>
 
 													</DockPanel>
@@ -2835,7 +2952,7 @@
 																Content="{Binding Path=Wm.Wbk.DateCreated,
 																									ElementName=MainWin,
 																									FallbackValue='date created'}"
-																Style="{StaticResource EditBValueField}"
+																Style="{StaticResource NoEditValueField}"
 																/>
 
 													</DockPanel>
@@ -2895,9 +3012,11 @@
 														d:Visibility="Visible"
 														Style="{StaticResource DpRow}"
 														>
+
 													<Border Style="{StaticResource BdrEditorStatus}">
 														<Rectangle Style="{StaticResource RtEditStatus}" />
 													</Border>
+
 													<DockPanel Style="{StaticResource DpItem}">
 
 														<Label
@@ -2908,12 +3027,16 @@
 
 														<Rectangle Style="{StaticResource RtFiller}" />
 
+														<Border Style="{StaticResource BdrEditStatus}">
+
 														<Label
-																Content="{Binding Path=Wm.Wbk.DateModified,
+																Content="{Binding Path=Wm.Wbk.DateModifiedByUser,
 																									ElementName=MainWin,
 																									FallbackValue='date modified'}"
 																Style="{StaticResource EditBValueField}"
 																/>
+
+														</Border>
 
 													</DockPanel>
 												</DockPanel>
@@ -2925,10 +3048,11 @@
 																								Mode=OneWay}"
 													DockPanel.Dock="Top"
 													>
+												
 												<DockPanel
 														d:Visibility="Visible"
 														Style="{StaticResource DpRow}"
-														>
+												>
 													<Border Style="{StaticResource BdrEditorStatus}">
 														<Rectangle Style="{StaticResource RtEditStatus}" />
 													</Border>
@@ -2945,6 +3069,8 @@
 																Click="BtnUndo2_OnClick"
 																/>
 
+														<!-- <Rectangle Style="{StaticResource RtFiller}" /> -->
+
 														<Border Style="{StaticResource BdrEditStatus}">
 
 															<TextBox x:Name="TbxLastId"
@@ -2959,6 +3085,7 @@
 														</Border>
 													</DockPanel>
 												</DockPanel>
+
 											</DockPanel>
 
 											<!--  * vendor id  -->
@@ -2995,6 +3122,7 @@
 																								 ElementName=MainWin,
 																								 FallbackValue='vendor id'}"
 																	PreviewKeyDown="OnPreviewKeyDown"
+
 																	Style="{StaticResource EditBValueFieldTbx}"
 																	/>
 
@@ -3032,7 +3160,7 @@
 																Content="{Binding Path=Wm.Wbk.SchemaVersion,
 																									ElementName=MainWin,
 																									FallbackValue='schema version'}"
-																Style="{StaticResource EditBValueField}"
+																Style="{StaticResource NoEditValueField}"
 																/>
 
 													</DockPanel>
@@ -3064,52 +3192,56 @@
 
 									<Button x:Name="BtnResetWorkbook"
 											Margin="5,0,0,0"
-											Command="{Binding}"
-											CommandParameter="{Binding Path=IsModified}"
+											Command="{Binding ElementName=MainWin, Path=Wm.CmdWorkbookUndoChanges}"
+											CommandParameter="{Binding Path=CanApplyResetBtn}"
 											Style="{StaticResource BtnFlatWhite}"
+											Content="Undo Changes"
 											>
-										<Button.Content>
-											<StackPanel
-													Margin="0"
-													Orientation="Vertical"
-													>
-												<Label
-														Content="Reset the"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Top}"
-														/>
-												<Label
-														Content="Workbook"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Bottom}"
-														/>
-											</StackPanel>
-										</Button.Content>
+										<!-- <Button.Content> -->
+										<!-- 	<StackPanel -->
+										<!-- 			Margin="0" -->
+										<!-- 			Orientation="Vertical" -->
+										<!-- 			> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Reset the" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+										<!-- 				/> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Workbook" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+										<!-- 				/> -->
+										<!-- 	</StackPanel> -->
+										<!-- </Button.Content> -->
 
 									</Button>
 
 									<Button x:Name="BtnSaveWorkbook"
 											Margin="5,0,0,0"
-											CommandParameter="{Binding Path=IsModified}"
+											Command="{Binding ElementName=MainWin, Path=Wm.CmdWorkbookApplyChanges}"
+											CommandParameter="{Binding Path=CanApplyResetBtn}"
 											Style="{StaticResource BtnFlatWhite}"
+											Content="Apply Changes"
+											FontSize="12"
 											>
-										<Button.Content>
-											<StackPanel
-													Margin="0"
-													Orientation="Vertical"
-													>
-												<Label
-														Content="Save the"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Top}"
-														/>
-												<Label
-														Content="Workbook"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Bottom}"
-														/>
-											</StackPanel>
-										</Button.Content>
+										<!-- <Button.Content> -->
+										<!-- 	<StackPanel -->
+										<!-- 			Margin="0" -->
+										<!-- 			Orientation="Vertical" -->
+										<!-- 			> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Save the" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+										<!-- 				/> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Workbook" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+										<!-- 				/> -->
+										<!-- 	</StackPanel> -->
+										<!-- </Button.Content> -->
 
 									</Button>
 
@@ -3182,7 +3314,7 @@
 														<Style TargetType="Rectangle">
 															<Setter Property="Fill" Value="LawnGreen" />
 															<Style.Triggers>
-																<DataTrigger Value="true" Binding="{Binding Path=XData.IsModifiedShtsList}">
+																<DataTrigger Value="true" Binding="{Binding Path=XData.IsModifiedSheetsList}">
 																	<Setter Property="Fill" Value="Red" />
 																</DataTrigger>
 															</Style.Triggers>
@@ -3202,11 +3334,11 @@
 													d:ItemsSource="{d:SampleData ItemCount=4}"
 													DockPanel.Dock="Top"
 													SelectedIndex="1"
-													SelectedValue="{Binding Path=XData.SelectSheet}"
+													SelectedValue="{Binding Path=XData.SelectSheet, Mode=TwoWay, NotifyOnSourceUpdated=True}"
 													SelectedValuePath="Value.DsName"
 													ItemContainerStyle="{DynamicResource LbxContainerStyle1}"
 													ItemsSource="{Binding XData.SheetsViewSource.View}"
-													
+													IsSynchronizedWithCurrentItem="True"
 													>
 												<!-- <ListBox.Style> -->
 												<!-- 	<Style TargetType="ListBox"> -->
@@ -3334,13 +3466,13 @@
 												</ListBox.Template>
 
 												<ListBox.ItemTemplate>
-													<DataTemplate x:Name="DtLbxItemTemp3">
-														<!--  DataType="{x:Type exSys:Sheet}"  -->
+													<DataTemplate x:Name="DtLbxItemTemp3"
+															>
+														<!-- DataType="{x:Type exSys:Sheet}" -->
 														<DockPanel
 																DataContext="{Binding Path=Value}"
 																Margin="0"
 																HorizontalAlignment="Stretch"
-
 																>
 
 															<Rectangle
@@ -3356,50 +3488,59 @@
 																	HorizontalAlignment="Stretch"
 																	>
 
-																<StackPanel
-																		VerticalAlignment="Center"
+																<Rectangle
+																			Margin="1,3,0,3"
+																			Width="3"
+																			VerticalAlignment="Stretch"
+																			DockPanel.Dock="Left"
+																			Fill="{Binding Path=SheetStatusEnumData.Brush, FallbackValue='Red'}"
+																			/>
+
+																<DockPanel
+																		VerticalAlignment="Stretch"
 																		DockPanel.Dock="Left"
-																		Orientation="Vertical"
-																		Margin="2,0,0,0"
-																		Width="26"
+
+																		Margin="0,5,0,0"
+																		Width="48"
 																		>
 
 																	<Button
-																			Margin="0,0,0,0"
+																			Margin="4,0,0,0"
 																			Padding="0"
+																			DockPanel.Dock="Top"
 	
-																			HorizontalAlignment="Center"
-																			VerticalAlignment="Center"
+																			HorizontalAlignment="left"
+																			VerticalAlignment="Top"
 																			
 																			Command="{Binding ElementName=MainWin, 
 																					Path=Wm.CmdSheetDelete}"
 																			CommandParameter="{Binding Path=DsName, Mode=OneWay}"
-
 																			>
+																			<!-- d:Visibility="Collapsed" -->
 																		<Button.Style>
 																			<Style TargetType="Button" 
 																					BasedOn="{StaticResource Btn.Ic}">
-																			<Setter Property="BorderBrush" Value="Transparent"/>
-																			<Setter Property="Background" Value="Transparent"/>
-																			<Setter Property="Visibility" Value="Visible"/>
+																				<Setter Property="BorderBrush" Value="Transparent"/>
+																				<Setter Property="Background" Value="Transparent"/>
+																				<Setter Property="Visibility" Value="Visible"/>
 
-																			<Setter Property="ContentTemplate">
-																				<Setter.Value>
-																				<DataTemplate>
-																					<ContentControl>
-																						<ContentControl.Content>
-																						<Grid>
-																							<Grid.ColumnDefinitions>
-																								<ColumnDefinition Width="*"/>
-																								
-																							</Grid.ColumnDefinitions>
+																				<Setter Property="ContentTemplate">
+																					<Setter.Value>
+																						<DataTemplate>
+																							<ContentControl>
+																								<ContentControl.Content>
+																									<Grid>
+																										<Grid.ColumnDefinitions>
+																											<ColumnDefinition Width="*"/>
 
-																							<Grid.RowDefinitions>
-																								<RowDefinition Height="*"/>
-																								
-																							</Grid.RowDefinitions>
+																										</Grid.ColumnDefinitions>
 
-																							<Ellipse
+																										<Grid.RowDefinitions>
+																											<RowDefinition Height="*"/>
+
+																										</Grid.RowDefinitions>
+
+																										<Ellipse
 																									Grid.Column="0"
 																									Grid.Row="0"
 																									Height="16"
@@ -3407,7 +3548,7 @@
 																									Fill="Red"
 																									/>
 
-																							<Path Grid.Column="0"
+																										<Path Grid.Column="0"
 																									Grid.Row="0"
 
 																									Margin="1,2,2,0"
@@ -3415,69 +3556,74 @@
 																									VerticalAlignment="Center"
 																									Stretch="Uniform"
 																							>
-																								<Path.Style>
-																									<Style TargetType="Path">
-																										<Setter Property="Data" Value="{StaticResource Ic.HeavyX}" />
-																										<Setter Property="Fill" Value="White" />
-																										<Setter Property="SnapsToDevicePixels" Value="true" />
+																											<Path.Style>
+																												<Style TargetType="Path">
+																													<Setter Property="Data" Value="{StaticResource Ic.HeavyX}" />
+																													<Setter Property="Fill" Value="White" />
+																													<Setter Property="SnapsToDevicePixels" Value="true" />
 
-																									</Style>
-																								</Path.Style>
-																							</Path>
+																												</Style>
+																											</Path.Style>
+																										</Path>
 
-																						</Grid>
-																						</ContentControl.Content>
-																					</ContentControl>
-																				</DataTemplate>
-																				</Setter.Value>
-																			</Setter>
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_DELETED}">
-																					<Setter Property="Visibility" Value="Collapsed"/>
-																				</DataTrigger>
-																			</Style.Triggers>
+																									</Grid>
+																								</ContentControl.Content>
+																							</ContentControl>
+																						</DataTemplate>
+																					</Setter.Value>
+																				</Setter>
+																				<Style.Triggers>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_DELETED}">
+																						<Setter Property="Visibility" Value="Collapsed"/>
+																					</DataTrigger>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_MOD_DELETED}">
+																						<Setter Property="Visibility" Value="Collapsed"/>
+																					</DataTrigger>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_NEW_DELETED}">
+																						<Setter Property="Visibility" Value="Collapsed"/>
+																					</DataTrigger>
+																				</Style.Triggers>
 																			</Style>
 																		</Button.Style>
 
 																	</Button>
 
 																	<Button
-																			Margin="0,0,0,0"
-
-																			HorizontalAlignment="Center"
-																			VerticalAlignment="Center"
-																			DockPanel.Dock="Left"
+																			Margin="4,0,0,0"
+																			DockPanel.Dock="Top"
+																			HorizontalAlignment="left"
 																			Height="20"
 																			Width="20"
 																			Padding="0"
 																			Command="{Binding ElementName=MainWin, Path=Wm.CmdSheetUndo}"
 																			CommandParameter="{Binding Path=DsName, Mode=OneWay}"
 																			>
+																			<!-- d:Visibility="Visible" -->
 																		<Button.Style>
 																			<Style TargetType="Button" 
 																					BasedOn="{StaticResource Btn.Ic}">
-																			<Setter Property="BorderBrush" Value="Transparent"/>
-																			<Setter Property="Background" Value="Transparent"/>
-																			<Setter Property="Visibility" Value="Collapsed"/>
+																				<Setter Property="BorderBrush" Value="Transparent"/>
+																				<Setter Property="Background" Value="Transparent"/>
+																				<Setter Property="Visibility" Value="Collapsed"/>
 
-																			<Setter Property="ContentTemplate">
-																				<Setter.Value>
-																				<DataTemplate>
-																					<ContentControl>
-																						<ContentControl.Content>
-																						<Grid>
-																							<Grid.ColumnDefinitions>
-																								<ColumnDefinition Width="*"/>
-																								
-																							</Grid.ColumnDefinitions>
+																				<Setter Property="ContentTemplate">
+																					<Setter.Value>
+																						<DataTemplate>
+																							<ContentControl>
+																								<ContentControl.Content>
+																									<Grid>
+																										<Grid.ColumnDefinitions>
+																											<ColumnDefinition Width="*"/>
 
-																							<Grid.RowDefinitions>
-																								<RowDefinition Height="*"/>
-																								
-																							</Grid.RowDefinitions>
+																										</Grid.ColumnDefinitions>
+
+																										<Grid.RowDefinitions>
+																											<RowDefinition Height="*"/>
+
+																										</Grid.RowDefinitions>
 
 
-																							<Path Grid.Column="0"
+																										<Path Grid.Column="0"
 																									Grid.Row="0"
 
 																									Margin="2,2,2,2"
@@ -3485,36 +3631,53 @@
 																									VerticalAlignment="Center"
 																									Stretch="Uniform"
 																							>
-																								<Path.Style>
-																									<Style TargetType="Path">
-																										<Setter Property="Data" Value="{StaticResource Ic.Reset}" />
-																										<Setter Property="Fill" Value="MediumSpringGreen" />
-																										<Setter Property="SnapsToDevicePixels" Value="true" />
+																											<Path.Style>
+																												<Style TargetType="Path">
+																													<Setter Property="Data" Value="{StaticResource Ic.Reset}" />
+																													<Setter Property="Fill" Value="MediumSpringGreen" />
+																													<Setter Property="SnapsToDevicePixels" Value="true" />
 
-																									</Style>
-																								</Path.Style>
-																							</Path>
+																												</Style>
+																											</Path.Style>
+																										</Path>
 
-																						</Grid>
-																						</ContentControl.Content>
-																					</ContentControl>
-																				</DataTemplate>
-																				</Setter.Value>
-																			</Setter>
-																			<Style.Triggers>
-																				<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_DELETED}">
-																					<Setter Property="Visibility" Value="Visible"/>
-																				</DataTrigger>
-																			</Style.Triggers>
+																									</Grid>
+																								</ContentControl.Content>
+																							</ContentControl>
+																						</DataTemplate>
+																					</Setter.Value>
+																				</Setter>
+																				<Style.Triggers>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_DELETED}">
+																						<Setter Property="Visibility" Value="Visible"/>
+																					</DataTrigger>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_MOD_DELETED}">
+																						<Setter Property="Visibility" Value="Visible"/>
+																					</DataTrigger>
+																					<DataTrigger Binding="{Binding Path=SheetStatus}" Value="{x:Static exSys:SheetStatus.SS_NEW_DELETED}">
+																						<Setter Property="Visibility" Value="Visible"/>
+																					</DataTrigger>
+																				</Style.Triggers>
 																			</Style>
 																		</Button.Style>
 
 																	</Button>
 
-																</StackPanel>
+																	<Label
+																			HorizontalAlignment="left"
+																			FontSize="9"
+																			Margin="2,0,0,0"
+																			Padding="0"
+																			Foreground="DarkGray"
+																			Content="{Binding Path=SheetStatusEnumData.Name, Mode=OneWay, FallbackValue='name'}"
+																			VerticalAlignment="Bottom"
+																			DockPanel.Dock="Bottom"
+																			/>
+
+																</DockPanel>
 
 																<Grid
-																		Margin="0,0,0,0"
+																		Margin="-23,0,0,0"
 																		HorizontalAlignment="Stretch"
 																		DockPanel.Dock="Top"
 																		>
@@ -3587,13 +3750,15 @@
 																	<Label
 																			Grid.Row="1"
 																			Grid.Column="3"
-																			Content="{Binding Converter={StaticResource ShtEnum2Str},
-																												ConverterParameter={x:Static exSys:SheetFieldKeys.RK_MGMT_FAM_COUNT},
-																												FallbackValue='fam count'}"
+																			Content="{Binding Path=FamListWkgViewSourceCount,
+																					FallbackValue='fam count'}"
 																			
 																			DockPanel.Dock="Left"
 																			Style="{StaticResource LblShtListItem}"
 																			/>
+																	<!-- Content="{Binding Converter={StaticResource ShtEnum2Str}, -->
+																	<!-- ConverterParameter={x:Static exSys:SheetFieldKeys.RK_MGMT_FAM_COUNT}, -->
+																	<!-- FallbackValue='fam count'}" -->
 
 																	<!--  status  -->
 																	<Label
@@ -3638,9 +3803,9 @@
 								</Border>
 
 								<DockPanel
-										Margin="15,0,0,0"
+										Margin="15,0,5,0"
 										DataContext="{Binding ElementName=MainWin,
-																					Path=Wm.Wbk}"
+																					Path=Wm}"
 										HorizontalAlignment="Stretch"
 										DockPanel.Dock="Top"
 										
@@ -3666,7 +3831,7 @@
 											HorizontalAlignment="Left"
 											DockPanel.Dock="Left"
 											Style="{StaticResource BtnFlatWhite}"
-											Command="{Binding ElementName=MainWin, Path=Wm.CmdSheetAdd}"
+											Command="{Binding CmdSheetAdd}"
 											>
 										<Button.Content>
 											<StackPanel
@@ -3689,53 +3854,88 @@
 
 									</Button>
 
-									<Button x:Name="BtnSaveShtLst"
+									<!-- <Button x:Name="BtnSaveShtLst" -->
+									<!-- 		Margin="5,0,0,0" -->
+									<!-- 		DockPanel.Dock="Right" -->
+									<!-- 		Style="{StaticResource BtnFlatWhite}" -->
+									<!-- 		Command="{Binding CmdSheetListCommit}" -->
+									<!-- 		CommandParameter="{Binding XData.IsModifiedShtsList}" -->
+									<!-- 		> -->
+									<!-- 	<Button.Content> -->
+									<!-- 		<StackPanel -->
+									<!-- 				Margin="0" -->
+									<!-- 				Orientation="Vertical" -->
+									<!-- 				> -->
+									<!-- 			<Label -->
+									<!-- 					Content="Save the" -->
+									<!-- 					FontSize="10" -->
+									<!-- 					Style="{DynamicResource Lbl.InButton.Top}" -->
+									<!-- 					/> -->
+									<!-- 			<Label -->
+									<!-- 					Content="Sheets List" -->
+									<!-- 					FontSize="10" -->
+									<!-- 					Style="{DynamicResource Lbl.InButton.Bottom}" -->
+									<!-- 					/> -->
+									<!-- 		</StackPanel> -->
+									<!-- 	</Button.Content> -->
+									<!-- -->
+									<!-- </Button> -->
+
+									<Button x:Name="BtnApplyShtLst"
 											Margin="5,0,0,0"
 											DockPanel.Dock="Right"
 											Style="{StaticResource BtnFlatWhite}"
-											>
-										<Button.Content>
-											<StackPanel
-													Margin="0"
-													Orientation="Vertical"
-													>
-												<Label
-														Content="Save the"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Top}"
-														/>
-												<Label
-														Content="Sheets List"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Bottom}"
-														/>
-											</StackPanel>
-										</Button.Content>
+											Command="{Binding CmdSheetListApplyChanges}"
+											CommandParameter="{Binding XData.IsModifiedSheetsList}"
+											FontSize="12"
+											Content="Apply Changes"
+									>
+										<!-- <Button.Content> -->
+										<!-- 	<StackPanel -->
+										<!-- 			Margin="0" -->
+										<!-- 			Orientation="Vertical" -->
+										<!-- 	> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Apply Sheets" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+										<!-- 		/> -->
+										<!-- 		<Label -->
+										<!-- 				Content="List Changes" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+										<!-- 		/> -->
+										<!-- 	</StackPanel> -->
+										<!-- </Button.Content> -->
 
 									</Button>
+
 
 									<Button x:Name="BtnRestoreShtLst"
 											Margin="5,0,0,0"
 											DockPanel.Dock="Right"
 											Style="{StaticResource BtnFlatWhite}"
+											Command="{Binding CmdSheetListUndoChanges}"
+											CommandParameter="{Binding XData.CanUndoSheetsList}"
+											Content="Undo Changes"
 											>
-										<Button.Content>
-											<StackPanel
-													Margin="0"
-													Orientation="Vertical"
-													>
-												<Label
-														Content="Restore the"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Top}"
-														/>
-												<Label
-														Content="Sheets List"
-														FontSize="10"
-														Style="{DynamicResource Lbl.InButton.Bottom}"
-														/>
-											</StackPanel>
-										</Button.Content>
+										<!-- <Button.Content> -->
+										<!-- 	<StackPanel -->
+										<!-- 			Margin="0" -->
+										<!-- 			Orientation="Vertical" -->
+										<!-- 			> -->
+										<!-- 		<Label -->
+										<!-- 				Content="Undo Sheets" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+										<!-- 				/> -->
+										<!-- 		<Label -->
+										<!-- 				Content="List Changes" -->
+										<!-- 				FontSize="10" -->
+										<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+										<!-- 				/> -->
+										<!-- 	</StackPanel> -->
+										<!-- </Button.Content> -->
 
 									</Button>
 
@@ -3743,6 +3943,8 @@
 											Margin="5,0,0,0"
 											DockPanel.Dock="Right"
 											Style="{StaticResource BtnFlatWhite}"
+											Command="{Binding CmdSheetListClear}"
+											CommandParameter="{Binding XData.SheetsViewSource.View.IsEmpty}"
 											>
 										<Button.Content>
 											<StackPanel
@@ -3759,6 +3961,33 @@
 														FontSize="10"
 														Style="{DynamicResource Lbl.InButton.Bottom}"
 														/>
+											</StackPanel>
+										</Button.Content>
+
+									</Button>
+
+									<Button x:Name="BtnResetShtLst"
+											Margin="5,0,0,0"
+											DockPanel.Dock="Right"
+											Style="{StaticResource BtnFlatWhite}"
+											Command="{Binding CmdSheetListReset}"
+											CommandParameter="{Binding XData.SheetsViewSource.View.IsEmpty}"
+									>
+										<Button.Content>
+											<StackPanel
+													Margin="0"
+													Orientation="Vertical"
+											>
+												<Label
+														Content="Reset the"
+														FontSize="10"
+														Style="{DynamicResource Lbl.InButton.Top}"
+												/>
+												<Label
+														Content="Sheets List"
+														FontSize="10"
+														Style="{DynamicResource Lbl.InButton.Bottom}"
+												/>
 											</StackPanel>
 										</Button.Content>
 
@@ -3791,7 +4020,27 @@
 							HorizontalContentAlignment="Stretch"
 							VerticalContentAlignment="Stretch"
 							Background="DimGray"
+							
 							>
+						<!-- IsEnabled="{StaticResource test}" -->
+
+						<TabItem.Style>
+							<Style TargetType="TabItem">
+								<Setter Property="Template">
+									<Setter.Value>
+										<ControlTemplate TargetType="TabItem">
+											<ContentPresenter x:Name="ContentSite"
+													Margin="0,0,3,0"
+													HorizontalAlignment="Center"
+													VerticalAlignment="Center"
+													ContentSource="Header"
+											/>
+										</ControlTemplate>
+									</Setter.Value>
+								</Setter>
+							</Style>
+
+						</TabItem.Style>
 
 						<TabItem.Header>
 							<Border Style="{StaticResource TbBdrHdrOuter}">
@@ -3870,7 +4119,7 @@
 										<Button x:Name="BtnResetFamList"
 												Margin="0,0,5,0"
 												HorizontalAlignment="Left"
-												Command="{Binding CmdResetFamList}"
+												Command="{Binding CmdFamListUndoChanges}"
 												CommandParameter="{Binding Path=CurrSht.IsModifiedFamList,
 																									 Mode=OneWay}"
 												Style="{StaticResource BtnFlatWhite}"
@@ -3884,7 +4133,7 @@
 														Orientation="Vertical"
 														>
 													<Label
-															Content="Reset the"
+															Content="Undo the"
 															FontSize="10"
 															Style="{DynamicResource Lbl.InButton.Top}"
 															/>
@@ -3898,33 +4147,33 @@
 
 										</Button>
 
-										<Button x:Name="BtnCommitFamList"
-												Margin="0,0,5,0"
-												HorizontalAlignment="Left"
-												Command="{Binding CmdSaveFamList}"
-												CommandParameter="{Binding Path=CurrSht.FamList.Count,
-																									 Mode=OneWay}"
-												Style="{StaticResource BtnFlatWhite}"
-												>
-											<Button.Content>
-												<StackPanel
-														Margin="0"
-														Orientation="Vertical"
-														>
-													<Label
-															Content="(debug) Save the"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Top}"
-															/>
-													<Label
-															Content="Family List"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Bottom}"
-															/>
-												</StackPanel>
-											</Button.Content>
-
-										</Button>
+										<!-- <Button x:Name="BtnCommitFamList" -->
+										<!-- 		Margin="0,0,5,0" -->
+										<!-- 		HorizontalAlignment="Left" -->
+										<!-- 		Command="{Binding CmdSaveFamList}" -->
+										<!-- 		CommandParameter="{Binding Path=CurrSht.FamList.Count, -->
+										<!-- 															 Mode=OneWay}" -->
+										<!-- 		Style="{StaticResource BtnFlatWhite}" -->
+										<!-- 		> -->
+										<!-- 	<Button.Content> -->
+										<!-- 		<StackPanel -->
+										<!-- 				Margin="0" -->
+										<!-- 				Orientation="Vertical" -->
+										<!-- 				> -->
+										<!-- 			<Label -->
+										<!-- 					Content="(debug) Save the" -->
+										<!-- 					FontSize="10" -->
+										<!-- 					Style="{DynamicResource Lbl.InButton.Top}" -->
+										<!-- 					/> -->
+										<!-- 			<Label -->
+										<!-- 					Content="Family List" -->
+										<!-- 					FontSize="10" -->
+										<!-- 					Style="{DynamicResource Lbl.InButton.Bottom}" -->
+										<!-- 					/> -->
+										<!-- 		</StackPanel> -->
+										<!-- 	</Button.Content> -->
+										<!-- -->
+										<!-- </Button> -->
 
 									</DockPanel>
 
@@ -3935,53 +4184,56 @@
 
 										<Button x:Name="BtnResetSheet"
 												Margin="5,0,0,0"
-												Command="{Binding CmdResetSheet}"
-												CommandParameter="{Binding CurrSht.IsModified}"
+												Command="{Binding CmdSheetUndoChanges}"
+												CommandParameter="{Binding CurrSht.IsModifiedExo}"
 												Style="{StaticResource BtnFlatWhite}"
+												Content="Undo Changes"
 												>
-											<Button.Content>
-												<StackPanel
-														Margin="0"
-														Orientation="Vertical"
-														>
-													<Label
-															Content="Reset"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Top}"
-															/>
-													<Label
-															Content="the Sheet"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Bottom}"
-															/>
-												</StackPanel>
-											</Button.Content>
+											<!-- <Button.Content> -->
+											<!-- 	<StackPanel -->
+											<!-- 			Margin="0" -->
+											<!-- 			Orientation="Vertical" -->
+											<!-- 			> -->
+											<!-- 		<Label -->
+											<!-- 				Content="Reset" -->
+											<!-- 				FontSize="10" -->
+											<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+											<!-- 				/> -->
+											<!-- 		<Label -->
+											<!-- 				Content="the Sheet" -->
+											<!-- 				FontSize="10" -->
+											<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+											<!-- 				/> -->
+											<!-- 	</StackPanel> -->
+											<!-- </Button.Content> -->
 
 										</Button>
 
 										<Button x:Name="BtnSaveSheet"
 												Margin="5,0,0,0"
-												Command="{Binding CmdSaveSheet}"
-												CommandParameter="{Binding CurrSht.IsModified}"
+												Command="{Binding CmdSheetApplyChanges}"
+												CommandParameter="{Binding CurrSht.IsModifiedExo}"
 												Style="{StaticResource BtnFlatWhite}"
+												Content="Apply Changes"
+												FontSize="12"
 												>
-											<Button.Content>
-												<StackPanel
-														Margin="0"
-														Orientation="Vertical"
-														>
-													<Label
-															Content="Save"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Top}"
-															/>
-													<Label
-															Content="the Sheet"
-															FontSize="10"
-															Style="{DynamicResource Lbl.InButton.Bottom}"
-															/>
-												</StackPanel>
-											</Button.Content>
+											<!-- <Button.Content> -->
+											<!-- 	<StackPanel -->
+											<!-- 			Margin="0" -->
+											<!-- 			Orientation="Vertical" -->
+											<!-- 			> -->
+											<!-- 		<Label -->
+											<!-- 				Content="Save" -->
+											<!-- 				FontSize="10" -->
+											<!-- 				Style="{DynamicResource Lbl.InButton.Top}" -->
+											<!-- 				/> -->
+											<!-- 		<Label -->
+											<!-- 				Content="the Sheet" -->
+											<!-- 				FontSize="10" -->
+											<!-- 				Style="{DynamicResource Lbl.InButton.Bottom}" -->
+											<!-- 				/> -->
+											<!-- 	</StackPanel> -->
+											<!-- </Button.Content> -->
 
 										</Button>
 
@@ -4280,6 +4532,7 @@
 												Margin="10,-26,0,0"
 												MaxHeight="240"
 												HorizontalAlignment="Stretch"
+												MinHeight="70"
 												>
 
 											<Label
@@ -4293,6 +4546,25 @@
 													DockPanel.Dock="Top"
 													/>
 
+											<Label 
+													DockPanel.Dock="Top"
+													Margin="8,0,0,0"
+													Content="There is currently no sheets available to select"
+													Foreground="White"
+											>
+												<Label.Style>
+													<Style TargetType="Label">
+														<Setter Property="Visibility" Value="Collapsed"/>
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding XData.SheetsNoDeletedViewSource.View.IsEmpty}" Value="True">
+																<Setter Property="Visibility" Value="Visible"/>
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Label.Style>
+											</Label>
+
+
 											<ListBox x:Name="Lbx02"
 													Margin="0,6,0,0"
 													Padding="0"
@@ -4301,14 +4573,23 @@
 													d:ItemsSource="{d:SampleData ItemCount=8}"
 													DockPanel.Dock="Top"
 													SelectedIndex="0"
-													SelectedValue="{Binding Path=XData.SelectSheet}"
+													SelectedValue="{Binding ElementName=Lbx03, Path=SelectedValue, Mode=TwoWay}"
 													SelectedValuePath="Value.DsName"
 													ItemsSource="{Binding XData.SheetsNoDeletedViewSource.View}"
+													IsSynchronizedWithCurrentItem="True"
 													>
+												<!-- SelectedValue="{Binding Path=XData.SelectSheet, Mode=TwoWay,  -->
+												<!-- NotifyOnSourceUpdated=True}" -->
+
 												<ListBox.Style>
 													<Style TargetType="ListBox">
+														<Setter Property="Visibility" Value="Visible"/>
 														<Style.Triggers>
-															<DataTrigger Value="true" Binding="{Binding CurrSht.IsModified}">
+															<DataTrigger Binding="{Binding XData.SheetsNoDeletedViewSource.View.IsEmpty}" Value="true">
+																<Setter Property="Visibility" Value="Collapsed"/>
+															</DataTrigger>
+
+															<DataTrigger Value="true" Binding="{Binding CurrSht.IsModifiedExo}">
 																<Setter Property="IsEnabled" Value="False" />
 															</DataTrigger>
 														</Style.Triggers>
@@ -4511,12 +4792,13 @@
 																	<Label
 																			Grid.Row="0"
 																			Grid.Column="2"
-																			Content="{Binding Converter={StaticResource ShtEnum2Str},
-																												ConverterParameter={x:Static exSys:SheetFieldKeys.RK_MGMT_FAM_COUNT},
-																												FallbackValue='fam count'}"
+																			Content="{Binding Path=FamListWkgViewSourceCount, FallbackValue='fam count'}"
 																			DockPanel.Dock="Left"
 																			Style="{StaticResource LblShtListItem}"
 																			/>
+																	<!-- Content="{Binding Converter={StaticResource ShtEnum2Str}, -->
+																	<!-- ConverterParameter={x:Static exSys:SheetFieldKeys.RK_MGMT_FAM_COUNT}, -->
+																	<!-- FallbackValue='fam count'}" -->
 
 																	<Rectangle
 																			Grid.Row="1"
@@ -4548,8 +4830,6 @@
 										VerticalAlignment="Top"
 										DockPanel.Dock="Top"
 										>
-
-
 
 									<!--  row 4  -->
 									<DockPanel x:Name="DpFamAndTypeList"
@@ -4600,6 +4880,7 @@
 														VerticalAlignment="Stretch"
 														BorderThickness="0,1,0,0"
 														BorderBrush="Red"
+
 														>
 
 
@@ -4619,7 +4900,8 @@
 															SelectedItem="{Binding Path=SelFamilyTypeItem}"
 															ScrollViewer.VerticalScrollBarVisibility="Visible"
 															ScrollViewer.HorizontalScrollBarVisibility="Visible"
-															ItemsSource="{Binding CurrSht.FamListViewSource.View}"
+															ItemsSource="{Binding CurrSht.FamListWkgViewSource.View}"
+
 															>
 														<!--  ItemsSource="{Binding CurrSht.FamListView}"  -->
 
@@ -4745,6 +5027,7 @@
 																			<ColumnDefinition Width="166" />
 																			<ColumnDefinition Width="210" />
 																			<ColumnDefinition Width="120" />
+																			<ColumnDefinition Width="*" />
 																		</Grid.ColumnDefinitions>
 
 																		<Button
@@ -4801,28 +5084,27 @@
 
 																		</Button>
 
-																		<TextBox
+																		<Grid
 																				Grid.Column="1"
-																				Margin="0,0,0,0"
-																				Text="{Binding Path=Value.FamName,
-																											 Mode=TwoWay,
-																											 FallbackValue='family name'}"
-																				Style="{StaticResource TbxFamListEntryEx}"
-																				>
 
-																		</TextBox>
-
-																		<Rectangle
-																				Grid.Column="1"
-																				Height="1"
-																				VerticalAlignment="Bottom"
-																				Fill="DeepSkyBlue"
+																				HorizontalAlignment="Stretch"
+																				Background="Black"
 																				>
+																			<Grid.ColumnDefinitions>
+																				<ColumnDefinition Width="3"/>
+																				<ColumnDefinition Width="*"/>
+																			</Grid.ColumnDefinitions>
+
+																			<Rectangle
+																					HorizontalAlignment="Left"
+																					Grid.Column="0"
+																					Fill="DeepSkyBlue"
+																			>
 																			<Rectangle.Style>
 																				<Style TargetType="Rectangle">
 																					<Setter Property="Visibility" Value="Collapsed" />
 																					<Style.Triggers>
-																						<DataTrigger Value="true" Binding="{Binding Path=Value.IsNewItem}">
+																						<DataTrigger Value="true" Binding="{Binding Path=Value.IsNewItemFat}">
 																							<Setter Property="Visibility" Value="Visible" />
 																						</DataTrigger>
 																					</Style.Triggers>
@@ -4831,16 +5113,15 @@
 																		</Rectangle>
 
 																		<Rectangle
-																				Grid.Column="1"
-																				Height="1"
-																				VerticalAlignment="Bottom"
+																				HorizontalAlignment="Left"
+																				Grid.Column="0"
 																				Fill="LawnGreen"
 																				>
 																			<Rectangle.Style>
 																				<Style TargetType="Rectangle">
 																					<Setter Property="Visibility" Value="Collapsed" />
 																					<Style.Triggers>
-																						<DataTrigger Value="true" Binding="{Binding Path=Value.IsModified}">
+																						<DataTrigger Value="true" Binding="{Binding Path=Value.IsModifiedFat}">
 																							<Setter Property="Visibility" Value="Visible" />
 																						</DataTrigger>
 																					</Style.Triggers>
@@ -4848,6 +5129,16 @@
 																			</Rectangle.Style>
 																		</Rectangle>
 
+																			<TextBox
+																					Grid.Column="1"
+																					Margin="0,0,0,0"
+																					Text="{Binding Path=Value.FamName,
+																											 Mode=TwoWay,
+																											 FallbackValue='family name'}"
+																					
+																					Style="{StaticResource TbxFamListEntryEx}"
+																			/>
+																		</Grid>
 
 																		<TextBox
 																				Grid.Column="2"
@@ -4870,7 +5161,20 @@
 																											 FallbackValue='props'}"
 																				Style="{StaticResource TbxFamListEntryEx}"
 																				>
-																			<!--  Width="200"  -->
+																			
+																		</TextBox>
+
+																		<TextBox
+																				Grid.Column="4"
+																				Margin="0,0,0,0"
+																				HorizontalAlignment="Stretch"
+																				Background="Transparent"
+																				Text="{Binding Path=Value,
+																											 Mode=OneWay,
+																											 FallbackValue='to string'}"
+																				Style="{StaticResource TbxFamListEntryEx}"
+																				>
+																			
 																		</TextBox>
 
 																	</Grid>
@@ -4916,6 +5220,7 @@
 													DataContext="{Binding ElementName=MainWin,
 																								Path=Wm.CurrSht}"
 													Margin="0,-28,0,0"
+													MinHeight="80"
 													>
 
 												<Grid.ColumnDefinitions>
@@ -4956,7 +5261,7 @@
 															<Style TargetType="Rectangle">
 																<Setter Property="Fill" Value="LawnGreen" />
 																<Style.Triggers>
-																	<DataTrigger Value="true" Binding="{Binding Path=IsModified}">
+																	<DataTrigger Value="true" Binding="{Binding Path=IsModifiedExo}">
 																		<Setter Property="Fill" Value="Red" />
 																	</DataTrigger>
 																</Style.Triggers>
@@ -4967,6 +5272,25 @@
 
 												</StackPanel>
 
+												<Label 
+														Grid.Row="1"
+														Grid.Column="0"
+														Margin="8,0,0,0"
+														Content="There is currently no sheet selected / available"
+														Foreground="White"
+														>
+													<Label.Style>
+														<Style TargetType="Label">
+															<Setter Property="Visibility" Value="Collapsed"/>
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding}" Value="{x:Null}">
+																	<Setter Property="Visibility" Value="Visible"/>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</Label.Style>
+												</Label>
+
 												<ScrollViewer x:Name="SvSheetValues"
 														Grid.Row="1"
 														Grid.Column="0"
@@ -4976,11 +5300,23 @@
 														HorizontalScrollBarVisibility="Visible"
 														VerticalScrollBarVisibility="Visible"
 														Template="{StaticResource CsScrollViewerRedBdrCt}"
+
 														>
+													<ScrollViewer.Style>
+														<Style TargetType="ScrollViewer">
+															<Setter Property="Visibility" Value="Visible"/>
+															<Style.Triggers>
+																<DataTrigger Binding="{Binding}" Value="{x:Null}">
+																	<Setter Property="Visibility" Value="Visible"/>
+																</DataTrigger>
+															</Style.Triggers>
+														</Style>
+													</ScrollViewer.Style>
 
 													<DockPanel x:Name="DpSheetFields"
 															VerticalAlignment="Top"
-															>
+
+													>
 
 														<!--  ds name  -->
 														<!--  read only  -->
@@ -5142,7 +5478,7 @@
 																												Mode=OneWay,
 																												ElementName=MainWin,
 																												FallbackValue='date created'}"
-																			Style="{StaticResource EditBValueField}"
+																			Style="{StaticResource NoEditValueField}"
 																			/>
 
 																</DockPanel>
@@ -5216,13 +5552,17 @@
 
 																	<Rectangle Style="{StaticResource RtFiller}" />
 
+																	<Border Style="{StaticResource BdrEditStatus}">
+
 																	<Label
-																			Content="{Binding Path=Wm.CurrSht.DateModified,
+																			Content="{Binding Path=Wm.CurrSht.DateModifiedByUser,
 																												ElementName=MainWin,
 																												Mode=OneWay,
 																												FallbackValue='date modified'}"
 																			Style="{StaticResource EditBValueField}"
 																			/>
+
+																	</Border>
 
 																</DockPanel>
 															</DockPanel>
@@ -5365,18 +5705,21 @@
 																		<!--  Tag="{x:Reference TbxOpSequence}"  -->
 																		<!--  />  -->
 
+																		<!--  DO NOT USE A FALL BACK VALUE  -->
 																		<ComboBox x:Name="CbxOpStatus"
 																				Tag="{x:Reference TbxOpSequence}"
 																				HorizontalAlignment="Stretch"
 																				d:ItemsSource="{d:SampleData ItemCount=5}"
 																				SelectedValuePath="Key"
 																				SelectedValue="{Binding Path=Wm.CurrSht.OpStatus,
-																																ElementName=MainWin,
-																																FallbackValue='SOS_GOOD'}"
+																																ElementName=MainWin}"
 																				DropDownClosed="Cbx_OnDropDownClosed"
 																				PreviewKeyDown="OnPreviewKeyDown"
 																				ItemsSource="{x:Static exSys:ExStorConst.ShtOpStatusDescView}"
 																				>
+																			<!-- SelectedValue="{Binding Path=Wm.CurrSht.OpStatus, -->
+																			<!-- ElementName=MainWin, -->
+																			<!-- FallbackValue='SOS_GOOD'}" -->
 																			<!--  Style="{StaticResource CbxEnum1}"  -->
 																			<ComboBox.Style>
 																				<Style
@@ -5527,18 +5870,21 @@
 																		<!--  Style="{StaticResource EditBValueFieldTbx}"  -->
 																		<!--  />  -->
 
+																		<!--  DO NOT USE A FALL BACK VALUE  -->
 																		<ComboBox x:Name="CbxUpdateRule"
 																				Tag="{x:Reference TbxUpdateBypass}"
 																				HorizontalAlignment="Stretch"
 																				d:ItemsSource="{d:SampleData ItemCount=5}"
 																				SelectedValuePath="Key"
 																				SelectedValue="{Binding Path=Wm.CurrSht.UpdateRule,
-																																ElementName=MainWin,
-																																FallbackValue='UR_AS_NEEDED'}"
+																																ElementName=MainWin}"
 																				DropDownClosed="Cbx_OnDropDownClosed"
 																				PreviewKeyDown="OnPreviewKeyDown"
 																				ItemsSource="{x:Static exSys:ExStorConst.UpdateRulesDescView}"
 																				>
+																			<!-- SelectedValue="{Binding Path=Wm.CurrSht.UpdateRule, -->
+																			<!-- ElementName=MainWin, -->
+																			<!-- FallbackValue={x:Static exSys:UpdateRules.UR_AS_NEEDED}}" -->
 																			<!--  Style="{StaticResource CbxEnum1}"  -->
 																			<ComboBox.Style>
 																				<Style
@@ -5714,18 +6060,30 @@
 																</Border>
 																<DockPanel Style="{StaticResource DpItem}">
 
-
-
 																	<Label
 																			Content="{Binding Path=Field.FieldDesc,
 																												FallbackValue='family list desc'}"
 																			Style="{StaticResource EditBDescField}"
 																			/>
 
-																	<!-- <Rectangle Style="{StaticResource RtFiller}" /> -->
+																	<Rectangle Style="{StaticResource RtFiller}" />
+
+
+																	
+																	<Border Style="{StaticResource BdrEditStatus}">
+
+																		<Label
+																				Content="{Binding Path=DyValue.CollectionCount,
+																												Mode=OneWay,
+																												FallbackValue='0'}"
+																				ContentStringFormat="Contains {0} items"
+																				Style="{StaticResource EditBValueField}"
+																		/>
+
+																	</Border>
 
 																	<StackPanel
-																			Margin="5,0,5,0"
+																			Margin="15,0,5,0"
 																			VerticalAlignment="Center"
 																			Orientation="Vertical"
 																			>
@@ -5783,7 +6141,7 @@
 																				<Style TargetType="Rectangle">
 																					<Setter Property="Fill" Value="#222222" />
 																					<Style.Triggers>
-																						<DataTrigger Value="true" Binding="{Binding ElementName=MainWin, Path=Wm.CurrSht.IsModified}">
+																						<DataTrigger Value="true" Binding="{Binding ElementName=MainWin, Path=Wm.CurrSht.IsModifiedExo}">
 																							<Setter Property="Fill" Value="Red">
 																							</Setter>
 																						</DataTrigger>
@@ -5842,6 +6200,7 @@
 																				FontSize="8"
 																				Foreground="White"
 																				/>
+																		
 																		<Label
 																				Content="fam lst"
 																				Margin="0"
@@ -5849,48 +6208,34 @@
 																				HorizontalAlignment="Center"
 																				FontSize="8"
 																				Foreground="White"
-																				/>
+																		/>
 
 																	</StackPanel>
 
-
 																	<Label
-																			Content="{Binding Path=Wm.CurrSht.FamilyListCount,
+																			Content="{Binding Path=Wm.CurrSht.FamListWkgViewSourceCount,
 																												ElementName=MainWin,
-																												FallbackValue='1'}"
-																			FontSize="12"
-																			ContentStringFormat="Svd: {0}"
+																												FallbackValue='5'}"
+																			FontSize="10"
+																			ContentStringFormat=" Proposed: {0}"
 																			Style="{StaticResource EditBValueField}"
 																			/>
 
 																	<Label
-																			Content="{Binding Path=Wm.CurrSht.FamListViewSourceCount,
-																												ElementName=MainWin,
+																			Content="{Binding Path=DyValue.CountNew,
 																												FallbackValue='5'}"
-																			FontSize="12"
-																			ContentStringFormat=" Prop: {0}"
-																			Style="{StaticResource EditBValueField}"
-																			/>
-
-																	<Label
-																			Content="{Binding Path=Wm.CurrSht.FamListNewViewSourceCount,
-																												ElementName=MainWin,
-																												FallbackValue='5'}"
-																			FontSize="12"
+																			FontSize="10"
 																			ContentStringFormat=" New: {0}"
 																			Style="{StaticResource EditBValueField}"
 																			/>
 
 																	<Label
-																			Content="{Binding Path=Wm.CurrSht.FamListModViewSourceCount,
-																												ElementName=MainWin,
+																			Content="{Binding Path=DyValue.CountDel,
 																												FallbackValue='5'}"
-																			FontSize="12"
-																			ContentStringFormat=" Mods: {0}"
+																			FontSize="10"
+																			ContentStringFormat=" Del: {0}"
 																			Style="{StaticResource EditBValueField}"
 																			/>
-
-
 
 																</DockPanel>
 															</DockPanel>
@@ -5923,7 +6268,7 @@
 																			Content="{Binding Path=Wm.CurrSht.SchemaVersion,
 																												ElementName=MainWin,
 																												FallbackValue='schema version'}"
-																			Style="{StaticResource EditBValueField}"
+																			Style="{StaticResource NoEditValueField}"
 																			/>
 
 																</DockPanel>
@@ -5974,7 +6319,7 @@
 			<!--#region > legend - field edit level-->
 
 			<Border x:Name="FieldEditLegend"
-					Grid.Row="3"
+					Grid.Row="4"
 					Grid.Column="0"
 					Margin="5,0,6,0"
 					HorizontalAlignment="Stretch"

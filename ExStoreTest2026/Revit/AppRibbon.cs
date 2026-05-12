@@ -136,6 +136,8 @@ namespace ExStoreTest2026
 
 			R.RvtUiApp = uiApp;
 
+			R.ShowProcessMsg = false;
+
 			// app.DocumentOpened += AppOnDocumentOpened;
 			app.DocumentOpening += AppOnDocumentOpening;
 			app.DocumentClosing += AppOnDocumentClosing;

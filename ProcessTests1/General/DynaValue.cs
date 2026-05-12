@@ -1,12 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Xaml;
 
-using Autodesk.Revit.DB;
-
-using ExStorSys;
-using JetBrains.Annotations;
 
 
 namespace UtilityLibrary
@@ -24,7 +19,7 @@ namespace UtilityLibrary
 
 		private bool lastValueReturnedIsValid;
 
-		public DynaValue(dynamic value)
+		public DynaValue(dynamic value, [CallerMemberName] string name = "")
 		{
 			dynValue = value;
 			ApplyChange();
@@ -32,22 +27,22 @@ namespace UtilityLibrary
 			// ObjectId = ExStorStartMgr.Instance?.AddObjId() ?? -1;
 			IsChanged = null;
 
-			initCollection();
+			// initCollection();
 
 		}
 
-		private void initCollection()
-		{
-			if (IsCollection)
-			{
-				if (IsDictStringString) 
-					CountInit = AsDictStringString().Count;
-				else if (IsListString)
-					CountInit = AsListString().Count;
-
-				updateCollectionProps();
-			}
-		}
+		// private void initCollection()
+		// {
+		// 	// if (IsCollection)
+		// 	// {
+		// 	// 	if (IsDictStringString) 
+		// 	// 		CountInit = AsDictStringString().Count;
+		// 	// 	else if (IsListString)
+		// 	// 		CountInit = AsListString().Count;
+		// 	//
+		// 	// 	updateCollectionProps();
+		// 	// }
+		// }
 
 		/// <summary>
 		/// the raw value stored
@@ -56,8 +51,6 @@ namespace UtilityLibrary
 		private dynamic dynValuePrior;
 		private int changeQty;
 		private bool? isChanged;
-		private int countNew = 0;
-		private int countDel = 0;
 
 		public dynamic Value => dynValue;
 
@@ -165,98 +158,98 @@ namespace UtilityLibrary
 
 		/* collection properties and methods */
 
-		/// <summary>
-		/// the initial item count for a collection
-		/// </summary>
-		public int CountInit {get; private set;}
+		// /// <summary>
+		// /// the initial item count for a collection
+		// /// </summary>
+		// public int CountInit {get; private set;}
 
-		/// <summary>
-		/// the number of new items added to the collection.  this
-		/// is added to the initial count.  Use (+) for an increase
-		/// in the number of new items and (-) for a decrease in the
-		/// number of new items. will not be below zero.
-		/// </summary>
-		public int CountNew
-		{
-			get => countNew;
-			private set
-			{
-				countNew = value;
+		// /// <summary>
+		// /// the number of new items added to the collection.  this
+		// /// is added to the initial count.  Use (+) for an increase
+		// /// in the number of new items and (-) for a decrease in the
+		// /// number of new items. will not be below zero.
+		// /// </summary>
+		// public int CountNew
+		// {
+		// 	get => countNew;
+		// 	private set
+		// 	{
+		// 		countNew = value;
+		//
+		// 		OnPropertyChanged();
+		// 		OnPropertyChanged(nameof(CountNet));
+		// 		OnPropertyChanged(nameof(CollectionCount));
+		// 	}
+		// }
 
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(CountNet));
-				OnPropertyChanged(nameof(CollectionCount));
-			}
-		}
+		// /// <summary>
+		// /// the number of tems deleted from the collection.  this
+		// /// is subtracted from the initial count.  Use (+) for an increase
+		// /// in the number of deleted items and (-) for a decrease in the
+		// /// number of deleted items.  will not be below zero.
+		// /// </summary>
+		// public int CountDel
+		// {
+		// 	get => countDel;
+		// 	private set
+		// 	{
+		// 		countDel = value;
+		//
+		// 		OnPropertyChanged();
+		// 		OnPropertyChanged(nameof(CountNet));
+		// 		OnPropertyChanged(nameof(CollectionCount));
+		// 	}
+		// }
 
-		/// <summary>
-		/// the number of tems deleted from the collection.  this
-		/// is subtracted from the initial count.  Use (+) for an increase
-		/// in the number of deleted items and (-) for a decrease in the
-		/// number of deleted items.  will not be below zero.
-		/// </summary>
-		public int CountDel
-		{
-			get => countDel;
-			private set
-			{
-				countDel = value;
+		// /// <summary>
+		// /// the net count of the number of items in the collection.  this
+		// /// must match the collection item count
+		// /// </summary>
+		// public int CountNet => CountInit + CountNew - CountDel;
 
-				OnPropertyChanged();
-				OnPropertyChanged(nameof(CountNet));
-				OnPropertyChanged(nameof(CollectionCount));
-			}
-		}
+		// /// <summary>
+		// /// the actual count of items in a collection.  this will
+		// /// return -1 if not a collection
+		// /// </summary>
+		// public int CollectionCount
+		// {
+		// 	get
+		// 	{
+		// 		if (IsDictStringString) return AsDictStringString().Count;
+		// 		if (IsListString) return AsListString().Count;
+		//
+		// 		return -1;
+		// 	}
+		// }
 
-		/// <summary>
-		/// the net count of the number of items in the collection.  this
-		/// must match the collection item count
-		/// </summary>
-		public int CountNet => CountInit + CountNew - CountDel;
+		// public void CountNewAdjust(int qty)
+		// {
+		// 	if (!IsCollection) return;
+		//
+		// 	countNew += qty;
+		//
+		// 	if (countNew < 0) countNew = 0;
+		//
+		// 	OnPropertyChanged(nameof(CountNew));
+		// }
+		//
+		// public void CountDelAdjust(int qty)
+		// {
+		// 	if (!IsCollection) return;
+		//
+		// 	countDel += qty;
+		//
+		// 	if (countDel < 0) countDel = 0;
+		//
+		// 	OnPropertyChanged(nameof(CountDel));
+		// }
 
-		/// <summary>
-		/// the actual count of items in a collection.  this will
-		/// return -1 if not a collection
-		/// </summary>
-		public int CollectionCount
-		{
-			get
-			{
-				if (IsDictStringString) return AsDictStringString().Count;
-				if (IsListString) return AsListString().Count;
-
-				return -1;
-			}
-		}
-
-		public void CountNewAdjust(int qty)
-		{
-			if (!IsCollection) return;
-
-			countNew += qty;
-
-			if (countNew < 0) countNew = 0;
-
-			OnPropertyChanged(nameof(CountNew));
-		}
-
-		public void CountDelAdjust(int qty)
-		{
-			if (!IsCollection) return;
-
-			countDel += qty;
-
-			if (countDel < 0) countDel = 0;
-
-			OnPropertyChanged(nameof(CountDel));
-		}
-
-		private void updateCollectionProps()
-		{
-			OnPropertyChanged(nameof(CountInit));
-			OnPropertyChanged(nameof(CountNet));
-			OnPropertyChanged(nameof(CollectionCount));
-		}
+		// private void updateCollectionProps()
+		// {
+		// 	OnPropertyChanged(nameof(CountInit));
+		// 	// OnPropertyChanged(nameof(CountNet));
+		// 	OnPropertyChanged(nameof(CollectionCount));
+		// }
 
 		/* values and value properties */
 
@@ -376,6 +369,25 @@ namespace UtilityLibrary
 		/// </summary>
 		public string? AsString()
 		{
+			if (IsCollection)
+			{ 
+				if (IsListString)
+				{
+					string count = ((List<string>) dynValue).Count.ToString();
+
+					return $"List<string> [ {count} ]";
+				}
+
+
+				if (IsDictStringString)
+				{
+					string count = ((Dictionary<string, string>) dynValue).Count.ToString();
+
+					return $"dict<string, string> [ {count} ]";
+				}
+			}
+
+
 			if (!IsString && !IsEnum)
 			{
 				return dynValue?.ToString() ?? "null";
@@ -498,13 +510,12 @@ namespace UtilityLibrary
 
 		public override string ToString()
 		{
-			return $"DynaValue is| {dynValue ?? "is null"} | Id = {ObjectId}";
+			return $"DynaValue is| {AsString() ?? "is null"} | Id = {ObjectId}";
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		[DebuggerStepThrough]
-		[NotifyPropertyChangedInvocator]
 		private void OnPropertyChanged([CallerMemberName] string memberName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
@@ -514,10 +525,10 @@ namespace UtilityLibrary
 
 		// revit specific
 
-		public ForgeTypeId GetRevitSpecIdCustom()
-		{
-			return SpecTypeId.Custom;
-		}
+		// public ForgeTypeId GetRevitSpecIdCustom()
+		// {
+		// 	return SpecTypeId.Custom;
+		// }
 
 		public Type RevitTypeIs
 		{
@@ -589,6 +600,13 @@ namespace UtilityLibrary
 			Debug.WriteLine($"** {title, -15} | value {dynValue?.ToString() ?? "is null"} | prior {dynValuePrior?.ToString() ?? "is null"}");
 		}
 
+		public void SetValue(dynamic value)
+		{
+			if (!(value.GetType().Equals(TypeIs))) return;
+
+			dynValue = value;
+		}
+
 		/// <summary>
 		/// update the value if the type matches<br/>
 		/// save the prior value if clean<br/>
@@ -598,24 +616,25 @@ namespace UtilityLibrary
 		{
 			if (!(value.GetType().Equals(TypeIs))) return false;
 
-			bool result;
+			bool result = false;
 
 			// check for the new value matching the prior value
 			if (value.GetType() == typeof(Dictionary<string, string>))
 			{
+				// if the new and current values match, all done
+				if (CsUtilities.DictionariesEqual(value, dynValue)) return true;
+
 				result = CsUtilities.DictionariesEqual(value, dynValuePrior);
 			}
 			else
 			{
-				result = value.Equals(dynValuePrior);
+				// if the new and current values match, all done
+				if (value.Equals(dynValue)) return true;
+
+				// removed to fix issues
+				// should use undo change
+				// result = value.Equals(dynValuePrior);
 			}
-
-
-			// if (value.Equals(dynValuePrior) ||
-			// 	(dynValuePrior != null && 
-			// 	value.GetType() == typeof(Dictionary<string, string>) &&
-			// 	dynValuePrior!.GetType() == typeof(Dictionary<string, string>))
-			// 	)
 
 			// if prior and new values match - do undo to remove the isdirty flag
 			if (result)
@@ -643,7 +662,7 @@ namespace UtilityLibrary
 				ChangeQty = 1;
 			}
 
-			initCollection();
+			// initCollection();
 
 			LastValueReturnedIsValid = false;
 
@@ -661,6 +680,8 @@ namespace UtilityLibrary
 		/// </summary>
 		public void UndoChange(int qty = 1)
 		{
+			// R.AddRoute($"restore this value | {dynValuePrior ?? "null"}", msg: true);
+
 			if (qty < 1) return;
 
 			if (dynValuePrior == null) return;
@@ -674,11 +695,9 @@ namespace UtilityLibrary
 			dynValue = dynValuePrior;
 			dynValuePrior = null;
 
-			initCollection();
+			// initCollection();
 
 			applyChange();
-
-			// showDyValues("UC - end");
 		}
 
 		/// <summary>
@@ -692,25 +711,28 @@ namespace UtilityLibrary
 
 		private void applyChange()
 		{
+			// R.AddRoute($"{AsString()}", 2, true);
+
+
 			// must use the field and not the property
 			changeQty = 0;
 
-			if (IsCollection)
-			{
-				if (IsDictStringString)
-				{
-					CountInit = AsDictStringString().Count;
-				}
-				else
-				{
-					CountInit = AsListString().Count;
-				}
-
-				CountNew = 0;
-				CountDel = 0;
-
-				updateCollectionProps();
-			}
+			// if (IsCollection)
+			// {
+			// 	if (IsDictStringString)
+			// 	{
+			// 		CountInit = AsDictStringString().Count;
+			// 	}
+			// 	else
+			// 	{
+			// 		CountInit = AsListString().Count;
+			// 	}
+			//
+			// 	CountNew = 0;
+			// 	CountDel = 0;
+			//
+			// 	updateCollectionProps();
+			// }
 
 			IsChanged = false;
 			LastValueReturnedIsValid = false;

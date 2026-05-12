@@ -75,6 +75,9 @@ namespace ExStorSys
 
 		public static ExStorMgr? Instance { get; set; }
 
+		/// <summary>
+		/// Startup and Configuration method
+		/// </summary>
 		public static ExStorMgr Create()
 		{
 			Instance = new ExStorMgr();
@@ -85,10 +88,11 @@ namespace ExStorSys
 
 		private void init()
 		{
-			// Debug.WriteLine($"\n*** ExStorMgr init | begin");
-
 			// ObjectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorMgr)) ?? -1;
+
+			R.ProcessMsg("init", ObjectId);
+
 			xLib = ExStorLib.Instance;
 			// after xLib / before data
 			Exid = new Exid();			
@@ -98,7 +102,7 @@ namespace ExStorSys
 
 			RestartRequired = null;
 
-			// Debug.WriteLine($"\n*** ExStorMgr init | exit  ({ObjectId})");
+			R.ProcessMsg("init", ObjectId, false);
 		}
 
 		public void Restore()
@@ -182,19 +186,18 @@ namespace ExStorSys
 			xData.ResetSheetSchemaSilent();
 		}
 
+		/* entity */
+
+		public bool GetEntity(DataStorage ds, Schema? s, out  Entity? e)
+		{
+			e = null;
+			return xLib.GetEntity(ds, s, out e);
+		}
+
+
 	#endregion
 
 	#region update
-
-		/* update field in xData */
-
-		public bool UpdateWbkDataField(WorkBookFieldKeys key, DynaValue value)
-		{
-			WorkBook wbk;
-
-
-			return true;
-		}
 
 		/* update field in entity */
 
@@ -270,6 +273,7 @@ namespace ExStorSys
 			string nextId = ExStorConst.CreateNextIdCode(lastId);
 
 			xData.WorkBook.LastId = nextId;
+
 			UpdateWbkEntityField(PK_AD_LAST_ID, new DynaValue(nextId));
 
 			return nextId;
@@ -323,7 +327,7 @@ namespace ExStorSys
 			
 			if (!xData.GotWbkSchema) return false;
 
-			ExStoreRtnCode rtnCode = xLib.WriteWorkBook(xData.WorkBook, xData.WorkBookSchema);
+			ExStoreRtnCode rtnCode = xLib.WriteNewWorkBook(xData.WorkBook, xData.WorkBookSchema);
 
 			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
 			{
@@ -371,12 +375,6 @@ namespace ExStorSys
 			// xData.TempModelCode = wbk.ModelCode;
 			xData.WorkBook = wbk;
 		}
-
-		// public void EnableWbkTrackChanges()
-		// {
-		// 	xData.WbkEnableTrackChanges();
-		// }
-		
 
 	#endregion
 
@@ -443,7 +441,7 @@ namespace ExStorSys
 		
 			foreach ((string key, Sheet sht) in xData.Sheets)
 			{
-				rtnCode = xLib.WriteSheet(sht, xData.SheetSchema);
+				rtnCode = xLib.WriteNewSheet(sht, xData.SheetSchema);
 		
 				if (rtnCode != ExStoreRtnCode.XRC_GOOD) break;
 			}
@@ -460,7 +458,7 @@ namespace ExStorSys
 
 			if (!xData.TryGetSheet(dsName, out sht)) return false;
 
-			ExStoreRtnCode rtnCode = xLib.WriteSheet(sht, xData.SheetSchema);
+			ExStoreRtnCode rtnCode = xLib.WriteNewSheet(sht, xData.SheetSchema);
 
 			if (rtnCode != ExStoreRtnCode.XRC_GOOD)
 			{
@@ -507,9 +505,12 @@ namespace ExStorSys
 		}
 
 		// test routine
+		/// <summary>
+		/// Add a new family and family type entry to the current sheet
+		/// </summary>
 		public bool AddSheetFamily(string fam, string type, string props)
 		{
-			return xData.CurrentSheet != null 
+			return xData.CurrentSheet != null
 				&& xData.CurrentSheet.AddFamAndType(fam, type, props);
 		}
 
@@ -594,16 +595,16 @@ namespace ExStorSys
 			return result;
 		}
 
-		public void DeleteLocalDs(string name, ItemUsage iu)
-		{
-			if (iu == ItemUsage.IU_WBK && xData.GotWbkDs)
-			{
-				if (xData.WorkBook.ExsDataStorage.Name.Equals(name))
-				{
-					
-				}
-			}
-		}
+		// public void DeleteLocalDs(string name, ItemUsage iu)
+		// {
+		// 	if (iu == ItemUsage.IU_WBK && xData.GotWbkDs)
+		// 	{
+		// 		if (xData.WorkBook.ExsDataStorage.Name.Equals(name))
+		// 		{
+		// 			
+		// 		}
+		// 	}
+		// }
 
 		public bool EraseScList(IList<Schema>? scList)
 		{
@@ -813,6 +814,27 @@ namespace ExStorSys
 		// 	return true;
 		// }
 
+		// /// <summary>
+		// /// read a workbook from the DS into the locak workbook<br/>
+		// /// the locak workbook must have the DS, Entity, and Schema configured
+		// /// </summary>
+		// private bool readWorkBook()
+		// {
+		// 	bool result = false;
+		//
+		// 	if (!xData.GotWbkSchema) return result;
+		//
+		// 	if (!xData.WorkBook.IsEmpty) return false;
+		//
+		// 	if (xLib.ReadEntityFields(xData.WorkBook.ExsEntity, xData.WorkBook) == ExStoreRtnCode.XRC_GOOD)
+		// 	{
+		// 		result = true;
+		// 	}
+		//
+		// 	return result;
+		// }
+
+
 		public bool ReadWorkBookViaTempInfo(out WorkBook? wbk, out ObservableDictionary<string, Sheet>? shts)
 		{
 			wbk = WorkBook.CreateEmptyWorkBook();
@@ -845,37 +867,72 @@ namespace ExStorSys
 				}
 			}
 
+
+
 			return true;
 		}
 
-		// /// <summary>
-		// /// read a workbook from the DS into the locak workbook<br/>
-		// /// the locak workbook must have the DS, Entity, and Schema configured
-		// /// </summary>
-		// private bool readWorkBook()
-		// {
-		// 	bool result = false;
-		//
-		// 	if (!xData.GotWbkSchema) return result;
-		//
-		// 	if (!xData.WorkBook.IsEmpty) return false;
-		//
-		// 	if (xLib.ReadEntityFields(xData.WorkBook.ExsEntity, xData.WorkBook) == ExStoreRtnCode.XRC_GOOD)
-		// 	{
-		// 		result = true;
-		// 	}
-		//
-		// 	return result;
-		// }
+		public bool ReadModelWbkInfo(out WorkBook? wbk)
+		{
+			wbk = WorkBook.CreateEmptyWorkBook();
+			Entity e;
+			//the current temp information is considered invalid
+			// clear all temp data
+			xData.ResetTemp();
 
-		private bool readWorkBook(DataStorage? ds, Schema? s)
+			if (FindWbkDataStorage() != VDS_GOOD) return false;
+			if (FindAndVerifyWbkSchema2() != VSC_GOOD) return false;
+
+			if (!xLib.GetEntity(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx!.Item, out e)) return false;
+
+			xData.TempWbkEntity = e;
+
+			if (xLib.ReadEntityFields(xData.TempWbkEntity, wbk) != ExStoreRtnCode.XRC_GOOD) return false;
+			
+			wbk.UpdateExsObjects(xData.TempWbkDsEx!.Item, xData.TempWbkEntity!, xData.TempWbkSchemaEx!.Item);
+
+			return true;
+		}
+
+		public bool ReadModelShtsInfo(out ObservableDictionary<string, Sheet?> shts)
+		{
+			shts = new ();
+			Sheet sht;
+			Entity e;
+
+			if (FindShtDataStorage2() != VDS_GOOD) return false;
+			if (FindAndVerifyShtSchema2() != VSC_GOOD) return false;
+
+			foreach ((string? key, ExListItem<DataStorage>? value) in xData.TempShtDsListEx.GoodItems)
+			{
+				if (!xLib.GetEntity(value.Item, xData.TempShtSchemaEx!.Item, out e)) continue;
+
+				if (readSheet(value.Item, xData.TempShtSchemaEx!.Item, out sht))
+				{
+					sht.ExsEntity = e;
+
+					if (shts.TryAdd(key, sht))
+					{
+						sht.Config();
+					}
+				}
+			}
+
+			return true;
+		}
+
+
+
+		// private bool readWorkBook(DataStorage? ds, Entity? e, Schema? s)
+		private bool readWorkBook(Entity? e)
 		{
 			bool result = false;
-			Entity? e;
-			if (!xLib.GetEntity(ds!, s, out e)) return false;
+			if (e == null) return false;
+			// Entity? e;
+			// if (!xLib.GetEntity(ds!, s, out e)) return false;
 
-			xData.WorkBook = WorkBook.CreateEmptyWorkBook();
-			xData.WorkBook.UpdateExsObjects(ds!, e!, s);
+			// xData.WorkBook = WorkBook.CreateEmptyWorkBook();
+			// xData.WorkBook.UpdateExsObjects(ds!, e!, s);
 
 			if (xLib.ReadEntityFields(e, xData.WorkBook) == ExStoreRtnCode.XRC_GOOD)
 			{
@@ -910,17 +967,17 @@ namespace ExStorSys
 		/// </summary>
 		public string? ReadModelName(DataStorage ds, Schema? s)
 		{
-			Entity? e;
-		
-			if (!xLib.GetEntity(ds, s, out e)) return null;
-
-			xData.TempWbkEntity = e;
+			// Entity? e;
+			//
+			// if (!xLib.GetEntity(ds, s, out e)) return null;
+			//
+			// xData.TempWbkEntity = e;
 
 			// FieldData<WorkBookFieldKeys> f = xData.GetWbkFieldData(PK_MD_MODEL_TITLE);
 			// FieldDef<WorkBookFieldKeys> f = xData.GetWbkFieldDef(PK_MD_MODEL_TITLE);
 			FieldDef<WorkBookFieldKeys> f = Fields.GetWbkFieldDef(PK_MD_MODEL_TITLE);
 
-			return xLib.CleanName(xLib.ReadFieldDyn(e, f).Value);
+			return xLib.CleanName(xLib.ReadFieldDyn(xData.TempWbkEntity!, f).Value);
 		}
 
 		/// <summary>
@@ -928,18 +985,18 @@ namespace ExStorSys
 		/// </summary>
 		public ActivateStatus ReadActivationStatus(DataStorage ds, Schema? s)
 		{
-			Entity? e;
-		
-			if (!xLib.GetEntity(ds, s, out e)) return ActivateStatus.AS_NA;
-
-			xData.TempWbkEntity = e;
+			// Entity? e;
+			//
+			// if (!xLib.GetEntity(ds, s, out e)) return ActivateStatus.AS_NA;
+			//
+			// xData.TempWbkEntity = e;
 
 			// FieldDef<WorkBookFieldKeys> f = xData.GetWbkFieldDef(PK_AD_STATUS);
 			FieldDef<WorkBookFieldKeys> f = Fields.GetWbkFieldDef(PK_AD_STATUS);
 
 			// if (f.Field == null) return ActivateStatus.AS_INACTIVE;
 
-			ActivateStatus act = xLib.ReadField2(e, f) ?? ActivateStatus.AS_INACTIVE;
+			ActivateStatus act = xLib.ReadField2(xData.TempWbkEntity!, f) ?? ActivateStatus.AS_INACTIVE;
 
 			return act;
 		}
@@ -949,7 +1006,234 @@ namespace ExStorSys
 
 	#region launch, start, initialization, and validation routines
 
-		/* launch, start, and validation routines */
+		/* launch validation routines */
+
+		/// <summary>
+		/// initial verification step.  find a wbk ds and save
+		/// this to xData
+		/// </summary>
+		public ValidateDataStorage FindWbkDataStorage()
+		{
+			string verStr;
+			ValidateDataStorage status; // = VDS_GOOD;
+			IList<DataStorage> dsList;
+			ExListItem<DataStorage> dsx;
+			
+			if (!FindAllWbkDs(out dsList)) return VDS_MISSING;
+			if (dsList.Count != 1) return VDS_WRONG_COUNT;
+			
+			status = verifyDataStorage(dsList[0], ExStorConst.EXS_VERSION_WBK, 
+				out dsx, out verStr);
+
+			if (status != VDS_INVALID)
+			{
+				xData.TempWbkDsEx = dsx;
+				xData.TempWbkVersion = verStr;
+			}
+
+			return status;
+		}
+
+		/// <summary>
+		/// initial verification step.  find sht ds's and save
+		/// this to xData
+		/// </summary>
+		public ValidateDataStorage FindShtDataStorage2()
+		{
+			string verStr;
+			ValidateDataStorage result = VDS_GOOD;
+			ValidateDataStorage status; // = VDS_GOOD;
+			IList<DataStorage> dsList;
+			ExListItem<DataStorage> dsx;
+			
+			if (!FindAllShtDs(out dsList)) return VDS_MISSING;
+			if (dsList.Count == 0) return VDS_WRONG_COUNT;
+
+			xData.TempShtDsListEx = new ();
+
+			foreach (DataStorage ds in dsList)
+			{
+				status = verifyDataStorage(ds, ExStorConst.EXS_VERSION_SHT, 
+					out dsx, out verStr);
+
+				if (status != VDS_GOOD && result == VDS_GOOD) result = status;
+
+				if (status == VDS_INVALID) continue;
+
+				xData.TempShtDsListEx.Add(dsx);
+				xData.TempShtVersion = verStr;
+			}
+
+			if (result == VDS_GOOD && 
+				xData.TempShtDsListEx.GoodItemsCount == 0) result = VDS_WRONG_COUNT;
+
+			return result;
+		}
+
+		/// <summary>
+		/// initial validation of a datastorage element
+		/// </summary>
+		private ValidateDataStorage verifyDataStorage(DataStorage ds, string verTestStr, 
+			out ExListItem<DataStorage> dsx, out string verStr)
+		{
+			ValidateDataStorage status = VDS_GOOD;
+			
+			verStr = String.Empty;
+			dsx = new ExListItem<DataStorage>(ds.Name, ds);
+
+			if (!ds.IsValidObject || ds.GetEntitySchemaGuids().Count != 1)
+			{
+				dsx.SetNotValid();
+				return VDS_INVALID;
+			}
+
+			verStr = ExtractVersionFromName(ds.Name)!;
+			
+			if (verStr.IsVoid() || !verStr.Equals(verTestStr))
+			{
+				dsx.SetWrongVersion();
+				status = VDS_WRONG_VER;
+			}
+
+			return status;
+		}
+
+
+		// there can be only one - but the find routine can find many
+		// need to verify which, if any, are correct
+		public ValidateSchema FindAndVerifyWbkSchema2()
+		{
+			IList<Guid> guids;
+			IList<Schema> scList;
+			ExListItem<Schema> scx;
+
+			if (!FindAllWbkSchema(out scList)) return VSC_MISSING;
+
+			if (!xData.GotTempWbkDs)
+			{
+				// no data storage - cannot verify schema
+				// so must assume they are all good
+				// use the first one found
+
+				xData.TempWbkSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+				return VSC_GOOD;
+			}
+
+			guids = xData.TempWbkDsEx!.Item.GetEntitySchemaGuids();
+
+			foreach (Schema sc in scList)
+			{
+				// if ( verifySchema(sc, xData.TempWbkVersion, out scx) == VSC_INVALID) continue;
+				if ( verifySchema(sc, ExStorConst.EXS_VERSION_WBK, out scx) == VSC_INVALID) continue;
+
+				// if resultWbkDs == wrong version && scx.version == true -> invalid -> continue
+				// if ( resultWbkDs == VDS_WRONG_VER && !scx.Version) continue;
+
+				if (!verifySchemaGuid(sc, guids)) continue;
+
+				if (xData.TempWbkSchemaEx == null)
+				{
+					// found the first one
+					xData.TempWbkSchemaEx = scx;
+				}
+				else
+				{
+					// found a second one - fail
+					xData.TempWbkSchemaEx = null;
+					return VSC_WRONG_COUNT;
+				}
+			}
+
+			return (xData.TempWbkSchemaEx?.Version ?? false) ? VSC_GOOD : xData.TempWbkSchemaEx == null ? VSC_MISSING : VSC_WRONG_VER;
+		}
+
+		public ValidateSchema FindAndVerifyShtSchema2()
+		{
+			IList<Guid> guids;
+			IList<Schema> scList;
+			ExListItem<Schema> scx;
+
+			if (!FindAllShtSchema(out scList)) return VSC_MISSING;
+
+			if (!xData.GotTempShtDs || !xData.TempShtDsListEx!.GotOneGoodItem)
+			{
+				// no data storage - cannot verify schema
+				// so must assume they are all good
+				// use the first one found
+
+				xData.TempShtSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+				return VSC_GOOD;
+			}
+
+			guids = xData.TempShtDsListEx!.GetGoodItem!.Item.GetEntitySchemaGuids();
+
+			foreach (Schema sc in scList)
+			{
+				// if ( verifySchema(sc, xData.TempShtVersion, out scx) == VSC_INVALID) continue;
+				if ( verifySchema(sc, ExStorConst.EXS_VERSION_SHT, out scx) == VSC_INVALID) continue;
+
+				// if ( resultShtDs == VDS_WRONG_VER && !scx.Version) continue;
+
+				if (!verifySchemaGuid(sc, guids)) continue;
+
+				if (xData.TempShtSchemaEx == null)
+				{
+					// found the first one
+					xData.TempShtSchemaEx = scx;
+				}
+				else
+				{
+					// found a second one - fail
+					xData.TempShtSchemaEx = null;
+					return VSC_WRONG_COUNT;
+				}
+			}
+
+			return xData.TempShtSchemaEx!.Version ? VSC_GOOD : VSC_WRONG_VER;
+		}
+
+
+
+		/// <summary>
+		/// verify if the schema is OK<br/>
+		/// validates if an OK revit object and the version is correct
+		/// </summary>
+		private ValidateSchema  verifySchema(Schema sc, string verStr, out ExListItem<Schema> scx)
+		{
+			scx = new ExListItem<Schema>(sc.SchemaName, sc);
+
+			if (!sc.IsValidObject) return VSC_INVALID;
+			
+			ValidateSchema status = VSC_GOOD;
+
+			string? verStrTst = ExtractVersionFromName(sc.SchemaName);
+
+
+			if (verStrTst.IsVoid() || !verStrTst.Equals(verStr))
+			{
+				scx.SetWrongVersion();
+				status = VSC_WRONG_VER;
+			}
+
+			return status;
+		}
+
+		/// <summary>
+		/// validate the schema's guid against a list of guids.  the list of guids
+		/// should come from the data storage object
+		/// </summary>
+		private bool verifySchemaGuid(Schema sc, IList<Guid> guids)
+		{
+			foreach (Guid guid in guids)
+			{
+				if (sc.GUID.Equals(guid)) return true;
+			}
+
+			return false;
+		}
+
+
+		/* start */
 
 		/// <summary>
 		/// combo routine to transfer the workbook schema and the workbook ds
@@ -1063,12 +1347,14 @@ namespace ExStorSys
 
 				if (!transShtV1ToShtV2(oldSheet, out newSheet)) continue;
 
-				if (xLib.WriteSheet(newSheet!, xData.SheetSchema) != ExStoreRtnCode.XRC_GOOD) return false;
+				if (xLib.WriteNewSheet(newSheet!, xData.SheetSchema) != ExStoreRtnCode.XRC_GOOD) return false;
 				
 				// xData.SheetsList.Add(newSheet!.DsName, newSheet);
 
 				xData.AddSheetPreInit(newSheet);
 			}
+
+			xData.FinalizeSheetListInit();
 
 			return true;
 		}
@@ -1240,8 +1526,7 @@ namespace ExStorSys
 		/// specific for a type 2 (new version) copy
 		/// </summary>
 		public Dictionary<SheetFieldKeys, DynaValue> MakeCpyShtDataForNewVer(			
-			DynaValue modDt, 
-			DynaValue modBy)
+			DynaValue modDt, DynaValue modBy)
 		{
 			return MakeCpyShtData(DynaValue.InValid(), 
 				DynaValue.InValid(), modDt, modBy);
@@ -1252,10 +1537,7 @@ namespace ExStorSys
 		/// create the dictionary with the updated values when a sheet is duplicated
 		/// </summary>
 		public Dictionary<SheetFieldKeys, DynaValue> MakeCpyShtData(
-			DynaValue createdDt, 
-			DynaValue createdBy, 
-			DynaValue modDt, 
-			DynaValue modBy)
+			DynaValue createdDt, DynaValue createdBy, DynaValue modDt, DynaValue modBy)
 		{
 			Dictionary<SheetFieldKeys, DynaValue> values = new ()
 			{
@@ -1293,21 +1575,24 @@ namespace ExStorSys
 		/// </summary>
 		private bool transTempWbkDsToXdata()
 		{
-			Entity e;
+			Entity e = xData.TempWbkEntity;
 
 			// wbk ds
-			if (!xData.GotTempWbkDs) return false;
+			if (!xData.GotTempWbkDs || e == null) return false;
 
 			xData.WorkBook = WorkBook.CreateEmptyWorkBook();
 
-			// wbk entity
-			if (!xLib.GetEntity(xData.TempWbkDsEx!.Item, 
-					xData.WorkBookSchema, out e)) return false;
+			// if (e == null)
+			// {
+			// 	// wbk entity
+			// 	if (!xLib.GetEntity(xData.TempWbkDsEx!.Item, 
+			// 			xData.WorkBookSchema, out e)) return false;
+			// }
 
-			xData.WorkBook.UpdateExsObjects(xData.TempWbkDsEx.Item,
-				e!, xData.WorkBookSchema!);
+			xData.WorkBook.UpdateExsObjects(xData.TempWbkDsEx.Item, e!, 
+				xData.WorkBookSchema!);
 
-			return readWorkBook(xData.TempWbkDsEx!.Item, xData.WorkBookSchema);
+			return readWorkBook(e!);
 
 			// // changed from true to this
 			// return readWorkBook();
@@ -1356,6 +1641,8 @@ namespace ExStorSys
 					xData.AddSheetPreInit(sht!);
 				}
 			}
+
+			xData.FinalizeSheetListInit();
 
 			return xData.GotAnySheets ? true : null;
 		}
@@ -1458,7 +1745,7 @@ namespace ExStorSys
 		// 	return sht.GetField(key);
 		// }
 
-		/** entity **/
+		/* entity */
 
 		// private bool getEntity(DataStorage ds, Schema? s, out Entity? e)
 		// {

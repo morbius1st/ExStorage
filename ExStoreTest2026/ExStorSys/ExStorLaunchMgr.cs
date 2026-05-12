@@ -313,25 +313,26 @@ namespace ExStorSys
 		/// </summary>
 		private ValidateDataStorage findWbkDataStorage2()
 		{
-			string verStr;
-			ValidateDataStorage status; // = VDS_GOOD;
-			IList<DataStorage> dsList;
-			ExListItem<DataStorage> dsx;
-			
+			return xMgr.FindWbkDataStorage();
 
-			if (!xMgr.FindAllWbkDs(out dsList)) return VDS_MISSING;
-			if (dsList.Count != 1) return VDS_WRONG_COUNT;
-			
-			status = verifyDataStorage(dsList[0], ExStorConst.EXS_VERSION_WBK, 
-				out dsx, out verStr);
-
-			if (status != VDS_INVALID)
-			{
-				xData.TempWbkDsEx = dsx;
-				xData.TempWbkVersion = verStr;
-			}
-
-			return status;
+			// string verStr;
+			// ValidateDataStorage status; // = VDS_GOOD;
+			// IList<DataStorage> dsList;
+			// ExListItem<DataStorage> dsx;
+			//
+			// if (!xMgr.FindAllWbkDs(out dsList)) return VDS_MISSING;
+			// if (dsList.Count != 1) return VDS_WRONG_COUNT;
+			//
+			// status = verifyDataStorage(dsList[0], ExStorConst.EXS_VERSION_WBK, 
+			// 	out dsx, out verStr);
+			//
+			// if (status != VDS_INVALID)
+			// {
+			// 	xData.TempWbkDsEx = dsx;
+			// 	xData.TempWbkVersion = verStr;
+			// }
+			//
+			// return status;
 		}
 
 		/* 1b */
@@ -339,48 +340,52 @@ namespace ExStorSys
 		// need to verify which, if any, are correct
 		private ValidateSchema findAndVerifyWbkSchema2()
 		{
-			IList<Guid> guids;
-			IList<Schema> scList;
-			ExListItem<Schema> scx;
+			return xMgr.FindAndVerifyWbkSchema2();
 
-			if (!xMgr.FindAllWbkSchema(out scList)) return VSC_MISSING;
-
-			if (!xData.GotTempWbkDs)
-			{
-				// no data storage - cannot verify schema
-				// so must assume they are all good
-				// use the first one found
-
-				xData.TempWbkSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
-				return VSC_GOOD;
-			}
-
-			guids = xData.TempWbkDsEx!.Item.GetEntitySchemaGuids();
-
-			foreach (Schema sc in scList)
-			{
-				// if ( verifySchema(sc, xData.TempWbkVersion, out scx) == VSC_INVALID) continue;
-				if ( verifySchema(sc, ExStorConst.EXS_VERSION_WBK, out scx) == VSC_INVALID) continue;
-
-				// if resultWbkDs == wrong version && scx.version == true -> invalid -> continue
-				// if ( resultWbkDs == VDS_WRONG_VER && !scx.Version) continue;
-
-				if (!verifySchemaGuid(sc, guids)) continue;
-
-				if (xData.TempWbkSchemaEx == null)
-				{
-					// found the first one
-					xData.TempWbkSchemaEx = scx;
-				}
-				else
-				{
-					// found a second one - fail
-					xData.TempWbkSchemaEx = null;
-					return VSC_WRONG_COUNT;
-				}
-			}
-
-			return (xData.TempWbkSchemaEx?.Version ?? false) ? VSC_GOOD : xData.TempWbkSchemaEx == null ? VSC_MISSING : VSC_WRONG_VER;
+			// moved to xmgr
+			//
+			// IList<Guid> guids;
+			// IList<Schema> scList;
+			// ExListItem<Schema> scx;
+			//
+			// if (!xMgr.FindAllWbkSchema(out scList)) return VSC_MISSING;
+			//
+			// if (!xData.GotTempWbkDs)
+			// {
+			// 	// no data storage - cannot verify schema
+			// 	// so must assume they are all good
+			// 	// use the first one found
+			//
+			// 	xData.TempWbkSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+			// 	return VSC_GOOD;
+			// }
+			//
+			// guids = xData.TempWbkDsEx!.Item.GetEntitySchemaGuids();
+			//
+			// foreach (Schema sc in scList)
+			// {
+			// 	// if ( verifySchema(sc, xData.TempWbkVersion, out scx) == VSC_INVALID) continue;
+			// 	if ( verifySchema(sc, ExStorConst.EXS_VERSION_WBK, out scx) == VSC_INVALID) continue;
+			//
+			// 	// if resultWbkDs == wrong version && scx.version == true -> invalid -> continue
+			// 	// if ( resultWbkDs == VDS_WRONG_VER && !scx.Version) continue;
+			//
+			// 	if (!verifySchemaGuid(sc, guids)) continue;
+			//
+			// 	if (xData.TempWbkSchemaEx == null)
+			// 	{
+			// 		// found the first one
+			// 		xData.TempWbkSchemaEx = scx;
+			// 	}
+			// 	else
+			// 	{
+			// 		// found a second one - fail
+			// 		xData.TempWbkSchemaEx = null;
+			// 		return VSC_WRONG_COUNT;
+			// 	}
+			// }
+			//
+			// return (xData.TempWbkSchemaEx?.Version ?? false) ? VSC_GOOD : xData.TempWbkSchemaEx == null ? VSC_MISSING : VSC_WRONG_VER;
 		}
 
 		/* 1c */
@@ -395,6 +400,14 @@ namespace ExStorSys
 
 			// ActivateStatus actStat;
 			// string modelName;
+
+			Entity? e;
+
+			if (!xMgr.GetEntity(xData.TempWbkDsEx!.Item, 
+					xData.TempWbkSchemaEx!.Item, out e)) return VDS_INVALID;
+
+			xData.TempWbkEntity = e;
+
 
 			// initial verification done
 			ValidateDataStorage status = VDS_GOOD;
@@ -442,80 +455,88 @@ namespace ExStorSys
 		/// </summary>
 		private ValidateDataStorage findShtDataStorage2()
 		{
-			string verStr;
-			ValidateDataStorage result = VDS_GOOD;
-			ValidateDataStorage status; // = VDS_GOOD;
-			IList<DataStorage> dsList;
-			ExListItem<DataStorage> dsx;
-			
-			if (!xMgr.FindAllShtDs(out dsList)) return VDS_MISSING;
-			if (dsList.Count == 0) return VDS_WRONG_COUNT;
+			return xMgr.FindShtDataStorage2();
 
-			xData.TempShtDsListEx = new ();
-
-			foreach (DataStorage ds in dsList)
-			{
-				status = verifyDataStorage(ds, ExStorConst.EXS_VERSION_SHT, 
-					out dsx, out verStr);
-
-				if (status != VDS_GOOD && result == VDS_GOOD) result = status;
-
-				if (status == VDS_INVALID) continue;
-
-				xData.TempShtDsListEx.Add(dsx);
-				xData.TempShtVersion = verStr;
-			}
-
-			if (result == VDS_GOOD && 
-				xData.TempShtDsListEx.GoodItemsCount == 0) result = VDS_WRONG_COUNT;
-
-			return result;
+			// moved to xmgr
+			//
+			// string verStr;
+			// ValidateDataStorage result = VDS_GOOD;
+			// ValidateDataStorage status; // = VDS_GOOD;
+			// IList<DataStorage> dsList;
+			// ExListItem<DataStorage> dsx;
+			//
+			// if (!xMgr.FindAllShtDs(out dsList)) return VDS_MISSING;
+			// if (dsList.Count == 0) return VDS_WRONG_COUNT;
+			//
+			// xData.TempShtDsListEx = new ();
+			//
+			// foreach (DataStorage ds in dsList)
+			// {
+			// 	status = verifyDataStorage(ds, ExStorConst.EXS_VERSION_SHT, 
+			// 		out dsx, out verStr);
+			//
+			// 	if (status != VDS_GOOD && result == VDS_GOOD) result = status;
+			//
+			// 	if (status == VDS_INVALID) continue;
+			//
+			// 	xData.TempShtDsListEx.Add(dsx);
+			// 	xData.TempShtVersion = verStr;
+			// }
+			//
+			// if (result == VDS_GOOD && 
+			// 	xData.TempShtDsListEx.GoodItemsCount == 0) result = VDS_WRONG_COUNT;
+			//
+			// return result;
 		}
 
 		/* 2b */
 		private ValidateSchema findAndVerifyShtSchema2()
 		{
-			IList<Guid> guids;
-			IList<Schema> scList;
-			ExListItem<Schema> scx;
+			return xMgr.FindAndVerifyShtSchema2();
 
-			if (!xMgr.FindAllShtSchema(out scList)) return VSC_MISSING;
-
-			if (!xData.GotTempShtDs || !xData.TempShtDsListEx!.GotOneGoodItem)
-			{
-				// no data storage - cannot verify schema
-				// so must assume they are all good
-				// use the first one found
-
-				xData.TempShtSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
-				return VSC_GOOD;
-			}
-
-			guids = xData.TempShtDsListEx!.GetGoodItem!.Item.GetEntitySchemaGuids();
-
-			foreach (Schema sc in scList)
-			{
-				// if ( verifySchema(sc, xData.TempShtVersion, out scx) == VSC_INVALID) continue;
-				if ( verifySchema(sc, ExStorConst.EXS_VERSION_SHT, out scx) == VSC_INVALID) continue;
-
-				// if ( resultShtDs == VDS_WRONG_VER && !scx.Version) continue;
-
-				if (!verifySchemaGuid(sc, guids)) continue;
-
-				if (xData.TempShtSchemaEx == null)
-				{
-					// found the first one
-					xData.TempShtSchemaEx = scx;
-				}
-				else
-				{
-					// found a second one - fail
-					xData.TempShtSchemaEx = null;
-					return VSC_WRONG_COUNT;
-				}
-			}
-
-			return xData.TempShtSchemaEx!.Version ? VSC_GOOD : VSC_WRONG_VER;
+			// moved to xmgr
+			//
+			// IList<Guid> guids;
+			// IList<Schema> scList;
+			// ExListItem<Schema> scx;
+			//
+			// if (!xMgr.FindAllShtSchema(out scList)) return VSC_MISSING;
+			//
+			// if (!xData.GotTempShtDs || !xData.TempShtDsListEx!.GotOneGoodItem)
+			// {
+			// 	// no data storage - cannot verify schema
+			// 	// so must assume they are all good
+			// 	// use the first one found
+			//
+			// 	xData.TempShtSchemaEx = new ExListItem<Schema>(scList[0].SchemaName, scList[0]);
+			// 	return VSC_GOOD;
+			// }
+			//
+			// guids = xData.TempShtDsListEx!.GetGoodItem!.Item.GetEntitySchemaGuids();
+			//
+			// foreach (Schema sc in scList)
+			// {
+			// 	// if ( verifySchema(sc, xData.TempShtVersion, out scx) == VSC_INVALID) continue;
+			// 	if ( verifySchema(sc, ExStorConst.EXS_VERSION_SHT, out scx) == VSC_INVALID) continue;
+			//
+			// 	// if ( resultShtDs == VDS_WRONG_VER && !scx.Version) continue;
+			//
+			// 	if (!verifySchemaGuid(sc, guids)) continue;
+			//
+			// 	if (xData.TempShtSchemaEx == null)
+			// 	{
+			// 		// found the first one
+			// 		xData.TempShtSchemaEx = scx;
+			// 	}
+			// 	else
+			// 	{
+			// 		// found a second one - fail
+			// 		xData.TempShtSchemaEx = null;
+			// 		return VSC_WRONG_COUNT;
+			// 	}
+			// }
+			//
+			// return xData.TempShtSchemaEx!.Version ? VSC_GOOD : VSC_WRONG_VER;
 		}
 
 		/* 2c */
@@ -540,102 +561,104 @@ namespace ExStorSys
 
 		/* backup routines */
 
-		/// <summary>
-		/// initial validation of a datastorage element
-		/// </summary>
-		private ValidateDataStorage verifyDataStorage(DataStorage ds, string verTestStr, 
-			out ExListItem<DataStorage> dsx, out string verStr)
-		{
-			ValidateDataStorage status = VDS_GOOD;
-			
-			verStr = String.Empty;
-			dsx = new ExListItem<DataStorage>(ds.Name, ds);
-
-			if (!ds.IsValidObject || ds.GetEntitySchemaGuids().Count != 1)
-			{
-				dsx.SetNotValid();
-				return VDS_INVALID;
-			}
-
-			verStr = xMgr.ExtractVersionFromName(ds.Name)!;
-			
-			if (verStr.IsVoid() || !verStr.Equals(verTestStr))
-			{
-				dsx.SetWrongVersion();
-				status = VDS_WRONG_VER;
-			}
-
-			return status;
-		}
-
+		// moved to xMgr
+		//
 		// /// <summary>
-		// /// data storage validation part two.  validate activation status and model name
+		// /// initial validation of a datastorage element
 		// /// </summary>
-		// private ValidateDataStorage validateShtDataStorage()
+		// private ValidateDataStorage verifyDataStorage(DataStorage ds, string verTestStr, 
+		// 	out ExListItem<DataStorage> dsx, out string verStr)
 		// {
-		// 	ActivateStatus actStat;
-		// 	string modelName;
-		//
 		// 	ValidateDataStorage status = VDS_GOOD;
+		// 	
+		// 	verStr = String.Empty;
+		// 	dsx = new ExListItem<DataStorage>(ds.Name, ds);
 		//
-		// 	actStat = xMgr.ReadActivationStatus(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx!.Item);
-		//
-		// 	if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
-		//
-		// 	if (actStat == ActivateStatus.AS_INACTIVE)
+		// 	if (!ds.IsValidObject || ds.GetEntitySchemaGuids().Count != 1)
 		// 	{
-		// 		status = VDS_ACT_OFF;
-		// 		xData.TempWbkDsEx!.SetActIsOff();
+		// 		dsx.SetNotValid();
+		// 		return VDS_INVALID;
 		// 	}
 		//
-		// 	modelName = xMgr.ReadModelName(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx.Item) ?? "";
-		//
-		// 	if (!modelName.Equals(xMgr.Exid.ModelName))
+		// 	verStr = xMgr.ExtractVersionFromName(ds.Name)!;
+		// 	
+		// 	if (verStr.IsVoid() || !verStr.Equals(verTestStr))
 		// 	{
-		// 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
-		// 		xData.TempWbkDsEx!.SetWrongModelName();
+		// 		dsx.SetWrongVersion();
+		// 		status = VDS_WRONG_VER;
 		// 	}
 		//
 		// 	return status;
 		// }
-
-		/// <summary>
-		/// verify if the schema is OK<br/>
-		/// validates if an OK revit object and the version is correct
-		/// </summary>
-		private ValidateSchema  verifySchema(Schema sc, string verStr, out ExListItem<Schema> scx)
-		{
-			scx = new ExListItem<Schema>(sc.SchemaName, sc);
-
-			if (!sc.IsValidObject) return VSC_INVALID;
-			
-			ValidateSchema status = VSC_GOOD;
-
-			string? verStrTst = xMgr.ExtractVersionFromName(sc.SchemaName);
-
-
-			if (verStrTst.IsVoid() || !verStrTst.Equals(verStr))
-			{
-				scx.SetWrongVersion();
-				status = VSC_WRONG_VER;
-			}
-
-			return status;
-		}
-
-		/// <summary>
-		/// validate the schema's guid against a list of guids.  the list of guids
-		/// should come from the data storage object
-		/// </summary>
-		private bool verifySchemaGuid(Schema sc, IList<Guid> guids)
-		{
-			foreach (Guid guid in guids)
-			{
-				if (sc.GUID.Equals(guid)) return true;
-			}
-
-			return false;
-		}
+		//
+		// // /// <summary>
+		// // /// data storage validation part two.  validate activation status and model name
+		// // /// </summary>
+		// // private ValidateDataStorage validateShtDataStorage()
+		// // {
+		// // 	ActivateStatus actStat;
+		// // 	string modelName;
+		// //
+		// // 	ValidateDataStorage status = VDS_GOOD;
+		// //
+		// // 	actStat = xMgr.ReadActivationStatus(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx!.Item);
+		// //
+		// // 	if (actStat == ActivateStatus.AS_IGNORE) return VDS_ACT_IGNORE;
+		// //
+		// // 	if (actStat == ActivateStatus.AS_INACTIVE)
+		// // 	{
+		// // 		status = VDS_ACT_OFF;
+		// // 		xData.TempWbkDsEx!.SetActIsOff();
+		// // 	}
+		// //
+		// // 	modelName = xMgr.ReadModelName(xData.TempWbkDsEx!.Item, xData.TempWbkSchemaEx.Item) ?? "";
+		// //
+		// // 	if (!modelName.Equals(xMgr.Exid.ModelName))
+		// // 	{
+		// // 		status = status == VDS_GOOD ? VDS_WRONG_MODEL_NAME : VDS_MULTIPLE_MN_O;
+		// // 		xData.TempWbkDsEx!.SetWrongModelName();
+		// // 	}
+		// //
+		// // 	return status;
+		// // }
+		//
+		// /// <summary>
+		// /// verify if the schema is OK<br/>
+		// /// validates if an OK revit object and the version is correct
+		// /// </summary>
+		// private ValidateSchema  verifySchema(Schema sc, string verStr, out ExListItem<Schema> scx)
+		// {
+		// 	scx = new ExListItem<Schema>(sc.SchemaName, sc);
+		//
+		// 	if (!sc.IsValidObject) return VSC_INVALID;
+		// 	
+		// 	ValidateSchema status = VSC_GOOD;
+		//
+		// 	string? verStrTst = xMgr.ExtractVersionFromName(sc.SchemaName);
+		//
+		//
+		// 	if (verStrTst.IsVoid() || !verStrTst.Equals(verStr))
+		// 	{
+		// 		scx.SetWrongVersion();
+		// 		status = VSC_WRONG_VER;
+		// 	}
+		//
+		// 	return status;
+		// }
+		//
+		// /// <summary>
+		// /// validate the schema's guid against a list of guids.  the list of guids
+		// /// should come from the data storage object
+		// /// </summary>
+		// private bool verifySchemaGuid(Schema sc, IList<Guid> guids)
+		// {
+		// 	foreach (Guid guid in guids)
+		// 	{
+		// 		if (sc.GUID.Equals(guid)) return true;
+		// 	}
+		//
+		// 	return false;
+		// }
 
 	#endregion
 

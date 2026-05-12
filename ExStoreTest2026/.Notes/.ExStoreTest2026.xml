@@ -651,7 +651,7 @@ should come from the data storage object
 					</member>
 					<member name=
 			"ExStorLib.
-WriteWorkBook(ExStorSys.WorkBook,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
+WriteNewWorkBook(ExStorSys.WorkBook,Autodesk.Revit.DB.ExtensibleStorage.Schema)">
 					<summary>
 takes the information stored in the workbook in xData and writes the
 information into the workbook's entity (and therefore into the models
@@ -870,7 +870,7 @@ configure workbook with typical data and model code
 					</member>
 					<member name=
 			"ExStorMgr.
-WriteWorkBook">
+WriteNewWorkBook">
 					<summary>
 Writes the workbook data to the external storage using the defined schema.
 					</summary>

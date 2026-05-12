@@ -42,6 +42,47 @@
 
 
 
+*********************************
+Start Manager code sequences
+*********************************
+
+ExStorStartMgr
+v
+switchBoardD
+v
+cases S or 0 -> proc_sn
+					+-> (process normal) -> startNormal
+v
+case 1 -> ... -> proc_nw
+					+-> (new) -> startActivate
+v
+case 2 -> ... -> proc_b
+					+-> (delete then create workbook) -> ? (deleteExistWbkDs) -> deleteExistWbkSchema -> ProcCreateAndWriteWbk -> ? (ProcTransSht)
+v
+case 3 -> ... -> proc_b
+					+-> (see above)
+v
+case 4 -> ... -> proc_cs
+					+-> (fix sht version) -> startFixShtVersion
+v
+case 6 -> ... -> proc_d
+					+-> (fix model name) -> xMgr.ProcTransWbk -> ? (startFixModelName) -> xxMgr.ProcTransSht
+v
+case 7 -> ... -> proc_cs -> ? -> proc_d
+					+-> (see above)
+v
+case O -> ... -> proc_o
+					+-> (reactivate) -> ProcTransWbk -> ? (ProcTransSht -> ? (startFixModelName) -> startSetActive)
+v
+case I -> ... ignore
+v
+v
+post process
+
+
+
+
+
 
 
 *********************************

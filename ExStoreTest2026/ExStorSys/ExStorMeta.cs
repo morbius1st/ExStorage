@@ -178,9 +178,11 @@ namespace ExStorSys
 
 		// exstordata
 		PI_XDATA_WBK        ,
+		PI_XDATA_WBK_MOD    ,
 		PI_XDATA_WBK_SC     ,
 		PI_XDATA_WBK_DS     ,
 		PI_XDATA_SHT        ,
+		PI_XDATA_SHT_MOD    ,
 		PI_XDATA_SHT_SC     ,
 		PI_XDATA_SHT_DS     ,
 
@@ -246,13 +248,25 @@ namespace ExStorSys
 
 	/* sheet */
 
+	/* Sheet Status, possible values
+	 * created		> only used when the list is created or there is no status
+	 * existing		> the item was read from the model
+	 * deleted		> an EXISTING item was deleted
+	 * modified		> an EXISTING item was modified
+	 * mod_deleted	> an EXISTING item was modified then deleted (this is done to allow status undo)
+	 *
+	 * new			> this is a new item, added by the user (note thata new item is also a modified item os new modified does not apply)
+	 * new_deleted	> a NEW item was deleted (this is done to allow status undo) 
+	 */
 	public enum SheetStatus
 	{
 		SS_CREATED,
 		SS_EXISTING,
-		SS_NEW,
 		SS_DELETED,
 		SS_MODIFIED,
+		SS_MOD_DELETED,
+		SS_NEW,
+		SS_NEW_DELETED,
 	}
 
 	/* fields */
@@ -295,7 +309,6 @@ namespace ExStorSys
 		FS_CLEAN  = 1,
 	}
 
-	[Flags]
 	public enum FieldCopyType
 	{
 		FC_IGNORE   = -1,
@@ -310,14 +323,53 @@ namespace ExStorSys
 		
 	}
 
-	public enum ItemUsage
+
+
+	/// <summary>
+	/// data about the state of the field - modified by the user, by alt src, etc. as a result of actions
+	/// </summary>
+	[Flags]
+	public enum FieldControl : ulong
 	{
-		IU_SCHEMA,
-		IU_DATASTORAGE,
-		IU_S_AND_DS,
-		IU_WBK,
-		IU_SHT
+		FC_NONE				= 0,
+		FC_BY_USER			= 1ul << 3,  
+		FC_BY_ALT_SRC_A		= 1ul << 4,
+		FC_BY_ALT_SRC_B		= 1ul << 5,
 	}
+
+	/// <summary>
+	/// data about the usage of the field - under user control, under program control, under alt src control, is a control field
+	/// </summary>
+	[Flags]
+	public enum ItemUsage : ulong
+	{
+		IU_NONE				= 0ul ,
+		IU_SCHEMA			= 1ul << 0,							// included as a schema field
+		IU_DATASTORAGE		= 1ul << 1,							// included as a data storage field
+		IU_S_AND_DS			= IU_SCHEMA | IU_DATASTORAGE,		// included as a field in both
+
+		IU_IS_CTRL_FLD		= 1ul << 2,							// this item's is a control field and changes to this field are not tracked
+		IU_IS_USER			= 1ul << 3,							// this item's status is controlled by user action
+		IU_IS_ALT_SRC_A		= 1ul << 4,							// this item's status is controlled by an alt source (type A)
+		IU_IS_ALT_SRC_B		= 1ul << 5,							// (not use now) this item's status is semi controlled by an alt source (type B)
+
+		IU_SND_BY_USER		= IU_S_AND_DS | IU_IS_USER,			// lazy combo for convenience
+		IU_SND_CTRL_FLD		= IU_S_AND_DS | IU_IS_CTRL_FLD,		// lazy combo for convenience
+		IU_SND_ALT_SRC_A	= IU_S_AND_DS | IU_IS_ALT_SRC_A,	// lazy combo for convenience
+		IU_SND_ALT_SRC_B	= IU_S_AND_DS | IU_IS_ALT_SRC_B,	// lazy combo for convenience
+
+	}
+
+	// item usage notes
+	// controlled by an alt source means
+	// that the items in a collection have changed or
+	// a field's value is driven by an external source or collection
+	// changes to this value dictate that the main item is modified
+	// semi controlled by an alt source means the same as type A except
+	// that this item does not exactly dictate that the item is modified
+	// that is, if this item / these items are the only items changed, then
+	// the item is not modified - for example, date modified
+
 
 	/*family / type enums */
 
@@ -408,6 +460,8 @@ namespace ExStorSys
 		public const ActivateStatus DEFAULT_ACTIVATE_STATUS = ActivateStatus.AS_INACTIVE;
 		public const SheetOpStatus DEFAULT_SHEET_OP_STATUS = SheetOpStatus.SOS_GOOD;
 
+		public const int FS_FLDSRC_SIZE_WBK = 2;
+		public const int FS_FLDSRC_SIZE_SHT = 2;
 
 		public static readonly string[,]  NAME_REPL_STRING =  new [,] {{ ".", "_"} } ;
 		public static readonly string[]  DOC_NAME_REPL_STRING =  [ @"[^0-9a-zA-Z]", ""]  ;
@@ -501,12 +555,6 @@ namespace ExStorSys
 		}
 
 		
-		/* sheet info constants */
-
-		public const string K_SHT_PLACE_HOLDER_NAME = "Place Holder";
-		public const string K_SHT_PLACE_HOLDER_DESC = "Place Holder Sheet Waiting for Sheets to be added";
-		public const string K_SHT_INVALID_NAME = "Invalid";
-
 		/* field type constants */
 
 		public const string K_NOT_DEFINED_TYPE = "";
@@ -516,9 +564,18 @@ namespace ExStorSys
 
 		public const string PRIMARY_SCHEMA_DESC = "Cells Primary DataStorage";
 
+		/* sheet info constants */
+
+		// public const string K_SHT_PLACE_HOLDER_NAME = "<Place Holder>";
+		public const string K_SHT_PLACE_HOLDER_NAME = K_FAM_LIST_INIT_ENTRY;
+		public const string K_SHT_PLACE_HOLDER_DESC = "Place Holder Sheet Waiting for Sheets to be added";
+		public const string K_SHT_INVALID_NAME = "Invalid";
+
 		// public static List<string> K_DICT = new () {K_FAM_LIST_INIT_ENTRY };
-		public static Dictionary<string, string> K_DICT = new () { {K_FAM_LIST_INIT_ENTRY, K_NOT_DEFINED_STR } };
+		public static Dictionary<string, string> K_DICT = new ();
+		// public static Dictionary<string, string> K_DICT = new () { {K_SHT_PLACE_HOLDER_NAME, K_NOT_DEFINED_STR } };
 		
+
 		/* info names*/
 
 		public static string UserName => CsUtilities.UserName;
@@ -802,7 +859,19 @@ namespace ExStorSys
 
 
 		/* enum description data */
-		// need 
+		
+		public static Dictionary<SheetStatus, EnumData<SheetStatus>> SheetStatusDesc = new ()
+		{
+			{ SheetStatus.SS_CREATED     , new ("99", SheetStatus.SS_CREATED    , "Created"     , "Created, No Status"           , Brushes.White         , false)},
+			{ SheetStatus.SS_EXISTING    , new ("1", SheetStatus.SS_EXISTING    , "Existing"    , "As Read"                      , Brushes.LawnGreen     , true) },
+			{ SheetStatus.SS_DELETED     , new ("2", SheetStatus.SS_DELETED     , "Deleted"     , "Flagged for Deletion"         , Brushes.Red           , true) },
+			{ SheetStatus.SS_MODIFIED    , new ("3", SheetStatus.SS_MODIFIED    , "Modified"    , "Modified, needs to be saved"  , Brushes.DeepSkyBlue   , true) },
+			{ SheetStatus.SS_MOD_DELETED , new ("4", SheetStatus.SS_MOD_DELETED , "Mod_Deleted" , "Modified, then deleted"       , Brushes.Magenta       , true) },
+			{ SheetStatus.SS_NEW         , new ("5", SheetStatus.SS_NEW         , "New"         , "New, needs to be saved"       , Brushes.Yellow        , true) },
+			{ SheetStatus.SS_NEW_DELETED , new ("6", SheetStatus.SS_NEW_DELETED , "New_Deleted" , "New, then deleted"            , Brushes.DarkOrange    , true) },
+		};
+
+		public static ICollectionView  SheetStatusDescView = ConfigEnumDesc(SheetStatusDesc);
 
 		/// <summary>
 		/// the rule for updating an item
@@ -810,10 +879,10 @@ namespace ExStorSys
 		/// <remarks>this is a user choice list</remarks>
 		public static Dictionary<UpdateRules, EnumData<UpdateRules>> UpdateRulesDesc = new ()
 		{
-			{ UpdateRules.UR_UNDEFINED     , new ("1", UpdateRules.UR_UNDEFINED     , "Not Assigned", "Not Assigned"           , Brushes.White    , true) },
+			{ UpdateRules.UR_UNDEFINED     , new ("99", UpdateRules.UR_UNDEFINED    , "Not Assigned", "Not Assigned"           , Brushes.White    , false) },
 			{ UpdateRules.UR_AS_NEEDED     , new ("1", UpdateRules.UR_AS_NEEDED     , "As Needed"   , "Automatic, when Needed" , Brushes.Blue     , true) },
-			{ UpdateRules.UR_UPON_REQUEST  , new ("1", UpdateRules.UR_UPON_REQUEST  , "Upon Request", "Not Until Requested"    , Brushes.LawnGreen, true) },
-			{ UpdateRules.UR_NEVER         , new ("1", UpdateRules.UR_NEVER         , "Never"       , "Never Update"           , Brushes.Red      , true) },
+			{ UpdateRules.UR_UPON_REQUEST  , new ("2", UpdateRules.UR_UPON_REQUEST  , "Upon Request", "Not Until Requested"    , Brushes.LawnGreen, true) },
+			{ UpdateRules.UR_NEVER         , new ("3", UpdateRules.UR_NEVER         , "Never"       , "Never Update"           , Brushes.Red      , true) },
 		};
 
 		public static ICollectionView UpdateRulesDescView = ConfigEnumDesc(UpdateRulesDesc);

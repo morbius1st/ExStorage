@@ -1,10 +1,17 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+
 using Autodesk.Revit.DB.ExtensibleStorage;
+
 using ExStoreTest2026.DebugAssist;
+
 using ExStorSys;
+
+using RevitLibrary;
+
 using UtilityLibrary;
+
 using static ExStorSys.SheetFieldKeys;
 using static ExStorSys.UpdateRules;
 
@@ -35,12 +42,14 @@ namespace ExStoreTest2026.Windows
 
 		private string?[,] testFamAndTypes = new [,]
 		{
-			{ "window sill", "24'-0\"", "prop a" },
+			{ "window sill", "24'-6\"", "prop a" },
 			{ "window sill", null, "none" },
 			{ "window sill", "23'-0\"", "prop b" },
 			{ "window sill", "12'-0\"", "prop c" },
 			{ "window sill", "14'-0\"", "prop d" },
 			{ "window sill", "16'-0\"", "prop e" },
+			{ "window sill", "16'-2\"", "prop e" },
+			{ "window sill", "16'-4\"", "prop f" },
 		};
 
 		private int idx = 0;
@@ -66,9 +75,9 @@ namespace ExStoreTest2026.Windows
 
 		private void init()
 		{
-			// Debug.WriteLine($"\n*** MainWinModel init | begin");
-
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWinModel)) ?? -1;
+
+			R.ProcessMsg("init", ObjectId);
 
 			mui = MainWinModelUi.Instance;
 
@@ -79,13 +88,13 @@ namespace ExStoreTest2026.Windows
 
 			// command initialization
 
-			CmdResetWorkbook = new RelayCommand(cmdResetWorkbookExe,cmdResetWorkbookCanExe);
-			CmdSaveWorkbook = new RelayCommand(cmdSaveWorkbookExe,cmdSaveWorkbookCanExe);
+			CmdWorkbookUndoChanges = new RelayCommand(cmdWorkbookUndoChgsExe,cmdWorkbookUndoChgsCanExe);
+			CmdWorkbookApplyChanges = new RelayCommand(cmdWorkbookApplyChgsExe,cmdWorkbookApplyChgsCanExe);
 
-			CmdResetSheet = new RelayCommand(cmdResetSheetExe,cmdResetSheetCanExe);
-			CmdSaveSheet = new RelayCommand(cmdSaveSheetExe,cmdSaveSheetCanExe);
+			CmdSheetUndoChanges = new RelayCommand(cmdSheetUndoChgsExe,cmdSheetUndoChgsCanExe);
+			CmdSheetApplyChanges = new RelayCommand(cmdSheetApplyChgsExe,cmdSheetApplyChgsCanExe);
 
-			CmdResetFamList = new RelayCommand(CmdResetFamListExe,CmdResetFamListCanExe);
+			CmdFamListUndoChanges = new RelayCommand(CmdFamListUndoChgsExe,CmdFamListUndoChgsCanExe);
 			CmdSaveFamList = new RelayCommand(CmdSaveFamListExe,CmdSaveFamListCanExe);
 			
 			SaveNewFamilyListItem = new RelayCommand(SaveNewFamItemExe,SaveNewFamItemCanExe);
@@ -95,10 +104,13 @@ namespace ExStoreTest2026.Windows
 			CmdSheetAdd = new RelayCommand(cmdAddSheetExe, cmdAddSheetCanExe);
 			CmdSheetDelete = new RelayCommand(cmdDeleteSheetExe, cmdDeleteSheetCanExe);
 			CmdSheetUndo = new RelayCommand(cmdUndoSheetExe, cmdUndoSheetCanExe);
-			CmdSheetListRestore = new RelayCommand(cmdResetSheetListExe, cmdResetSheetListCanExe);
-			CmdSheetListCommit = new RelayCommand(cmdCommitSheetListExe, cmdCommitSheetListCanExe);
+			CmdSheetListClear = new RelayCommand(cmdClearSheetListExe, cmdClearSheetListCanExe);
+			CmdSheetListReset = new RelayCommand(cmdResetSheetListExe, cmdResetSheetListCanExe);
+			CmdSheetListUndoChanges = new RelayCommand(cmdSheetListUndoChgsExe, cmdSheetListUndoChgsCanExe);
+			CmdSheetListApplyChanges = new RelayCommand(cmdSheetListApplyChgsExe, cmdSheetListApplyChgsCanExe);
 
-			// Debug.WriteLine($"\n*** MainWinModel init | exit ({ObjectId})");
+
+			R.ProcessMsg("init", ObjectId, false);
 		}
 
 	#endregion
@@ -325,6 +337,11 @@ namespace ExStoreTest2026.Windows
 
 				result = xMgr.AddSheetFamily(fam, type, props);
 
+				if (!result)
+				{
+					R.Msg.WriteLine("Family and Fam Type already exist - not added");
+				}
+
 				idx++;
 			}
 
@@ -423,7 +440,18 @@ namespace ExStoreTest2026.Windows
 			WorkBook? wbk;
 			ObservableDictionary<string, Sheet>? shts;
 			
-			if (!xMgr.ReadWorkBookViaTempInfo(out wbk, out shts)) return;
+			// if (!xMgr.ReadWorkBookViaTempInfo(out wbk, out shts)) return;
+
+			if (!xMgr.ReadModelWbkInfo(out wbk))
+			{
+				Debug.WriteLine("*** read model workbook failed");
+				return;
+			}
+			if (!xMgr.ReadModelShtsInfo(out shts))
+			{
+				Debug.WriteLine("*** read model sheets failed");
+				return;
+			}
 
 			DebugRoutines.ShowAWorkBook(wbk);
 			DebugRoutines.ShowSheets(shts);
@@ -967,7 +995,7 @@ namespace ExStoreTest2026.Windows
 			{
 				copyFct = i == 0 ? FieldCopyType.FC_TYPE_1 : i == 1 ? FieldCopyType.FC_TYPE_4 : FieldCopyType.FC_TYPE_2;
 
-				foreach ((WorkBookFieldKeys key, FieldDef<WorkBookFieldKeys>? f) in Fields.WorkBookFields)
+				foreach ((WorkBookFieldKeys key, FieldDef<WorkBookFieldKeys> f) in Fields.WorkBookFields)
 				{
 					b1 = f.FieldCopyType.HasFlag(copyFct);
 					s1 = b1 ? "** update" : "*** copy";
@@ -982,7 +1010,7 @@ namespace ExStoreTest2026.Windows
 			{
 				copyFct = i == 0 ? FieldCopyType.FC_TYPE_1 : i == 1 ? FieldCopyType.FC_TYPE_4 : FieldCopyType.FC_TYPE_2;
 
-				foreach ((SheetFieldKeys key, FieldDef<SheetFieldKeys>? f) in Fields.SheetFields)
+				foreach ((SheetFieldKeys key, FieldDef<SheetFieldKeys> f) in Fields.SheetFields)
 				{
 					b1 = f.FieldCopyType.HasFlag(copyFct);
 					s1 = b1 ? "** update" : "*** copy";
@@ -1153,25 +1181,8 @@ namespace ExStoreTest2026.Windows
 
 	#region sheet list commands
 
-		// add a sheet command
+		/* sheets list sheet commands */
 
-		public RelayCommand CmdSheetAdd {get; private set;}
-
-		private void cmdAddSheetExe(object? parameter)
-		{
-			Sheet sht =
-				xMgr.CreateNewSheet(new SheetCreationData("<un-assigned>", "<un-assigned>"));
-
-			xData.AddSheet(sht);
-		}
-
-		private bool cmdAddSheetCanExe(object? parameter)
-		{
-			// parameter is currSheet.ismodified
-			return true;
-		}
-
-		
 		// delete a sheet command
 
 		public RelayCommand CmdSheetDelete {get; private set;}
@@ -1187,7 +1198,6 @@ namespace ExStoreTest2026.Windows
 			return true;
 		}
 
-		
 		// undo a sheet command
 
 		public RelayCommand CmdSheetUndo {get; private set;}
@@ -1199,38 +1209,70 @@ namespace ExStoreTest2026.Windows
 
 		private bool cmdUndoSheetCanExe(object? parameter)
 		{
+			return true;
+		}
+
+		// add a sheet command
+
+		public RelayCommand CmdSheetAdd {get; private set;}
+
+		private void cmdAddSheetExe(object? parameter)
+		{
+			Sheet sht =
+				xMgr.CreateNewSheet(
+					new SheetCreationData(ExStorConst.K_NOT_DEFINED_STR, 
+						ExStorConst.K_NOT_DEFINED_STR));
+
+			if (sht == null)
+			{
+				Debug.WriteLine("CANNOT CREATE A SHEET - returned null");
+				return;
+			}
+
+			xData.AddSheet(sht);
+		}
+
+		private bool cmdAddSheetCanExe(object? parameter)
+		{
 			// parameter is currSheet.ismodified
 			return true;
 		}
 
+		/* sheets list list commands */
 
 		// reset sheet list command
 
-		public RelayCommand CmdSheetListRestore {get; private set;}
+		public RelayCommand CmdSheetListUndoChanges {get; private set;}
 
-		private void cmdResetSheetListExe(object? parameter)
+		private void cmdSheetListUndoChgsExe(object? parameter)
 		{
+			xData.SheetsListUndoChgs();
 		}
 
-		private bool cmdResetSheetListCanExe(object? parameter)
+		private bool cmdSheetListUndoChgsCanExe(object? parameter)
 		{
-			// parameter is currSheet.ismodified
-			return true;
+			// parameter is xdata ismodified sheet list
+
+			bool isMod = (bool) (parameter ?? false);
+			return isMod;
 		}
 
 
-		// Commit sheet list command
+		// apply changes sheet list command
 
-		public RelayCommand CmdSheetListCommit {get; private set;}
+		public RelayCommand CmdSheetListApplyChanges {get; private set;}
 
-		private void cmdCommitSheetListExe(object? parameter)
+		private void cmdSheetListApplyChgsExe(object? parameter)
 		{
+			xData.SheetListApplyChgs();
 		}
 
-		private bool cmdCommitSheetListCanExe(object? parameter)
+		private bool cmdSheetListApplyChgsCanExe(object? parameter)
 		{
-			// parameter is currSheet.ismodified
-			return true;
+			// parameter is xdata ismodified sheet list
+
+			bool isMod = (bool) (parameter ?? false);
+			return isMod;
 		}
 
 
@@ -1240,31 +1282,77 @@ namespace ExStoreTest2026.Windows
 
 		private void cmdClearSheetListExe(object? parameter)
 		{
+			xData.ClearSheetsList();
 		}
 
 		private bool cmdClearSheetListCanExe(object? parameter)
 		{
-			// parameter is currSheet.ismodified
-			return true;
+			// parameter is view / is empty
+			// return false when view no elements 
+			// return false when all elements deleted (no deleted view is empty)
+			// else true
+
+			bool test = xData.SheetsViewSource.View.IsEmpty;
+
+			// true when empty else false
+			// when empty, disable -> change to false
+			bool any = (bool) (parameter ?? true); 
+
+			// true when all elements have been deleted
+			// therefore change to false
+			bool some = xData.SheetsNoDeletedViewSource.View.IsEmpty; // true when empty
+
+			// return false if either is false
+			return !any && !some;
+		}
+
+
+		// reset sheet list command
+
+		public RelayCommand CmdSheetListReset {get; private set;}
+
+		private void cmdResetSheetListExe(object? parameter)
+		{
+			xData.ResetSheetsList();
+		}
+
+		private bool cmdResetSheetListCanExe(object? parameter)
+		{
+			// parameter is view / is empty
+			// return false when view no elements 
+			// return false when all elements deleted (no deleted view is empty)
+			// else true
+
+			bool test = xData.SheetsViewSource.View.IsEmpty;
+
+			// true when empty else false
+			// when empty, disable -> change to false
+			bool any = (bool) (parameter ?? true); 
+
+			// true when all elements have been deleted
+			// therefore change to false
+			bool some = xData.SheetsNoDeletedViewSource.View.IsEmpty; // true when empty
+
+			// return false if either is false
+			return !any && !some;
 		}
 
 
 	#endregion
 
-
-
 	#region workbook commands
 		
 		// reset workbook command
 
-		public RelayCommand CmdResetWorkbook {get; private set;}
+		public RelayCommand CmdWorkbookUndoChanges {get; private set;}
 
-		private void cmdResetWorkbookExe(object? parameter)
+		private void cmdWorkbookUndoChgsExe(object? parameter)
 		{
-			Wbk.UndoChangeWorkbook();
+			// Wbk.WorkbookUndoChgs();
+			Wbk.ApplyOrUndoChanges(true, false);
 		}
 
-		private bool cmdResetWorkbookCanExe(object? parameter)
+		private bool cmdWorkbookUndoChgsCanExe(object? parameter)
 		{
 			// parameter is currWorkbook.ismodified
 			return (bool) (parameter ?? false);
@@ -1272,19 +1360,18 @@ namespace ExStoreTest2026.Windows
 
 		// save workbook command
 
-		public RelayCommand CmdSaveWorkbook {get; private set;}
+		public RelayCommand CmdWorkbookApplyChanges {get; private set;}
 
-		private void cmdSaveWorkbookExe(object? parameter)
+		private void cmdWorkbookApplyChgsExe(object? parameter)
 		{
-			Wbk.CommitWorkbook();
+			xData.WorkbookApplyChgs(true);
 		}
 
-		private bool cmdSaveWorkbookCanExe(object? parameter)
+		private bool cmdWorkbookApplyChgsCanExe(object? parameter)
 		{
 			// if (Wbk == null) return false;
 
 			return (bool) (parameter ?? false);
-
 		}
 
 
@@ -1293,33 +1380,35 @@ namespace ExStoreTest2026.Windows
 
 	#region sheet commands
 
-		// reset sheet command
+		// undo sheet command
 
-		public RelayCommand CmdResetSheet {get; private set;}
+		public RelayCommand CmdSheetUndoChanges {get; private set;}
 
-		private void cmdResetSheetExe(object? parameter)
+		private void cmdSheetUndoChgsExe(object? parameter)
 		{
-			CurrSht?.UndoChangeSheet();
+			// CurrSht?.UndoChangeSheet();
+
+			CurrSht?.ApplyOrUndoChanges(true, false);
 		}
 
-		private bool cmdResetSheetCanExe(object? parameter)
+		private bool cmdSheetUndoChgsCanExe(object? parameter)
 		{
 			// parameter is currSheet.ismodified
 			return (bool) (parameter ?? false);
 		}
 
 
-		// save sheet command
+		// sheet apply changes command
 
-		public RelayCommand CmdSaveSheet {get; private set;}
+		public RelayCommand CmdSheetApplyChanges {get; private set;}
 
 		/// <summary>
 		/// command to save a sheet
 		/// </summary>
 		/// <param name="parameter"></param>
-		private void cmdSaveSheetExe(object? parameter)
+		private void cmdSheetApplyChgsExe(object? parameter)
 		{
-			CurrSht?.CommitSheet();
+			xData.CurrSheetApplyChgs(true);
 
 			// if (!CurrSht?.CommitSheet() == true)
 			// {
@@ -1336,7 +1425,7 @@ namespace ExStoreTest2026.Windows
 		/// determine if the current sheet can be saved<br/>
 		/// linked parameter is| currsht is modified
 		/// </summary>
-		private bool cmdSaveSheetCanExe(object? parameter)
+		private bool cmdSheetApplyChgsCanExe(object? parameter)
 		{
 			if (CurrSht == null) return false;
 
@@ -1350,17 +1439,17 @@ namespace ExStoreTest2026.Windows
 
 		// reset family list command
 
-		public RelayCommand CmdResetFamList {get; private set;}
+		public RelayCommand CmdFamListUndoChanges {get; private set;}
 
-		public int FamListCount => CurrSht?.FamList?.Count ?? 0;
+		// public int FamListCount => CurrSht?.FamListWkg?.Count ?? 0;
 
-		public void CmdResetFamListExe(object? parameter)
+		public void CmdFamListUndoChgsExe(object? parameter)
 		{
 			// CurrSht?.ClearFamAndTypeList();
-			CurrSht?.ResetFamAndTypeList();
+			CurrSht?.FamAndTypeListUndoChanges();
 		}
 		
-		public bool CmdResetFamListCanExe(object? parameter)
+		public bool CmdFamListUndoChgsCanExe(object? parameter)
 		{
 			return (bool) (parameter ?? false);
 		}
@@ -1372,7 +1461,9 @@ namespace ExStoreTest2026.Windows
 
 		public void CmdSaveFamListExe(object? parameter)
 		{
-			CurrSht?.CommitFamAndType();
+			// CurrSht?.FamAndTypeApplyChanges();
+			// CurrSht?.famListUpdateProps();
+
 		}
 
 		public bool CmdSaveFamListCanExe(object? parameter)

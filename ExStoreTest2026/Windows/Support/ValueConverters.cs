@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using ExStorSys;
+using RevitLibrary;
 
 
 // user name: jeffs
@@ -229,8 +230,6 @@ namespace ExStoreTest2026.Windows
 		// return field edit status
 		public object Convert(object[]? values, Type targetType, object? parameter, CultureInfo culture)
 		{
-			// Debug.WriteLine($"*** at convert to vis | {parameter} | len {values?.Length ?? -1}");
-
 			if (values == null || parameter == null) return false;
 
 			if (values.Length == 0 ||

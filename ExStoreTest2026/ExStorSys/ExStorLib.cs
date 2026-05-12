@@ -33,6 +33,8 @@ namespace ExStorSys
 		private ExStorLib()
 		{
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorLib)) ?? -1;
+			
+			R.ProcessMsg("ctor", ObjectId, null);
 		}
 
 		public static ExStorLib Instance => instance.Value;
@@ -57,10 +59,7 @@ namespace ExStorSys
 		/// ds).  this creates a new DS so an existing DS must not be present. use
 		/// UpdateWorkBook to update an existing DS
 		/// </summary>
-		/// <param name="wbk"></param>
-		/// <param name="wbkSchema"></param>
-		/// <returns></returns>
-		public ExStoreRtnCode WriteWorkBook(WorkBook wbk, Schema? wbkSchema)
+		public ExStoreRtnCode WriteNewWorkBook(WorkBook wbk, Schema? wbkSchema)
 		{
 			if (wbkSchema == null) return ExStoreRtnCode.XRC_SCHEMA_MISSING;
 
@@ -101,7 +100,11 @@ namespace ExStorSys
 
 		/* system routines - sheet */
 
-		public ExStoreRtnCode WriteSheet(Sheet sheet, Schema? shtSchema)
+		/// <summary>
+		/// Write a sheet to the an entity (therefore to the model).
+		/// This creates a new DS so an existing DS must not be present.
+		/// </summary>
+		public ExStoreRtnCode WriteNewSheet(Sheet sheet, Schema? shtSchema)
 		{
 			if (shtSchema == null) return ExStoreRtnCode.XRC_SCHEMA_MISSING;
 
@@ -162,6 +165,9 @@ namespace ExStorSys
 
 		/* data storage */
 
+		/// <summary>
+		/// Get an IList of all DS based on a search name
+		/// </summary>
 		public ExStoreRtnCode FindSheetsDs(string dsSearchName, out IList<DataStorage>? dsList)
 		{
 			return FindAllDataStorageByNamePrefix(dsSearchName, out dsList);
@@ -191,6 +197,9 @@ namespace ExStorSys
 
 		/* entity */
 
+		/// <summary>
+		/// Based on a DS and Schema, get the Entity
+		/// </summary>
 		public bool GetEntity(DataStorage ds, Schema? s, out Entity? e)
 		{
 			e = null;
@@ -524,8 +533,11 @@ namespace ExStorSys
 		}
 		*/
 
-		public DynaValue? ReadFieldDyn<TKeyType>(Entity e, FieldDef<TKeyType>  data)
-			where TKeyType : Enum
+		/// <summary>
+		/// Read a field from an entity into a DyanaValue
+		/// </summary>
+		public DynaValue? ReadFieldDyn<TKeyType>(Entity e, FieldDef<TKeyType> data)
+					where TKeyType : Enum
 		{
 			return new DynaValue(readField2<TKeyType>(e, data.FieldName, data.FieldType));
 		}
@@ -556,14 +568,20 @@ namespace ExStorSys
 			return rtnCode;
 		}
 
-		public dynamic? ReadField2<TKeyType>(Entity e, FieldDef<TKeyType>  data)
-			where TKeyType : Enum
+		/// <summary>
+		/// Read a field from an entity into a dynamic (preface for readField2)
+		/// </summary>
+		public dynamic? ReadField2<TKeyType>(Entity e, FieldDef<TKeyType> data)
+					where TKeyType : Enum
 		{
 			return readField2<TKeyType>(e, data.FieldName, data.FieldType);
 		}
 
+		/// <summary>
+		/// Read a field from an entity into a dynamic
+		/// </summary>
 		private dynamic? readField2<TKeyType>(Entity e, string? fieldName, Type t)
-			where TKeyType : Enum
+					where TKeyType : Enum
 		{
 			// data is the field definition and the DV within contains the definition 
 			// information
@@ -696,8 +714,11 @@ namespace ExStorSys
 
 		/* find */
 
+		/// <summary>
+		/// Based on search parameters, get the DS, Entity, and Schema
+		/// </summary>
 		public ExStoreRtnCode FindExStorInfo(int wbkOrSht, string schemaName, string searchText, string matchText,
-			out DataStorage? ds, out Entity? e, out Schema? s)
+					out DataStorage? ds, out Entity? e, out Schema? s)
 		{
 			// wbkOrSht - 0 = wbk / 1 = sht
 			// match text - for wbk == model name / for sht == model code
@@ -907,6 +928,9 @@ namespace ExStorSys
 		// 	return dsList;
 		// }
 
+		/// <summary>
+		/// Find all DS based on a name prefix
+		/// </summary>
 		public ExStoreRtnCode FindAllDataStorageByNamePrefix(string searchName, out IList<DataStorage> dsList)
 		{
 			dsList = new List<DataStorage>();
@@ -1011,9 +1035,12 @@ namespace ExStorSys
 			return shtNewVer;
 		}
 
-		
+
 		/* misc */
 
+		/// <summary>
+		/// Verify that the provided name and the model name from the entity match
+		/// </summary>
 		public bool ValidateModelName(string matchName, Entity e, out string? modelName)
 		{
 			modelName = ReadModelName(e);
@@ -1050,6 +1077,9 @@ namespace ExStorSys
 		}
 
 
+		/// <summary>
+		/// Extract the version code from a name (used when converting from one version to another)
+		/// </summary>
 		public string? ExtractVersionFromName(string? name)
 		{
 			// look for "_v"
@@ -1073,6 +1103,9 @@ namespace ExStorSys
 			return name.Substring(pos1, pos2);
 		}
 
+		/// <summary>
+		/// Extract the Id code from a sheet name (used when converting from one version to another)
+		/// </summary>
 		public string? ExtractIdFromShtName(string? name, string searchName)
 		{
 			// sht ds
@@ -1088,11 +1121,17 @@ namespace ExStorSys
 			return name.Substring(searchName.Length, 4);
 		}
 
+		/// <summary>
+		/// Remove characters from the model's title so it may be used as a DS name
+		/// </summary>
 		public string CleanName(string? name)
 		{
 			return CsStringUtil.RegexCleanString(name ?? "", ExStorConst.DOC_NAME_REPL_STRING[0], ExStorConst.DOC_NAME_REPL_STRING[1]) ?? "";
 		}
 
+		/// <summary>
+		/// Format the family name and family type name into a discionary key
+		/// </summary>
 		public static string FormatFamAndType(string famName, string? typeName)
 		{
 			string key = $"{famName}|{typeName}";
@@ -1100,6 +1139,9 @@ namespace ExStorSys
 			return key;
 		}
 
+		/// <summary>
+		/// Separate from the key the family name and the family type name
+		/// </summary>
 		public static bool DivideFamAndType(string? famAndType, out string? family, out string? famType)
 		{
 			family = null;
@@ -1115,22 +1157,22 @@ namespace ExStorSys
 
 			// family is from start to the dividing charater but not including the dividing charagter
 			family = famAndType.Substring(0, pos);
-			famType = famAndType.Substring(pos+1, famAndType.Length - (pos+1));
+			famType = famAndType.Substring(pos + 1, famAndType.Length - (pos + 1));
 
 			return true;
 		}
 
-	#endregion
+		#endregion
 
-	#region event consuming
+		#region event consuming
 
-	#endregion
+		#endregion
 
-	#region event publishing
+		#region event publishing
 
-	#endregion
+		#endregion
 
-	#region system overrides
+		#region system overrides
 
 		public override string ToString()
 		{

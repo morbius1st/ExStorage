@@ -13,6 +13,12 @@
   </Target>
 
   <ItemGroup>
+    <None Remove="FieldUndoAndApply.xlsx" />
+    <None Remove="Object Creation Order.xlsx" />
+    <None Remove="~%24FieldUndoAndApply.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsConversions.cs" Link=".Linked\CsConversions.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsExtensions.cs" Link=".Linked\CsExtensions.cs" />
     <Compile Include="..\..\..\UtilityLibrary\UtilityLibrary\CsIWin.cs" Link=".Linked\CsIWin.cs" />
@@ -28,17 +34,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".Notes\.ToDo.txt" />
-    <Content Include=".Notes\StartupAndEndNotes.txt" />
+    <Content Include=".Notes\!ToDo.txt" />
+    <Content Include=".Notes\old StartupAndEndNotes.txt" />
+    <Content Include=".Notes\.Task-SequenceNotes.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include=".Notes\SequenceNotes.txt" />
-    <None Include=".Notes\ExStoreTest2026.xml" />
-    <None Include=".Notes\OperationNotes.txt" />
+    <None Include=".Notes\old SequenceNotes.txt" />
+    <None Include=".Notes\.ExStoreTest2026.xml" />
+    <None Include=".Notes\.OperationNotes.txt" />
     <None Include=".Notes\ObjectNotes.txt" />
-    <None Include=".Notes\Launch-Start OperationNotes.txt" />
-    <None Include=".Notes\ProcessNotes.txt" />
+    <None Include=".Notes\.Launch-Start OperationNotes.txt" />
+    <None Include=".Notes\old ProcessNotes.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,9 +80,9 @@
 	</Target>
 
   <ItemGroup>
-    <None Include=".Notes\FieldNotes.txt" />
-    <None Include=".Notes\SystemNotes.txt" />
-    <None Include=".Notes\DataContainers.txt" />
+    <None Include=".Notes\.FieldNotes.txt" />
+    <None Include=".Notes\.SystemNotes.txt" />
+    <None Include=".Notes\.DataContainers.txt" />
   </ItemGroup>
 
   <ItemGroup>

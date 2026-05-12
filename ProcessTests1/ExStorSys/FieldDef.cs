@@ -26,9 +26,10 @@ namespace ExStorSys
 		where Te : Enum
 	{
 		public FieldDef(Te fieldKey, string fieldName, string fieldDesc,
-			string? fieldPropName, DynaValue? fieldDefValue, ItemUsage fieldUse, 
-			FieldEditLevel fieldEditLevel, FieldCopyType fieldCopyType, 
-			int fieldIdx, bool[] allowedSrcs)
+			string? fieldPropName, DynaValue? fieldDefValue, ItemUsage fieldUse,
+			FieldEditLevel fieldEditLevel, FieldCopyType fieldCopyType,
+			SourceId fieldId,
+			SourceId fieldIdCvt)
 		{
 			FieldKey = fieldKey;
 			FieldName = fieldName;
@@ -38,8 +39,8 @@ namespace ExStorSys
 			FieldEditLevel = fieldEditLevel; 
 			FieldUse = fieldUse;
 			FieldCopyType = fieldCopyType;
-			FieldSrcIdx = fieldIdx;
-			FieldAllowedSources = allowedSrcs;
+			FieldSrcId = fieldId;
+			FieldSrcIdCvt = fieldIdCvt;
 		}
 
 		private void configAllowedSources(int[] a)
@@ -94,47 +95,19 @@ namespace ExStorSys
 		public FieldCopyType FieldCopyType { get; }
 
 		/// <summary>
-		/// this field's source index
+		/// this field's source index Min Value
 		/// </summary>
-		public int FieldSrcIdx {get;}
+		public SourceId FieldSrcIdCvt {get;}
 
 		/// <summary>
-		/// the list of sources that may change the value of
-		/// this field. idx number is shared with various fields
+		/// this field's source index Max Value
 		/// </summary>
-		public bool[] FieldAllowedSources {get; }
+		public SourceId FieldSrcId {get;}
 
 		public override string ToString()
 		{
 			return $"this is {FieldName}";
 		}
-
-
-		public bool CanSetSrcIdx(int srcIdx)
-		{
-			return FieldAllowedSources[srcIdx];
-		}
-
-
-		// removed
-		// // field control flags
-		//
-		// public void SetFcFlagViaIuFlag(ItemUsage iu) => FieldCtrl |= (FieldControl) iu;
-		// public void ClrFcFlagViaIuFlag(ItemUsage iu) => FieldCtrl &= ~(FieldControl) iu;
-		// public bool TstFcFlagViaIuFlag(ItemUsage iu) => FieldCtrl.HasFlag((FieldControl) iu);
-		//
-		// public void SetFcFlag(FieldControl fc) => FieldCtrl |= fc;
-		// public void ClrFcFlag(FieldControl fc) => FieldCtrl &= ~fc;
-		// public bool TstFcFlag(FieldControl fc) => FieldCtrl.HasFlag(fc);
-		//
-		//
-		// // Item Usage flags
-		//
-		// public bool IsCtrlField => FieldUse.HasFlag(ItemUsage.IU_IS_CTRL_FLD);
-		// public bool IsAltSrcA => FieldUse.HasFlag(ItemUsage.IU_IS_ALT_SRC_A);
-		// public bool IsAltSrcB => FieldUse.HasFlag(ItemUsage.IU_IS_ALT_SRC_B);
-		//
-		// public void ClrFc() => FieldCtrl = FieldControl.FC_NONE;
 
 	}
 }

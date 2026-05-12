@@ -1,9 +1,12 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows.Data;
+
 using Autodesk.Revit.DB.ExtensibleStorage;
 
 using ExStoreTest2026;
@@ -11,6 +14,8 @@ using ExStoreTest2026.DebugAssist;
 using ExStoreTest2026.Windows;
 
 using JetBrains.Annotations;
+
+using RevitLibrary;
 
 using UtilityLibrary;
 
@@ -44,14 +49,21 @@ namespace ExStorSys
 		private Schema? wbkSchema;
 		private Schema? shtSchema;
 
-		private MainWinModelUi xMui;
+		// private MainWinModelUi xMui;
+
+		private ExStorLib xLib;
 
 		private bool? restartRequired;
 
 		// private Sheet? currentSheet;
-		private string? selectSheet;
+		public static string? selectSheet
+		{
+			get; 
+			set;
+		}
 
-		private bool isModifiedShtsList;
+		private bool isModifiedSheetsList;
+		private bool canUndoSheetsList;
 
 	#endregion
 
@@ -76,43 +88,64 @@ namespace ExStorSys
 
 		private void init()
 		{
-			// Debug.WriteLine($"\n*** ExStorData init | begin");
-
-			// ObjectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(ExStorData)) ?? -1;
+
+
 			WorkBook = WorkBook.CreateEmptyWorkBook();
 			
 			sheetsList = new ObservableDictionary<string, Sheet>();
 			
 			ResetSheets();
-			InitSheets();
-			IsModifiedShtsList = false;
 
-			xMui = MainWinModelUi.Instance;
+// // ******* NEED THIS ?? ******
+			InitSheets();
+			
+			// xMui = MainWinModelUi.Instance;
+			xLib = ExStorLib.Instance;
 
 			SheetsViewSource = new CollectionViewSource {Source = Sheets};
 			SheetsViewSource.SortDescriptions.Add(new SortDescription("Value.OpSequence", ListSortDirection.Ascending));
 
 			SheetsNoDeletedViewSource = new CollectionViewSource {Source = Sheets};
-			SheetsViewSource.SortDescriptions.Add(new SortDescription("Value.OpSequence", ListSortDirection.Ascending));
+			SheetsNoDeletedViewSource.SortDescriptions.Add(new SortDescription("Value.OpSequence", ListSortDirection.Ascending));
 			SheetsNoDeletedViewSource.Filter += SheetsViewSourceOnFilter;
 
-			// Debug.WriteLine($"\n*** ExStorData | exit ({ObjectId})");
+			isModifiedSheetsList = false;
+
+
+			Sheet.PropChgd += ChildOnPropChgd;
+			WorkBook.PropChgd += ChildOnPropChgd;
+
+
 		}
 
+		/// <summary>
+		/// restores prior information when the system is restarted (by start manager)
+		/// </summary>
 		public void Restore()
 		{
-			xMui = MainWinModelUi.Instance;
+			// xMui = MainWinModelUi.Instance;
+
+			xLib = ExStorLib.Instance;
+
+		}
+
+		/// <summary>
+		/// run once each time the window is opened
+		/// </summary>
+		public void Config()
+		{
+			setSelectedSheet();
 		}
 
 	#endregion
 
 	#region general propertries
 
-		public ExSysStatus ExStorStatus
+		private ExSysStatus exStorStatus
 		{
-			get => xMui.ExSysStatus;
-			private set => OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XSYS_STATUS, value));
+			// get => xMui.ExSysStatus;
+			set => OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XSYS_STATUS, value));
 		}
 
 		/// <summary>
@@ -128,10 +161,59 @@ namespace ExStorSys
 				restartRequired = value;
 
 				RaiseRestartRequiredEvent(value);
-				ExStorStatus = ES_RESTART_REQD;
+				exStorStatus = ES_RESTART_REQD;
 			}
 		}
 		
+		// status items to track
+		// A - overall - anything has changed / this needs to be saved
+		// B - a workbook field has been changed
+		// C - the collection of sheets has changed (added or removed or modified)
+		// D - a sheet field has been changed (this gets folded into 
+		//	 +-> a family and type list has been change (this changes a sheet so is not separately tracked)
+
+		public bool NeedsSaving
+		{
+			get
+			{
+				// string caller = new StackFrame(2, false).GetMethod()?.Name ?? "is null";
+
+
+				bool w = WorkBook.IsModifiedExo;
+				bool l = IsModifiedSheetsList;
+
+
+				return w || l;
+			}
+		}
+
+		/// <summary>
+		/// flag that the sheets list has been modified<br/>
+		/// but only after initialization (tracking turned on)
+		/// </summary>
+		public bool IsModifiedSheetsList
+		{
+			get => isModifiedSheetsList;
+			private set
+			{
+				if (value == isModifiedSheetsList) return;
+				isModifiedSheetsList = value;
+				OnPropertyChanged();
+
+				OnPropertyChanged(nameof(NeedsSaving));
+			}
+		}
+
+		public bool CanUndoSheetsList
+		{
+			get => canUndoSheetsList;
+			private set
+			{
+				if (value == canUndoSheetsList) return;
+				canUndoSheetsList = value;
+				OnPropertyChanged();
+			}
+		}
 
 	#endregion
 
@@ -148,7 +230,7 @@ namespace ExStorSys
 			ResetSheetSchemaSilent();
 			ResetTemp();
 
-			IsModifiedShtsList = false;
+			IsModifiedSheetsList = false;
 		}
 
 		/// <summary>
@@ -213,7 +295,7 @@ namespace ExStorSys
 	#region workbook ops
 
 		/* workbook OPS */
-
+		
 		/* workbook Schema */
 
 		/// <summary>
@@ -226,17 +308,18 @@ namespace ExStorSys
 			get => wbkSchema;
 			set
 			{
+
 				if (wbkSchema != null && value != null) return;
 				wbkSchema = value;
 
 				if (value == null)
 				{
 					RestartRequired = true;
-					ExStorStatus = ES_RESTART_REQD;
+					exStorStatus = ES_RESTART_REQD;
 				}
 				else
 				{
-					ExStorStatus = ES_WBK_SCHEMA_CREATED;
+					exStorStatus = ES_WBK_SCHEMA_CREATED;
 				}
 
 				OnPropChgd(PropertyId.PI_XDATA_WBK_SC, GotWbkSchema);
@@ -271,7 +354,7 @@ namespace ExStorSys
 
 				wbk = value;
 
-				ExStorStatus = ES_WBK_CREATED;
+				exStorStatus = ES_WBK_CREATED;
 				OnPropChgd(PropertyId.PI_XDATA_WBK, GotWorkBook);
 			}
 		}
@@ -285,19 +368,46 @@ namespace ExStorSys
 			return WorkBook.CreateEmptyWorkBook();
 		}
 
-		// public FieldData<WorkBookFieldKeys> GetWbkFieldData2(WorkBookFieldKeys key)
-		// {
-		// 	FieldDef<WorkBookFieldKeys> a = Fields.WorkBookFields[key];
-		//
-		// 	// if (!GotWorkBook) return FieldData<WorkBookFieldKeys>.Empty();
-		//
-		// 	return WorkBook.GetField(key);
-		// }
+		/// <summary>
+		/// commit the change to the workbook to the model
+		/// </summary>
+		/// <returns></returns>
+		public bool WorkbookApplyChgs(bool bypassAlt)
+		{
+			if (!WorkBook.IsModifiedExo) return false;
 
-		// public FieldDef<WorkBookFieldKeys> GetWbkFieldDef(WorkBookFieldKeys key)
-		// {
-		// 	return Fields.WorkBookFields[key];
-		// }
+			bool found = false;
+
+			bool canEditField;
+
+			UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
+
+			foreach ((WorkBookFieldKeys key, FieldData<WorkBookFieldKeys> fd) in WorkBook)
+			{
+				if ((fd.DyValue?.IsDirty ?? false))
+				{
+					canEditField = 
+						SecurityMgr.ValidateFieldEditing(fd.Field!.FieldEditLevel, usl) == 
+						FieldEditStatus.FES_CAN_EDIT;
+
+					// todo - add logic
+					// // if found AltSrcA
+					// if (fd.Field!.IsAltSrcA)
+					// {
+					// 	// if bypassing alt - cont.
+					// 	if (bypassAlt && !canEditField) continue;
+					// }
+					// else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
+
+					xLib.UpdateEntityField(key, WorkBookSchema, WorkBook, fd.DyValue);
+					found = true;
+				}
+			}
+
+			if (found) WorkBook.ApplyOrUndoChanges(bypassAlt, true);
+
+			return true;
+		}
 
 	#endregion
 
@@ -324,11 +434,11 @@ namespace ExStorSys
 				if (value == null)
 				{
 					RestartRequired = true;
-					ExStorStatus = ES_RESTART_REQD;
+					exStorStatus = ES_RESTART_REQD;
 				}
 				else
 				{
-					ExStorStatus = ES_SHT_SCHEMA_CREATED;
+					exStorStatus = ES_SHT_SCHEMA_CREATED;
 				}
 
 				OnPropChgd(PropertyId.PI_XDATA_SHT_SC, GotShtSchema);
@@ -436,8 +546,6 @@ namespace ExStorSys
 			return sht.GetField(key);
 		}
 
-
-
 		/// <summary>
 		/// the currently selected sheet from the Sheets list
 		/// </summary>
@@ -445,6 +553,7 @@ namespace ExStorSys
 		{
 			get
 			{
+
 				if (selectSheet!.IsVoid()) return null;
 				return !sheetsList.ContainsKey(selectSheet!) ? null : sheetsList[selectSheet!];
 			}
@@ -455,19 +564,59 @@ namespace ExStorSys
 		/// </summary>
 		public string? SelectSheet
 		{
-			get => selectSheet;
+			get
+			{
+				return selectSheet;
+			}
 			set
 			{
 				if ((value ?? "").Equals(selectSheet)) return;
-				
+
 				selectSheet = value;
 
 				OnPropertyChanged();
 
+				OnPropertyChanged(nameof(ExStorData));
 				OnPropertyChanged(nameof(CurrentSheet));
 			}
 		}
 
+		public bool CurrSheetApplyChgs(bool bypassAlt)
+		{
+			if (!CurrentSheet!.IsModifiedExo) return false;
+
+			bool found = false;
+
+			bool canEditField;
+
+			UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
+
+			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> fd) in CurrentSheet)
+			{
+				if ((fd.DyValue?.IsDirty ?? false))
+				{
+					canEditField = 
+						SecurityMgr.ValidateFieldEditing(fd.Field!.FieldEditLevel, usl) == 
+						FieldEditStatus.FES_CAN_EDIT;
+
+					// todo - add logic
+					// // if found AltSrcA
+					// if (fd.Field!.IsAltSrcA)
+					// {
+					// 	// if bypassing alt - cont.
+					// 	if (bypassAlt && !canEditField) continue;
+					// }
+					// else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
+
+					ExStorMgr.Instance?.UpdateShtEntityField(CurrentSheet.DsName,key, fd.DyValue);
+					found = true;
+				}
+			}
+
+			if (found) CurrentSheet.ApplyOrUndoChanges(bypassAlt, true);
+
+			return true;
+		}
 
 	#endregion
 
@@ -482,27 +631,19 @@ namespace ExStorSys
 
 		private void updateSheetsListProps()
 		{
+
+			// note for the clear sheets list can exe method to work correctly
+			// this view must be updated before the regular view
+			// or use multi converter with multibinding
+			SheetsNoDeletedViewSource.View.Refresh();
+			OnPropertyChanged(nameof(SheetsNoDeletedViewSource));
+
+
 			SheetsViewSource.View.Refresh();
 			OnPropertyChanged(nameof(SheetsViewSource));
 
-			SheetsNoDeletedViewSource.View.Refresh();
-			OnPropertyChanged(nameof(SheetsNoDeletedViewSource));
 		}
 
-		/// <summary>
-		/// flag that the sheets list has been modified<br/>
-		/// but only after initialization (tracking turned on)
-		/// </summary>
-		public bool IsModifiedShtsList
-		{
-			get => isModifiedShtsList;
-			private set
-			{
-				if (value == isModifiedShtsList) return;
-				isModifiedShtsList = value;
-				OnPropertyChanged();
-			}
-		}
 
 		/// <summary>
 		/// return the number of sheets in the list
@@ -515,6 +656,12 @@ namespace ExStorSys
 		// public Dictionary<string, Sheet>.ValueCollection? Sheets => sheetsList.Values;
 		public ObservableDictionary<string, Sheet>? Sheets => sheetsList;
 
+		public void FinalizeSheetListInit()
+		{
+			updateSheetsListProps();
+
+			OnPropertyChanged(nameof(NeedsSaving));
+		}
 
 		/// <summary>
 		/// add a sheet to the sheets list - before system initialized
@@ -524,7 +671,6 @@ namespace ExStorSys
 			sht.SheetStatus = SheetStatus.SS_EXISTING;
 			addSheet(sht);
 
-			updateSheetsListProps();
 		}
 
 		/// <summary>
@@ -534,9 +680,10 @@ namespace ExStorSys
 		public void AddSheet(Sheet sht)
 		{
 			sht.SheetStatus = SheetStatus.SS_NEW;
+			
 			addSheet(sht);
 
-			IsModifiedShtsList = true;
+			validateSheetStatus();
 
 			updateSheetsListProps();
 
@@ -555,7 +702,7 @@ namespace ExStorSys
 
 			sheetsList[sht.DsName] = sht;
 
-			IsModifiedShtsList = true;
+			IsModifiedSheetsList = true;
 			updateSheetsListProps();
 
 			return true;
@@ -568,11 +715,24 @@ namespace ExStorSys
 		// ReSharper disable once UnusedMember.Global
 		public bool RemoveCurrentSheet(string name)
 		{
-			sheetsList[name].SheetStatus = SheetStatus.SS_DELETED;
+			if (sheetsList[name].SheetStatus == SheetStatus.SS_EXISTING)
+			{
+				sheetsList[name].SheetStatus = SheetStatus.SS_DELETED;
+			}
+			else if (sheetsList[name].SheetStatus == SheetStatus.SS_NEW)
+			{
+				sheetsList[name].SheetStatus = SheetStatus.SS_NEW_DELETED;
+			}
+			else if (sheetsList[name].SheetStatus == SheetStatus.SS_MODIFIED)
+			{
+				sheetsList[name].SheetStatus = SheetStatus.SS_MOD_DELETED;
+			}
+			
 
 			// SelectSheet = null;
+			// IsModifiedSheetsList = true;
 
-			IsModifiedShtsList = true;
+			validateSheetStatus();
 			
 			updateSheetsListProps();
 
@@ -591,29 +751,157 @@ namespace ExStorSys
 
 			// SelectSheet = null;
 
-			validateSheetsListStatus();
+			validateSheetStatus();
 			updateSheetsListProps();
 
 			// must follow update props
 			setSelectedSheet();
 		}
 
-		private void validateSheetsListStatus()
+		/// <summary>
+		/// restore the sheets list - e.g., undo the changes<br/>
+		/// except that, any added sheet is marked to delete rather than being
+		/// removed - this allows for a 2nd level of undo
+		/// </summary>
+		public void SheetsListUndoChgs()
 		{
-			bool isMod = false;
+			bool result = false;
+			// restore does two things	
+			// for each sheet in the list that can undo, it un-dose
+			// for each new item, it deletes it (and allows undo)
 
 			foreach ((string key, Sheet sht) in sheetsList)
 			{
-				if (sht.SheetStatus != SheetStatus.SS_EXISTING)
+				if (sht.SheetStatus == SheetStatus.SS_DELETED)
 				{
-					isMod = true;
-					break;
+					sht.UndoSheetStatus();
+				}
+				else if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED)
+				{
+					sht.UndoSheetStatus();
+					result = true;
+				}
+				else if (sht.SheetStatus == SheetStatus.SS_NEW)
+				{
+					sht.SheetStatus = SheetStatus.SS_NEW_DELETED;
 				}
 			}
 
-			IsModifiedShtsList = isMod;
+			// this removed because the change date and the last id code
+			// need to be kept because the new sheet was not deleted, it was
+			// just flagged for deletion / not saved to allow its deletion to be
+			// undone
+			// wbk.ApplyOrUndoChanges(false, false);
+
+			IsModifiedSheetsList = result;
+
+			updateSheetsListProps();
+
+			// must follow update props
+			setSelectedSheet();
 		}
 
+		/// <summary>
+		///  clears the sheets list - except that, it does not remove
+		/// any of the sheets, it just marks them as deleted
+		/// </summary>
+		public void ClearSheetsList()
+		{
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				sht.SheetStatus = SheetStatus.SS_DELETED;
+			}
+
+			IsModifiedSheetsList = true;
+
+			updateSheetsListProps();
+		}
+
+		public void ResetSheetsList()
+		{
+			string last = "";
+			string idCode;
+
+
+			for (int i = sheetsList.Count - 1; i >= 0; i--)
+			{
+				if (sheetsList[i].Value.SheetStatus != SheetStatus.SS_EXISTING)
+				{
+					sheetsList.Remove(sheetsList[i].Key);
+					continue;
+				}
+
+				idCode = xLib.ExtractIdFromShtName(sheetsList[i].Value.DsName, ExStorConst.EXS_SHT_NAME_SEARCH)!;
+
+				// ReSharper disable once StringCompareToIsCultureSpecific
+				if (idCode.CompareTo(last) > 0)
+				{
+					last = idCode;
+				}
+			}
+
+			if (!last.IsVoid()) WorkBook.SetLastId(last);
+
+
+			updateSheetsListProps();
+
+			setSelectedSheet();
+
+		}
+
+		/// <summary>
+		/// check the status of each sheet to determine if it
+		/// is modified in some way - new, deleted, modified
+		/// </summary>
+		/// <returns></returns>
+		private void validateSheetStatus()
+		{
+			bool isMod = false;
+			bool canUndo = false;
+
+			// watching sheet statuses existing, deleted, new, new deleted, mod deleted
+			// not watching modified
+
+			// for existing == no apply changes / no undo changes
+			// for deleted == apply changes / undo changes
+			// for new ==  apply changes / undo changes
+			// for new deleted == no apply changes / can undo changes
+			// for mod deleted == no apply changes / can undo changes
+
+			// is mod when any sheet status is not existing and  is not new deleted
+
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				// if (sht.SheetStatus != SheetStatus.SS_EXISTING && 
+				// 	sht.SheetStatus != SheetStatus.SS_NEW_DELETED)
+				// {
+				// 	isMod = true;
+				// 	break;
+				// }
+
+				if (sht.SheetStatus == SheetStatus.SS_DELETED || 
+					sht.SheetStatus == SheetStatus.SS_NEW)
+				{
+					isMod = true;
+					canUndo = true;
+					break;
+				}
+
+				if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED || 
+					sht.SheetStatus == SheetStatus.SS_MOD_DELETED)
+				{
+					canUndo = true;
+				}
+			}
+
+
+			IsModifiedSheetsList = isMod;
+			CanUndoSheetsList = canUndo;
+		}
+
+		/// <summary>
+		/// find and select a sheet that is not deleted - when a sheet exists
+		/// </summary>
 		private void setSelectedSheet()
 		{
 			string? selSht = null;
@@ -626,6 +914,7 @@ namespace ExStorSys
 					break;
 				}
 			}
+
 
 			SelectSheet = selSht;
 		}
@@ -659,6 +948,89 @@ namespace ExStorSys
 			// InitSheets();
 		}
 
+		public void SheetListApplyChgs()
+		{
+			int status;
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				status = sheetStatus(sht.SheetStatus);
+				
+				// existing or created - do nothing
+				if (status == 0 ) continue;
+
+				// deleted or mod_deleted - delete the ds
+				if (status == -1)
+				{
+					// ExStorMgr.Instance.sheet
+					// -1 = delete a sheet
+					if (sht.GotDs) ExStorLib.Instance.DeleteDs(sht.ExsDataStorage!);
+
+					continue;
+				}
+
+				// modified - update (not handeled here)
+				if (status == 1) throw new InvalidOperationException("Sheet should not be modified");
+				
+				// new - create the new sheet
+				if (status == 2)
+				{
+					// todo only continue if good to go
+					ExStoreRtnCode a = ExStorLib.Instance.WriteNewSheet(sht, shtSchema);
+
+					sht.SheetStatus = SheetStatus.SS_EXISTING;
+
+					// WorkBook.CommitAltChanges(wbkSchema);
+					// todo is this correct?  or just save the correct field
+					WorkbookApplyChgs(false);
+				}
+			}
+
+			updateSheetsListProps();
+
+			IsModifiedSheetsList = false;
+			
+		}
+
+		/// <summary>
+		/// process sheet status to determine next step<br/>
+		/// -1 delete this
+		/// 0 = ignore
+		/// 1 update this
+		/// 2 save this
+		/// </summary>
+		private int sheetStatus(SheetStatus ss)
+		{
+			if (ss == SheetStatus.SS_CREATED)
+			{
+				return 0;
+			}
+			if (ss == SheetStatus.SS_NEW)
+			{
+				return 2;
+			}
+			if (ss == SheetStatus.SS_NEW_DELETED)
+			{
+				return 0;
+			}
+			if (ss == SheetStatus.SS_EXISTING)
+			{
+				return 0;
+			} 
+			if (ss == SheetStatus.SS_DELETED)
+			{
+				return -1;
+			} 
+			if (ss == SheetStatus.SS_MODIFIED)
+			{
+				return 1;
+			} 
+			if (ss == SheetStatus.SS_MOD_DELETED)
+			{
+				return -1;
+			}
+
+			return -1;
+		}
 
 		/* private sheet list */
 
@@ -668,14 +1040,11 @@ namespace ExStorSys
 
 			sht.Config();
 
-			ExStorStatus = ES_SHT_CREATED;
-
 			OnPropChgd(PropertyId.PI_XDATA_SHT, GotAnySheets);
 
 			if (CurrentSheet == null) SelectSheet = sht.DsName;
 		}
-
-
+		
 		/*  NOTES
 		 * save sheet list
 		 */ // xMgr.write sheets ()
@@ -756,7 +1125,11 @@ namespace ExStorSys
 		/// <summary>
 		/// temp workbook entity
 		/// </summary>
-		public Entity? TempWbkEntity { get; set; }
+		public Entity? TempWbkEntity
+		{
+			get; 
+			set;
+		}
 
 		// not used for validation but for lib routines
 		/// <summary>
@@ -846,22 +1219,36 @@ namespace ExStorSys
 
 	#region event consuming
 
+		private void ChildOnPropChgd(object sender, PropChgEvtArgs e)
+		{
+			if (e.PropId == PropertyId.PI_XDATA_SHT_MOD)
+			{
+				validateSheetStatus();
+			}
+			else if (e.PropId == PropertyId.PI_XDATA_WBK_MOD)
+			{
+				OnPropertyChanged(nameof(WorkBook));
+				OnPropertyChanged(nameof(NeedsSaving));
+			}
+		}
+
 	#endregion
 
 	#region event publishing
 
-		public event PropertyChangedEventHandler? PropertyChanged;
-		
 		[DebuggerStepThrough]
 		[NotifyPropertyChangedInvocator]
 		private void OnPropertyChanged([CallerMemberName] string memberName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
+		public event PropertyChangedEventHandler? PropertyChanged;
+
+
 
 		public delegate void PropChgdEventHandler(object sender, PropChgEvtArgs e);
 
-		public event ExStorData.PropChgdEventHandler PropChgd;
+		public event PropChgdEventHandler PropChgd;
 
 		protected void OnPropChgd(PropertyId pi, dynamic value)
 		{
@@ -886,7 +1273,7 @@ namespace ExStorSys
 
 		public delegate void RestartRequiredEventHandler(object sender, bool? e);
 
-		public event ExStorData.RestartRequiredEventHandler RestartRequiredChanged;
+		public event RestartRequiredEventHandler RestartRequiredChanged;
 
 		protected void RaiseRestartRequiredEvent(bool? e)
 		{

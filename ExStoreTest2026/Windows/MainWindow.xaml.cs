@@ -64,26 +64,33 @@ namespace ExStoreTest2026.Windows
 			// the ui gets connected to a null object that no longer exists after it gets configured
 			mui = MainWinModelUi.Instance;
 			xData = ExStorData.Instance;
-			
+
+			// list of prime ogjects to watch
+			// xdata, xlib, mui, mw, xmgr
 
 			InitializeComponent();
 
 			Msgs.Mw = this;
 			R.Msg = this;
-			
-			IntPtr ptr = R.RvtUiApp.MainWindowHandle;
-			rvtWin = RvtLibrary.WindowHandle(ptr);
 
-			rvtWin.LocationChanged += RvtWinOnLocationChanged;
+			// see app ribbon for this
+			R.ShowProcessMsg = true;
+
+			R.ProcessMsg($"got wbk {xData.WorkBook != null} | got shts {xData.GotAnySheets}", ObjectId);
+
 
 			// save this
+			// IntPtr ptr = R.RvtUiApp.MainWindowHandle;
+			// rvtWin = RvtLibrary.WindowHandle(ptr);
+			// rvtWin.LocationChanged += RvtWinOnLocationChanged;
 			// configTitleWindow();
+
 
 			_win.Owner = rvtWin;
 
-			// Debug.WriteLine($"\n*** main window init | begin");
+			// DebugRoutines.ShowObjectId();
 
-			DebugRoutines.ShowObjectId();
+			R.ProcessMsg("pre-init comps", ObjectId, false);
 		}
 
 		/* message text box */
@@ -99,9 +106,18 @@ namespace ExStoreTest2026.Windows
 			}
 		}
 
-		public void DebugMsgLine(string msg) => Message += msg + "\n";
-		public void DebugMsg(string msg) => Message += msg;
+		public void DebugMsgLine(string msg)
+		{
+			Message += msg + "\n";
+			Debug.WriteLine(msg);
+		}
+		public void DebugMsg(string msg)
+		{
+			Message += msg;
+			Debug.Write(msg);
+		}
 		public void WriteLine(string msg) => DebugMsgLine(msg);
+		public void Write(string msg) => DebugMsg(msg);
 
 		/* system status */
 
@@ -172,11 +188,18 @@ namespace ExStoreTest2026.Windows
 			return $"{nameof(MainWindow)} [{ObjectId}]";
 		}
 
+
+
+
 		/* process ui events */
 
 		private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
 		{
-			Msgs.WriteLine($"\n*** window loaded | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.ModelTitle ?? "null"}");
+			R.ProcessMsg($"*** window loaded | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.ModelTitle ?? "null"}", -1, null);
+			// Msgs.WriteLine($"\n*** window loaded | model is {R.RvtDoc?.Title ?? "no title"} | model name | {ExStorMgr.Instance.xData.WorkBook?.ModelTitle ?? "null"}");
+
+			xData.Config();
+
 
 			// statusReport("win loaded", 0);
 			//
@@ -241,9 +264,9 @@ namespace ExStoreTest2026.Windows
 				string shtStat = xData.CurrentSheet == null ? "is null" : "is good";
 				string shtLstStat = xData.Sheets == null ? "is null" : "is good";
 
-				string wbkModStat = (xData.WorkBook?.IsModified ?? false) ? "is modified" : "not modified";
-				string shtModStat = (xData.CurrentSheet?.IsModified ?? false) ? "is modified" : "not modified";
-				string shtLstModStat = xData.IsModifiedShtsList  ? "is modified" : "not modified";
+				string wbkModStat = (xData.WorkBook?.IsModifiedExo ?? false) ? "is modified" : "not modified";
+				string shtModStat = (xData.CurrentSheet?.IsModifiedExo ?? false) ? "is modified" : "not modified";
+				string shtLstModStat = xData.IsModifiedSheetsList  ? "is modified" : "not modified";
 
 				string shtLstCount = (xData.Sheets?.Count ?? -1).ToString();
 				// string shtLstTmpCount = (xData.TempShtDsList?.Count ?? -1).ToString();
@@ -274,7 +297,7 @@ namespace ExStoreTest2026.Windows
 
 			Msgs.WriteLine($"** {title} | xm.ExSysStatus {xm?.ExSysStatus}");
 			Msgs.WriteLine($"** {title} | xm.restart? {xm?.RestartRequired}");
-			Msgs.WriteLine($"** {title} | xd.ExStorStatus {xData?.ExStorStatus}");
+			// Msgs.WriteLine($"** {title} | xd.ExStorStatus {xData?.ExStorStatus}");
 			Msgs.WriteLine($"** {title} | xd.restart? {xData?.RestartRequired}");
 			Msgs.WriteLine($"** {title} | Mui.ExSysStatus {Mui?.ExSysStatus}");
 			Msgs.WriteLine($"** {title} | Mui.restart status {Mui?.RestartStatus}");
@@ -414,7 +437,7 @@ namespace ExStoreTest2026.Windows
 			}
 			else if (flip % 3 == 1)
 			{
-				Wm.CurrSht!.ApplyChanges();
+				Wm.CurrSht!.ApplyOrUndoChanges(false, true);
 				flip++;
 			}
 			else
@@ -460,7 +483,7 @@ namespace ExStoreTest2026.Windows
 
 			} else if (flip % 3 == 1)
 			{
-				Wm.Wbk.ApplyChanges();
+				Wm.Wbk.ApplyOrUndoChanges(false, true);
 
 				if (test)
 				{
@@ -914,10 +937,10 @@ namespace ExStoreTest2026.Windows
 			Wm.CurrSht?.UndoChange(fd);
 		}
 
-		private void BtnAddSht_OnClick(object sender, RoutedEventArgs e)
-		{
-
-		}
+		// private void BtnAddSht_OnClick(object sender, RoutedEventArgs e)
+		// {
+		//
+		// }
 		
 		private void BtnRemoveSht_OnClick(object sender, RoutedEventArgs e)
 		{
@@ -942,11 +965,6 @@ namespace ExStoreTest2026.Windows
 		private void BtnRemoveAllFams_OnClick(object sender, RoutedEventArgs e)
 		{
 
-		}
-
-		private void BtnAddFamAndType_OnClick(object sender, RoutedEventArgs e)
-		{
-			Wm.AddFamilyAndType2();
 		}
 
 		private Control getNextControl(Control sender)

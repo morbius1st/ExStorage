@@ -74,10 +74,11 @@ namespace ExStoreTest2026.Windows
 
 		public void Init()
 		{
-			// Debug.WriteLine($"\n*** MainWinModelUi init | begin");
-
 			// objectId = AppRibbon.ObjectIdx++;
 			ObjectId = ExStorStartMgr.Instance?.AddObjId(nameof(MainWinModelUi)) ?? -1;
+
+			R.ProcessMsg("init", ObjectId);
+
 			Instance = this;
 			xMgr = ExStorMgr.Instance!;
 			xData = ExStorData.Instance;
@@ -91,10 +92,10 @@ namespace ExStoreTest2026.Windows
 			SecurityMgr.Instance.ResetPropChanged();
 			SecurityMgr.Instance.PropertyChanged += SecMgr_PropertyChanged;
 
-			// CmdResetFamList = new RelayCommand(CmdResetFamListExe,CmdResetFamListCanExe);
+			// CmdFamListUndoChanges = new RelayCommand(CmdFamListUndoChgsExe,CmdFamListUndoChgsCanExe);
 			// SaveNewFamilyListItem = new RelayCommand(SaveNewFamItemExe,SaveNewFamItemCanExe);
 
-			// Debug.WriteLine($"\n*** MainWinModelUi init | exit ({ObjectId})");
+			R.ProcessMsg("init", ObjectId, false);
 		}
 
 

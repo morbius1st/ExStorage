@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Controls.Primitives;
 using Autodesk.Revit.DB.ExtensibleStorage;
 using JetBrains.Annotations;
+using RevitLibrary;
 using UtilityLibrary;
 
 
@@ -23,7 +24,9 @@ namespace ExStorSys
 		private Entity? exsEntity;
 
 		protected Dictionary<Te, FieldData<Te>> rows;
-		// private bool isPopulated;
+		
+		protected bool isModifiedExo;
+		private bool canApplyResetBtn;
 
 		protected ExStorDataObj()
 		{
@@ -31,6 +34,8 @@ namespace ExStorSys
 		}
 
 		/* properties */
+
+		public int FieldSrcArraySize {get; protected set;}
 
 		// use UpdateExsObjects to set this
 		/// <summary>
@@ -59,8 +64,18 @@ namespace ExStorSys
 				// updatePopulate();
 			}
 		}
-
-		public abstract bool IsModified { get; protected set; }
+		
+		public bool CanApplyResetBtn
+		{
+			get => canApplyResetBtn;
+			set
+			{
+				if (value == canApplyResetBtn) return;
+				canApplyResetBtn = value;
+				OnPropertyChanged();
+			}
+		}
+		public abstract bool IsModifiedExo { get; set; }
 
 		/* shortcuts */
 
@@ -94,8 +109,36 @@ namespace ExStorSys
 			return GetEnumerator();
 		}
 
+		/* required properties */
+
+		public abstract string DateModifiedByUser {get; set;}
+		public abstract void SetDateModifiedByAltSrc(string value,int src);
+		public abstract FieldData<Te> DateModifiedField {get;}
 
 		/* methods */
+
+		// protected abstract void UpdateModifiedDate(int state);
+		/// <summary>
+		/// update the modify date to a current value or to the original value depending on state<br/>
+		/// state >= 0 -> set modified to state<br/>
+		/// state &#60; 0 reset mod date and set modified by none.
+		/// </summary>
+		protected void UpdateModifiedDate(int state)
+		{
+			if (state >= 0)
+			{
+				SetDateModifiedByAltSrc(DateTime.Now.ToString("s"), state);
+			}
+			else
+			{
+				DateModifiedField.UndoChg();
+				DateModifiedField.ClrChgSrc();
+
+				OnPropertyChanged(nameof(DateModifiedByUser));
+			}
+		}
+
+
 
 		/// <summary>
 		/// update the DS & E objects (S to be removed)
@@ -113,33 +156,201 @@ namespace ExStorSys
 			return true;
 		}
 
-		protected void ValidateChangeStatus()
+
+		protected void ValidateChangeStatus([CallerMemberName] string who = "")
 		{
-			bool isMod = false;
+			bool isAnyAltSrcSet = false;
+			bool hasMod = false;
+			int[] isMod = new int[FieldSrcArraySize];
 
 			foreach ((Te? key, FieldData<Te>? fd) in rows)
 			{
-				if (fd.DyValue.IsChanged == true)
+				if (fd.DyValue!.IsClean) continue;
+
+				hasMod = true;
+
+				for (int i = 0; i < FieldSrcArraySize; i++)
 				{
-					isMod = true;
+					if (fd.IsChgSrcSet(i))
+					{
+						isMod[i]++;
+						if (i >= FieldData<Te>.ALT_SRC_FIRST_IDX) isAnyAltSrcSet=true;
+					}
 				}
 			}
 
-			IsModified = isMod;
+			IsModifiedExo = isMod[0] > 0;
+			CanApplyResetBtn = isMod[0] > 0;;
+
+			if (hasMod)
+			{
+				for (int i = FieldSrcArraySize - 1; i >= FieldData<Te>.ALT_SRC_FIRST_IDX; i--)
+				{
+					if (isMod[i] > 0)
+					{
+						UpdateModifiedDate(1);
+						break;
+					}
+				}
+
+				if (isMod[0] > 0)
+				{
+					UpdateModifiedDate(0);
+				}
+			}
+			else
+			{
+				UpdateModifiedDate(-1);
+			}
 		}
 
-		public void ApplyChanges()
+
+		/// <summary>
+		/// validate the state of field changes to determine the state of<br/>
+		/// IsModifiedExo (basic modified flag)<br/>
+		/// CanApplyResetBtn (whether these buttons are emabled)<br/>
+		/// Whether to update the modified data field
+		/// </summary>
+		protected void ValidateChangeStatus2([CallerMemberName] string who = "")
 		{
+			int isMod = 0;
+
+			int userFieldCount = 0;
+			int altSrcCount = 0;
+			int altSrcACount = 0;
+			int altSrcBCount = 0;
+
+			// UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
+
 			foreach ((Te? key, FieldData<Te>? fd) in rows)
 			{
-				if (fd.DyValue.IsChanged == true)
+				if (fd.DyValue!.IsClean) continue;
+				// if (fd.IsCtrlField) continue;
+				// todo - add logic?
+
+				// canEditField = SecurityMgr.ValidateFieldEditing(fd.Field.FieldEditLevel, usl) == FieldEditStatus.FES_CAN_EDIT;
+
+
+				// todo - add logic
+				// if (fd.Field!.TstFcFlagViaIuFlag(ItemUsage.IU_IS_ALT_SRC_A) ||
+				// 	fd.Field!.TstFcFlagViaIuFlag(ItemUsage.IU_IS_ALT_SRC_B))
+				// {
+				// 	altSrcCount++;
+				// 	altSrcACount += fd.IsAltSrcA ? 1 : 0;
+				// 	altSrcBCount += fd.IsAltSrcB ? 1 : 0;
+				// }
+				// else
+				// 	userFieldCount++;
+
+				isMod++;
+			}
+
+			if (isMod > 0)
+			{
+				isModifiedExo = userFieldCount > 0;
+				CanApplyResetBtn = userFieldCount  > 0;
+
+				if (altSrcCount == 0)
 				{
-					fd.DyValue.ApplyChange();
+					UpdateModifiedDate(0);
+				}
+				else
+				{
+					if (altSrcACount > 0) UpdateModifiedDate(1);
+					else if (altSrcBCount > 0) UpdateModifiedDate(2);
 				}
 			}
+			else
+			{
+				// no changes, clear the info
+				// disallow buttons
+				UpdateModifiedDate(-1);
+				isModifiedExo = false;
+				CanApplyResetBtn = false;;
+			}
+
+			OnPropertyChanged(nameof(IsModifiedExo));
+		}
+
+		/// <summary>
+		/// apply or undo the change in the local copy to all fields
+		/// </summary>
+		public void ApplyOrUndoChanges(bool bypassAlt, bool applyChg)
+		{
+			UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
+			bool canEditField;
+
+			foreach ((Te? key, FieldData<Te>? fd) in rows)
+			{
+				if (fd.DyValue!.IsChanged == true)
+				{
+					canEditField = 
+						SecurityMgr.ValidateFieldEditing(fd.Field!.FieldEditLevel, usl) == 
+						FieldEditStatus.FES_CAN_EDIT;
+
+
+					// todo - add logic
+					// if (fd.Field!.IsAltSrcA)
+					// {
+					// 	if (applyChg)
+					// 	{
+					// 		if (bypassAlt && !canEditField) continue;
+					// 	}
+					// 	else
+					// 	{
+					// 		if (bypassAlt) continue;
+					// 	}
+					// 	
+					// }
+					// else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
+					//
+					// if (applyChg)
+					// {
+					// 	fd.DyValue.ApplyChange();
+					// }
+					// else
+					// {
+					// 	UndoChange(fd);
+					// }
+				}
+			}
+
+			// // flag no modified
+			// IsModifiedExo = false;
 
 			ValidateChangeStatus();
+
+			// update the modified date to the current time
+			// UpdateModifiedDate();
 		}
+
+		// /// <summary>
+		// /// apply change in the local copy to all fields
+		// /// </summary>
+		// public void ApplyChanges(bool bypassAlt)
+		// {
+		// 	foreach ((Te? key, FieldData<Te>? fd) in rows)
+		// 	{
+		// 		if (fd.DyValue!.IsChanged == true)
+		// 		{
+		// 			if (fd.Field!.IsAltSrcA)
+		// 			{
+		// 				if (bypassAlt) continue;
+		// 			}
+		// 			else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
+		//
+		// 			fd.DyValue.ApplyChange();
+		// 		}
+		// 	}
+		//
+		// 	// // flag no modified
+		// 	// IsModifiedExo = false;
+		//
+		// 	ValidateChangeStatus();
+		//
+		// 	// update the modified date to the current time
+		// 	// UpdateModifiedDate();
+		// }
 
 		public void SetTrackChanges()
 		{
@@ -151,7 +362,20 @@ namespace ExStorSys
 
 		public int RowCount => Rows.Count;
 
-		public void UndoValueChange(FieldData<Te> fd)
+		protected void SetFieldCtrlByAlt(Te which)
+		{
+			FieldData<Te> fd = rows[which];
+
+			
+		}
+
+		public void UndoChange(FieldData<Te> fd)
+		{
+			UndoValueChange(fd);
+			OnPropertyChanged(fd.Field.FieldPropName);
+		}
+
+		protected void UndoValueChange(FieldData<Te> fd)
 		{
 			fd.DyValue.UndoChange();
 
@@ -177,22 +401,48 @@ namespace ExStorSys
 			return true;
 		}
 
-		public bool SetNewValueDym(Te key, dynamic dv, bool validate = true)
+		public bool SetNewValueDymx(Te key, dynamic dv) //, bool validate = true)
 		{
 			if (!(Rows?.ContainsKey(key) ?? false)) return false;
 
 			FieldData<Te> field = Rows[key];
 
 			if (!field.DyValue.TrackChanges) 
-				throw new InvalidOperationException($"Use {nameof(SetInitValueDym)}() to set the field's value");
+				R.ProcessMsg($"track? {field.DyValue.TrackChanges} | got key {key} & value {dv.ToString()}", -1);
+
+			// if (!field.DyValue.TrackChanges) 
+			// 	throw new InvalidOperationException($"Use {nameof(SetInitValueDym)}() to set the field's value");
 			
 			field.DyValue.ChangeValue(dv!);
 
-			Rows[key] = field;
-
-			if (validate) ValidateChangeStatus();
+			// Rows[key] = field;
 
 			return true;
+		}
+
+		public bool SetNewValueDym(FieldData<Te> field, dynamic dv) //, bool validate = true)
+		{
+			if (!field.DyValue.TrackChanges)
+			{
+				R.ProcessMsg($"track? {field.DyValue.TrackChanges} | got field {field.Field!.FieldName} & value {dv.ToString()}", -1);
+				return false;
+			}
+
+			field.DyValue.ChangeValue(dv!);
+
+			return true;
+		}
+
+		public void UpdateUsrChgSrc(FieldData<Te> field)
+		{
+			if (field.IsModified())
+			{
+				field.SetUsrChgSrc();
+			}
+			else
+			{
+				field.UnSetUsrChgSrc();
+			}
 		}
 
 		public FieldData<Te> GetField(Te key)
@@ -215,7 +465,11 @@ namespace ExStorSys
 
 			if (dy != null && !dy.GetType() != field.FieldType) return;
 
-			Rows.Add(key, new (field, dy ?? field.FieldDefValue.Value));
+			FieldData<Te> f = new FieldData<Te>(field, dy ?? field.FieldDefValue!.Value);
+
+			f.FieldSrcArraySize = FieldSrcArraySize;
+
+			Rows.Add(key, f);
 		}
 
 		/* initialize row data */
@@ -224,7 +478,7 @@ namespace ExStorSys
 		{
 			IsEmpty = true;
 
-			foreach ((Te? key, FieldDef<Te>? value) in f)
+			foreach ((Te key, FieldDef<Te> value) in f)
 			{
 				// addValue(key, f);
 
@@ -232,13 +486,13 @@ namespace ExStorSys
 			}
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
 		[DebuggerStepThrough]
 		[NotifyPropertyChangedInvocator]
 		protected void OnPropertyChanged([CallerMemberName] string memberName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 		}
+		public event PropertyChangedEventHandler PropertyChanged;
+
 	}
 }

@@ -1,11 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Windows.Data;
-
-using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.ExtensibleStorage;
-
 using UtilityLibrary;
-
 using static ExStorSys.SheetFieldKeys;
 
 // user name: jeffs
@@ -19,6 +13,7 @@ namespace ExStorSys
 		{
 			return false;
 		}
+
 		public int GetHashCode(Dictionary<string, string?> obj)
 		{
 			return 0;
@@ -45,19 +40,19 @@ namespace ExStorSys
 
 		private Sheet()
 		{
-			FieldSrcArraySize = ExStorConst.FS_FLDSRC_SIZE_SHT;
+			// FieldSrcArraySize = ExStorConst.FS_FLDSRC_SIZE_SHT;
 
 			Rows = new ();
 
 			init(Fields.SheetFields);
 
-			ObjectId = ExStorStartMgr.Instance?.AddObjId() ?? -1;
+			// ObjectId = ExStorStartMgr.Instance?.AddObjId() ?? -1;
 
 			FamAndType.Modified += OnModified_FamAndType;
 
-			famListWkg = new ();
+			FamListWkg = new ();
 
-			FamListWkgViewSource = new CollectionViewSource { Source = famListWkg };
+			// FamListWkgViewSource = new CollectionViewSource { Source = famListWkg };
 
 
 			/*
@@ -67,10 +62,10 @@ namespace ExStorSys
 			famListModViewSource = new CollectionViewSource { Source = famListWkg };
 			famListModViewSource.Filter += FamListModViewSourceOnFilter;
 			*/
-
 		}
 
 	#region shortcuts & properties
+
 
 		/* shortcuts & properties*/
 
@@ -79,11 +74,19 @@ namespace ExStorSys
 		/// </summary>
 		public override bool IsModifiedExo
 		{
-			get => isModifiedExo || IsModifiedFamList;
+			get => isModifiedExo || isModifiedFamList;
 			set
 			{
-				if (value == isModifiedExo) return;
+				R.AddRouteEnter($"setting to {value}",addMorM: true);
+
+				if (value == isModifiedExo)
+				{
+					R.AddRouteExit("value matches - ignore");
+					return;
+				}
+
 				isModifiedExo = value;
+
 				OnPropertyChanged();
 
 				if (!isModifiedExo)
@@ -94,19 +97,25 @@ namespace ExStorSys
 
 				setSheetStatus(isModifiedExo);
 
-				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, ""));
+				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, DsName));
 
+				R.AddRouteExit();
 			}
 		}
+
+		public override SourceId DateModSrcId => DateModifiedField.ChgSrcId;
+		public override SourceId NameModSrcId => NameModifiedField.ChgSrcId;
 
 		/// <summary>
 		/// flag to determine if the family list has changes
 		/// </summary>
 		public bool IsModifiedFamList
-		{		
+		{
 			get => isModifiedFamList;
 			set
 			{
+				R.AddRoute($"set to {value} (IsModifiedExo is {IsModifiedExo}");
+
 				if (value == isModifiedFamList) return;
 				isModifiedFamList = value;
 
@@ -115,21 +124,7 @@ namespace ExStorSys
 				OnPropertyChanged();
 				OnPropertyChanged(nameof(IsModifiedExo));
 
-				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, ""));
-			}
-		}
-
-		public SheetStatus SheetStatus
-		{
-			get => sheetStatus;
-			set
-			{
-				if (value == sheetStatus) return;
-
-				if (sheetPriorStatus == SheetStatus.SS_CREATED) sheetPriorStatus = sheetStatus;
-
-				sheetStatus = value;
-				OnPropertyChanged();
+				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, $"placeholder {nameof(IsModifiedFamList)}"));
 			}
 		}
 
@@ -145,7 +140,6 @@ namespace ExStorSys
 			}
 		}
 
-
 		/// <summary>
 		/// the root name for searching for the actual DS - does not include
 		/// model code or thereafter.
@@ -159,7 +153,7 @@ namespace ExStorSys
 		// 	set => SetInitValueDym(RK_AD_DESC, value);
 		// }
 
-		public override string? SchemaName => ExStorMgr.Instance?.Exid.ShtSchemaName;
+		// public override string? SchemaName => ExStorMgr.Instance?.Exid.ShtSchemaName;
 		public override string SchemaDesc => $"Sheet Schema for {ExStorConst.EXS_SHT_NAME_SEARCH}";
 		public override Guid SchemaGuid => ExStorConst.ShtSchemaGuid;
 
@@ -167,13 +161,30 @@ namespace ExStorSys
 
 		/* sheet status */
 
-		public EnumData<SheetStatus> SheetStatusEnumData => ExStorConst.SheetStatusDesc[SheetStatus];
-		
+		// public EnumData<SheetStatus> SheetStatusEnumData => ExStorConst.SheetStatusDesc[SheetStatus];
+
+		public SheetStatus SheetStatus
+		{
+			get => sheetStatus;
+			set
+			{
+				if (value == sheetStatus) return;
+
+				if (sheetPriorStatus == SheetStatus.SS_CREATED) sheetPriorStatus = sheetStatus;
+
+				sheetStatus = value;
+				OnPropertyChanged();
+			}
+		}
+
 		private void setModifiedSheetStatus()
 		{
 			if (sheetStatus == SheetStatus.SS_EXISTING) SheetStatus = SheetStatus.SS_MODIFIED;
 		}
 
+		/// <summary>
+		/// undo the current sheet status by restoring the prior sheet status
+		/// </summary>
 		public void UndoSheetStatus()
 		{
 			if (sheetPriorStatus == SheetStatus.SS_CREATED) return;
@@ -183,7 +194,7 @@ namespace ExStorSys
 
 			OnPropertyChanged(nameof(SheetStatus));
 		}
-		
+
 	#endregion
 
 	#region general methods & creation
@@ -196,9 +207,14 @@ namespace ExStorSys
 		/// </summary>
 		public void Config()
 		{
+			R.AddRouteEnter(addMorM: true);
 			updateFamElemList();
 
+			validateFamListWkg();
+
 			updateFamListProps();
+
+			R.AddRouteExit();
 		}
 
 		/// <summary>
@@ -238,9 +254,15 @@ namespace ExStorSys
 		/// </summary>
 		public static Sheet CreateSheet(string shtName, SheetCreationData sd)
 		{
+			R.AddRouteEnter(addMorM: true);
+
 			Sheet sht = new ();
 
+			R.AddRoute($"sheet dsname track changes? {sht.DsNameField.DyValue.TrackChanges}");
+
 			sht.updateWithCurrentData(shtName, sd);
+
+			R.AddRouteExit();
 
 			return sht;
 		}
@@ -257,19 +279,25 @@ namespace ExStorSys
 
 		private void updateWithBasicInfo(string shtName)
 		{
+			R.AddRouteEnter(addMorM: true);
 			IsEmpty = false;
 
 			updateWithInitialData(shtName);
 
-			SetInitValueDym(RK_AD_DESC,           $"Sheet for {ExStorMgr.Instance?.Exid.ModelTitle}");
-			SetInitValueDym(RK_AD_DATE_CREATED  , DateTime.Now.ToString("s"));
-			SetInitValueDym(RK_AD_NAME_CREATED  , ExStorConst.UserName);
-			SetInitValueDym(RK_AD_DATE_MODIFIED , DateTime.Now.ToString("s"));
-			SetInitValueDym(RK_AD_NAME_MODIFIED , ExStorConst.UserName);
+			SetInitValueDym(RK_AD_DESC,           $"Sheet for {ExStorConstFaux.FAUX_MODEL_TITLE}");
+			// SetInitValueDym(RK_AD_DATE_CREATED  , DateTime.Now.ToString("s"));
+			SetInitValueDym(RK_AD_DATE_CREATED  , "2026-01-01T08:10:18");
+			SetInitValueDym(RK_AD_NAME_CREATED  , ExStorConstFaux.FauxUserName);
+			// SetInitValueDym(RK_AD_DATE_MODIFIED , DateTime.Now.ToString("s"));
+			SetInitValueDym(RK_AD_DATE_MODIFIED , "2026-01-01T08:10:18");
+			SetInitValueDym(RK_AD_NAME_MODIFIED , ExStorConstFaux.FauxUserName);
+
+			R.AddRouteExit();
 		}
 
 		private void updateWithCurrentData(string shtName, SheetCreationData sd)
 		{
+			R.AddRouteEnter(addMorM: true);
 			updateWithBasicInfo(shtName);
 
 			SetInitValueDym(RK_ED_XL_FILE_PATH  , sd.XlFilePath!);
@@ -278,7 +306,9 @@ namespace ExStorSys
 			SetInitValueDym(RK_OD_SEQUENCE      , sd.Sequence);
 			SetInitValueDym(RK_OD_UPDATE_RULE   , sd.UpdateRule);
 			SetInitValueDym(RK_OD_UPDATE_SKIP   , sd.Skip);
-			// SetInitValueDym(RK_RD_FAMILY_LIST   , sd.FamililyAndType);
+			
+			R.AddRouteExit();
+
 		}
 
 		// protected override void UpdateModifiedDate(int state)
@@ -307,6 +337,8 @@ namespace ExStorSys
 	#region sheet row properties
 
 		/* sheet row properties */
+
+		// NOTES
 		// access abilities
 
 		// locked - read access only
@@ -339,6 +371,8 @@ namespace ExStorSys
 
 		/* fields */
 
+	#region locked
+
 		/* locked - never view except for debug */
 
 		/// <summary>
@@ -348,6 +382,9 @@ namespace ExStorSys
 
 		public FieldData<SheetFieldKeys> DsNameField => Rows[RK_DS_NAME];
 
+	#endregion
+
+	#region view only
 
 		/* view only */
 
@@ -359,70 +396,6 @@ namespace ExStorSys
 		public FieldData<SheetFieldKeys> DateCreatedField => Rows[RK_AD_DATE_CREATED];
 
 
-
-		/// <summary>
-		/// access to the date created for this workbook
-		/// </summary>
-		public override string DateModifiedByUser
-		{
-			get => DateModifiedField.DyValue!.Value;
-			set
-			{
-				// SetNewValueDym(RK_AD_DATE_MODIFIED, value);
-				SetNewValueDym(DateModifiedField, value);
-
-				Debug.WriteLine($"** SHOULD NOT SEE THIS? ** track changes {DateModifiedField.DyValue.TrackChanges} | is dirty {DateModifiedField.IsModified()}");
-
-				// if (DateModifiedField.DyValue!.IsDirty)
-				// {
-				// 	DateModifiedField.SetChgSource(-1);
-				// }
-
-				// do not include this - stack overflow
-				// ValidateChangeStatus();
-				OnPropertyChanged();
-			}
-		}
-
-		public override void SetDateModifiedByAltSrc(string value,int src)
-		{
-			// SetNewValueDym(RK_AD_DATE_MODIFIED, value);
-			SetNewValueDym(DateModifiedField, value);
-
-			if (DateModifiedField.DyValue!.IsDirty)
-			{
-				if (DateModifiedField.DyValue!.IsDirty)
-				{
-					DateModifiedField.SetChgSource(src);
-				}
-			}
-				
-			// do not include this - stack overflow
-			// ValidateChangeStatus();
-			OnPropertyChanged(nameof(DateModifiedByUser));
-		}
-		
-		// public override string DateModifiedByAltSrcA
-		// {
-		// 	set
-		// 	{
-		// 		SetNewValueDym(RK_AD_DATE_MODIFIED, value);
-		//
-		// 		if (DateModifiedField.DyValue!.IsDirty)
-		// 		{
-		// 			DateModifiedField.Field!.SetFcFlagViaIuFlag(ItemUsage.IU_IS_ALT_SRC_A);
-		// 		}
-		//
-		// 		// do not include this - stack overflow
-		// 		// ValidateChangeStatus();
-		// 		OnPropertyChanged(nameof(DateModifiedByUser));
-		// 	}
-		// }
-
-
-		public override FieldData<SheetFieldKeys> DateModifiedField => Rows[RK_AD_DATE_MODIFIED];
-
-
 		/// <summary>
 		/// access to the date created for this workbook
 		/// </summary>
@@ -430,6 +403,49 @@ namespace ExStorSys
 
 		public FieldData<SheetFieldKeys> SchemaVersionField => Rows[RK_SD_SCHEMA_VERSION];
 
+
+		/* view only but modified by an alt soruce */
+
+		/// <summary>
+		/// access to the date created for this workbook
+		/// </summary>
+		public override string DateModified
+		{
+			get => DateModifiedField.DyValue!.Value;
+			set
+			{
+				// SetNewValueDym(RK_AD_DATE_MODIFIED, value);
+				SetNewValueDym(DateModifiedField, value);
+
+				DateModifiedField.ChgSrcId = SourceId.SI_SRC_MOD;
+
+				Debug.WriteLine($"** SHOULD NOT SEE THIS? ** track changes {DateModifiedField.DyValue.TrackChanges} | is dirty {DateModifiedField.IsDirty()}");
+
+				// do not include this - stack overflow
+				// ValidateChangeStatus();
+				OnPropertyChanged();
+			}
+		}
+
+		public override void SetDateModifiedBySrc(string value, SourceId srcIdIn)
+		{
+			// R.AddRoute(srcIdIn, msg: true);
+
+			// SetNewValueDym(RK_AD_DATE_MODIFIED, value);
+			SetNewValueDym(DateModifiedField, value);
+
+			DateModifiedField.ChgSrcId = srcIdIn;
+
+			// do not include this - stack overflow
+			// ValidateChangeStatus();
+			OnPropertyChanged(nameof(DateModified));
+		}
+
+		public override FieldData<SheetFieldKeys> DateModifiedField => Rows[RK_AD_DATE_MODIFIED];
+
+	#endregion
+
+	#region general editing
 
 		/* general edit ability - depending on security level */
 
@@ -441,19 +457,26 @@ namespace ExStorSys
 			get => DescField.DyValue!.Value;
 			set
 			{
+				R.AddRouteEnter(addMorM: true);
+
 				// if (!SetNewValueDym(RK_AD_DESC, value)) return;
 				if (!SetNewValueDym(DescField, value)) return;
 
-				Debug.WriteLine($"** SHOULD NOT SEE THIS? ** track changes {DateModifiedField.DyValue.TrackChanges} | is dirty {DateModifiedField.IsModified()}");
+				DescField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
+
+				R.AddRouteExit();
 			}
 		}
 
 		public FieldData<SheetFieldKeys> DescField => Rows[RK_AD_DESC];
 
+	#endregion
+
+	#region limited editing
 
 		/* limited editing ability */
 
@@ -467,9 +490,11 @@ namespace ExStorSys
 			{
 				// if (!SetNewValueDym(RK_AD_NAME_CREATED, value)) return;
 				if (!SetNewValueDym(NameCreatedField, value)) return;
-				
+
+				NameCreatedField.ChgSrcId = SourceId.SI_SRC_MOD;
+
 				ValidateChangeStatus();
-				
+
 				OnPropertyChanged();
 			}
 		}
@@ -484,8 +509,12 @@ namespace ExStorSys
 			get => NameModifiedField.DyValue!.Value;
 			set
 			{
+				R.AddRoute();
+
 				// if (!SetNewValueDym(RK_AD_NAME_MODIFIED, value)) return;
 				if (!SetNewValueDym(NameModifiedField, value)) return;
+
+				NameModifiedField.ChgSrcId = SourceId.SI_DEST_B_MOD;
 
 				ValidateChangeStatus();
 
@@ -493,7 +522,22 @@ namespace ExStorSys
 			}
 		}
 
-		public FieldData<SheetFieldKeys> NameModifiedField => Rows[RK_AD_NAME_MODIFIED];
+		public override void SetNameModifiedBySrc(string value, SourceId srcIdIn)
+		{
+			R.AddRoute(srcIdIn, msg: true);
+
+			// SetNewValueDym(RK_AD_DATE_MODIFIED, value);
+			SetNewValueDym(NameModifiedField, value);
+
+			NameModifiedField.ChgSrcId = srcIdIn;
+
+			// do not include this - stack overflow
+			// ValidateChangeStatus();
+			OnPropertyChanged(nameof(NameModified));
+		}
+
+
+		public override FieldData<SheetFieldKeys> NameModifiedField => Rows[RK_AD_NAME_MODIFIED];
 
 		/// <summary>
 		/// access to the xl file path
@@ -503,8 +547,12 @@ namespace ExStorSys
 			get => XlFilePathField.DyValue!.Value;
 			set
 			{
+				R.AddRoute();
+
 				// if (!SetNewValueDym(RK_ED_XL_FILE_PATH, value)) return;
 				if (!SetNewValueDym(XlFilePathField, value)) return;
+
+				XlFilePathField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -525,6 +573,8 @@ namespace ExStorSys
 				// if (!SetNewValueDym(RK_ED_XL_SHEET_NAME, value)) return;
 				if (!SetNewValueDym(XlSheetNameField, value)) return;
 
+				XlSheetNameField.ChgSrcId = SourceId.SI_SRC_MOD;
+
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
@@ -543,6 +593,8 @@ namespace ExStorSys
 			{
 				// if (!SetNewValueDym(RK_OD_STATUS, value)) return;
 				if (!SetNewValueDym(OpStatusField, value)) return;
+
+				OpStatusField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -563,6 +615,8 @@ namespace ExStorSys
 				// if (!SetNewValueDym(RK_OD_SEQUENCE, value)) return;
 				if (!SetNewValueDym(OpSequenceField, value)) return;
 
+				OpSequenceField.ChgSrcId = SourceId.SI_SRC_MOD;
+
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
@@ -581,6 +635,8 @@ namespace ExStorSys
 			{
 				// if (!SetNewValueDym(RK_OD_UPDATE_RULE, value)) return;
 				if (!SetNewValueDym(UpdateRuleField, value)) return;
+
+				UpdateRuleField.ChgSrcId = SourceId.SI_SRC_MOD;
 
 				ValidateChangeStatus();
 
@@ -601,6 +657,8 @@ namespace ExStorSys
 				// if (!SetNewValueDym(RK_OD_UPDATE_SKIP, value)) return;
 				if (!SetNewValueDym(UpdateSkipField, value)) return;
 
+				UpdateSkipField.ChgSrcId = SourceId.SI_SRC_MOD;
+
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
@@ -609,22 +667,32 @@ namespace ExStorSys
 
 		public FieldData<SheetFieldKeys> UpdateSkipField => Rows[RK_OD_UPDATE_SKIP];
 
+
+		// not directly modified by the user
+
 		/// <summary>
-		/// access to the family list field
+		/// access to the family list field<br/>
+		/// only modified by indirect source
 		/// </summary>
 		private	Dictionary<string, string?> _FamilyList
 		{
 			get => FamilyListField.DyValue!.Value;
 			set
 			{
+				R.AddRouteEnter(addMorM: true);
+
 				// if (!SetNewValueDym(RK_RD_FAMILY_LIST, value)) return;
 				if (!SetNewValueDym(FamilyListField, value)) return;
+
+				FamilyListField.ChgSrcId = SourceId.SI_INDR_MOD;
 
 				// with the false argument, this does nothing
 				// do not use this - 
 				ValidateChangeStatus();
 
 				OnPropertyChanged();
+
+				R.AddRouteExit();
 			}
 		}
 
@@ -633,13 +701,28 @@ namespace ExStorSys
 		/// </summary>
 		public FieldData<SheetFieldKeys> FamilyListField => Rows[RK_RD_FAMILY_LIST];
 
+	#endregion
 
 		/* debug only */
 
 		/// <summary>
 		/// access to the vendor id
 		/// </summary>
-		public string VendorId  => VendorIdField.DyValue!.Value;
+		public string VendorId
+		{
+			get => VendorIdField.DyValue!.Value;
+			set
+			{
+				// if (!SetNewValueDym(PK_AD_LAST_ID, value)) return;
+				if (!SetNewValueDym(VendorIdField, value)) return;
+
+				VendorIdField.ChgSrcId = SourceId.SI_SRC_MOD;
+
+				ValidateChangeStatus();
+
+				OnPropertyChanged();
+			}
+		}
 
 		public FieldData<SheetFieldKeys> VendorIdField => Rows[RK_AD_VENDORID];
 
@@ -660,11 +743,11 @@ namespace ExStorSys
 		/// <summary>
 		/// undo a whole sheet
 		/// </summary>
-		public void UndoChangeSheet()
+		public void UndoAllSheetChanges(SourceId srcIdIn )
 		{
 			// process each row and determine if has been changed and undo the change if yes
-
-			FamAndTypeListUndoChanges();
+			undoc
+			UndoFamAndTypeListChanges();
 
 			// ReSharper disable once UnusedVariable
 			foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> fd) in rows)
@@ -673,7 +756,7 @@ namespace ExStorSys
 				{
 					// todo - add logic
 					// if (fd.Field!.IsAltSrcA || fd.Field.IsAltSrcB) continue;
-					UndoChange(fd);
+					UndoChangeMultiple( fd);
 				}
 			}
 
@@ -745,19 +828,25 @@ namespace ExStorSys
 		/// </summary>
 		public bool AddFamAndType(string famName, string typName, string props)
 		{
+			R.AddRouteEnter(addMorM: true);
+
 			string key = ExStorLib.FormatFamAndType(famName, typName);
 
 			FamAndType value = FamAndType.GetNewItem(famName, typName, props);
 
-			if (!famListWkg.TryAdd(key, value)) return false;
-
-			// FamilyListField.DyValue!.CountNewAdjust(1);
-
-			UpdateModifiedDate(1);
+			if (!FamListWkg.TryAdd(key, value))
+			{
+				R.WriteLine($"\nADD FAT | *** Failed to add ***");
+				return false;
+			}
 
 			FamAndTypeApplyChanges();
 
+			validateFamListWkg();
+
 			updateFamListProps();
+
+			R.AddRouteExit();
 
 			return true;
 		}
@@ -767,13 +856,15 @@ namespace ExStorSys
 		/// </summary>
 		public bool RemoveFamAndType(string key)
 		{
-			if (!famListWkg.Remove(key)) return false;
+			if (!FamListWkg.Remove(key)) return false;
 
 			// FamilyListField.DyValue!.CountDelAdjust(1);
 
-			UpdateModifiedDate(1);
+			// UpdateModifiedDate(SourceId.SI_INDR_MOD);
 
 			FamAndTypeApplyChanges();
+
+			validateFamListWkg();
 
 			updateFamListProps();
 
@@ -783,12 +874,13 @@ namespace ExStorSys
 		/// <summary>
 		/// reset the family name and type list
 		/// </summary>
-		public void FamAndTypeListUndoChanges()
+		public void UndoFamAndTypeListChanges()
 		{
-
-			UndoChange(FamilyListField);
+			UndoChange( FamilyListField);
 
 			updateFamElemList();
+
+			validateFamListWkg();
 
 			updateFamListProps();
 
@@ -797,14 +889,19 @@ namespace ExStorSys
 
 		/// <summary>
 		/// commit the family name and type list<br/>
-		/// that is, update the family list field with the current family list values
+		/// that is, update the family list field with the current family list values<br/>
+		/// update _FamilyList does the validate
 		/// </summary>
 		public void FamAndTypeApplyChanges()
 		{
+			R.AddRouteEnter(addMorM: true);
+
+			R.WriteLine("\n\t***** FAT Apply Changes\n");
+
 			Dictionary<string, string?> fl = new ();
 
 			// ReSharper disable once UnusedVariable
-			foreach ((string key, FamAndType fat) in famListWkg)
+			foreach ((string key, FamAndType fat) in FamListWkg)
 			{
 				fl.Add(fat.Key, fat.Properties);
 			}
@@ -813,11 +910,10 @@ namespace ExStorSys
 			// and update dyvalue & get changes notified
 			_FamilyList = fl;
 
-			// Debug.WriteLine($"** family list count| {FamilyListCnt} | dirty? {(rows[RK_RD_FAMILY_LIST].DyValue?.IsDirty.ToString()) ?? "is null"}");
-
 			// updateFamElemList();
-		}
 
+			R.AddRouteExit();
+		}
 
 		// public void FamAndTypeApplyChanges()
 		// {
@@ -840,7 +936,6 @@ namespace ExStorSys
 		// }
 
 
-
 		// // not used yet
 		// public void ClearFamAndTypeList()
 		// {
@@ -860,22 +955,18 @@ namespace ExStorSys
 		/// </summary>
 		public int FamilyListCnt
 		{
-			get
-			{
-				return _FamilyList.Count;
-			}
+			get { return _FamilyList.Count; }
 		}
-
 
 		// key is < family name > | < type name > i.e. <family>|<type>
 		// value is a tuple
 		// item 1 is the family name
 		// item 2 is the type name
 		// item 3 are item properties (undetermined)
-		private Dictionary<string, FamAndType> famListWkg { get; }
+		public Dictionary<string, FamAndType> FamListWkg { get; }
 
-		public CollectionViewSource FamListWkgViewSource { get; }
-		public int FamListWkgViewSourceCount => FamListWkgViewSource.View.Cast<object>().Count();
+		// public CollectionViewSource FamListWkgViewSource { get; }
+		// public int FamListWkgViewSourceCount => FamListWkgViewSource.View.Cast<object>().Count();
 
 
 		/*
@@ -883,7 +974,7 @@ namespace ExStorSys
 		// if the save list button should be active
 		// if the save sheet button should be active
 		// * number of items in the "saved list" / are in the family list
-		// * number of items in the "working list" 
+		// * number of items in the "working list"
 		// * number of new items > 0 -> needs saving
 		// * number of modified items > 0 -> needs saving
 
@@ -906,7 +997,7 @@ namespace ExStorSys
 
 		// ReSharper disable once InconsistentNaming
 		private CollectionViewSource famListModViewSource { get; }
-		
+
 		/// <summary>
 		/// count of tne number of modified items in the family list
 		/// </summary>
@@ -922,9 +1013,11 @@ namespace ExStorSys
 
 		private void updateFamListProps()
 		{
-			FamListWkgViewSource.View.Refresh();
-			OnPropertyChanged(nameof(FamListWkgViewSource));
-			OnPropertyChanged(nameof(FamListWkgViewSourceCount));
+			R.AddRouteEnter(addMorM: true);
+
+			// FamListWkgViewSource.View.Refresh();
+			// OnPropertyChanged(nameof(FamListWkgViewSource));
+			// OnPropertyChanged(nameof(FamListWkgViewSourceCount));
 			OnPropertyChanged(nameof(FamilyListCnt));
 
 			/*
@@ -934,37 +1027,44 @@ namespace ExStorSys
 
 			famListModViewSource.View.Refresh();
 			OnPropertyChanged(nameof(FamListModViewSourceCount));
-			
-			 */
 
-			validateFamListWkg();
+			*/
+
+			
 			// OnPropertyChanged(nameof(IsModifiedFamList));
 
 			OnPropertyChanged(nameof(IsModifiedExo));
 
 			// OnPropertyChanged(nameof(famListWkg));
 
-
+			R.AddRouteExit();
 		}
 
 		private void validateFamListWkg()
 		{
+			R.AddRouteEnter(addMorM: true);
+
 			if (FamilyListField.DyValue.IsDirty)
 			{
+				R.AddRouteExit("found FamLstField dirty & is mod fam lst now true");
 				IsModifiedFamList = true;
 				return;
 			}
 
-			foreach ((string key, FamAndType fat) in famListWkg)
+			foreach ((string key, FamAndType fat) in FamListWkg)
 			{
 				if (fat.IsNewItemFat || fat.IsModifiedFat)
 				{
+					R.AddRouteExit("found new or mod item & is mod fam lst now true");
+
 					IsModifiedFamList = true;
 					return;
 				}
 			}
 
 			IsModifiedFamList = false;
+
+			R.AddRouteExit("is mod fam lst now false");
 		}
 
 		private void updateFamElemList()
@@ -972,7 +1072,7 @@ namespace ExStorSys
 			string? famName;
 			string? famTypeName;
 
-			famListWkg.Clear();
+			FamListWkg.Clear();
 
 			if (FamLstHasElements)
 			{
@@ -980,7 +1080,7 @@ namespace ExStorSys
 				{
 					if (ExStorLib.DivideFamAndType(key, out famName, out famTypeName))
 					{
-						famListWkg.Add(key, FamAndType.GetExistItem(famName ?? "", famTypeName, value));
+						FamListWkg.Add(key, FamAndType.GetExistItem(famName ?? "", famTypeName, value));
 					}
 				}
 			}
@@ -1003,29 +1103,31 @@ namespace ExStorSys
 			// famListModViewSource.View.Refresh();
 			// OnPropertyChanged(nameof(FamListModViewSourceCount));
 
+			validateFamListWkg();
+
 			updateFamListProps();
 
 			// flag that the sheet has been modified
 			// IsModifiedFamList = true;
 		}
 
-		private void FamListNewViewSourceOnFilter(object sender, FilterEventArgs e)
-		{
-			if (e.Item is KeyValuePair<string, FamAndType> kvp)
-			{
-				e.Accepted = kvp.Value.IsNewItemFat;
-			}
-			else e.Accepted = false;
-		}
-
-		private void FamListModViewSourceOnFilter(object sender, FilterEventArgs e)
-		{
-			if (e.Item is KeyValuePair<string, FamAndType> kvp)
-			{
-				e.Accepted = kvp.Value.IsModifiedFat;
-			}
-			else e.Accepted = false;
-		}
+		// private void FamListNewViewSourceOnFilter(object sender, FilterEventArgs e)
+		// {
+		// 	if (e.Item is KeyValuePair<string, FamAndType> kvp)
+		// 	{
+		// 		e.Accepted = kvp.Value.IsNewItemFat;
+		// 	}
+		// 	else e.Accepted = false;
+		// }
+		//
+		// private void FamListModViewSourceOnFilter(object sender, FilterEventArgs e)
+		// {
+		// 	if (e.Item is KeyValuePair<string, FamAndType> kvp)
+		// 	{
+		// 		e.Accepted = kvp.Value.IsModifiedFat;
+		// 	}
+		// 	else e.Accepted = false;
+		// }
 
 	#endregion
 
@@ -1035,7 +1137,26 @@ namespace ExStorSys
 
 		protected virtual void OnPropChgd(PropChgEvtArgs e)
 		{
+			R.AddRoute("@ OnPropChgd");
 			PropChgd?.Invoke(this, e);
+
+			
+		}
+
+		public static void InvokeList()
+		{
+			R.WriteLine("\nINVOCATION LIST");
+
+			Delegate[] il = PropChgd.GetInvocationList();
+
+			R.WriteLine($"delegate count {il.Length}");
+
+			foreach (Delegate d in il)
+			{
+				R.WriteLine($"member method {d.Method.Name}");
+			}
+
+			R.NewLine();
 		}
 
 		/* removed
