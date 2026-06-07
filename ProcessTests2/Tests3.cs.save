@@ -1,0 +1,1350 @@
+﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExStorSys;
+using ProcessTests2.General;
+using UtilityLibrary;
+using static ExStorSys.ExStorConstFaux;
+
+
+
+// user name: jeffs
+// created:   5/15/2026 2:27:40 PM
+
+namespace ProcessTests2
+{
+
+	// overall Validate(string[] tests) - return bool (pass or fail)
+	//		contains a complete list of tests - must be preconfigured with access to
+	//		all needed objects or the object can be accessed
+	// each ValidateTest - return tuple<bool (actual), string (message)
+	//		associated with an interface that dictates toe input, output, and the call test()
+
+	public class Tests3 : ATests
+	{
+
+		public Tests3(Program p)
+		{
+
+			register(nameof(Test301A), Test301A);
+			register(nameof(Test301B), Test301B);
+			
+			register(nameof(Test302A), Test302A);
+			register(nameof(Test302B), Test302B);
+
+			register(nameof(Test303A), Test303A);
+			register(nameof(Test304A), Test304A);
+			register(nameof(Test305A), Test305A);
+			register(nameof(Test306A), Test306A);
+			register(nameof(Test307A), Test307A);
+			register(nameof(Test308A), Test308A);
+
+			register(nameof(Test311A), Test311A);
+			register(nameof(Test312A), Test312A);
+			register(nameof(Test313A), Test313A);
+			register(nameof(Test322A), Test322A);
+			register(nameof(Test323A), Test323A);
+			register(nameof(Test323B), Test323B);
+			register(nameof(Test323C), Test323C);
+
+			register(nameof(Test324A), Test324A);
+			register(nameof(Test324B), Test324B);
+			register(nameof(Test324C), Test324C);
+			register(nameof(Test324D), Test324D);
+			register(nameof(Test324E), Test324E);
+			register(nameof(Test324F), Test324F);
+
+			register(nameof(Test331A), Test331A);
+			register(nameof(Test331B), Test331B);
+			register(nameof(Test331C), Test331C);
+		}
+
+
+		
+		/* show / utility routines */
+
+		protected override void startTest()
+		{
+			R.NewLine();
+			R.WriteAnyway($"START TESTS3 ");
+			R.NewLine();
+			showShtLst();
+			ShowWbk.ShowWorkbookFields();
+			ShowSht.ShowSheetFields();
+			ShowSht.ShowFamList();
+
+			R.WriteLine($"\n*** Current user is {FauxUserName}\n");
+			R.WriteLine($"*** IsModExo [ {_sht.IsModifiedExo} ] | IsModFamLst [ {_sht.IsModifiedFamList} ]");
+
+			testResults = new ();
+		}
+
+		private void wbkStartTest(string desc)
+		{
+			string nametst = "";
+			string nameWbk = "";
+			bool nameStatus;
+			string nameResult = "";
+
+			tstAnsIdx = 0;
+			tstDesc = desc;
+
+			R.WriteAnyway($"{tstId} | START | {tstDesc}");
+			R.WriteOnlyWhenSilent("\n");
+
+			showShtLst();
+			ShowWbk.ShowWorkbookFields();
+
+			if (tstNameModIdx == 0)
+			{
+				nametst = tstNamMod[tstNameModIdx++];
+				nameWbk = _wbk.NameModified;
+				nameStatus = nametst.Equals(nameWbk);
+				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
+
+				R.WriteLine($"\n\tdoes actual {nameWbk} equal test {nametst}? {nameResult}");
+			}
+
+			R.NewLine();
+		}
+
+		private void wbkBeginTest(string proc)
+		{
+			testResults.Add(new (tstAnsIdx, [$"{tstId} | {proc}", ""]));
+			// run test Test323D => Test323D | START | add three sheet
+			R.StartRoute(0, $"**** run test | part [ {tstAnsIdx} ] | {tstId}");
+			R.AddRouteEnter();
+			
+			R.NewLine();
+			R.Write($"****************************\n");
+			R.WriteAnyway($"{$"[ {tstAnsIdx} ]",-5} {tstId} | ");
+			// R.NewLine();
+			R.Write($"BEGIN ");
+			R.WriteAnyway($"{proc}");
+			R.WriteOnlyWhenSilent(" >> ");
+			R.NewLine();
+			R.NewLine();
+			
+		}
+
+		private void wbkEndTest(string proc)
+		{
+			R.AddRouteExit();
+			R.WriteLine($"\nAFTER {proc}");
+			wbkEndTestInfo();
+			R.ShowRoute();
+		}
+
+		private void wbkEndTestInfo()
+		{
+			showShtLst();
+			ShowWbk.ShowWorkbookFields();
+		}
+
+		private bool endValidateTest2(string proc)
+		{
+			R.WriteLine($"****************************");
+			R.WriteLine($"TEST VALIDATE | {$"[ {tstAnsIdx} ]",-5} | {tstId} | {proc} ");
+			R.WriteLine($"\nTEST VALIDATE | workbook test result  ");
+			bool result = _V.ValidateTests(stopTestingOnError, tests[tstAnsIdx]);
+			
+			R.Write("\n***** >> ");
+
+			string answer = getAnswer(result, 4);
+
+			R.WriteAnyway($"{answer} ");
+			R.NewLine();
+
+			testResults[tstAnsIdx].Item2[1] = answer;
+
+			tstAnsIdx++;
+
+			return result;
+		}
+
+		// public Sheet CreateSheet()
+		// {
+		// 	R.AddRouteEnter();
+		//
+		// 	Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_wbk.GetId()),
+		// 		new ($"path:\\file{shtIdx}.xls", $"no sheet name {shtIdx}"));
+		//
+		// 	sht.SetTrackChanges();
+		//
+		// 	shtIdx++;
+		//
+		// 	R.AddRouteExit();
+		//
+		// 	return sht;
+		// }
+		//
+		// /* show and utility */
+		//
+		// private void addFamAndTypeStealth(string fn, string tn, string p)
+		// {
+		// 	string key = ExStorLib.FormatFamAndType(fn, tn);
+		//
+		// 	FamAndType fat = FamAndType.GetNewItem(fn, tn, p);
+		//
+		// 	fat.IsNewItemFat = false;
+		//
+		// 	_sht.FamListWkg.Add(key, fat);
+		// }
+
+		private void wbkShowTestCompletionResult( bool result)
+		{
+			string r = result ? "WORKED" : "FAIL";
+
+			R.WriteLine("\n****************************");
+			R.WriteLine(tstDesc);
+			R.WriteLine($"{tstId} | {r}");
+			R.WriteLine("****************************\n");
+
+			showTestResultSummary();
+
+		}
+
+		private void showTestResultSummary()
+		{
+			if (testResults == null || testResults.Count == 0) return;
+
+			R.WriteLine("**********\nTEST RESULT SUMMARY\n");
+
+			foreach ((int idx, string[] item2) in testResults)
+			{
+				R.WriteLine($"{$"[ {idx} ]", -7} |  {item2[1], -7} ( {item2[0]} )");
+			}
+
+			R.WriteLine("\n**********");
+		}
+
+		private void showLastIdStatus(string location)
+		{
+			string status = _xData.WorkBook.LastIdField.IsDirty() ? "is Dirty" : "is Clean";
+
+			R.WriteLine($"\n\t*** {location} | LastId | [ {_xData.WorkBook.LastId} ] | status [ {status} ] | chg src id [ {_xData.WorkBook.LastIdField.ChgSrc} ]\n");
+		}
+
+		private void showShtLst()
+		{
+			if (!doingShtLst) return;
+
+			ShowWbk.ShowShtsLst();
+
+			R.NewLine();
+		}
+
+		/// <summary>
+		/// convert a bool into a good answer string<br/>
+		/// type<br/>
+		/// 0 = yes / no<br/>
+		/// 1 = does match / does not match<br/>
+		/// 2 = match / not match<br/>
+		/// 3 = correct / wrong<br/>
+		/// 4 = worked / failed<br/>
+		/// </summary>
+		private string getAnswer(bool result, int type)
+		{
+			if (type==0)
+			{
+				return result ? "Yes" : "No";
+			}
+
+			if (type == 1)
+			{
+				return result ? "DOES Match" : "does NOT match";
+			}
+
+			if (type == 2)
+			{
+				return result ? "Match" : "NOT match";
+			}
+
+			if (type == 3)
+			{
+				return result ? "Correct" : "Wrong";
+			}
+
+			if (type == 4)
+			{
+				return result ? "WORKED" : "FAILED";
+			}
+
+
+			return result.ToString();
+		}
+
+		/* tests components */
+
+		private bool wbkChgDesc(string desc)
+		{
+			string proc = "CHANGE DESC";
+
+			wbkBeginTest(proc);
+
+			_wbk.Desc = desc;
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+			// return endValidateTest(proc) && endValidateTest2(proc);
+		}
+
+		private bool wbkChgLastId(string lastid)
+		{
+			string proc = "CHANGE LAST ID";
+
+			wbkBeginTest(proc);
+
+			_wbk.LastId = lastid;
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+			// return endValidateTest(proc) && endValidateTest2(proc);
+		}
+
+		private bool wbkChgNameMod(string name)
+		{
+			string proc = "CHANGE NAME MOD";
+
+			wbkBeginTest(proc);
+
+			_wbk.NameModified = name;
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+			// return endValidateTest(proc) && endValidateTest2(proc);
+		}
+
+		private bool wbkCanApply(bool result)
+		{
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteAnyway(" >> Can Apply - Continue >> ");
+				return true;
+			}
+
+			R.WriteAnyway(" >> CANNOT APPLY - ABORT ");
+
+			wbkShowTestCompletionResult(result);
+
+			R.AddRouteExit("CANNOT APPLY - ABORT");
+
+			return false;
+		}
+
+		private bool wbkCanUndo(bool result)
+		{
+			if (_wbk.UndoBtnStatus)
+			{
+				R.WriteAnyway(" >> Can Undo - Continue >> ");
+				return true;
+			}
+
+			R.WriteAnyway(" >> CANNOT UNDO - ABORT ");
+
+			wbkShowTestCompletionResult(result);
+
+			R.AddRouteExit("CANNOT UNDO - ABORT");
+
+			return false;
+		}
+
+		private bool wbkUndoSingle(FieldData<WorkBookFieldKeys> field)
+		{
+			string proc = "UNDO SINGLE";
+
+			wbkBeginTest(proc);
+
+			R.AddRouteEnter();
+			R.WriteLine("begin undo change| undo single");
+
+			_wbk.UndoChange(field, false);
+
+			R.WriteLine("end undo change| undo single");
+			R.AddRouteExit();
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool wbkApplySingle(FieldData<WorkBookFieldKeys> field)
+		{
+			string proc = "APPLY SINGLE";
+
+			wbkBeginTest(proc);
+
+			R.AddRouteEnter();
+			R.WriteLine("begin apply change| apply single");
+
+			_wbk.ApplyChange(field, false);
+
+			R.WriteLine("end apply change| apply single");
+			R.AddRouteExit();
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool wbkUndoAll()
+		{
+			string proc = "UNDO ALL";
+
+			wbkBeginTest(proc);
+
+			// _wbk.UndoChange(_wbk.DescField, false);
+			_wbk.UndoChangesAll(ChgSrcId.CI_SRC_A);
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool wbkApplyAll()
+		{
+			string proc = "WORKBOOK APPLY ALL";
+
+			wbkBeginTest(proc);
+
+			_wbk.ApplyChangesAll();
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool xDAddSheet(out string shtName)
+		{
+			string proc = "ADD A SHEET - CHANGE LAST ID";
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(xDAddSheet)}");
+
+			Sheet sht = CreateSheet();
+
+			_xData.AddNewSheet(sht);
+
+			shtName = sht.DsName;
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool xDDeleteSheetC(string shtName)
+		{
+			string proc = $"DELETE A SHEET | {shtName}";
+
+			wbkBeginTest(proc);
+
+			_xData.DeleteSheet(shtName);
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool xDUndoShtsLst()
+		{
+			string proc = "UNDO SHEETS LIST";
+
+			if (!_xData.UndoBtnShtsLstStatus)
+			{
+				R.AddRoute( "*** CANNOT undo sheets list (fail)", 0, -1);
+				R.WriteLine("*** CANNOT undo sheets list (fail)");
+				return false;
+			}
+
+			R.AddRoute( "*** CAN undo sheets list (correct)", 0, -1);
+			R.WriteLine("\n*** CAN undo sheets list (correct)\n");
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(xDAddSheet)}");
+
+			_xData.ShtsLstUndoChgsAll();
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool xDApplyShtsLst()
+		{
+			string proc = "APPLY SHEETS LIST";
+
+			if (!_xData.ApplyBtnShtsLstStatus)
+			{
+				R.AddRoute( "*** CANNOT apply sheets list (fail)", 0, -1);
+				R.WriteLine("*** CANNOT apply sheets list (fail)");
+				return false;
+			}
+
+			R.AddRoute( "*** CAN apply sheets list (correct)", 0, -1);
+			R.WriteLine("\n*** CAN apply sheets list (correct)\n");
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(xDAddSheet)}");
+
+			_xData.ShtsLstApplyChgsAll();
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		private bool xDUnDeleteSheet(string shtName)
+		{
+			string proc = $"UN-DELETE A SHEET | {shtName}";
+
+			wbkBeginTest(proc);
+
+			_xData.UnDeleteSheet(shtName);
+
+			wbkEndTest(proc);
+
+			return endValidateTest2(proc);
+		}
+
+		/* test routines */
+
+
+		/* 30x tests - change user field(s) */
+
+		// NOTE - EARLY TESTS MAY FAIL DUE TO THE CHANGE
+		// TO USING ...T FOR DATE AND NAME MOD CHG SRC
+
+		private string test301aDesc = "change user field (desc)";
+		public bool Test301A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1];
+
+			wbkStartTest(test301aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test301bDesc = "change user fields (desc, last id, name mod)";
+		public bool Test301B(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkLastIdChanged_g, _V.WbkNameModChanged_alt2];
+
+			wbkStartTest(test301bDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			result &= wbkChgLastId(FAUX_LAST_ID_UPD_G);
+
+			result &= wbkChgNameMod(FAUX_USER_NAME_ALT2);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		private string test302aDesc = "change user field (desc) undo all";
+		public bool Test302A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkDescChgUndo];
+
+			wbkStartTest(test302aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			R.AddRoute( $"can undo? {_wbk.UndoBtnStatus} - true is correct", 0);
+
+			if (_wbk.UndoBtnStatus)
+			{
+				R.WriteLine("*** CAN undo changes all (correct)");
+				result &= wbkUndoAll();
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT undo changes all (fail)");
+				result = false;
+			}
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		private string test302bDesc = "change user field (desc, last id, name mod) undo all";
+		public bool Test302B(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkLastIdChanged_g, 
+				_V.WbkNameModChanged_alt2, _V.WbkDescChgUndo];
+
+			wbkStartTest(test302aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			result &= wbkChgLastId(FAUX_LAST_ID_UPD_G);
+
+			result &= wbkChgNameMod(FAUX_USER_NAME_ALT2);
+
+			if (!wbkCanUndo(result)) return false;
+
+			result &= wbkUndoAll();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		private string test303aDesc = "change user field (desc) apply all";
+		public bool Test303A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkDescChgApply];
+
+			wbkStartTest(test303aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			// must verify that the apply all is allowed
+
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("*** CAN apply changes all (correct)");
+				result &= wbkApplyAll();
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT apply changes all (fail)");
+				result = false;
+			}
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test304aDesc = "change user field (desc) undo single";
+		public bool Test304A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkDescChgUndo];
+
+			// tstResults = new()
+			// {
+			// 	new TestResult("change description",
+			// 		[FAUX_DESCRIPTION_ALT1, FAUX_USER_NAME_ALT, FAUX_MOD_DATE_UPD1],
+			// 		[ true,  true,  true,  true,  true,   true],
+			// 		[ChgSrcId.CI_SRC_A, ChgSrcId.CI_SRC_A]),
+			//
+			// 	new TestResult("apply single change description",
+			// 		[FAUX_DESCRIPTION_ALT1, FAUX_USER_NAME_INIT, FAUX_MOD_DATE_INIT],
+			// 		[ false,  false,  false,  false,  true,   true],
+			// 		[ChgSrcId.CI_NONE, ChgSrcId.CI_NONE]),
+			//
+			// };
+
+			wbkStartTest(test304aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			R.AddRoute( $"can undo field? {_wbk.DescField.IsDirty()} - true is correct", 0);
+
+			if (_wbk.DescField.IsDirty())
+			{
+				R.WriteLine("*** CAN undo change (correct)\n\n");
+				result &= wbkUndoSingle(_wbk.DescField);
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT undo change all (fail)\n");
+				result = false;
+			}
+
+
+			// result &= wbkValidateTestEx($"final results for {testId}");
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test305aDesc = "change user field (desc) apply single";
+		public bool Test305A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkDescChanged_alt1, _V.WbkDescChgApply];
+
+			wbkStartTest(test305aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			R.AddRoute( $"can apply field? {_wbk.DescField.IsDirty()} - true is correct", 0);
+
+			if (_wbk.DescField.IsDirty())
+			{
+				R.WriteLine("*** CAN apply change (correct)\n\n");
+				result &= wbkApplySingle(_wbk.DescField);
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT apply change all (fail)\n");
+				result = false;
+			}
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test306aDesc = "change user field (lastid [debug only])";
+		public bool Test306A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkLastIdChanged_g];
+
+			wbkStartTest(test306aDesc);
+
+			result &= wbkChgLastId(FAUX_LAST_ID_UPD_G);
+
+			wbkShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test307aDesc = "change user field (lastid [debug only]) - undo all";
+		public bool Test307A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkLastIdChanged_g, _V.WbkLastIdUndo];
+
+			wbkStartTest(test307aDesc);
+
+			result &= wbkChgLastId(FAUX_LAST_ID_UPD_G);
+
+			if (!wbkCanUndo(result)) return true;
+
+			result &= wbkUndoAll();
+
+			wbkShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test308aDesc = "change user field (lastid [debug only]) - apply all";
+		public bool Test308A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests = [_V.WbkLastIdChanged_g, _V.WbkLastIdApply];
+
+			wbkStartTest(test308aDesc);
+
+			result &= wbkChgLastId(FAUX_LAST_ID_UPD_G);
+
+			if (!wbkCanApply(result)) return true;
+
+			result &= wbkApplyAll();
+
+			wbkShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+
+		/* 31x tests - add one sheet */
+
+		private string test311aDesc = "add a sheet";
+		public bool Test311A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet];
+
+			wbkStartTest(test311aDesc);
+
+			result &= xDAddSheet(out _);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test312aDesc = "add a sheet / undo sheets list";
+		public bool Test312A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdShtsLstAdd1UndoAll];
+
+			wbkStartTest(test312aDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDUndoShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test313aDesc = "add a sheet / apply sheets list";
+		public bool Test313A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			
+			bool result = true;
+
+			doingShtLst = true;
+
+			tstId = testId;
+
+			tests = [_V.XdAddFirstSheet, _V.XdShtsLstAdd1ApplyAll];
+
+			wbkStartTest(test312aDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDApplyShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		/* 323x tests - add 1+ sheet */
+
+		private string test322aDesc = "add two sheet";
+		public bool Test322A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet];
+
+			wbkStartTest(test322aDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test323aDesc = "add three sheet";
+		public bool Test323A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet, _V.XdAddThirdSheet];
+
+			wbkStartTest(test323aDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test323bDesc = "add three sheet - undo all";
+		public bool Test323B(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet, 
+				_V.XdAddThirdSheet, _V.XdShtsLstAdd3UndoAll];
+
+			wbkStartTest(test323bDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDUndoShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test323cDesc = "add three sheet - apply all";
+		public bool Test323C(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet, 
+				_V.XdAddThirdSheet, _V.XdShtsLstAdd3ApplyAll];
+
+			wbkStartTest(test323cDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDApplyShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		// 24x add sheets / delete sheet
+
+		private string test324aDesc = "add three sheet / delete existing C after last";
+		public bool Test324A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet, 
+				_V.XdAddThirdSheet, _V.XdAdd3ShtsDelOneAfterLast
+			];
+
+			wbkStartTest(test324aDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(FAUX_EX_SHT_C);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test324bDesc = "add three sheet / delete new #2 after last";
+		public bool Test324B(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+			string sheetName;
+			doingShtLst = true;
+
+			tests = [_V.XdAddFirstSheet, _V.XdAddSecondSheet, 
+				_V.XdAddThirdSheet, _V.XdAdd3ShtsDelOneAfterLast
+			];
+
+			wbkStartTest(test324bDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out sheetName);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(sheetName);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test324cDesc = "add three sheet / delete existing C after 1st ";
+		public bool Test324C(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests =
+			[
+				_V.XdAddFirstSheet, _V.XdAdd3ShtsDelOneAfterFirst,
+				_V.XdAddSecondSheet, _V.XdAddThirdSheet
+			];
+
+			wbkStartTest(test324cDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(FAUX_EX_SHT_C);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test324dDesc = "add three sheet / delete existing C after / undo delete sheet";
+		public bool Test324D(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests =
+			[
+				_V.XdAddFirstSheet, _V.XdAdd3ShtsDelOneAfterFirst,
+				_V.XdAddSecondSheet, _V.XdAddThirdSheet,
+				_V.XdUnDelete1SheetAfterAdd3
+			];
+
+			wbkStartTest(test324dDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(FAUX_EX_SHT_C);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDUnDeleteSheet(FAUX_EX_SHT_C);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test324eDesc = "add three sheet / delete existing C after / undo all";
+		public bool Test324E(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests =
+			[
+				_V.XdAddFirstSheet, _V.XdAdd3ShtsDelOneAfterFirst,
+				_V.XdAddSecondSheet, _V.XdAddThirdSheet,
+				_V.XdUndoAllAfterAddAndDelete
+			];
+
+			wbkStartTest(test324eDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(FAUX_EX_SHT_C);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDUndoShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test324fDesc = "add three sheet / delete existing C after / apply all";
+		public bool Test324F(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests =
+			[
+				_V.XdAddFirstSheet, _V.XdAdd3ShtsDelOneAfterFirst,
+				_V.XdAddSecondSheet, _V.XdAddThirdSheet,
+				_V.XdApplyAllAfterAddAndDelete
+			];
+
+			wbkStartTest(test324fDesc);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDDeleteSheetC(FAUX_EX_SHT_C);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDAddSheet(out _);
+
+			result &= xDApplyShtsLst();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		// next 24G - add sheets / delete sheet / undo delete / undo all
+		// next 24G - add sheets / delete sheet / undo delete / apply all
+
+
+		/* 33x compound change user field, add sheets */
+
+		private string test331aDesc = "change user field (desc), add 1 sheet";
+		public bool Test331A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.WbkDescChanged_alt1, _V.XdAddFirstSheetPlusDesc];
+
+			wbkStartTest(test331aDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			result &= xDAddSheet(out _);
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		// this is an invalid test - workbook undo all is not allowed after 
+		// sheet(s) are added
+		private string test331bDesc = "change user field (desc), add 1 sheet, undo wbk all";
+		public bool Test331B(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.WbkDescChanged_alt1, _V.XdAddFirstSheetPlusDesc, 
+				_V.WbkDescChgUndoAfterAddSheet];
+
+			wbkStartTest(test331bDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			result &= xDAddSheet(out _);
+
+			if (!wbkCanUndo(result)) return true;
+
+			result &= wbkUndoAll();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		// this is an invalid test - workbook apply all is not allowed after 
+		// sheet(s) are added
+		private string test331cDesc = "change user field (desc), add 1 sheet, apply wbk all";
+		public bool Test331C(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			doingShtLst = true;
+
+			tests = [_V.WbkDescChanged_alt1, _V.XdAddFirstSheetPlusDesc, 
+				_V.WbkDescChgApplyAfterAddSheet];
+
+			wbkStartTest(test331cDesc);
+
+			result &= wbkChgDesc(FAUX_DESCRIPTION_ALT1);
+
+			result &= xDAddSheet(out _);
+
+			if (!wbkCanApply(result)) return true;
+
+			result &= wbkApplyAll();
+
+			wbkShowTestCompletionResult( result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+	}
+}

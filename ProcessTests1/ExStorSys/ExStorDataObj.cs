@@ -28,7 +28,7 @@ namespace ExStorSys
 		{
 			Rows = new ();
 
-			srcEnumLen = Enum.GetNames(typeof(SourceId)).Length;
+			srcEnumLen = Enum.GetNames(typeof(ChgSrcId)).Length;
 		}
 
 		/* properties */
@@ -136,20 +136,24 @@ namespace ExStorSys
 			FieldData<Te> field = Rows[key];
 
 			if (field.DyValue.TrackChanges) 
-				throw new InvalidOperationException($"Use {nameof(SetNewValueDym)}() to change the field's value");
+				throw new InvalidOperationException($"Use {nameof(SetNewValueDyn)}() to change the field's value");
 			
-			field.DyValue.ChangeValue(dv!);
+			field.DyValue.SetValue(dv!, ChgSrcId.CI_NONE);
 
 			Rows[key] = field;
 
 			return true;
 		}
 
-		public bool SetNewValueDym(FieldData<Te> field, dynamic dv) //, bool validate = true)
+		/// <summary>
+		/// update the value of the DynaValue with the dynamic provided<br/>
+		/// the ChgSrc is set to the value provided
+		/// </summary>
+		public bool SetNewValueDyn(FieldData<Te> field, dynamic dv, ChgSrcId cs) //, bool validate = true)
 		{
 			// R.AddRouteEnter(field.Field!.FieldName, true);
-
-			R.AddRoute($"SetNewValueDym | value {dv}");
+			R.RouteDepth[0]++;
+			R.AddRoute( $"SetNewValueDym | value {dv}", 0);
 
 			if (!field.DyValue!.TrackChanges)
 			{
@@ -157,9 +161,11 @@ namespace ExStorSys
 				return false;
 			}
 
-			field.DyValue.ChangeValue(dv!);
+			field.DyValue.ChangeValue(dv!, cs);
 
 			// R.AddRouteExit();
+
+			R.RouteDepth[0]--;
 
 			return true;
 		}
@@ -186,8 +192,6 @@ namespace ExStorSys
 
 			FieldData<Te> f = new FieldData<Te>(field, dy ?? field.FieldDefValue!.Value);
 
-			// f.FieldSrcArraySize = FieldSrcArraySize;
-
 			Rows.Add(key, f);
 		}
 
@@ -204,8 +208,6 @@ namespace ExStorSys
 
 			foreach ((Te key, FieldDef<Te> value) in f)
 			{
-				// addValue(key, f);
-
 				addValue(key, value);
 			}
 

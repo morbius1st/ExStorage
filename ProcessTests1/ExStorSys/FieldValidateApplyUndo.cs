@@ -45,7 +45,7 @@ namespace ExStorSys
 			get => undoBtnStatus;
 			set
 			{
-				R.AddRoute($"setting to {value}", 1, true);
+				R.AddRoute(  $"setting to {value}", 0, 1, true);
 				if (value == undoBtnStatus) return;
 				undoBtnStatus = value;
 				OnPropertyChanged();
@@ -57,7 +57,7 @@ namespace ExStorSys
 			get => applyBtnStatus;
 			set
 			{
-				R.AddRoute($"setting to {value}", 1, true);
+				R.AddRoute(  $"setting to {value}", 0, 1, true);
 				if (value == applyBtnStatus) return;
 				applyBtnStatus = value;
 				OnPropertyChanged();
@@ -71,156 +71,212 @@ namespace ExStorSys
 
 		protected Dictionary<Te, FieldData<Te>> rows;
 
-		public abstract SourceId DateModSrcId { get; }
-		public abstract SourceId NameModSrcId { get; }
+		// public abstract SourceId DateModSrcId { get; }
+		// public abstract SourceId NameModSrcId { get; }
 
 		public abstract string DateModified { get; set; }
-		public abstract void SetDateModifiedBySrc(string value, SourceId srcIdIn);
-		public abstract void SetNameModifiedBySrc(string value, SourceId srcIdIn);
+		public abstract string NameModified { get; set; }
+
+		public abstract void SetDateModifiedByInternal(string value, ChgSrcId cs);
+		public abstract void SetNameModifiedInternal(string value, ChgSrcId cs);
+
 
 		/* modified date routines */
 
 		/// <summary>
 		/// update the modify date to a current value<br/>
-		/// srcIdIn => chgSrcId
+		/// to be called only from validate - use _obj.ModDate field for UI changes
 		/// </summary>
-		public void UpdateModifiedDate(SourceId srcIdIn)
+		public void ModDate_Update(ChgSrcId srcIdIn)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute( srcIdIn, 0, msg: true);
 
-			if (DateModifiedField.ChgSrcId >= srcIdIn)
+			if (DateModifiedField.ChgSrc >= srcIdIn)
 			{
-				R.WriteLine($"\n\tUPDATE DATE | *** did not to update => chgSrcId {DateModifiedField.ChgSrcId} is >= than srcIdIn {srcIdIn} ***");
+				R.WriteLine($"\n\tUPDATE DATE MOD | *** did not to update => chgSrcId {DateModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
 				return;
 			}
 
-			R.WriteLine($"\n\tUPDATE DATE |updated => chgSrcId {DateModifiedField.ChgSrcId} is < than srcIdIn {srcIdIn} ***");
+			R.WriteLine($"\n\tUPDATE DATE MOD | updated => chgSrcId {DateModifiedField.ChgSrc} is < than srcIdIn {srcIdIn} ***");
 
-			secToAdd += 26;
-			DateTime d = DateTime.Now.AddSeconds(secToAdd);
-			SetDateModifiedBySrc(d.ToString("s"), srcIdIn);
+			// secToAdd += 26;
+			// DateTime d = DateTime.Now.AddSeconds(secToAdd);
+			// SetDateModifiedByInternal(d.ToString("s"), srcIdIn);
+
+			// SetDateModifiedByInternal(ExStorConstFaux.FauxModDate, srcIdIn);
+			SetDateModifiedByInternal(ExStorConstFaux.FauxModDate, ChgSrcId.CI_SRC_T);
 		}
 
 		/// <summary>
-		/// undo the date modified<br/>
-		/// set the chgSrcId &lt;= srcIdIn
+		/// undo the date modified - to be called from validate and UI<br/>
 		/// </summary>
-		public void UndoModifiedDate(SourceId srcIdIn)
+		public void ModDate_Undo(bool suppreseValidate, ChgSrcId srcIdIn = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute();
 
-			R.WriteLine($"\n\tUNOD DATE MOD | undone");
+			R.WriteLine($"\n\tUNDO DATE MOD | to be undone");
 
-			DateModifiedField.UndoChg();
+			// if (DateModifiedField.ChgSrc > srcIdIn)
+			// {
+			// 	R.WriteLine($"\n\tUNDO DATE MOD | *** did not to update => chgSrcId {DateModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
+			// 	return;
+			// }
 
-			DateModifiedField.ChgSrcId = srcIdIn;
+			UndoChange(DateModifiedField, suppreseValidate);
 
 			OnPropertyChanged(nameof(DateModified));
 		}
 
 		/// <summary>
-		/// apply the modified date<br/>
-		/// if srcIn != chgSrcId => return
+		/// apply the modified date to be called by the UI<br/>
 		/// </summary>
-		public void ApplyModifiedDate(SourceId srcIdIn)
+		public void ModDate_ApplyOptRevert(bool revert, bool suppressValidate, ChgSrcId srcIdIn = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute( $"revert after apply? {(revert ? "yes" : "no")}", 0);
 
-			if (DateModifiedField.ChgSrcId != srcIdIn) return;
+			R.WriteLine($"\tAPPLY MOD DATE | revert after apply? {(revert ? "yes" : "no")} | validate? {!suppressValidate}");
 
-			R.WriteLine($"\tAPPLY MOD DATE | applied");
+			if (DateModifiedField.ChgSrc > srcIdIn)
+			{
+				R.WriteLine($"\n\tAPPLY DATE MOD | *** did not to update => chgSrcId {DateModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
+				return;
+			}
 
+			string priorDate = DateModifiedField.DyValue.PriorValue;
+			ChgSrcId priorCs = DateModifiedField.DyValue.PriorChgSrc;
+
+			// cannot use ApplyChange as that then updates
+			// the mod dete and then does validate change status
+			// in addition, chis applies the change and sets the prior value to null
+			// so the current prior values must be saved in order to revert
 			DateModifiedField.ApplyChg();
-			DateModifiedField.ChgSrcId = SourceId.SI_NONE;
+
+			if (revert)
+			{
+				DateModifiedField.DyValue.SetValue(priorDate, priorCs);
+
+				return;
+			}
+
+			R.WriteLine("\n\tMOD DATE apply | validate| false");
+
+			if (!suppressValidate) ValidateChangeStatus(null);
 		}
 
 		/// <summary>
-		/// change the chgSrcId based on the srcIdIn<br/>
+		/// change the chgSrcId based on the srcIdIn - not sure this is still needed<br/>
 		/// in = SI_DEST_A => chg to SI_SRC<br/>
 		/// in = SI_NONE => chg to SI_NONE
 		/// </summary>
-		public void DownGradeDateModifiedSrcId(SourceId srcIdIn)
+		public void ModDate_DownGrade(ChgSrcId tstSrcId, ChgSrcId resultSrcId)
 		{
 			R.AddRoute();
 			
-			if (srcIdIn == SourceId.SI_DEST_A_MOD)
+			if (DateModifiedField.ChgSrc == tstSrcId)
 			{
-				R.WriteLine($"\tDate modified downgraded to {SourceId.SI_SRC_MOD}");
-				DateModifiedField.ChgSrcId = SourceId.SI_SRC_MOD;
-			}
-			else
-			if (srcIdIn == SourceId.SI_NONE)
-			{
-				R.WriteLine($"\tDate modified downgraded to {SourceId.SI_NONE}");
-				DateModifiedField.ChgSrcId = SourceId.SI_NONE;
+				R.WriteLine($"\tDate modified downgraded to {resultSrcId}");
+				DateModifiedField.ChgSrc = resultSrcId;
 			}
 		}
+
 
 		/* modified name routines */
 
 		/// <summary>
 		/// update the modified name to the current user<br/>
-		/// srcIdIn => chgSrcId 
+		/// to be called only from validate - use _obj.ModName field for UI changes
 		/// </summary>
-		public void UpdateModifiedName(SourceId srcIdIn)
+		public void ModName_Update(ChgSrcId srcIdIn)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute( srcIdIn, 0, msg: true);
 
-			if (NameModifiedField.ChgSrcId >= srcIdIn)
+			if (NameModifiedField.ChgSrc >= srcIdIn)
 			{
-				R.WriteLine($"\n\tUPDATE NAME | *** did not to update => chgSrcId {NameModifiedField.ChgSrcId} is >= than srcIdIn {srcIdIn} ***");
+				R.WriteLine($"\n\tUPDATE NAME | *** did not to update => chgSrcId {NameModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
 				return;
 			}
 
-			R.WriteLine($"\n\tUPDATE MOD NAME | updated => chgSrcId {NameModifiedField.ChgSrcId} is < than srcIdIn {srcIdIn} ***\");");
+			R.WriteLine($"\n\tUPDATE MOD NAME | updated => chgSrcId {NameModifiedField.ChgSrc} is < than srcIdIn {srcIdIn} ***");
 
-			SetNameModifiedBySrc(ExStorConstFaux.FauxUserName, srcIdIn);
+			// SetNameModifiedInternal(ExStorConstFaux.FauxUserName, srcIdIn);
+			SetNameModifiedInternal(ExStorConstFaux.FauxUserName, ChgSrcId.CI_SRC_T);
 		}
 
 		/// <summary>
-		/// undo the name modified<br/>
+		/// undo the name modified - to be called from validate and the UI<br/>
 		/// set the chgSrcId &lt;= srcIdIn
 		/// </summary>
-		public void UndoModifiedName(SourceId srcIdIn)
+		public void ModName_Undo(bool suppreseValidate, ChgSrcId srcIdIn = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute();
 
-			R.WriteLine($"\n\tUNDO NAME MOD | undone");
+			// if (NameModifiedField.ChgSrc > srcIdIn)
+			// {
+			// 	R.WriteLine($"\n\tUNDO NAME MOD | *** did not to update => chgSrcId {NameModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
+			// 	return;
+			// }
 
-			NameModifiedField.UndoChg();
-
-			NameModifiedField.ChgSrcId = srcIdIn;
+			UndoChange(NameModifiedField, suppreseValidate);
 
 			OnPropertyChanged(nameof(NameModifiedField));
 		}
 
 		/// <summary>
-		/// apply the modified name<br/>
-		/// if srcIn != chgSrcId => return
+		/// apply the modified name - to be called from the UI<br/>
 		/// </summary>
-		public void ApplyModifiedName(SourceId srcIdIn)
+		public void ModName_ApplyOptRevert(bool revert, bool suppressValidate, ChgSrcId srcIdIn = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRoute(srcIdIn, msg: true);
+			R.AddRoute( $"revert after apply? {(revert ? "yes" : "no")}", 0);
+			R.AddRoute( $"mod name | value = {NameModified} | & chg src = {NameModifiedField.ChgSrc} ", 0, -1);
 
-			R.WriteLine($"\tAPPLY MOD NAME | applied");
+			R.WriteLine($"\tAPPLY MOD NAME | revert after apply? {(revert ? "yes" : "no")} | validate? {!suppressValidate}");
 
-			if (NameModifiedField.ChgSrcId != srcIdIn) return;
+			if (NameModifiedField.ChgSrc > srcIdIn)
+			{
+				R.WriteLine($"\n\tAPPLY NAME MOD | *** did not to update => chgSrcId {NameModifiedField.ChgSrc} is >= than srcIdIn {srcIdIn} ***");
+				return;
+			}
 
+			string priorDate = NameModifiedField.DyValue.PriorValue;
+			ChgSrcId priorCs = NameModifiedField.DyValue.PriorChgSrc;
+
+			// cannot use ApplyChange as that then updates
+			// the mod dete and then does validate change status
+			// in addition, chis applies the change and sets the prior value to null
+			// so the current prior values must be saved in order to revert
 			NameModifiedField.ApplyChg();
-			NameModifiedField.ChgSrcId = SourceId.SI_NONE;
+
+			if (revert)
+			{
+				NameModifiedField.DyValue.SetValue(priorDate, priorCs);
+
+				// NameModifiedField.UndoChgSrc();
+				R.AddRoute( $"mod name | value = {NameModified} | & chg src = {NameModifiedField.ChgSrc} ", 0, -1);
+				return;
+			}
+
+			R.AddRoute( $"mod name | value = {NameModified} | & chg src = {NameModifiedField.ChgSrc} ", 0, -1);
+
+			R.WriteLine("\n\tMOD NAME apply | validate| false");
+
+			if (!suppressValidate) ValidateChangeStatus(null);
 		}
 
 		/// <summary>
-		/// change the chgSrcId based on the srcIdIn<br/>
+		/// change the chgSrcId based on the srcIdIn - not sure this is still needed<br/>
 		/// in = SI_DEST_A => chg to SI_SRC
 		/// </summary>
-		public void DownGradeNameModifiedSrcId(SourceId srcIdIn)
+		public void ModName_DownGrade(ChgSrcId tstSrcId, ChgSrcId resultSrcId)
 		{
 			R.AddRoute();
-			R.WriteLine($"\tName modified downgraded to {srcIdIn}");
-			if (srcIdIn == SourceId.SI_DEST_A_MOD) NameModifiedField.ChgSrcId = SourceId.SI_SRC_MOD;
-		}
+			
+			if (NameModifiedField.ChgSrc == tstSrcId)
+			{
+				R.WriteLine($"\tName modified downgraded to {resultSrcId}");
 
+				NameModifiedField.ChgSrc = resultSrcId;
+			}
+		}
 
 		private int[,] configSrcArr = new int[,]
 		{ 
@@ -252,139 +308,203 @@ namespace ExStorSys
 
 
 		/// <summary>
-		/// undo a single field change
+		/// undo a single field change<br/>
+		/// undoes change soruce<br/>
+		/// performs a validate unless suppressValidate is true
 		/// </summary>
-		public void UndoChange(FieldData<Te> fd)
+		public void UndoChange(FieldData<Te> fd, bool suppressValidate)
 		{
-			R.AddRoute();
-			R.WriteLine($"\n\t***** Undo Change | {fd.Field.FieldName}");
+			R.RouteDepth[0]++;
+			R.AddRoute( $"***** Undo Change | {fd.Field.FieldName}| validate? {!suppressValidate}", 0);
+			R.WriteLine($"\n\t***** Undo Change | {fd.Field.FieldName}| validate? {!suppressValidate}");
+
 			fd.UndoChg();
-			fd.ChgSrcId = SourceId.SI_NONE;
-			ValidateChangeStatus();
+
+			if (!suppressValidate)
+			{
+				R.WriteLine("\tUNDO CHANGE single | validate| false");
+
+				ValidateChangeStatus(false);
+
+				if (!IsModifiedExo)
+				{
+					ModDate_Undo(true);
+					ModName_Undo(true);
+				}
+			}
+
 			OnPropertyChanged(fd.Field.FieldPropName);
+			R.RouteDepth[0]--;
 		}
 
 		/// <summary>
-		/// apply a single field change
+		/// apply a single field change<br/>
+		/// applies change source<br/>
+		/// performs a validate unless suppressValidate is true
 		/// </summary>
-		public void ApplyChange(FieldData<Te> fd)
+		public void ApplyChange(FieldData<Te> fd, bool suppressValidate)
 		{
-			R.AddRoute();
-			R.WriteLine($"\n\t***** Apply Change | {fd.Field.FieldName}\n");
+			R.RouteDepth[0]++;
+			R.AddRoute( $"***** Apply Change | {fd.Field.FieldName} | validate? {!suppressValidate}", 0);
+			R.WriteLine($"\n\t***** Apply Change | {fd.Field.FieldName} | validate? {!suppressValidate}\n");
+			
 			fd.ApplyChg();
-			fd.ChgSrcId = SourceId.SI_NONE;
-			ValidateChangeStatus();
+			// fd.ApplyChgSrc();  fd.ApplyChg() does this in the long run
+
+			if (!suppressValidate)
+			{
+				R.WriteLine("\n\tAPPLY CHANGE single | validate| false");
+
+				ValidateChangeStatus(null);
+
+				if (!IsModifiedExo)
+				{
+					ModDate_ApplyOptRevert(false, true);
+					ModName_ApplyOptRevert(false, true);
+				}
+			}
+
 			OnPropertyChanged(fd.Field.FieldPropName);
+			R.RouteDepth[0]--;
+
 		}
 
-		/// <summary>
-		/// does an undo but does not run validate status to allow this to be
-		/// run multiple times and run validate only once
-		/// </summary>
-		public void UndoChangeMultiple(FieldData<Te> fd)
-		{
-			fd.UndoChg();
-			fd.ChgSrcId = SourceId.SI_NONE;
-			// ValidateChangeStatus(srcIdIn);
-			OnPropertyChanged(fd.Field.FieldPropName);
-		}
+		// /// <summary>
+		// /// does an undo but does not run validate status to allow this to be
+		// /// run multiple times and run validate only once
+		// /// </summary>
+		// public void UndoChangeMultiple(FieldData<Te> fd)
+		// {
+		// 	fd.UndoChg();
+		// 	fd.ChgSrc = SourceId.SI_NONE;
+		// 	// ValidateChangeStatus(srcIdIn);
+		// 	OnPropertyChanged(fd.Field.FieldPropName);
+		// }
 
 
 		/// <summary>
-		/// apply or undo the change in the local copy to all fields
+		/// undo the change in the local copy to all fields
+		/// this suppresses validate for all fields and runs
+		/// validate only at the end
 		/// </summary>
-		public void UndoChangesAll(SourceId topSrcId, SourceId bottSrcId)
+		/// </summary>
+		public void UndoChangesAll(ChgSrcId maxChgSrc = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRouteEnter();
+			R.AddRouteEnter(msg: $"Undo All");
 
-			R.WriteLine("\tEXSTORDATA | undo changes");
+			R.WriteLine("\tUndoChangesAll | undo changes");
 
 			if (!isModifiedExo) return;
 
-			// UndoModifiedDate(topSrcId);
-			// UndoModifiedName(topSrcId);
+			ModDate_Undo(true);
+			ModName_Undo(true);
 
 			foreach ((Te? key, FieldData<Te>? fd) in rows)
 			{
-				if (fd.DyValue!.IsChanged == true)
+				if (fd.DyValue!.IsDirty)
 				{
+					if (fd.ChgSrc > maxChgSrc)
+					{
+						R.WriteLine($"\t{fd.Field.FieldName} - skip - chg src too low to process");
+						R.AddRoute($"{fd.Field.FieldName} - skip - chg src too low to process");
+						continue;
+					}
+
 					R.Write("\t\tROUTE | ");
 					R.Write($"=> fld {fd.Field.FieldName, -20} ");
-					R.Write($"=> undo chg | fld chg src {fd.ChgSrcId} <= param src id {topSrcId} && >= {bottSrcId} == {fd.ChgSrcId <= topSrcId && fd.ChgSrcId >= bottSrcId}");
-					
-					
-					if (fd.ChgSrcId <= topSrcId && fd.ChgSrcId >= bottSrcId) // && fd.SourceIdOk(chgSrcId))
-					{
-						R.Write(" => UNDOING change");
+					R.Write($"=> undo chg | fld chg src {fd.ChgSrc}");
+					R.AddRoute( $"FIELD undo chg | {fd.Field.FieldName}", 0);
 
-						fd.UndoChg();
-						fd.ChgSrcId = SourceId.SI_NONE;
-					}
-					else
-					{
-						R.Write(" => NOT undoing change");
-					}
+					UndoChange(fd, true);
+					
+					// fd.UndoChg();
+					fd.UndoChgSrc();
 
 					R.NewLine();
 				}
 			}
 
-			ValidateChangeStatus();
+
+			R.WriteLine($"\n\tUNDO CHANGE all | VALIDATE here");
+
+			ValidateChangeStatus(false);
 
 			R.AddRouteExit();
 		}
 
 		/// <summary>
-		/// apply or undo the change in the local copy to all fields
+		/// apply the change in the local copy to all fields</br>
+		/// this suppresses validate for all fields and runs
+		/// validate only at the end
 		/// </summary>
-		public void ApplyChangesAll(SourceId topSrcId, SourceId bottSrcId)
+		public void ApplyChangesAll(ChgSrcId maxChgSrc = ChgSrcId.CI_SRC_A)
 		{
-			R.AddRouteEnter();
+			R.AddRouteEnter(msg: $"apply All | validate?");
 
-			R.WriteLine("\tEXSTORDATA | apply changes");
+			R.WriteLine("\tApplyChangesAll | apply changes");
 
 			if (!isModifiedExo) return;
 
-			ApplyModifiedDate(topSrcId);
-			ApplyModifiedName(topSrcId);
+			ModDate_ApplyOptRevert(false, true);
+			ModName_ApplyOptRevert(false, true);
 
 			foreach ((Te? key, FieldData<Te>? fd) in rows)
 			{
 				if (fd.IsDirty())
 				{
+					if (fd.ChgSrc > maxChgSrc)
+					{
+						R.WriteLine($"\t{fd.Field.FieldName} - skip - chg src too low to process");
+						R.AddRoute($" {fd.Field.FieldName} - skip - chg src too low to process");
+						continue;
+					}
+
 					R.Write("\t\tROUTE | ");
 					R.Write($"=> fld {fd.Field.FieldName} ");
-					R.Write($"=> apply chg | fld chg src {fd.ChgSrcId} <= param src id {topSrcId} && >= {bottSrcId} == {fd.ChgSrcId <= topSrcId && fd.ChgSrcId >= bottSrcId}");
+					R.Write($"=> apply chg | fld chg src {fd.ChgSrc}");
 					R.NewLine();
 
-					if (fd.ChgSrcId <= topSrcId && fd.ChgSrcId >= bottSrcId) // && fd.SourceIdOk(topSrcId))
-					{
-						fd.ApplyChg();
-						fd.ChgSrcId = SourceId.SI_NONE;
-					}
+					R.AddRoute( $"FIELD before apply chg | {fd.Field.FieldName} [ {fd.ChgSrc} ]", 0);
+
+					ApplyChange(fd, true);
+
+					fd.ApplyChgSrc();
+
+					R.AddRoute( $"FIELD after apply chg | {fd.Field.FieldName} [ {fd.ChgSrc} ]", 0);
 				}
 			}
 
 			R.NewLine();
 
-			ValidateChangeStatus();
+			// ShowWbk.ShowWorkbookFields();
+
+			R.WriteLine($"\n\tAPPLY CHANGE all | VALIDATE here");
+			ValidateChangeStatus(null);
 
 			R.AddRouteExit();
 		}
 
+
+		// got change
+		// true = a field has changed
+		// null = doing an apply
+		// false = doing an undo
+
 		/// <summary>
-		/// validate the status of all of the fields
+		/// validate the status of all of the fields<br/>
+		/// got change | true = a field has changed | null = doing an apply | false = doing an undo
 		/// </summary>
-		public void ValidateChangeStatus2([CallerMemberName] string who = "")
+		public void ValidateChangeStatus(bool? gotChgType)
 		{
-			R.AddRouteEnter(null, true);
+			bool gotChg = gotChgType.HasValue && gotChgType.Value;
 
-			R.WriteLine($"\tVALIDATE START | chg srcId {DateModifiedField.ChgSrcId}");
-			// R.WriteLine(ShowWbk.ChangeStatus("\tVALIDATE START"));
-			// ShowWbk.wbkUiStatus("\tVALIDATE START");
-			int hasMod = 0;
-			int[] hasModChgSrc = new int[srcEnumLen];
-			int[] hasModSrc = new int[srcEnumLen];
+			string s = gotChgType.HasValue ? gotChgType.Value ? "FLD CHG (true)" : "UNDO (null)" :  "APPLY (false)";
+			
+			R.AddRouteEnter($"\ti am {GetType().Name} | change type? {s} and gotChg? {gotChg}", 0, true);
+			R.WriteLine($"\n\tVALIDATE START |i am {GetType().Name} | change type? {s} and gotChg? {gotChg}");
+			
+			int[] chgSrcs = new int[srcEnumLen];
+			int count = 0;
 
 			R.Write("\tVALIDATE | MODIFIED ");
 
@@ -392,283 +512,196 @@ namespace ExStorSys
 			{
 				if (fd.DyValue!.IsClean) continue;
 
-				R.Write($"| {fd.Field!.FieldName} ({fd.ChgSrcId})");
+				R.Write($"| {fd.Field!.FieldName} ({fd.ChgSrc})");
 
-				hasModChgSrc[(int) fd.ChgSrcId]++;
-				hasModSrc[(int) fd.Field.FieldSrcId]++;
-
-				hasMod++;
+				chgSrcs[(int) fd.ChgSrc]++;
+				count++;
 			}
 
 			R.Write("|\n\n");
 
-			R.WriteLine($"\tVALIDATE MID   | has mod {hasMod}");
-			R.WriteLine($"\tVALIDATE MID   | has mod - change source");
-			R.WriteLine(ShowWbk.ShowHasModArray2("\tVALIDATE MID   | ", hasModChgSrc, 0, configSrcArr));
-			// R.WriteLine($"\tVALIDATE MID   | has mod - field source");
-			// R.WriteLine(ShowWbk.ShowHasModArray2("\tVALIDATE MID   | ", hasModSrc, 1, configSrcArr));
+			R.WriteLine(ShowWbk.ShowHasModArray2("\t\tVALIDATE MID   | ", chgSrcs, 0, configSrcArr));
 
-			bool found = false;
-			Tuple<SourceId, SourceId, bool, bool, bool, string>? a = null;
+			R.Write($"\n\t\tVALIDATE MID   | ROUTE | ");
 
-			// int c = validateResults.Count;
 
-			for (int i = 0; i < validateResults.Count; i++)
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_X] > 0)
 			{
-				a = validateResults[i];
+				R.WriteLine(" => X (u3) got chtSrc = X (mod name)");
+				R.AddRoute( " => X (u3) got chtSrc = X (mod name)", 0, -1);
 
-				R.Write($"\tVALIDATE MID   | ROUTE | ");
-				R.Write($"[ {i,2} ] checking {a.Item6} == [ {(int) a.Item1} ]");
+				ModDate_Update(ChgSrcId.CI_SRC_B);
 
-				if (hasModChgSrc[(int) a.Item1] > 0 || i == validateResults.Count - 1)
+				if (gotChgType.HasValue)
 				{
-					if (a.Item5)
+					if (gotChgType == false)
 					{
-						R.WriteLine($" *** | {a.Item6} | UPDATE date & name  | apply set to {a.Item3} | undo set to {a.Item4}");
-						UpdateModifiedDate(a.Item2);
-						UpdateModifiedName(a.Item2);
+						ModName_Undo(false, ChgSrcId.CI_SRC_X);
 					}
-					else
-					{
-						UndoModifiedDate(a.Item2);
-						UndoModifiedName(a.Item2);
-
-						hasMod -= 2;
-					}
-
-					ApplyBtnStatus = a.Item3;
-					UndoBtnStatus = a.Item4;
-
-					found = true;
-
-					break;
 				}
-
-				R.NewLine();
-			}
-
-			// if (!found)
-			// {
-			// 	a = validateResults[validateResults!.Count -1];
-			// 	R.Write($"\tVALIDATE MID   | ROUTE | ");
-			// 	R.WriteLine($" *** | {a!.Item6} | UNDO date & name | apply set to {a.Item3} | undo set to {a.Item4}");
-			// 	UndoModifiedDate(a.Item2);
-			// 	UndoModifiedName(a.Item2);
-			//
-			// 	ApplyBtnStatus = a.Item3;
-			// 	UndoBtnStatus = a.Item4;
-			// }
-
-			//
-			// if (hasModChgSrc[(int) SourceId.SI_DEST_MOD] > 0)
-			// {
-			// 	R.AddRoute($"C hasModChgSrc [SI_DEST_MOD] > 0 ");
-			//
-			// 	R.Write($"=> C hasModChgSrc [SI_DEST_MOD] > 0 ");
-			// 	R.Write($"=> L mod date / disable buttons ");
-			//
-			// 	R.NewLine();
-			//
-			// 	UpdateModifiedDate(SourceId.SI_DEST_A);
-			// 	UpdateModifiedName(SourceId.SI_DEST_A);
-			//
-			// 	// UpdateModifiedDate(srcIdIn);
-			// 	// UpdateModifiedName(srcIdIn);
-			//
-			// 	ApplyBtnStatus = false;
-			// 	UndoBtnStatus = false;
-			// }
-			// else
-			// if (hasModChgSrc[(int) SourceId.SI_INDR_MOD] > 0)
-			// {
-			// 	// being modified by a src field (user changed)
-			// 	R.AddRoute($"A hasModChgSrc [SI_INDR_MOD] > 0 ");
-			//
-			// 	R.Write($"=> A hasModChgSrc [SI_INDR_MOD] > 0 ");
-			// 	R.Write($"=> J mod date / enable buttons ");
-			//
-			// 	R.NewLine();
-			//
-			// 	UpdateModifiedDate(SourceId.SI_INDIRECT);
-			// 	UpdateModifiedName(SourceId.SI_INDIRECT);
-			//
-			// 	ApplyBtnStatus = true;
-			// 	UndoBtnStatus = true;
-			// }
-			// else
-			// if (hasModChgSrc[(int) SourceId.SI_SRC_MOD] > 0)
-			// {
-			// 	// being modified by a src field (user changed)
-			// 	R.AddRoute($"A hasModChgSrc [SI_SRC_MOD] > 0 ");
-			//
-			// 	R.Write($"=> A hasModChgSrc [SI_SRC_MOD] > 0 ");
-			// 	R.Write($"=> J mod date / enable buttons ");
-			//
-			// 	R.NewLine();
-			//
-			// 	UpdateModifiedDate(SourceId.SI_SRC);
-			// 	UpdateModifiedName(SourceId.SI_SRC);
-			//
-			// 	ApplyBtnStatus = true;
-			// 	UndoBtnStatus = true;
-			// }
-			// else
-			// {
-			// 	R.AddRoute($"B hasModChgSrc [src_mod] <= 0 ");
-			//
-			// 	R.Write($"=> B hasModChgSrc [src_mod] <= 0 ");
-			// 	R.Write($"=> K undo date / disable buttons ");
-			//
-			// 	R.NewLine();
-			//
-			// 	UndoModifiedDate(SourceId.SI_NONE);
-			// 	UndoModifiedName(SourceId.SI_NONE);
-			//
-			// 	ApplyBtnStatus = false;
-			// 	UndoBtnStatus = false;
-			// 	 
-			// 	hasMod = 0;
-			// }
-
-			R.AddRoute($"** set IsModifiedExo to {hasMod > 0}");
-
-			IsModifiedExo = hasMod > 0;
-
-			R.NewLine();
-
-			R.AddRouteExit("complete");
-		}
-
-		public void ValidateChangeStatus()
-		{
-			R.AddRouteEnter(null, true);
-
-			R.WriteLine($"\tVALIDATE START | chg srcId {DateModifiedField.ChgSrcId}");
-
-			bool isMod = false;
-
-			int[] modChgSrc = new int[srcEnumLen];
-
-			R.Write("\tVALIDATE | MODIFIED ");
-
-			foreach ((Te? key, FieldData<Te>? fd) in rows)
-			{
-				if (fd.DyValue!.IsClean) continue;
-
-				R.Write($"| {fd.Field!.FieldName} ({fd.ChgSrcId})");
-
-				modChgSrc[(int) fd.ChgSrcId]++;
-
-				if (ExStorConst.SourceIdXlate.ContainsKey(fd.ChgSrcId))
+				else
 				{
-					fd.ChgSrcId = ExStorConst.SourceIdXlate[fd.ChgSrcId];
+					ModName_ApplyOptRevert(false, false, ChgSrcId.CI_SRC_X);
 				}
-			}
-
-			R.Write("|\n\n");
-
-			R.WriteLine($"\tVALIDATE MID");
-			R.WriteLine(ShowWbk.ShowHasModArray2("\tVALIDATE MID   | ", modChgSrc, 0, configSrcArr));
-
-			R.Write($"\tVALIDATE MID   | ROUTE | ");
-
-			if (modChgSrc[(int) SourceId.SI_INDR_MOD] > 0)
-			{
-				R.WriteLine(" => A got indr_mod");
-				R.AddRoute(" => A got indr_mod");
-
-				UpdateModifiedDate(SourceId.SI_DEST_MOD);
-				UpdateModifiedName(SourceId.SI_DEST_MOD);
+				IsModifiedExo = true;
 
 				ApplyBtnStatus = true;
 				UndoBtnStatus = true;
 
-				isMod = true;
 			}
-			else
-			if (modChgSrc[(int) SourceId.SI_DEST_A_MOD] > 0)
+			// continue processing
+
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_E] > 0 && gotChg)
 			{
-				R.WriteLine(" => B1 got dest_a_mod");
-				R.AddRoute(" => B got dest_a_mod");
+				R.WriteLine(" => E-chg (s1) got chtSrc = E & change (shts list)");
+				R.AddRoute( " => E-chg (s1) got chtSrc = E & change (shts list)", 0, -1);
 
-				UpdateModifiedDate(SourceId.SI_DEST);
-				UpdateModifiedName(SourceId.SI_DEST);
+				ModDate_Update(ChgSrcId.CI_SRC_E);
+				ModName_Update(ChgSrcId.CI_SRC_E);
 
-				ApplyBtnStatus = true;
-				UndoBtnStatus = true;
-
-				isMod = true;
-			}
-			else
-			if (modChgSrc[(int) SourceId.SI_DEST_B_MOD] > 0)
-			{
-				R.WriteLine(" => B got dest_b_mod");
-				R.AddRoute(" => B got dest_b_mod");
-
-				UpdateModifiedDate(SourceId.SI_DEST);
-				NameModifiedField.ChgSrcId = SourceId.SI_DEST;
-
-				ApplyBtnStatus = true;
-				UndoBtnStatus = true;
-
-				isMod = true;
-			}
-			else
-			if (modChgSrc[(int) SourceId.SI_SRC_MOD] > 0)
-			{
-				R.WriteLine(" => C got src_mod");
-				R.AddRoute(" => C got src_mod");
-
-				UpdateModifiedDate(SourceId.SI_DEST_MOD);
-				UpdateModifiedName(SourceId.SI_DEST_MOD);
-
-				ApplyBtnStatus = true;
-				UndoBtnStatus = true;
-
-				isMod = true;
-			}
-			else
-			if (modChgSrc[(int) SourceId.SI_INDIRECT] > 0 ||
-				modChgSrc[(int) SourceId.SI_DEST] > 0 ||
-				modChgSrc[(int) SourceId.SI_SRC] > 0 )
-			{
-				R.WriteLine(" => X  got indirect, dest, src");
-				R.AddRoute(" => X  got indirect, dest, src");
-				isMod = true;
-			}
-
-			if (!isMod)
-			{
-				R.WriteLine(" => Z  not modified");
-				R.AddRoute(" => Z  not modified");
-
-				UndoModifiedDate(SourceId.SI_NONE);
-				UndoModifiedName(SourceId.SI_NONE);
+				IsModifiedExo = true;
 
 				ApplyBtnStatus = false;
 				UndoBtnStatus = false;
+
+				// no further processing
 			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_E] > 0) // && !gotChg
+			{
+				R.WriteLine(" => E-!chg (s2) got chtSrc = E & not change (shts list)");
+				R.AddRoute( " => E-!chg (s2) got chtSrc = E & not change (shts list)", 0, -1);
 
-			R.AddRoute($"** set IsModifiedExo to {isMod}");
+				// these handeled by sheets list undo routine
+				// ModDate_Update(ChgSrcId.CI_SRC_E);
+				// ModName_Update(ChgSrcId.CI_SRC_E);
 
-			IsModifiedExo = isMod;
+				IsModifiedExo = false;
+
+				ApplyBtnStatus = false;
+				UndoBtnStatus = false;
+
+				// no further processing
+			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_D] > 0 && gotChg)
+			{
+				R.WriteLine(" => D-chg (f1) got chtSrc = D & change (fam and type list)");
+				R.AddRoute( " => D-chg (f1) got chtSrc = D & change (fam and type list)", 0, -1);
+
+				ModDate_Update(ChgSrcId.CI_SRC_D);
+				ModName_Update(ChgSrcId.CI_SRC_D);
+
+				IsModifiedExo = true;
+
+				ApplyBtnStatus = false;
+				UndoBtnStatus = false;
+
+				// no further processing
+			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_D] > 0) // && !gotChg
+			{
+				R.WriteLine(" => D-chg (f1) got chtSrc = E & not change (fam and type list)");
+				R.AddRoute( " => D-chg (f1) got chtSrc = E & not change (fam and type list)", 0, -1);
+
+				// these handeled by fam and type list undo routine
+				// ModDate_Update(ChgSrcId.CI_SRC_D);
+				// ModName_Update(ChgSrcId.CI_SRC_D);
+
+				// these cannot be reverted so they have been set to false
+				IsModifiedExo = false;
+				ApplyBtnStatus = false;
+				UndoBtnStatus = false;
+
+				// no further processing
+			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_B] > 0 && gotChg)
+			{
+				R.WriteLine(" => B-chg (u2) got chtSrc = B & change (LB field [e.g. LastId])");
+				R.AddRoute( " => B-chg (u2) got chtSrc = B & change (LB field [e.g. LastId])", 0, -1);
+
+				ModDate_Update(ChgSrcId.CI_SRC_B);
+				ModName_Update(ChgSrcId.CI_SRC_B);
+
+				IsModifiedExo = true;
+				ApplyBtnStatus = true;
+				UndoBtnStatus = true;
+
+				// no further processing
+			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_A] > 0 && gotChg)
+			{
+				R.WriteLine(" => A-chg (u1) got chtSrc = A & change (LA field list [i.e. most editing fields])");
+				R.AddRoute( " => A-chg (u1) got chtSrc = A & change (LA field list [i.e. most editing fields])", 0, -1);
+
+				ModDate_Update(ChgSrcId.CI_SRC_A);
+				ModName_Update(ChgSrcId.CI_SRC_A);
+
+				IsModifiedExo = true;
+				ApplyBtnStatus = true;
+				UndoBtnStatus = true;
+
+				// no further processing
+			}
+			else
+			if (chgSrcs[(int) ChgSrcId.CI_SRC_T] == count && !gotChgType.HasValue || (gotChgType.HasValue && !gotChgType.Value))
+			{
+				R.WriteLine($" => T and got chg type is {s} (date mod &/or Name mod) exclusive");
+				R.AddRoute( $" => T and got chg type is {s} (date mod &/or Name mod) exclusive", 0, -1);
+
+				if (gotChgType.HasValue)
+				{
+					// value can only be false => doing an undo
+					ModDate_Undo(true, ChgSrcId.CI_SRC_T);
+					ModName_Undo(true, ChgSrcId.CI_SRC_T);
+				}
+				else 
+				{
+					// doing an apply
+					ModDate_ApplyOptRevert(false, true, ChgSrcId.CI_SRC_T);
+					ModName_ApplyOptRevert(false, true, ChgSrcId.CI_SRC_T);
+				}
+
+				IsModifiedExo = false;
+				ApplyBtnStatus = false;
+				UndoBtnStatus = false;
+
+				// no further processing
+			}
+			else // none
+			{
+				R.WriteLine(" => none got chtSrc = [none])");
+				R.AddRoute( " => none got chtSrc = [none]", 0, -1);
+
+				// these handeled by prior routines
+				// ModDate_Update(ChgSrcId.CI_SRC_A);
+				// ModName_Update(ChgSrcId.CI_SRC_A);
+
+				IsModifiedExo  = false;
+				ApplyBtnStatus = false;
+				UndoBtnStatus  = false;
+
+				// no further processing
+			}
 
 			R.NewLine();
 
-			R.AddRouteExit("complete");
+			R.WriteLine("\tcomplete");
+			R.AddRouteExit(msg: "complete");
 		}
-
-
-
-		private List<Tuple<SourceId, SourceId, bool, bool, bool, string>> validateResults = new ()
-		{
-			new (SourceId.SI_DEST_MOD, SourceId.SI_INDIRECT, false, false, true, "DEST_MOD"),
-			new (SourceId.SI_INDR_MOD, SourceId.SI_INDIRECT, true, true, true, "INDR_MOD"),
-			new (SourceId.SI_SRC_MOD, SourceId.SI_SRC, true, true, true, "SRC_MOD"),
-			// new (SourceId.SI_SRC, SourceId.SI_NONE, false, false, false, "SRC"),
-			// default if none of the above are used
-			new (SourceId.SI_NONE, SourceId.SI_NONE, false, false, false, "NONE"),
-		};
+		
+		// private List<Tuple<SourceId, SourceId, bool, bool, bool, string>> validateResults = new ()
+		// {
+		// 	new (SourceId.SI_DEST_MOD, SourceId.SI_INDIRECT, false, false, true, "DEST_MOD"),
+		// 	new (SourceId.SI_INDR_MOD, SourceId.SI_INDIRECT, true, true, true, "INDR_MOD"),
+		// 	new (SourceId.SI_SRC_MOD, SourceId.SI_SRC, true, true, true, "SRC_MOD"),
+		// 	// new (SourceId.SI_SRC, SourceId.SI_NONE, false, false, false, "SRC"),
+		// 	// default if none of the above are used
+		// 	new (SourceId.SI_NONE, SourceId.SI_NONE, false, false, false, "NONE"),
+		// };
 
 
 		// protected void ValidateChangeStatus1(SourceId srcIdIn, [CallerMemberName] string who = "")

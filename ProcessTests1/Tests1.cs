@@ -42,18 +42,21 @@ namespace ProcessTests1
 
 		public void init()
 		{
-			R.WriteLine("*******  init Test1 *******");
-			// ShowCommon.ShowCurrent("@ test 1 - before init()", _xData, _wbk);
+			R.AddRouteEnter(  null, 1);
 
-			ExStorConstFaux.UseFauxUserName();
+			R.WriteLine("*******  init Test1 *******");
+
+
+			UseFauxUserName();
+			UseFauxModDate();
 
 			tstNameModIdx = -1;
 
 			
 			_xData = ExStorData.Instance;
 			_xData.WorkBook = WorkBook.CreateNewWorkBook();
+			// _Wbk.DescField.DyValue!.SetValue("created in test1 init", _Wbk.DescField.ChgSrcStd);
 			_xData.WorkBook.SetTrackChanges();
-			_Wbk.DescField.DyValue!.SetValue("this test1 desc");
 			_exid = new();
 
 			_xData.RemovePlaceHolderSheet();
@@ -73,11 +76,13 @@ namespace ProcessTests1
 			//
 			// _xData.WorkBook.LastIdField.ApplyChg();
 
-			ExStorConstFaux.UseAltUserName();
+			UseAltUserName();
+			UseFauxModDate();
 
 			// ShowCommon.ShowCurrent("@ test 1 - after init()", _xData, _wbk);
-		}
 
+			R.AddRouteExit(  null, 1);
+		}
 
 		private void initCreateSheets()
 		{
@@ -94,12 +99,12 @@ namespace ProcessTests1
 
 			_xData.AddSheetPreInit(CreateSheetStealth());
 
-			_Wbk.LastIdField.ApplyChg();
+			_wbk.LastIdField.ApplyChg();
 
 			ExStorConstFaux.UseAltUserName();
 		}
 
-		private WorkBook _Wbk => _xData.WorkBook;
+		private WorkBook _wbk => _xData.WorkBook;
 
 
 		/* wbk public */
@@ -229,7 +234,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// D
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLine("*** APPLY changes all");
 				result &= wbkApplyAll();
@@ -289,7 +294,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// D
-			if (_Wbk.UndoBtnStatus)
+			if (_wbk.UndoBtnStatus)
 			{
 				R.WriteLine("*** UNDO changes all (good)");
 				result &= wbkUndoAll();
@@ -424,7 +429,7 @@ namespace ProcessTests1
 			result &= chgStatus();
 
 			// D
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLineAnyway("*** APPLY changes all - should not happen - fail\n");
 				result = false;
@@ -476,7 +481,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// E
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLine("\t*** APPLY changes all *** should happen");
 				result &= wbkApplyAll();
@@ -527,7 +532,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// E
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLine("\t*** UNDO changes all *** should happen");
 				result &= wbkUndoAll();
@@ -811,7 +816,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// E
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLine("\t*** APPLY changes all *** should happen");
 				result &= wbkApplyAll();
@@ -862,7 +867,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// E
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLine("\t*** UNDO changes all *** should happen");
 				result &= wbkUndoAll();
@@ -919,7 +924,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 
 			// D
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLineAnyway("*** can APPLY changes all - this should not happen - fail");
 				result = false;
@@ -970,7 +975,7 @@ namespace ProcessTests1
 
 			R.NewLineAnyway();
 
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
 
@@ -1025,7 +1030,7 @@ namespace ProcessTests1
 			// this will return true if the field can be edited - which is not good
 			// flip value for this test routine
 
-			bool answer = canEditNameModified(SourceId.SI_SRC);
+			bool answer = canEditNameModified();
 			result &= !answer;
 
 			// {
@@ -1058,7 +1063,7 @@ namespace ProcessTests1
 
 			R.NewLineAnyway();
 
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
 
@@ -1098,7 +1103,7 @@ namespace ProcessTests1
 			// this will return true if the field can be edited - which is not good
 			// flip value for this test routine
 
-			bool answer = canEditNameModified(SourceId.SI_SRC);
+			bool answer = canEditNameModified();
 			result &= !answer;
 
 			showProgress("MODIFY name modified", answer, "this is a fail", "this is correct");
@@ -1113,7 +1118,7 @@ namespace ProcessTests1
 
 			R.NewLineAnyway();
 
-			if (_Wbk.ApplyBtnStatus)
+			if (_wbk.ApplyBtnStatus)
 			{
 				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
 
@@ -1301,9 +1306,9 @@ namespace ProcessTests1
 		{
 			string proc = "WORKBOOK APPLY ALL";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_Wbk.ApplyChangesAll(SourceId.SI_SRC_MOD, SourceId.SI_NONE);
+			_wbk.ApplyChangesAll();
 
 			return wbkEndTest(proc);
 		}
@@ -1312,9 +1317,9 @@ namespace ProcessTests1
 		{
 			string proc = "WORKBOOK UNDO ALL";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_Wbk.UndoChangesAll(SourceId.SI_SRC_MOD, SourceId.SI_NONE);
+			_wbk.UndoChangesAll();
 
 			return wbkEndTest(proc);
 		}
@@ -1325,7 +1330,7 @@ namespace ProcessTests1
 		{
 			string proc = "SHTS LST APPLY ALL";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
 			_xData.ShtsLstApplyChgsAll();
 
@@ -1336,7 +1341,7 @@ namespace ProcessTests1
 		{
 			string proc = "SHEETS LIST UNDO ALL";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
 			showLastIdStatus($"before {nameof(shtsLstUndoAll)}");
 
@@ -1352,9 +1357,9 @@ namespace ProcessTests1
 		{
 			string proc = "CHANGE DESC";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_Wbk.Desc = "new value";
+			_wbk.Desc = "new value";
 
 			return wbkEndTest(proc);
 		}
@@ -1363,9 +1368,9 @@ namespace ProcessTests1
 		{
 			string proc = "UNDO DESC";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_Wbk.UndoChange(_Wbk.DescField);
+			_wbk.UndoChange(_wbk.DescField, false);
 
 			return wbkEndTest(proc);
 		}
@@ -1374,7 +1379,7 @@ namespace ProcessTests1
 		{
 			string proc = "ADD SHEET - CHANGE LAST ID (alt src)";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
 			showLastIdStatus($"before {nameof(xdChgLastIdByAddSht)}");
 
@@ -1391,7 +1396,7 @@ namespace ProcessTests1
 		{
 			string proc = "REMOVE SHT FROM SHTS LST";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
 			showLastIdStatus($"before {nameof(xdDeleteSht)}");
 
@@ -1411,9 +1416,9 @@ namespace ProcessTests1
 		{
 			string proc = "CHANGE STATUS";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_Wbk.Status = ActivateStatus.AS_INACTIVE;
+			_wbk.Status = ActivateStatus.AS_INACTIVE;
 
 			return wbkEndTest(proc);
 		}
@@ -1424,7 +1429,7 @@ namespace ProcessTests1
 			R.NewLine();
 
 			R.AddRouteEnter();
-			_Wbk.UndoChange(_Wbk.StatusField);
+			_wbk.UndoChange(_wbk.StatusField, false);
 			R.AddRouteExit();
 
 			R.WriteLine("\nAFTER UNDO CHG STATUS");
@@ -1435,48 +1440,48 @@ namespace ProcessTests1
 		}
 
 
-		private bool chgDateModx()
-		{
-			string proc = "CHANGE DATE MOD";
-
-			beginTest(proc);
-
-			string dateBefore = _Wbk.DateModified;
-
-			_Wbk.UpdateModifiedDate(SourceId.SI_SRC_MOD);
-
-			if (dateBefore == _Wbk.DateModified)
-			{
-				R.WriteLine("\n\ttest worked - dates match");
-			}
-			else
-			{
-				R.WriteLine("\n********\nthis is a fail, dates do not match - should not get here\n***********\n");
-			}
-			
-
-			return wbkEndTest(proc);
-		}
+		// private bool chgDateModx()
+		// {
+		// 	string proc = "CHANGE DATE MOD";
+		//
+		// 	beginTest(proc);
+		//
+		// 	string dateBefore = _Wbk.DateModified;
+		//
+		// 	_Wbk.ModDate_Update(SourceId.SI_SRC_MOD);
+		//
+		// 	if (dateBefore == _Wbk.DateModified)
+		// 	{
+		// 		R.WriteLine("\n\ttest worked - dates match");
+		// 	}
+		// 	else
+		// 	{
+		// 		R.WriteLine("\n********\nthis is a fail, dates do not match - should not get here\n***********\n");
+		// 	}
+		// 	
+		//
+		// 	return wbkEndTest(proc);
+		// }
 
 		private bool chgNameModByUser(out bool namesMatch)
 		{
 			string proc = "CHANGE NAME MOD";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			string nameBefore = _Wbk.NameModified;
+			string nameBefore = _wbk.NameModified;
 
-			_Wbk.NameModified = FauxUserName;
+			_wbk.NameModified = FauxUserName;
 
-			if (nameBefore == _Wbk.NameModified)
+			if (nameBefore == _wbk.NameModified)
 			{
-				R.WriteLine($"\tname modified match | {nameBefore} vs {_Wbk.NameModified}");
+				R.WriteLine($"\tname modified match | {nameBefore} vs {_wbk.NameModified}");
 
 				namesMatch = true;
 			}
 			else
 			{
-				R.WriteLine($"\tname modified does not match | {nameBefore} vs {_Wbk.NameModified}");
+				R.WriteLine($"\tname modified does not match | {nameBefore} vs {_wbk.NameModified}");
 
 				namesMatch = false;
 			}
@@ -1488,7 +1493,7 @@ namespace ProcessTests1
 		{
 			string proc = "UNDO CHANGE NAME MOD";
 			
-			_Wbk.UndoChange(_Wbk.NameModifiedField);
+			_wbk.UndoChange(_wbk.NameModifiedField, false);
 
 			return wbkEndTest(proc);
 		}
@@ -1499,7 +1504,7 @@ namespace ProcessTests1
 			R.NewLine();
 
 			R.AddRouteEnter();
-			_Wbk.LastId = "BAAA";
+			_wbk.LastId = "BAAA";
 
 			R.AddRouteExit();
 
@@ -1517,7 +1522,7 @@ namespace ProcessTests1
 
 			R.StartRoute();
 
-			_Wbk.UndoChange(_Wbk.LastIdField);
+			_wbk.UndoChange(_wbk.LastIdField, false);
 
 			R.WriteLine("\nAFTER UNDO LAST ID (user)");
 
@@ -1543,7 +1548,7 @@ namespace ProcessTests1
 			if (tstNameModIdx == 0)
 			{
 				nametst = tstNamMod[tstNameModIdx++];
-				nameWbk = _Wbk.NameModified;
+				nameWbk = _wbk.NameModified;
 				nameStatus = nametst.Equals(nameWbk);
 				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
 
@@ -1553,7 +1558,7 @@ namespace ProcessTests1
 			R.NewLineAnyway();
 		}
 
-		private void beginTest(string proc)
+		private void wbkBeginTest(string proc)
 		{
 			R.WriteLine($"****************************");
 			R.WriteAnyway($"{$"[ {tstAnsIdx} ]",-5} {tstTitle} | ");
@@ -1579,18 +1584,20 @@ namespace ProcessTests1
 		/// determine if the nameModified field can be edited<br/>
 		/// true if yes, can be edited, false if no
 		/// </summary>
-		private bool canEditNameModified(SourceId srcIdIn)
+		private bool canEditNameModified()
 		{
-			bool canEdit1 = _Wbk.NameModifiedField.ChgSrcId <= srcIdIn;
-			bool canEdit2 = !(_Wbk.NameModifiedField.IsDirty() && _Wbk.NameModifiedField.ChgSrcId > srcIdIn);
-			bool canEditTstMatch = canEdit1 == canEdit2;
+			// bool canEdit1 = _Wbk.NameModifiedField.ChgSrc <= srcIdIn;
+			// bool canEdit2 = !(_Wbk.NameModifiedField.IsDirty() && _Wbk.NameModifiedField.ChgSrc > srcIdIn);
+			// bool canEditTstMatch = canEdit1 == canEdit2;
 
-			R.WriteLine($"\n\tis Dirty = {_Wbk.NameModifiedField.IsDirty()} | chgSrcId = {_Wbk.NameModifiedField.ChgSrcId} | srcIdIn = {srcIdIn}");
-			R.WriteLine($"\tcanEdit1 is {canEdit1} [ chgsrcId <= srcIdIn ] |");
-			R.WriteLine($"\tcanEdit2 is {canEdit2} [ not (is dirty && chgsrcId > srcIdIn)]");
-			R.WriteLine($"\tfinal answer {canEdit1} | do they match = {canEditTstMatch}\n");
+			// R.WriteLine($"\n\tis Dirty = {_Wbk.NameModifiedField.IsDirty()} | chgSrcId = {_Wbk.NameModifiedField.ChgSrc} | srcIdIn = {srcIdIn}");
+			// R.WriteLine($"\tcanEdit1 is {canEdit1} [ chgsrcId <= srcIdIn ] |");
+			// R.WriteLine($"\tcanEdit2 is {canEdit2} [ not (is dirty && chgsrcId > srcIdIn)]");
+			// R.WriteLine($"\tfinal answer {canEdit1} | do they match = {canEditTstMatch}\n");
 
-			return canEdit1;
+			R.WriteLine($"\tfinal answer (via FieldCanEdit) {_wbk.NameModifiedField.FieldCanEdit}\n");
+
+			return _wbk.NameModifiedField.FieldCanEdit;
 
 			// true when
 			// not dirty
@@ -1632,9 +1639,9 @@ namespace ProcessTests1
 			bool nameStatus;
 			string nameResult = "";
 
-			status &= evalStatus(_Wbk.IsModifiedExo, a[idx, 0], out w);
-			status &= evalStatus(_Wbk.ApplyBtnStatus, a[idx, 1], out wbkA);
-			status &= evalStatus(_Wbk.UndoBtnStatus, a[idx, 2], out wbkU);
+			status &= evalStatus(_wbk.IsModifiedExo, a[idx, 0], out w);
+			status &= evalStatus(_wbk.ApplyBtnStatus, a[idx, 1], out wbkA);
+			status &= evalStatus(_wbk.UndoBtnStatus, a[idx, 2], out wbkU);
 
 			if (shtList)
 			{
@@ -1645,7 +1652,7 @@ namespace ProcessTests1
 			if (tstNameModIdx >=0)
 			{
 				nametst = tstNamMod[tstNameModIdx++];
-				nameWbk = _Wbk.NameModified;
+				nameWbk = _wbk.NameModified;
 				nameStatus = nametst.Equals(nameWbk);
 				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
 				status &= nameStatus;
@@ -1671,7 +1678,7 @@ namespace ProcessTests1
 		{
 			string status = _xData.WorkBook.LastIdField.IsDirty() ? "is Dirty" : "is Clean";
 
-			R.WriteLine($"\n\t*** {location} | LastId | [ {_xData.WorkBook.LastId} ] | status [ {status} ] | chg src id [ {_xData.WorkBook.LastIdField.ChgSrcId} ]\n");
+			R.WriteLine($"\n\t*** {location} | LastId | [ {_xData.WorkBook.LastId} ] | status [ {status} ] | chg src id [ {_xData.WorkBook.LastIdField.ChgSrc} ]\n");
 		}
 
 		private void showShtLst()
@@ -1732,7 +1739,7 @@ namespace ProcessTests1
 		{
 			R.AddRouteEnter();
 
-			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_Wbk.GetId()),
+			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_wbk.GetId()),
 				new ($"path:\\file{shtIdx}.xls", $"no sheet name {shtIdx}"));
 
 			sht.SetTrackChanges();
@@ -1746,7 +1753,7 @@ namespace ProcessTests1
 
 		public Sheet CreateSheetStealth()
 		{
-			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_Wbk.GetIdStealth()),
+			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_wbk.GetIdStealth()),
 				new ($"path:\\file{shtIdx}.xls", $"no sheet name {shtIdx}"));
 
 			sht.SetTrackChanges();
@@ -1817,7 +1824,7 @@ namespace ProcessTests1
 		{
 			string proc = "CHANGE DESC";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
 			_sht.Desc = "new value";
 
@@ -1828,9 +1835,9 @@ namespace ProcessTests1
 		{
 			string proc = "UNDO CHANGE DESC";
 
-			beginTest(proc);
+			wbkBeginTest(proc);
 
-			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.DescField);
+			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.DescField, false);
 
 			return wbkEndTest(proc);
 		}
@@ -1874,7 +1881,7 @@ namespace ProcessTests1
 
 			R.StartRoute();
 
-			_sht.ApplyChangesAll(SourceId.SI_SRC_MOD, SourceId.SI_NONE);
+			_sht.ApplyChangesAll();
 
 			// xData.CurrSheetApplyChgs(SourceId.SI_SRC);
 
@@ -1900,7 +1907,7 @@ namespace ProcessTests1
 			if (tstNameModIdx == 0)
 			{
 				nametst = tstNamMod[tstNameModIdx++];
-				nameWbk = _Wbk.NameModified;
+				nameWbk = _wbk.NameModified;
 				nameStatus = nametst.Equals(nameWbk);
 				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
 
@@ -1916,13 +1923,13 @@ namespace ProcessTests1
 		private readonly Dictionary<string, string[]> _tstAnsNameMod = new ()
 		{
 			//                  start			test 0				test 2
-			{"TEST1E", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT2, FAUX_USER_NAME}},
+			{"TEST1E", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT2, FAUX_USER_NAME_INIT}},
 
-			{"TEST4A", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT}},
-			{"TEST24C", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT, FAUX_USER_NAME, FAUX_USER_NAME }},
-			{"TEST24D", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME }},
-			{"TEST41A", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME }},
-			{"TEST42A", new [] { FAUX_USER_NAME, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME }},
+			{"TEST4A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT}},
+			{"TEST24C", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT, FAUX_USER_NAME_INIT }},
+			{"TEST24D", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
+			{"TEST41A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
+			{"TEST42A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
 		};
 
 		private readonly Dictionary<string, bool[,]> _tstAnswers = new ()

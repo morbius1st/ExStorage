@@ -25,9 +25,10 @@ public class FieldData<Te> : INotifyPropertyChanged
 
 	/* ctor */
 
-	private FieldData() { }
+	private FieldData()
+	{ }
 
-	public FieldData(FieldDef<Te>? field, DynaValue? dyValue)
+	public FieldData(FieldDef<Te>? field, DynaValue? dyValue) 
 	{
 		Field = field;
 		DyValue = dyValue;
@@ -35,7 +36,7 @@ public class FieldData<Te> : INotifyPropertyChanged
 		// fieldSources = null;
 	}
 
-	public FieldData(FieldDef<Te>? field, dynamic? value)
+	public FieldData(FieldDef<Te>? field, dynamic? value) 
 	{
 		Field = field;
 		DyValue = new DynaValue(value);
@@ -50,6 +51,8 @@ public class FieldData<Te> : INotifyPropertyChanged
 
 	public FieldDef<Te>? Field { get; }
 
+	public bool FieldCanEdit => ChgSrc <= ChgSrcId.CI_SRC_B;
+
 	/* events */
 
 	public event PropertyChangedEventHandler? PropertyChanged;
@@ -60,40 +63,39 @@ public class FieldData<Te> : INotifyPropertyChanged
 		PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(memberName));
 	}
 
-
 	/* methods */
 
+	/// <summary>
+	/// undo the last change and replace with the last saved value<br/>
+	/// also undoes the chg src
+	/// </summary>
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public void UndoChg()
 	{
-		// R.AddRouteEnter($"[{Field.FieldName}] | is clean? [{DyValue!.IsClean}] true => do NOT undo - exit");
-		R.AddRoute($"{Field.FieldName} | is clean? [{DyValue!.IsClean}] true => do NOT undo - exit", 2, true);
+		R.AddRoute(  $"{Field.FieldName} | is clean? [{DyValue!.IsClean}] true => do NOT undo - exit", 0, 2, true);
 
-		if (DyValue!.IsClean)
-		{
-			// R.AddRouteExit();
-			return;
-		}
+		if (DyValue!.IsClean) return;
 
 		DyValue.UndoChange();
-		// R.AddRouteExit();
 	}
 
+	/// <summary>
+	/// applies the last change.  ChgSrc is set to none
+	/// </summary>
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public void ApplyChg()
 	{
-		// R.AddRouteEnter($"[{Field.FieldName}]");
-		R.AddRoute($"{Field.FieldName}", 2, true);
+		// R.AddRouteEnter(0, $"before {Field.FieldName} [ {Field.FieldChgSrcId} ]");
 
 		if (DyValue!.IsClean)
 		{
-			// R.AddRouteExit();
+			// R.AddRouteExit(0, "is clean - early exit");
 			return;
 		}
 
 		DyValue.ApplyChange();
 
-		// R.AddRouteExit();
+		// R.AddRouteExit(0, $"before {Field.FieldName} [ {Field.FieldChgSrcId} ]");
 	}
 
 	// public bool SourceIdOk(SourceId srcIdIn)
@@ -113,7 +115,46 @@ public class FieldData<Te> : INotifyPropertyChanged
 		return DyValue.IsDirty;
 	}
 
-	public SourceId ChgSrcId { get; set; }
+	/// <summary>
+	/// the source of the change to the dynaValue
+	/// </summary>
+	public ChgSrcId ChgSrc
+	{
+		get => DyValue!.ChgSrc;
+		set => DyValue!.ChgSrc = value;
+	}
 
+	/// <summary>
+	/// the source of the change to the dynaValue and set the IsDirtyFlag
+	/// </summary>
+	public ChgSrcId ChgSrcDirty
+	{
+		get => DyValue!.ChgSrc;
+		set
+		{
+			DyValue!.ChgSrcDirty = value;
+		}
+	}
+
+	/// <summary>
+	/// the source of the change to the dynaValue
+	/// </summary>
+	public ChgSrcId ChgSrcStd => Field!.FieldChgSrcId[0];
+
+
+	/// <summary>
+	/// the source of the change to the dynaValue
+	/// </summary>
+	public ChgSrcId ChgSrcAlt => Field!.FieldChgSrcId[1];
+
+	public void ApplyChgSrc()
+	{
+		DyValue!.ApplyChgSrcId();
+	}
+
+	public void UndoChgSrc()
+	{
+		DyValue!.UndoChgSrcId();
+	}
 
 }

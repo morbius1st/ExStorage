@@ -23,7 +23,9 @@ namespace UtilityLibrary
 
 		static R()
 		{
-			resetRoute();
+			route = new List<Tuple<int, string, string>>[2];
+
+			resetRoutes();
 		}
 
 	#endregion
@@ -31,6 +33,11 @@ namespace UtilityLibrary
 		public static bool RunSilent { get; set; } = false;
 
 		public static int prefaceColWidth = 30;
+
+		public static void WriteOnlyWhenSilent(string msg)
+		{
+			if (RunSilent) Console.Write(msg);
+		}
 
 		public static void WriteLineAnyway(string msg)
 		{
@@ -78,38 +85,35 @@ namespace UtilityLibrary
 		/* route */
 
 		public static int DepthMultiplier { get; set; } = 3;
-		private static int Depth
-		{
-			get => depth;
-			set
-			{
-				depth = (value <=0 ? 1 : value);
-			}
-		}
 
-		private static List<Tuple<int, string, string>> route;
-		private static int depth;
+		private static List<Tuple<int, string, string>>[] route;
+		private static int routeDepth;
 
-		public static void StartRoute([CallerMemberName] string name = "")
+		public static bool SuspendAddRoute { get; set; } = false;
+
+		public static int[] RouteDepth;
+
+		public static void StartRoute(int routeIdx = 0, [CallerMemberName] string name = "")
 		{
-			depth = -1;
-			resetRoute();
+			RouteDepth[routeIdx] = -1;
+			resetRoute(routeIdx);
 			// route.Add(new (0, name, ""));
 
 			// R.AddRoute(name, 2, true);
 			// R.AddRoute(null, 2, true, 1, name);
 		}
 
-		public static void AddRouteEnter(string? msg = "", bool addMorM = false, [CallerMemberName] string name = "", [CallerFilePath] string path = "")
+		public static void AddRouteEnter(string? msg = "", int routeIdx = 0, bool addMorM = false, [CallerMemberName] string name = "", [CallerFilePath] string path = "")
 		{
 			string p = Path.GetFileNameWithoutExtension(path);
 
-			if (addMorM) AddRoute(msg.IsVoid() ? null : msg, 2, true, 1, $"{name} [ {p} ]", null);
-			else AddRoute(msg.IsVoid() ? null : msg, 0, true, 1, $"{name} [ {p} ]", null);
+			if (addMorM) AddRoute(  msg.IsVoid() ? null : msg, routeIdx, 2, true, 1, $"{name} [ {p} ]", null);
+			else AddRoute(  msg.IsVoid() ? null : msg, routeIdx, 0, true, 1, $"{name} [ {p} ]", null);
 		}
-		public static void AddRouteExit(string msg = "", [CallerMemberName] string name = "")
+		
+		public static void AddRouteExit(string msg = "", int routeIdx = 0, [CallerMemberName] string name = "")
 		{
-			AddRoute((msg.IsVoid() ? null : msg), 0, true, -1, name, null);
+			AddRoute(  (msg.IsVoid() ? null : msg), routeIdx, 0, true, -1, name, null);
 
 			// AddRoute($"<<= exit {msg}", msg: true, d: -1, name: name);
 		}
@@ -117,22 +121,24 @@ namespace UtilityLibrary
 		/// <summary>
 		/// provide none, get {name}<br/>
 		/// provide r, get {r}<br/>
-		/// provide r, true; get {name} ( {r} )
+		/// provide r, true; get {name} ( {r} )<br/>
+		/// mOrM == 0, include method name, == -1, do not include method name, >0 include method name & calling path<br/>
+		/// d = forced depth (which continues until changed)
 		/// </summary>
-		public static void AddRoute(object? r = null, int mOrM = 0, bool msg = false, int d = 0, [CallerMemberName] string name = "", [CallerFilePath] string? path = "")
+		public static void AddRoute(object? r = null, int routeIdx = 0, int mOrM = 0, bool msg = false, int d = 0, [CallerMemberName] string name = "", [CallerFilePath] string? path = "")
 		{
 			if (SuspendAddRoute) return;
 
-			if (d > 0) depth += d;
+			if (d > 0) RouteDepth[routeIdx] += d;
 
 			string result = "";
 			string result2 = "";
 			string dir = d > 0 ? IN_ARROW : d < 0 ? OUT_ARROW : "    ";
 
-			string n = name;
+			string n = mOrM >= 0 ? name : "...";
 
 
-			if (path != null)
+			if (path != null && mOrM >= 0)
 			{
 				string p = Path.GetFileNameWithoutExtension(path);
 				n = $"{name} [ {p} ]";
@@ -160,16 +166,16 @@ namespace UtilityLibrary
 				else result2 = $"{result2}[ {getCalling(5, out file, out method)} ]";
 			}
 
-			route.Add(new (depth, $"{dir} {result}", result2));
+			route[routeIdx].Add(new (RouteDepth[routeIdx], $"{dir} {result}", result2));
 
-			if (d < 0) depth += d;
+			if (d < 0) RouteDepth[routeIdx] += d;
 		}
 
-		public static void ShowRoute(string begMsg = "", string endMsg = "")
+		public static void ShowRoute(int routeIdx = 0, string begMsg = "", string endMsg = "")
 		{
 			string msg;
 
-			if (route.Count == 0) return;
+			if (route[routeIdx].Count == 0) return;
 
 			Write("ROUTE |");
 
@@ -177,7 +183,7 @@ namespace UtilityLibrary
 
 			R.WriteLine($"{IN_ARROW}BEGIN ROUTE{(begMsg.IsVoid() ? "" : $" | {begMsg}" )}");
 
-			foreach ((int d, string s, string m) in route)
+			foreach ((int d, string s, string m) in route[routeIdx])
 			{
 				string b = d <=0 ? "" : " ".Repeat(d * DepthMultiplier);
 
@@ -192,11 +198,20 @@ namespace UtilityLibrary
 			resetRoute();
 		}
 
-		public static bool SuspendAddRoute { get; set; } = false;
-
-		private static void resetRoute()
+		private static void resetRoute(int routeIdx = 0)
 		{
-			route = new ();
+			route[routeIdx] = new ();
+			RouteDepth[routeIdx] = 0;
+		}
+
+		private static void resetRoutes()
+		{
+			RouteDepth = new int[route.Length];
+
+			for (int i = 0; i < route.Length; i++)
+			{
+				route[i] = new ();
+			}
 		}
 
 		private static string getCalling(int which, out string module, out string method)

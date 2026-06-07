@@ -36,8 +36,8 @@ namespace ProcessTests1
 		private const int COL_BTN  = -9;
 
 		private const int COL_WFLD_ID   = -4;
-		private const int COL_WFLD_SIMX = -15;
-		private const int COL_WFLD_SIMN = -15;
+		private const int COL_WFLD_SCSID0 = -15;
+		private const int COL_WFLD_SCSID1 = -15;
 		private const int COL_WFLD_NM   = -14;
 		private const int COL_WFLD_VAL  = -34;
 		private const int COL_WFLD_CS   = -15;
@@ -122,8 +122,8 @@ namespace ProcessTests1
 
 			DynaValue? d = fld.DyValue;
 
-			string siMx = $"[ {fld.Field!.FieldSrcId.ToString()} ]";
-			string siMn = $"[ {fld.Field!.FieldSrcIdCvt.ToString()} ]";
+			string sCsid0 = $"[ {fld.Field!.FieldChgSrcId[0].ToString()} ]";
+			string sCsid1 = $"[ {fld.Field!.FieldChgSrcId[1].ToString()} ]";
 
 			string id = d.IsDirty ? "*" : " ";
 
@@ -131,13 +131,13 @@ namespace ProcessTests1
 
 			string id1 = $"[{id}]";
 
-			string cs = $"[ {fld.ChgSrcId} ]";
+			string cs = $"[ {fld.ChgSrc} ]";
 
 			string n = fld.Field.FieldName;
 
 			string st = fld.IsDirty() ? "[ is dirty ]" : "[ is clean ]";
 
-			r = $"{id1,COL_WFLD_ID}  {n,COL_WFLD_NM}  {s,COL_WFLD_VAL}  {cs,COL_WFLD_CS}  {st,COL_WFLD_ST}  {siMx,COL_WFLD_SIMX}  {siMn,COL_WFLD_SIMN}";
+			r = $"{id1,COL_WFLD_ID}  {n,COL_WFLD_NM}  {s,COL_WFLD_VAL}  {cs,COL_WFLD_CS}  {st,COL_WFLD_ST}  {sCsid0,COL_WFLD_SCSID0}  {sCsid1,COL_WFLD_SCSID1}";
 
 			return string.Format(fmt, r);
 		}
@@ -188,9 +188,8 @@ namespace ProcessTests1
 
 			R.WriteLine($"\nSHEET fields | for [ {sht.DsName} ]\n");
 
-			R.WriteLine($" |{" dty",COL_WFLD_ID} |{" name",COL_WFLD_NM} |{" value",COL_WFLD_VAL} |{" chg si",COL_WFLD_CS} |{"cln / drty",COL_WFLD_ST} |{" si max",COL_WFLD_SIMX} |{" si min",COL_WFLD_SIMN}");
-			R.WriteLine($" |{dl(-COL_WFLD_ID)} |{dl(-COL_WFLD_NM)} |{dl(-COL_WFLD_VAL)} |{dl(-COL_WFLD_CS)} |{dl(-COL_WFLD_ST)} |{dl(-COL_WFLD_SIMX)} |{dl(-COL_WFLD_SIMN)} ");
-
+			R.WriteLine($" |{" dty",COL_WFLD_ID} |{" name",COL_WFLD_NM} |{" value",COL_WFLD_VAL} |{" chg si",COL_WFLD_CS} |{"cln / drty",COL_WFLD_ST} |{" cs[0]",COL_WFLD_SCSID0} |{" cs[1]",COL_WFLD_SCSID1}");
+			R.WriteLine($" |{dl(-COL_WFLD_ID)} |{dl(-COL_WFLD_NM)} |{dl(-COL_WFLD_VAL)} |{dl(-COL_WFLD_CS)} |{dl(-COL_WFLD_ST)} |{dl(-COL_WFLD_SCSID0)} |{dl(-COL_WFLD_SCSID1)} ");
 
 			R.WriteLine($"  {dn}");
 			R.WriteLine($"  {nc}");
@@ -236,12 +235,12 @@ namespace ProcessTests1
 			string nameModIsMod = getModStatus(xd.CurrentSheet!.NameModifiedField.IsDirty());
 			string famLstIsMod  = getModStatus(xd.CurrentSheet!.FamilyListField.IsDirty());
 
-			string descSrc    = $"[ {xd.CurrentSheet!.DescField.ChgSrcId.ToString()} ]";
-			string statusSrc  = $"[ {xd.CurrentSheet!.OpStatusField.ChgSrcId.ToString()} ]";
-			string seqSrc   = $"[ {xd.CurrentSheet!.OpSequenceField.ChgSrcId.ToString()} ]";
-			string dateModSrc = $"[ {xd.CurrentSheet!.DateModifiedField.ChgSrcId.ToString()} ]";
-			string nameModSrc = $"[ {xd.CurrentSheet!.NameModifiedField.ChgSrcId.ToString()} ]";
-			string famLstSrc =  $"[ {xd.CurrentSheet!.FamilyListField.ChgSrcId.ToString()} ]";
+			string descSrc    = $"[ {xd.CurrentSheet!.DescField.ChgSrc.ToString()} ]";
+			string statusSrc  = $"[ {xd.CurrentSheet!.OpStatusField.ChgSrc.ToString()} ]";
+			string seqSrc   = $"[ {xd.CurrentSheet!.OpSequenceField.ChgSrc.ToString()} ]";
+			string dateModSrc = $"[ {xd.CurrentSheet!.DateModifiedField.ChgSrc.ToString()} ]";
+			string nameModSrc = $"[ {xd.CurrentSheet!.NameModifiedField.ChgSrc.ToString()} ]";
+			string famLstSrc =  $"[ {xd.CurrentSheet!.FamilyListField.ChgSrc.ToString()} ]";
 
 			string s1 = $"{title} | desc mod ({descIsMod,COL_TF}) {descSrc, COL_SRC} | status mod ({statusIsMod,COL_TF}) {statusSrc, COL_SRC} | seq mod ({seqIdIsMod,COL_TF}) {seqSrc, COL_SRC} | fam lst mod ({famLstIsMod}) {famLstSrc}|";
 			string s2 = $"{title} | mod date mod ({dateModIsMod,COL_TF}) {dateModSrc, COL_SRC} | mod name mod ({nameModIsMod,COL_TF}) {nameModSrc, COL_SRC}";

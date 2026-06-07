@@ -21,18 +21,21 @@ namespace ProcessTests1
 		private const int COL_DC = -22;
 		private const int COL_NM = -18;
 		private const int COL_DM = -22;
+		private const int COL_SL = -22;
 
 		private const int COL_SRC  = -12;
 		private const int COL_TF   = -2;
 		private const int COL_BTN  = -9;
 
 		private const int COL_WFLD_ID	= -4;
-		private const int COL_WFLD_SIMX = -15;
-		private const int COL_WFLD_SIMN = -15;
+		private const int COL_WFLD_SCSID0 = -15;
+		private const int COL_WFLD_SCSID1 = -15;
 		private const int COL_WFLD_NM	= -14;
 		private const int COL_WFLD_VAL	= -34;
 		private const int COL_WFLD_CS	= -15;
 		private const int COL_WFLD_ST	= -15;
+		private const int COL_WFLD_PRIOR_VALUE	= -25;
+		private const int COL_WFLD_PRIOR_CHGSRC	= -15;
 		
 
 		private static string dn;
@@ -45,6 +48,7 @@ namespace ProcessTests1
 		private static string dc;
 		private static string nm;
 		private static string dm;
+		private static string sl;
 
 		private static void setWbkStrings(int type, WorkBook wbk)
 		{
@@ -58,6 +62,7 @@ namespace ProcessTests1
 			dc = fmtFld(type, wbk.DateCreatedField, COL_DC);
 			nm = fmtFld(type, wbk.NameModifiedField, COL_NM);
 			dm = fmtFld(type, wbk.DateModifiedField, COL_DM);
+			sl = fmtFld(type, wbk.ShtsListField, COL_SL);
 		}
 
 		private static string fmtFld(int type, FieldData<WorkBookFieldKeys> fld, int width)
@@ -103,8 +108,11 @@ namespace ProcessTests1
 
 			DynaValue? d= fld.DyValue;
 
-			string siMx = $"[ {fld.Field!.FieldSrcId.ToString()} ]";
-			string siMn = $"[ {fld.Field!.FieldSrcIdCvt.ToString()} ]";
+			string priorValue = fld.DyValue.PriorValue;
+			string priorChgSrc = $"[ {fld.DyValue.PriorChgSrc.ToString()} ]";
+
+			string scSID0 = $"[ {fld.Field!.FieldChgSrcId[0].ToString()} ]";
+			string scSID1 = $"[ {fld.Field!.FieldChgSrcId[1].ToString()} ]";
 
 			string id = d.IsDirty ? "*" : " ";
 
@@ -112,13 +120,13 @@ namespace ProcessTests1
 
 			string id1 = $"[{id}]";
 
-			string cs = $"[ {fld.ChgSrcId} ]";
+			string cs = $"[ {fld.ChgSrc} ]";
 
 			string n = fld.Field.FieldName;
 
 			string st = fld.IsDirty() ? "[ is dirty ]" : "[ is clean ]";
 
-			r = $"{id1,COL_WFLD_ID}  {n,COL_WFLD_NM}  {s,COL_WFLD_VAL}  {cs,COL_WFLD_CS}  {st, COL_WFLD_ST}  {siMx,COL_WFLD_SIMX}  {siMn,COL_WFLD_SIMN}";
+			r = $"{id1,COL_WFLD_ID}  {n,COL_WFLD_NM}  {s,COL_WFLD_VAL}  {cs,COL_WFLD_CS}  {st, COL_WFLD_ST}  {scSID0,COL_WFLD_SCSID0}  {scSID1,COL_WFLD_SCSID1} {priorValue, COL_WFLD_PRIOR_VALUE} {priorChgSrc,COL_WFLD_PRIOR_CHGSRC}";
 
 			return r;
 
@@ -138,7 +146,7 @@ namespace ProcessTests1
 
 			string id1 = $"[{id}]";
 
-			string cs = $"[ {fld.ChgSrcId} ]";
+			string cs = $"[ {fld.ChgSrc} ]";
 
 			string n = $"{s} {cs}";
 
@@ -170,7 +178,7 @@ namespace ProcessTests1
 
 			for (int i = 0; i < hasMod.Length; i++)
 			{
-				sb.Append($"[ {(SourceId) i} ] {getModStatus(hasMod[i])} | ");
+				sb.Append($"[ {(ChgSrcId) i} ] {getModStatus(hasMod[i])} | ");
 			}
 
 			return sb.ToString();
@@ -191,11 +199,11 @@ namespace ProcessTests1
 
 				if (hasMod[i] > 0)
 				{
-					sbT.Append($"| {(SourceId) i} ({count}) ");
+					sbT.Append($"| {(ChgSrcId) i} ({count}) ");
 				}
 				else
 				{
-					sbF.Append($"| {(SourceId) i} ({count}) ");
+					sbF.Append($"| {(ChgSrcId) i} ({count}) ");
 				}
 			}
 
@@ -220,8 +228,8 @@ namespace ProcessTests1
 			// sheets list modified
 
 			string btnStat = getWbkButtonStatus(xd.WorkBook);
-			string srcId = xd.SrcId.ToString();
-			string modFldsChgSrcId = xd.WorkBook.DateModifiedField.ChgSrcId.ToString();
+			// string srcId = xd.sr.ToString();
+			string modFldsChgSrcId = xd.WorkBook.DateModifiedField.ChgSrc.ToString();
 			string descIsMod = xd.WorkBook.DescField.IsDirty().ToString();
 			string statusIsMod = xd.WorkBook.StatusField.IsDirty().ToString();
 			string lastIdIsMod =  xd.WorkBook.LastIdField.IsDirty().ToString();
@@ -229,7 +237,7 @@ namespace ProcessTests1
 
 			string t = title.IsVoid() ? "" : $"{title,-20}| ";
 
-			R.WriteLine($"\n{t}CHG STAT| srcId {srcId,COL_SRC} | date chg src {modFldsChgSrcId,COL_SRC}");
+			R.WriteLine($"\n{t}CHG STAT| date chg src {modFldsChgSrcId,COL_SRC}");
 			R.WriteLine($"{t}CHG STAT| desc mod {descIsMod,COL_TF} | status mod {statusIsMod,COL_TF} | lastid mod {lastIdIsMod,COL_TF} | sht lst mod {shtLstMod,COL_TF}");
 			R.WriteLine($"{t}CHG STAT| {getWbkStatus(wbk)}");
 			R.WriteLine($"{t}CHG STAT| {getWbkButtonStatus(wbk)}");
@@ -264,11 +272,11 @@ namespace ProcessTests1
 			string dateModIsMod = getModStatus(xd.WorkBook.DateModifiedField.IsDirty());
 			string nameModIsMod = getModStatus(xd.WorkBook.NameModifiedField.IsDirty());
 
-			string descSrc    = $"[ {xd.WorkBook.DescField.ChgSrcId.ToString()} ]";
-			string statusSrc  = $"[ {xd.WorkBook.StatusField.ChgSrcId.ToString()} ]";
-			string lastIdSrc  = $"[ {xd.WorkBook.LastIdField.ChgSrcId.ToString()} ]";
-			string dateModSrc = $"[ {xd.WorkBook.DateModifiedField.ChgSrcId.ToString()} ]";
-			string nameModSrc = $"[ {xd.WorkBook.NameModifiedField.ChgSrcId.ToString()} ]";
+			string descSrc    = $"[ {xd.WorkBook.DescField.ChgSrc.ToString()} ]";
+			string statusSrc  = $"[ {xd.WorkBook.StatusField.ChgSrc.ToString()} ]";
+			string lastIdSrc  = $"[ {xd.WorkBook.LastIdField.ChgSrc.ToString()} ]";
+			string dateModSrc = $"[ {xd.WorkBook.DateModifiedField.ChgSrc.ToString()} ]";
+			string nameModSrc = $"[ {xd.WorkBook.NameModifiedField.ChgSrc.ToString()} ]";
 
 
 			string s1 = $" | desc mod {descIsMod,COL_TF} {descSrc, COL_SRC} | status mod {statusIsMod,COL_TF} {statusSrc, COL_SRC} | lastid mod {lastIdIsMod,COL_TF} {lastIdSrc, COL_SRC} | sht lst mod {shtLstMod,COL_TF} |";
@@ -321,9 +329,10 @@ namespace ProcessTests1
 			setWbkStrings(1, wbk);
 
 			R.WriteLine("\nWORKBOOK fields\n");
+			R.WriteLine($"IsModifiedExo? {wbk.IsModifiedExo}\n");
 
-			R.WriteLine($" |{" dty",COL_WFLD_ID} |{" name",COL_WFLD_NM} |{" value",COL_WFLD_VAL} |{" chg si",COL_WFLD_CS} |{"cln / drty", COL_WFLD_ST} |{" si max",COL_WFLD_SIMX} |{" si min",COL_WFLD_SIMN}");
-			R.WriteLine($" |{dl(-COL_WFLD_ID)} |{dl(-COL_WFLD_NM)} |{dl(-COL_WFLD_VAL)} |{dl(-COL_WFLD_CS)} |{dl(-COL_WFLD_ST)} |{dl(-COL_WFLD_SIMX)} |{dl(-COL_WFLD_SIMN)} ");
+			R.WriteLine($" |{" dty",COL_WFLD_ID} |{" name",COL_WFLD_NM} |{" value",COL_WFLD_VAL} |{" chg src",COL_WFLD_CS} |{"cln / drty", COL_WFLD_ST} |{" cs[0]",COL_WFLD_SCSID0} |{" cs[1]",COL_WFLD_SCSID1} |{" prior value", COL_WFLD_PRIOR_VALUE} |{" prior chgsrc", COL_WFLD_PRIOR_CHGSRC} |");
+			R.WriteLine($" |{dl(-COL_WFLD_ID)} |{dl(-COL_WFLD_NM)} |{dl(-COL_WFLD_VAL)} |{dl(-COL_WFLD_CS)} |{dl(-COL_WFLD_ST)} |{dl(-COL_WFLD_SCSID0)} |{dl(-COL_WFLD_SCSID1)} |{dl(-COL_WFLD_PRIOR_VALUE)} |{dl(-COL_WFLD_PRIOR_CHGSRC)} ");
 
 			R.WriteLine($"  {dn}");
 			R.WriteLine($"  {mt}");
@@ -335,6 +344,7 @@ namespace ProcessTests1
 			R.WriteLine($"  {li}");
 			R.WriteLine($"  {nm}");
 			R.WriteLine($"  {dm}");
+			R.WriteLine($"  {sl}");
 			R.NewLine();
 		}
 

@@ -6,6 +6,20 @@ using System.Runtime.CompilerServices;
 
 namespace UtilityLibrary
 {
+	public enum ChgSrcId
+	{
+		CI_NOP		=-1,
+		CI_NONE		= 0,
+
+		CI_SRC_A,
+		CI_SRC_B,
+		CI_SRC_D,
+		CI_SRC_E,
+		CI_SRC_T,
+		CI_SRC_X,
+	}
+
+
 	/// <summary>
 	/// store a value as one of these data types:<br/>
 	/// string, int, double, enum, Guid
@@ -48,11 +62,18 @@ namespace UtilityLibrary
 		/// the raw value stored
 		/// </summary>
 		private dynamic dynValue;
+
 		private dynamic dynValuePrior;
+
+		private ChgSrcId chgSrc;
+		private ChgSrcId chgSrcPrior;
+
+
 		private int changeQty;
 		private bool? isChanged;
 
 		public dynamic Value => dynValue;
+		public dynamic PriorValue => dynValuePrior;
 
 		// an invalid DynaValue for use in error situations
 		public static DynaValue InValid()
@@ -579,9 +600,11 @@ namespace UtilityLibrary
 
 		#endregion
 
-
 		/* basic value undo operations */
 
+		/// <summary>
+		/// turn on the tracking of changes to the dynavalue
+		/// </summary>
 		public void SetTrackChanges()
 		{
 			if (TrackChanges) return;
@@ -600,11 +623,56 @@ namespace UtilityLibrary
 			Debug.WriteLine($"** {title, -15} | value {dynValue?.ToString() ?? "is null"} | prior {dynValuePrior?.ToString() ?? "is null"}");
 		}
 
-		public void SetValue(dynamic value)
+		/// <summary>
+		/// "apply" the value by setting the isdirty flag to false
+		/// and ChgSrc to the none (prior values are not modified)
+		/// </summary>
+		public void FixValue()
+		{
+			IsChanged = false;
+
+			// do not use the property
+			chgSrc = ChgSrcId.CI_NONE;
+
+			OnPropertyChanged(nameof(ChgSrc));
+		}
+
+		/// <summary>
+		/// un-"apply" the value by setting the isdirty flag to true
+		/// and ChgSrc to the value provided  (prior values are not modified)
+		/// </summary>
+		public void UnFixValue(ChgSrcId cs)
+		{
+			IsChanged = true;
+
+			// do not use the property
+			chgSrc = cs;
+
+			OnPropertyChanged(nameof(ChgSrc));
+		}
+
+		/// <summary>
+		/// update the value and update the change src but
+		/// don't adjust other settings<br/>
+		/// if stealth is true, chg src is ignored
+		/// </summary>
+		public void SetValue(dynamic value, ChgSrcId cs, bool stealth = false)
 		{
 			if (!(value.GetType().Equals(TypeIs))) return;
 
+			if (!stealth) chgSrc = cs;
+
 			dynValue = value;
+		}
+
+		/// <summary>
+		/// determine of a proposed value matches the prior value
+		/// </summary>
+		public bool MatchesPrior(dynamic value)
+		{
+			// check for the new value matching the prior value
+			return value.GetType() == typeof(Dictionary<string, string>) ? 
+				(bool) CsUtilities.DictionariesEqual(value, dynValuePrior) : (bool) value.Equals(dynValuePrior);
 		}
 
 		/// <summary>
@@ -612,48 +680,19 @@ namespace UtilityLibrary
 		/// save the prior value if clean<br/>
 		/// return false if type does not match, true elsewise
 		/// </summary>
-		public bool ChangeValue(dynamic value)
+		public bool ChangeValue(dynamic value, ChgSrcId cs)
 		{
 			if (!(value.GetType().Equals(TypeIs))) return false;
 
-			bool result = false;
+			// bool result = false;
 
-			// check for the new value matching the prior value
-			if (value.GetType() == typeof(Dictionary<string, string>))
+			ChgSrc = cs;
+
+			if (TrackChanges && IsClean)
 			{
-				// if the new and current values match, all done
-				if (CsUtilities.DictionariesEqual(value, dynValue)) return true;
-
-				result = CsUtilities.DictionariesEqual(value, dynValuePrior);
+				dynValuePrior = dynValue;
+				R.AddRoute( $"save prior value => {dynValuePrior}", 0);
 			}
-			else
-			{
-				// if the new and current values match, all done
-				if (value.Equals(dynValue)) return true;
-
-				// removed to fix issues
-				// should use undo change
-				// result = value.Equals(dynValuePrior);
-			}
-
-			// if prior and new values match - do undo to remove the isdirty flag
-			if (result)
-			{
-				UndoChange();
-				OnPropertyChanged(nameof(Value));
-
-				return true;
-			}
-			
-			// type matches
-			// save prior value
-			// save new value
-			// set "dirty" flag
-			// set last value returned flag to false
-
-			// only save first prior value 
-			// other prior values are lost
-			if (TrackChanges && IsClean) dynValuePrior = dynValue;
 
 			dynValue = value;
 
@@ -662,26 +701,22 @@ namespace UtilityLibrary
 				ChangeQty = 1;
 			}
 
-			// initCollection();
-
 			LastValueReturnedIsValid = false;
 
 			OnPropertyChanged(nameof(Value));
-
-			// showDyValues("CV - end 1");
 
 			return true;
 		}
 
 		/// <summary>
 		/// undo the last n changes. currently only the last
-		/// change is saved and can be undone.  multi-level undo
-		/// has not been implemented
+		/// change is saved and can be undone.<br/>
+		/// also undoes the chg src<br/>
+		/// /// ChgSrcId gets set to None
+		/// multi-level undo has not been implemented
 		/// </summary>
 		public void UndoChange(int qty = 1)
 		{
-			// R.AddRoute($"restore this value | {dynValuePrior ?? "null"}", msg: true);
-
 			if (qty < 1) return;
 
 			if (dynValuePrior == null) return;
@@ -690,87 +725,168 @@ namespace UtilityLibrary
 			// clear "dirty" flag
 			// set last value returned flag to false
 
-			// (dynValue, dynValuePrior) = (dynValuePrior, dynValue);
-
 			dynValue = dynValuePrior;
 			dynValuePrior = null;
 
-			// initCollection();
+			UndoChgSrcId();
 
 			applyChange();
 		}
 
 		/// <summary>
 		/// make the revised value the current value and remove the prior value
+		/// ChgSrcId gets set to None
 		/// </summary>
 		public void ApplyChange()
 		{
+			// R.AddRoute();
 			dynValuePrior = null;
 			applyChange();
 		}
 
 		private void applyChange()
 		{
-			// R.AddRoute($"{AsString()}", 2, true);
-
+			// R.AddRoute();
 
 			// must use the field and not the property
 			changeQty = 0;
 
-			// if (IsCollection)
-			// {
-			// 	if (IsDictStringString)
-			// 	{
-			// 		CountInit = AsDictStringString().Count;
-			// 	}
-			// 	else
-			// 	{
-			// 		CountInit = AsListString().Count;
-			// 	}
-			//
-			// 	CountNew = 0;
-			// 	CountDel = 0;
-			//
-			// 	updateCollectionProps();
-			// }
+			ApplyChgSrcId();
 
 			IsChanged = false;
 			LastValueReturnedIsValid = false;
 		}
 
-		public dynamic PriorValue => dynValuePrior;
+
+		/* change source operations */
+
+		/// <summary>
+		/// change source property that tracks the "source" of the value change.
+		/// if this is CI_NONE, there is no change source<br/>
+		/// provide "CI_NOP to reset
+		/// </summary>
+		public ChgSrcId ChgSrc
+		{
+			get => chgSrc;
+
+			set
+			{
+				setChgSrc(value);
+			}
+		}
+
+		public ChgSrcId PriorChgSrc => chgSrcPrior;
+
+		/// <summary>
+		/// change source property that tracks the "source" of the value change.
+		/// if this is CI_NONE, there is no change source<br/>
+		/// provide "CI_NOP to reset
+		/// </summary>
+		public ChgSrcId ChgSrcDirty
+		{
+			get => chgSrc;
+
+			set
+			{
+				setChgSrc(value);
+				isChanged = true;
+			}
+		}
+
+		private void setChgSrc(ChgSrcId value)
+		{
+			// do not check that the same value has been provided
+			// that will prevent the easy replacement of an out of date value
+
+			// if provided == nop -> set current and prior to none
+			// if provided == any -> current => prior & value => current
+
+			if (value == ChgSrcId.CI_NOP)
+			{
+				resetChgSrcIdPriorId();
+				chgSrc = ChgSrcId.CI_NONE;
+			}
+			else
+			{
+				chgSrcPrior = chgSrc;
+				chgSrc = value;
+			}
+
+			OnPropertyChanged(nameof(ChgSrc));
+		}
+
+		/// <summary>
+		/// test the equality of a test value to the current value of change source
+		/// </summary>
+		public bool EqualsChgSrc(ChgSrcId test) => chgSrc == test;
+
+		/// <summary>
+		/// Apply the change source (set both values to none)
+		/// </summary>
+		public void ApplyChgSrcId()
+		{
+			// R.AddRoute();
+			resetChgSrcId();
+			resetChgSrcIdPriorId();
+		}
+
+		/// <summary>
+		/// return the change source to its prior value (which could be the same)
+		/// </summary>
+		public void UndoChgSrcId()
+		{
+			ChgSrc = chgSrcPrior;
+			resetChgSrcIdPriorId();
+		}
+
+		private void resetChgSrcIdPriorId()
+		{
+			// R.AddRoute();
+			chgSrcPrior = ChgSrcId.CI_NONE;
+		}
+		private void resetChgSrcId()
+		{
+			// R.AddRoute();
+			chgSrc = ChgSrcId.CI_NONE;
+		}
 
 
-		// value update management
+		/// <summary>
+		/// return true if the Change Source is NOT none
+		/// </summary>
+		public bool HasChgSrcId => chgSrc != ChgSrcId.CI_NONE;
 
-		// need (for a single undo level)
-		//	> prior value
-		//	> flag for clean vs dirty
-		//	() set new value (must be same type => return false)
-		//	() reset to clean
-		//	() restore prior value
-
-		// original value set when created
-		//	> set clean to true
-		//	> prior value to null
-
-		// set new value
-		//	> can happen multiple times but prior values are lost but original value is maintained
-		//	> if type not same => return false;
-		//	> clean = false
-		// 	> prior value = current value
-		//	> current value = new value
-
-		// reset to clean
-		//	> clean = true
-		//	> prior value = null
-
-		// restore prior value
-		//	> if prior value is null => ignore / return
-		//	> current value = prior value
-		//	> prior value = null
-		//	> clean = true
 
 
 	}
 }
+
+// future - value update management
+
+// need (for a single undo level)
+//	> prior value
+//	> flag for clean vs dirty
+//	() set new value (must be same type => return false)
+//	() reset to clean
+//	() restore prior value
+
+// original value set when created
+//	> set clean to true
+//	> prior value to null
+
+// set new value
+//	> can happen multiple times but prior values are lost but original value is maintained
+//	> if type not same => return false;
+//	> clean = false
+// 	> prior value = current value
+//	> current value = new value
+
+// reset to clean
+//	> clean = true
+//	> prior value = null
+
+// restore prior value
+//	> if prior value is null => ignore / return
+//	> current value = prior value
+//	> prior value = null
+//	> clean = true

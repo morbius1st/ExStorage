@@ -93,6 +93,7 @@ if basic && fel >= basic => can edit
 workbook modified reset and undo notes
 
 routines & properties that affect this
+the below is good but out-of-date - some routine names may have changed
 
 workbook (w) &/or sheet (s) or ExStorData (x) or shts lst (l => ExStorData) 
 	or date (d) / name (n) modified or famandtype list (f => Sheet)
@@ -170,243 +171,304 @@ f		FamAndTypeApplyChanges()
 
 ****
 
-basic validate process
+5/21/26 notes
 
-to be analyized
+* any user change to a field gets the chg src of A
+* the date mod and name mod get chg src of A when based on A
 
-* item changed (chg src id) (user - src_mod)
-* item changed (chg src id) (lastId (by user) - src_mod)
-* item changed (chg src id) (nameMod (by user) - src_mod)
+* apply and undo routines cannot affect any chg src > the src input
+* the apply and undo routines will ignore date and name mod
 
-* item changed (chg src id) (lastId (by dest A) destA_mod)
-* item changed (chg src id) (nameMod (by dest B) destB_mod)
+* when last id is changed, it gets chg src of E (verify)
 
-* item changed (chg src id) (indirect (datemod) - indr_mod)
 
-// * undo item  | 
-// * undo all	| these routines adjust the item's settings
-// * apply item	| 
-// * apply all	| 
+
+
+ALL OF THE BELOW IS OUT-OF-DATE but still has some useful information
 
 
 **************
-***  adjustments
+***  adjustments to do
+
+
+
+
+
+
+
+
+
+
+
+**************
+***  adjustments done
+
+sourceId
+created new enum named: 
+ChgSrcId
+add SI_NOP = 0
+create id for each change op
+SI_SRC_A, B, D, X, NONE, NOP
+
+wbk / sht common
+rename mod date routines to _obj.ModDate_xxx
+rename mod name routines to _obj.ModName_xxx
 
 new field that are not saved to the DS
 
-wbk / sht common
-	rename mod date routines to _obj.ModDate_xxx
-	rename mod name routines to _obj.ModName_xxx
-
 workbook
-	new sheets list modified 
-		(srcIdTyp = SI_SRC_E)
-		(srcIdAlt = SI_SRC_E) (was srcIdName)
+new sheets list modified 
+	(srcIdTyp = SI_SRC_E)
+	(srcIdAlt = SI_SRC_E) (was srcIdName)
 
 sheet
-	fam and type list modified (use the FAT field)
-		(srcIdTyp = SI_SRC_D)
-		(srcIdAlt = SI_SRC_D) (was srcIdName)
-
-change types
-	all false except if changed
+fam and type list modified (use the FAT field)
+	(srcIdTyp = SI_SRC_D)
+	(srcIdAlt = SI_SRC_D) (was srcIdName)
 
 fields
-	
-	add bool, is a saved field (field that is stored in the DS - eg. new sheets list (and new family and type list - this may not occur) are false)
 
-	add bool can edit to each (editable) field == srcIdTyp <= SI_SRC_B || == SI_SRC_X && chgSrc <= SI_SRC_B
+revised - using the item usage field [void - add bool, is a saved field (field that is stored in the DS - eg. new sheets list (and new family and type list - this may not occur) are false)]
 
-	rename src id => srcIdTyp = 
-		typical == SI_SRC_A
-		locked / fixed = SI_SRC_NOP // does not mater / not used
-		ModDate = SI_SRC_NONE // does not matter / not used
-		ModName = SI_SRC_X
-		LastId = SI_SRC_B
-		FAT field = SI_SRC_A
-		new ShtsList = SI_SRC_E
-		new FatList = SI_SRC_D
+revised - using ChgSrc[1] - add bool can edit to each (editable) field == srcIdTyp <= SI_SRC_B || == SI_SRC_X && chgSrc <= SI_SRC_B
 
-	rename src id min => srcIdName = (all = SI_SRC_A - except, ModName = SI_SRC_B, LastId = SI_SRC_B)
-		typical == SI_SRC_A
-		locked / fixed = SI_SRC_NOP // does not mater / not used
-		ModDate = SI_SRC_NONE // does not mater / not used
-		ModName = SI_SRC_B
-		LastId = SI_SRC_B
-		FAT field = SI_SRC_A
-		new ShtsList = SI_SRC_E
-		new FatList = SI_SRC_D
+
+rename	revised - using field.ChgSrc[0]
+	src id => srcIdTyp = 
+	typical == SI_SRC_A
+	locked / fixed = SI_SRC_NOP // does not mater / not used
+	ModDate	 (verify typical ChangeSrc values)	= SI_SRC_NONE // does not matter / not used
+	CreateDate / createname	 (verify typical ChangeSrc values)		= SI_SRC_NONE // does not matter / not used
+	ModName = SI_SRC_X
+	LastId = SI_SRC_B
+	FAT field = SI_SRC_A
+	new ShtsList = SI_SRC_E
+	new FatList = SI_SRC_D
+
+rename	revised - using field.ChgSrc[1]
+	src id min => srcIdName = (all = SI_SRC_A - except, ModName = SI_SRC_B, LastId = SI_SRC_B)
+	typical == SI_SRC_A
+	locked / fixed = SI_SRC_NOP // does not mater / not used
+	ModDate = SI_SRC_NONE // does not mater / not used
+	ModName = SI_SRC_B  (unique)
+	LastId = SI_SRC_B
+	FAT field = SI_SRC_A
+	new ShtsList = SI_SRC_E
+	new FatList = SI_SRC_D
 
 value
-	chgSrc gets a prior value
+	adjusted, using dynaValue - chgSrc gets a prior value
 
-sourceId
-	add SI_NOP = 0
-	create id for each change op
-	SI_SRC_A
-	SI_SRC_B
-	etc.
+change types
+all false except if changed
+since all are bool & default starting value for a bool is false, this is automatic
+
+wbk / sht
+IsModifiedExo
+ApplyButton
+UndoButton
+
+ExStorData (e.g. xData)
+	
+Sheets List
+	IsModifiedSheetsList
+	ApplyBtnShtsLstStatus
+	UndoBtnShtsLstStatus
+sht
+IsModifiedFamList
+
+*** field modifications
+
+	** each field's set routine
+			update (this is a property - cannot have a parameter)
+			update value (creates a prior)
+			if (srcIdTyp != X) set chgSrc (creates a prior) to srcIdTyp
+			else (X) set chgSrc (creates a prior) to srcIdAlt
+			validate
+
+	*** apply / undo per field
+
+		apply (bool multi) ea field
+			* can only occur when it is allowed to occur so no need to validate it this routine can run
+			apply value
+			chgSrc => none
+			if (!multi) validate
+** FieldValidateApplyUndo.ApplyChange()
+
+		undo (bool multi) ea field
+			undo value
+			undo chgSrc
+			if (!multi) validate
+** FieldValidateApplyUndo.UndoChange()
+** FieldValidateApplyUndo.UndoChangeMultiple()
+
+*** apply / undo all
+
+	** apply() all, general
+			* can only occur when it is allowed to occur so no need to validate it this routine can run
+			foreach field
+				if clean, continue
+				if not a saved field, continue
+				apply(multi = true)
+			validate
+** FieldValidateApply
 
 
-************
-
+		undo() all, general
+			* same as above except undo() rather than apply
+** FieldValidateApplyUndo.UndoChangesAll()
+** _sht.UndoAllSheetChanges
 
 
 *** mod date & mod name routines
 
-			** the below routines are called as a result of UI operations
+		** the below routines are called as a result of UI operations
 
-			change routines
+		change routines
 
 
 @ workbook / sheet
-			{_wbk / _sht}.ModName (field)
-				srcId = SI_SRC_X
-				update value
-				validate
+		{_wbk / _sht}.ModName (field)
+			srcId = SI_SRC_X
+			update value
+			validate
 
 @FieldValidateApplyUndo
 
-			{_wbk / _sht}.Mod{xxx}_Apply(bool rvt)
-				if (rvt) apply then, undo chgSrc => return
-				apply value
-				chgSrc => none
-				validate
+		{_wbk / _sht}.Mod{xxx}_Apply(bool rvt)
+			if (rvt) apply then, undo chgSrc => return
+			apply value
+			chgSrc => none
+			validate
 	
-			{_wbk / _sht}.Mod{xxx}_Undo(bool validate = false)
-				** see below
+		{_wbk / _sht}.Mod{xxx}_Undo(bool validate = false)
+			** see below
 
-			?? is this now needed
-			Mod{xxx}_Downgrade(srcIdIn)?
-				undo ChgSrc
+		?? is this now needed
+		Mod{xxx}_Downgrade(srcIdIn)?
+			undo ChgSrc
 
 
 ** the below routines are called by validate
 
 @FieldValidateApplyUndo
 
-			ModDate_Update (srcIn = srcIdTyp)
-			ModName_Update (srcIn = srcIdName)
-				if (chgSrc >= srcIn) => return
-				update
-				chgSrc => srcIn
-				* do not validate - circular reference *
+		ModDate_Update (srcIn = srcIdTyp)
+		ModName_Update (srcIn = srcIdName)
+			if (chgSrc >= srcIn) => return
+			update
+			chgSrc => srcIn
+			* do not validate - circular reference *
 
 
-			Mod{xxx}_Undo(bool validate = false)
-				undo value
-				undo chgSrc
-				chgSrc => none
-				if (validate) validate(not change)
+		Mod{xxx}_Undo(bool validate = false)
+			undo value
+			undo chgSrc
+			chgSrc => none
+			if (validate) validate(not change)
 
 
-	**** no other routines are called from validate
-	********
+**** no other routines are called from validate
+********
+
 
 *** process add fam and type list (in Sheet file)
 
-			event occurs
-			added, deleted, etc.
-				f1 event
-				FamAndType list field updated => chgSrc = srcIdTyp
-				validate (change)
+		event occurs
+		added, deleted, etc.
+			f1 event
+			FamAndType list field updated => chgSrc = srcIdTyp (LD)
+			validate (change)
 ** _sht.AddFamAndType()
 ** _sht.RemoveFamAndType()
 
-			apply()
+		apply()
+			f2 event
+			fam list applied
+			fam list field chrSrc => none
+			validate (!change)
 ** _sht.FamAndTypeApplyChanges()
 
-			undo()
+		undo()
 ** _sht.UndoFamAndTypeListChanges()
-				(this is a reset to the prior unmodified state)
-				f2 event
-				FamAndType field undone => chgSrc = prior
-				validate (not change)
+			(this is a reset to the prior unmodified state)
+			f2 event
+			FamAndType field undone => chgSrc = prior
+			validate (not change)
+
 
 *** process sheets list (in ExStorData file)
 
-			event occurs
-				* added, deleted, undo, modify, etc.
+		event occurs
+			* added, deleted, undo, modify, etc.
 ** @ ExStorData.AddNewSheet
 ** @ ExStorData.UpdateSheet
 ** @ ExStorData.DeleteSheet
-		
+	
+
 *** validate sheets list routine
 
 **  @ ExStorData.validateSheetStatus()
 
-			if (has an added or deleted or modified)
-				s1 event
-				update sheets list field => chgSrc = srcIdTyp
-				validate (change)
-				return
+** actually, there is no need to set change source or to validate 
+	start processing, sheet list could have
+	all of the possible sheet status
+	new, new_deleted, existing, deleted, modified, or mod_deleted
+						
+	** as the sheets list is not a saved field
+	** and although its status has change, the sheet / sheet field
+	** have not changed so there is no change to validate
 
-			if (has new deleted [new deleted or undone])
-				s2 event
-				update sheets list field => chgSrc = srcIdTyp
-				validate (not change)
+	precedence
+		first, if any of these
+		if (has a new or deleted or modified)
+			s1 event
+			set modified = true
+			set can undo = true
+			return
 
-			if (has only existing)
-				s3 event
-				update sheets list field => chgSrc = none
-				validate (not change)
-				return
+		second, if any of these
+		if (has new or mod deleted [new_deleted or mod_deleted])
+			s2 event
+			set modified = false
+			set can undo = true
 
->>>>>>>>>>>>
-		** apply
-		** @ ExStorData.ShtsLstApplyChgsAll()
-
-		** undo
-		** @ ExStorData.ShtsLstUndoChgsAll()
->>>>>>>>>>>>
-
-
-
-*** field modifications
-
-		** each field's set routine
-				update (this is a property - cannot have a parameter)
-				update value (creates a prior)
-				if (srcIdTyp != X) set chgSrc (creates a prior) to srcIdTyp
-				else (X) set chgSrc (creates a prior) to srcIdAlt
-				validate
-
-		*** apply / undo per field
-
-			apply (bool multi) ea field
-				* can only occur when it is allowed to occur so no need to validate it this routine can run
-				apply value
-				chgSrc => none
-				if (!multi) validate
-** FieldValidateApplyUndo.ApplyChange()
-
-			undo (bool multi) ea field
-				undo value
-				undo chgSrc
-				if (!multi) validate
-** FieldValidateApplyUndo.UndoChange()
-** FieldValidateApplyUndo.UndoChangeMultiple()
+		third / last, if only these
+		if (has only existing)
+			s3 event
+			update sheets list field => chgSrc = none
+			set modified = false
+			set can undo = false
 
 
-	*** apply / undo all
+	the same applies to sheets list apply all and
+	undo all. there is no reason to assign a change source
+	or to validate.  these get done when editing a sheet only
 
-		** apply() all, general
-				* can only occur when it is allowed to occur so no need to validate it this routine can run
-				foreach field
-					if clean, continue
-					if not a saved field, continue
-					apply(multi = true)
-				validate
-** FieldValidateApplyUndo.ApplyChangesAll()
+	** apply all
+		process each sheet
+			apply process
+				if (existing) continue
+				if (deleted, new_deleted) delete & remove
+				if (modified) update => to existing
+				end state, all are gone or existing
+			validate sheets status to set buttons
+			return
+	** @ ExStorData.ShtsLstApplyChgsAll()
 
-			undo() all, general
-				* same as above except undo() rather than apply
-** FieldValidateApplyUndo.UndoChangesAll()
-** _sht.UndoAllSheetChanges
-		
+	** undo all
+			undo process
+				if (existing)		=> continue
+				if (new)			=> new_deleted => continue
+				if (new_deleted)	=> to new => continue
+				if (deleted)		=> to existing => continue
+				if (modified)		=> restore prior => continue
+				end state, can be existing, new, new_deleted
+			validate sheets status to set buttons
+			return
+	** @ ExStorData.ShtsLstUndoChgsAll()
 
-
-
+	
 change op
 u1	user field (level A)
 	[srcid = si_src_A_mod]
@@ -424,7 +486,7 @@ u2	user mod lastId (level B)
 	can apply = true
 	can undo = true
 
-f1	fam and type list modified (level D) (has new - deleting does delete)
+f1	fam and type list modified (level D) (has new - deleting actually deletes for this list)
 	[srcid = si_src_D_mod]
 	* applies to sheets only
 	mod date = updated level D (cannot not override any above / overrides below)
@@ -436,7 +498,7 @@ f1	fam and type list modified (level D) (has new - deleting does delete)
 	can apply list = (n/a - does not have this button)
 	can undo list = true
 
-f2	fam and type list reset (level C) (has only original)
+f2	fam and type list undo (reset) (level C) (has only original)
 	[srcid = si_src_C_mod]
 	* applies to sheets only
 	mod date = revert
@@ -502,13 +564,12 @@ u3	user mod name (level X)		updates date (level X)
 see excel
 
 
-
 *** validate
 
 @ FieldValidateApplyUndo.ValidateChangeStatus()
 
 Validate(bool change)
-	* change is, flag indicating that the validation is being run due to a user change (change = true)
+	* change is, flag indicating that the validation is being run due to actual field change (change = true)
 		or from an apply or undo (change is false, eg., not change)
 	* to determine adjustment to settings / mod date / mod name / buttons / etc.
 	* all settings are correct at this point so this routine only needs to adjust 
@@ -516,92 +577,127 @@ Validate(bool change)
 	* for each / track chgSrc into array
 	* for mod date and mod name, cannot not override any levels above / does overrides levels below (with exceptions)
 
-if (u3) (X)  (mod name changed by user)
-	upd mod date(LB)
-	(skip mod name)
-	is mod => true
-	can apply => true
-	can undo => true
-	can apply list => false
-	can undo list => false
+
+	if (u3) (X)  (mod name changed by user)
+		upd mod date(LB)
+		(skip mod name)
+		is mod => true
+		can apply => true
+		can undo => true
+
+		// for all conditions, the list settings
+		// do not get applied as these are handeled by the 
+		// individual list processing routines
+		can apply list => false
+		can undo list => false
 	
-continue processing
+	continue processing
 		
-if (s1) (LE)  (sheet list changed => has 1+ added, deleted, modified)
-	upd mod date (LE)
-	upd mod name (LE)
-	is mod => true
-	can apply => false
-	can undo => false
-	can apply list => true
-	can undo list => true
-	return
+	if (s1) [E] chg  (sheet list changed => has 1+ added, deleted, modified)
+		upd mod date (LE)
+		upd mod name (LE)
+		is mod => true
+		can apply => false
+		can undo => false
+		can apply list => true
+		can undo list => true
+		return
 
-(s2) (LF)  (sheets list undone => has new undone and no LE)
-	processing this does not happen as the
-	undo routine adjusts mod date, mod name, lastId
-	new sheets list field => [none]
-	all per validate
+	(s2) [E] !chg (was LF)  (sheets list undone => has new deleted and no LE)
+		mod date (per undo rtn)
+		mod name (per undo rtn)
+		is mod => false
+		can apply => false
+		can undo => false
+		can apply list => true
+		can undo list => true
+		return
 	
 
-if (s3) (LG)  (sheets list has only existing)
-	processing this does not happen as the 
-	new sheets list field => [none]
-	all per validate
-
-if (f1) (LD)  (fam and type list modified)
-	upd mod date (LD)
-	upd mod name (LD)
-	is mod => true
-	can apply => false
-	can undo => false
-	can apply list => true
-	can undo list => false
-	return
-
-if (f1) (LC)  (fam and type list not changed)
-	processing this does not happen as the
-	FamAndType List field => [none]
-	all per validate
-	
-if (u2) (LB)  (last id modified by user)
-	upd mod date (LB)
-	upd mod name (LB)
-	is mod => true
-	can apply => true
-	can undo => true
-	can apply list => false
-	can undo list => false
-	return
+	if (s3) (none) !chg (was LG) (sheets list applied or undone and has only existing)
+		mod date (per undo rtn)
+		mod name (per undo rtn)
+		is mod => false
+		can apply => false
+		can undo => false
+		can apply list => false
+		can undo list => false
+		return
 
 
-if (u1) (LA)  (field modified by user)
-	upd mod date (LA)
-	upd mod name (LA)
-	is mod => true
-	can apply => true
-	can undo => true
-	can apply list => false
-	can undo list => false
-	return
+	if (f1) (LD) chg  (fam and type list modified)
+		upd mod date (LD)
+		upd mod name (LD)
+		is mod => true
+		can apply => false
+		can undo => false
 
-if (none)
-	mod date - n/c
-	mod name - n/c
-	is mod => false
-	can apply => false
-	can undo => false
-	can apply list => false
-	can undo list => false
-	return
+		// list info by the list routines
+		isListMod => true
+		can apply list => n/a, does not have thsi button
+		can undo list => true
+		return
+
+	if (f1) (LD) !chg  (fam and type list reset / reverted)
+		all per undo routine, in general
+		date mod (per unto rtn)
+		name mod (per unto rtn)
+				
+		** at the moment, cannot revert so this has been set to false
+		is modified = revert (to false)
+		can apply = revert (to false)
+		can undo = revert (to false)
+				
+		// list info by the list routines
+		is list modified = false
+		can apply list = (n/a - does not have this button)
+		can undo list = false
+		return
+
+	if (u2) (LB)  (last id modified by user)
+		upd mod date (LB)
+		upd mod name (LB)
+		is mod => true
+		can apply => true
+		can undo => true
+
+		// list info by the list routines
+		can apply list => false
+		can undo list => false
+		return
 
 
-***
+	if (u1) (LA)  (field modified by user)
+		upd mod date (LA)
+		upd mod name (LA)
+		is mod => true
+		can apply => true
+		can undo => true
+		can apply list => false
+		can undo list => false
+		return
+
+	if (none)
+		mod date - n/c
+		mod name - n/c
+		is mod => false
+		can apply => false
+		can undo => false
+
+		// list settings by list routines
+		can apply list => false
+		can undo list => false
+		return
+
+
+	***
 
 undo / apply buttons for workbook & sheets list (and for sheets + family types - similar)
 
 see excel file for additional information
 
+
+****************
 
 ******
 element identification & notes

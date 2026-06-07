@@ -68,6 +68,9 @@ type 1 data list (one schema for all?)
         or
         * linked family name + type name
 
+	* [CD] control date
+		* sheets list tracking field
+
 
 sheet
                                                                                                                                                                      
@@ -120,7 +123,8 @@ workbook
 {PK_AD_LAST_ID,           new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code",     , IU_S_AND_DS  , DL_DEBUG      , FS_CLEAN      , FC_COPY_C35    | YD     | cl           | y       | y     | u     |  FC_TYPE_4                 yyu                
 {PK_SD_SCHEMA_VERSION,    new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version",                  , IU_S_AND_DS  , DL_ADVANCED   , FS_CLEAN      , FC_COPY_C25    | N2     | ig           | i       | i     | i     |  FC_IGNORE                                     iii          
 {PK_MD_MODEL_NAME,        new (PK_MD_MODEL_NAME,        "ModelName",        "Model Name",                      , IU_S_AND_DS  , DL_BASIC      , FS_CLEAN      , FC_COPY_C35    | N1     | cl           | y       | y     | u     |  FC_TYPE_4                 yyu                
-   
+{PK_CD_SHEETS_LIST_CTRL}
+
 copy / duplicate
 y - copy the original value
 u - update with new value

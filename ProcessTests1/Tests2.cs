@@ -1,11 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using ExStorSys;
+﻿using ExStorSys;
 using UtilityLibrary;
 
 
@@ -35,16 +28,24 @@ namespace ProcessTests1
 		private Exid _exid;
 		private Tests1 t1;
 
+		private static Tests2 t2;
+
 		public bool ShowShtOverRideControl { get; set; } = true;
 
 		public Tests2()
 		{
+			t2 = this;
+
 			_xData = null!;
 			_sht = null!;
 			_exid = null!;
 
+			Program.Register2(nameof(Test105E), Test105E);
+
 			// init();
 		}
+
+		
 
 		private void init()
 		{
@@ -103,10 +104,10 @@ namespace ProcessTests1
 			R.RunSilent = true;
 
 			_sht.FamAndTypeApplyChanges();
-			_sht.ApplyChange(_sht.FamilyListField);
+			_sht.ApplyChange(_sht.FamilyListField, true);
 
-			_sht.UndoModifiedName(SourceId.SI_NONE);
-			_sht.UndoModifiedDate(SourceId.SI_NONE);
+			_sht.ModName_Undo(true);
+			_sht.ModDate_Undo(true);
 
 			_sht.IsModifiedExo = false;
 
@@ -132,6 +133,7 @@ namespace ProcessTests1
 
 			tstTitle = $"TEST{testId}";
 			tstAnsIdx = 0;
+
 
 			tstAns = new[,]
 			{ 
@@ -347,6 +349,7 @@ namespace ProcessTests1
 			return result;
 
 		}
+		
 		public bool Test105D(string testId, string desc = "sht modify user field / add family & type to list => sheet undo all")
 		{
 			R.AddRouteEnter();
@@ -393,6 +396,15 @@ namespace ProcessTests1
 			return result;
 		}
 
+		private string test105e = "future test";
+		public bool Test105E(string testId)
+		{
+			tstTitle = $"TEST{testId}";
+
+			R.WriteLine($"\n***\n got it {testId}\n{test105e}\n***\n");
+
+			return true;
+		}
 
 		/* operations */
 
@@ -413,7 +425,7 @@ namespace ProcessTests1
 
 			shtBeginTest(proc);
 
-			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.DescField);
+			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.DescField, false);
 
 			return shtEndTest(proc);
 		}
@@ -435,7 +447,7 @@ namespace ProcessTests1
 
 			shtBeginTest(proc);
 
-			_sht.ApplyChangesAll(SourceId.SI_INDIRECT, SourceId.SI_NONE);
+			_sht.ApplyChangesAll();
 
 			return shtEndTest(proc);
 		}
@@ -446,7 +458,7 @@ namespace ProcessTests1
 
 			shtBeginTest(proc);
 
-			_sht.UndoChangesAll(SourceId.SI_INDIRECT, SourceId.SI_NONE);
+			_sht.UndoChangesAll();
 
 			return shtEndTest(proc);
 		}
@@ -484,7 +496,7 @@ namespace ProcessTests1
 
 			shtBeginTest(proc);
 
-			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.XlFilePathField);
+			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.XlFilePathField, false);
 
 			return shtEndTest(proc);
 		}
@@ -508,7 +520,7 @@ namespace ProcessTests1
 
 			shtBeginTest(proc);
 
-			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.NameModifiedField);
+			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.NameModifiedField, false);
 
 			return shtEndTest(proc);
 		}
@@ -596,7 +608,7 @@ namespace ProcessTests1
 			R.AddRouteExit();
 			R.WriteLine($"\nAFTER {proc}");
 			shtShowTestStatus(tstTitle);
-			R.ShowRoute(modStatusBeg, $"IsModExo [ {_sht.IsModifiedExo} ] | IsModFamLst [ {_sht.IsModifiedFamList} ]");
+			R.ShowRoute(0, modStatusBeg, $"IsModExo [ {_sht.IsModifiedExo} ] | IsModFamLst [ {_sht.IsModifiedFamList} ]");
 
 			return showShtValidateStatus();
 		}

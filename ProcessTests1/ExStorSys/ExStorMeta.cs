@@ -7,27 +7,8 @@ using static ExStorSys.Numbers;
 
 namespace ExStorSys
 {
-	public enum SourceId
-	{
-		SI_NONE		= 0, // 
-		SI_LOCKED,          //
-		SI_FIXED,           // 13 all ad fields to set si min / si max
-		SI_SRC_MOD,         // 
 
-		// SI_SRC_UNDO,		// none
-		SI_SRC,      // 
-		SI_DEST_MOD, // 2
-
-		// SI_DEST_UNDO,		// none
-		// SI_DEST_REDO,		// none
-		SI_DEST_A_MOD,   // 13
-		SI_DEST_B_MOD,   // 5 all ad fields to set si min / si max
-		SI_DEST,   // 5 all ad fields to set si min / si max
-		SI_INDR_MOD, // 1
-
-		// SI_INDR_UNDO,		// none
-		SI_INDIRECT,        // 3 all ad fields to set si min / si max
-	}
+	
 
 	public enum Numbers
 	{
@@ -146,18 +127,6 @@ namespace ExStorSys
 
 	/* property system */
 
-	/* property classes */
-	// public enum PropertyOwner  // that is, who generated the property event - not always the owner class
-	// {
-	// 	PO_GEN  = 0, 
-	// 	PO_XSYS    ,
-	// 	PO_XMGR    ,
-	// 	PO_STMGR   ,
-	// 	PO_XDATA   ,
-	// 	PO_EXO     ,
-	// 	PO_LMGR    ,
-	// }
-
 	/* property identifiers */
 	public enum PropertyId
 	{
@@ -249,6 +218,19 @@ namespace ExStorSys
 	}
 
 	/* various enums */
+
+	/* change validation */
+
+	public enum ChangeType
+	{
+		CT_CHANGE,		// true
+		CT_UNDO,		// false
+		CT_APPLY,		// null
+		CT_SHT_CHANGE,
+		CT_SHT_UNDO,
+		CT_SHT_APPLY
+	}
+
 
 	/* sheet */
 
@@ -346,19 +328,22 @@ namespace ExStorSys
 	public enum ItemUsage : ulong
 	{
 		IU_NONE				= 0ul ,
-		IU_SCHEMA			= 1ul << 0,                     // included as a schema field
-		IU_DATASTORAGE		= 1ul << 1,                    // included as a data storage field
-		IU_S_AND_DS			= IU_SCHEMA | IU_DATASTORAGE, // included as a field in both
+		IU_SCHEMA			= 1ul << 1,						// included as a schema field
+		IU_DATASTORAGE		= 1ul << 2,						// included as a data storage field
+		IU_S_AND_DS			= IU_SCHEMA | IU_DATASTORAGE,	// included as a field in both
+		IU_NEITHER			= 1ul << 3,						// not included in either
 
-		IU_IS_CTRL_FLD		= 1ul << 2,  // this item's is a control field and changes to this field are not tracked
-		IU_IS_USER			= 1ul << 3,  // this item's status is controlled by user action
-		IU_IS_ALT_SRC_A		= 1ul << 4, // this item's status is controlled by an alt source (type A)
-		IU_IS_ALT_SRC_B		= 1ul << 5, // (not use now) this item's status is semi controlled by an alt source (type B)
+		IU_IS_CTRL_FLD		= 1ul << 5,						// this item is a control field
+		IU_IS_USER			= 1ul << 6,						// this item's status is controlled by user action
+		IU_IS_ALT_SRC_A		= 1ul << 7,						// this item's status is controlled by an alt source (type A)
+		IU_IS_ALT_SRC_B		= 1ul << 8,						// (not use now) this item's status is semi controlled by an alt source (type B)
 
-		IU_SND_BY_USER		= IU_S_AND_DS | IU_IS_USER,      // lazy combo for convenience
-		IU_SND_CTRL_FLD		= IU_S_AND_DS | IU_IS_CTRL_FLD, // lazy combo for convenience
-		IU_SND_ALT_SRC_A	= IU_S_AND_DS | IU_IS_ALT_SRC_A,   // lazy combo for convenience
-		IU_SND_ALT_SRC_B	= IU_S_AND_DS | IU_IS_ALT_SRC_B,   // lazy combo for convenience
+		IU_CTRL_ONLY		= IU_NEITHER | IU_IS_CTRL_FLD,	// this is an internal control field - this is not saved but used for program operations
+
+		IU_SND_BY_USER		= IU_S_AND_DS | IU_IS_USER,			// lazy combo for convenience
+		IU_SND_CTRL_FLD		= IU_S_AND_DS | IU_IS_CTRL_FLD,		// lazy combo for convenience
+		IU_SND_ALT_SRC_A	= IU_S_AND_DS | IU_IS_ALT_SRC_A,	// lazy combo for convenience
+		IU_SND_ALT_SRC_B	= IU_S_AND_DS | IU_IS_ALT_SRC_B,	// lazy combo for convenience
 	}
 
 	// item usage notes
@@ -453,12 +438,42 @@ namespace ExStorSys
 
 	public static class ExStorConstFaux
 	{
+		// test process labels
+
+		public const string A1 = "A1";
+		public const string A2 = "A2";
+		public const string A3 = "A3";
+		public const string A4 = "A4";
+		public const string A5 = "A5";
+
+		public const string F = "F";
+		public const string H = "H";
+		public const string K = "K";
+		public const string P = "P";
+		public const string X = "X";
+
+
 		public const string FAUX_MODEL_TITLE = "Faux Model Title";
-		public const string FAUX_USER_NAME = "JeffS";
+
+		public const string FAUX_DESCRIPTION_INIT = $"Workbook for {FAUX_MODEL_TITLE}";
+		public const string FAUX_DESCRIPTION_ALT1 = "New Description";
+
+		public const string FAUX_EX_SHT_C = "CsCells_SHT_AAAC_v1_10";
+
+		public const string FAUX_LAST_ID_INIT = "AAAD";
+		public const string FAUX_LAST_ID_UPD_E = "AAAE";
+		public const string FAUX_LAST_ID_UPD_F = "AAAF";
+		public const string FAUX_LAST_ID_UPD_G = "AAAG";
+
+		public const string FAUX_USER_NAME_INIT = "JeffS";
 		public const string FAUX_USER_NAME_ALT = "JackS";
 		public const string FAUX_USER_NAME_ALT2 = "TerryS";
 
-		public static string FauxUserName { get; set; } = FAUX_USER_NAME;
+		public const string FAUX_MOD_DATE_INIT = "2026-01-01T08:10:18";
+		public const string FAUX_MOD_DATE_UPD1 = "2026-05-01T08:10:18";
+		public const string FAUX_MOD_DATE_UPD2 = "2026-05-02T08:10:18";
+
+		public static string FauxUserName { get; set; } = FAUX_USER_NAME_INIT;
 
 		public static void UseAltUserName()
 		{
@@ -470,19 +485,33 @@ namespace ExStorSys
 			FauxUserName = FAUX_USER_NAME_ALT2;
 		}
 
-
 		public static void UseFauxUserName()
 		{
-			FauxUserName = FAUX_USER_NAME;
+			FauxUserName = FAUX_USER_NAME_INIT;
 		}
 
+		public static string FauxModDate { get; set; } = FAUX_MOD_DATE_INIT;
+
+		public static void UseFauxModDate()
+		{
+			FauxModDate = FAUX_MOD_DATE_INIT;
+		}
+
+		public static void UseUpd1ModDate()
+		{
+			FauxModDate = FAUX_MOD_DATE_UPD1;
+		}
+
+		public static void UseUpd2ModDate()
+		{
+			FauxModDate = FAUX_MOD_DATE_UPD2;
+		}
 
 		public static string CreateWbkDsName()
 		{
 			return $"{ExStorConst.EXS_WBK_NAME_SEARCH}{ExStorConst.EXS_VERSION_WBK}";
 		}
 	}
-
 
 	public static class ExStorConst
 	{
@@ -589,13 +618,13 @@ namespace ExStorSys
 
 		/* source id translate */
 
-		public static Dictionary<SourceId, SourceId> SourceIdXlate = new ()
-		{
-			{ SourceId.SI_INDR_MOD, SourceId.SI_INDIRECT },
-			{ SourceId.SI_DEST_B_MOD, SourceId.SI_DEST },
-			{ SourceId.SI_DEST_A_MOD, SourceId.SI_DEST },
-			{ SourceId.SI_SRC_MOD, SourceId.SI_SRC },
-		};
+		// public static Dictionary<SourceId, SourceId> SourceIdXlate = new ()
+		// {
+		// 	{ SourceId.SI_INDR_MOD, SourceId.SI_INDIRECT },
+		// 	{ SourceId.SI_DEST_B_MOD, SourceId.SI_DEST },
+		// 	{ SourceId.SI_DEST_A_MOD, SourceId.SI_DEST },
+		// 	{ SourceId.SI_SRC_MOD, SourceId.SI_SRC },
+		// };
 
 		/* field type constants */
 
@@ -630,7 +659,6 @@ namespace ExStorSys
 		public const int K_DS_NAME			= 0;
 		public const int K_DESCRIPTION	    = 1;
 		public const int K_VENDORID  	    = 2;
-		public const int K_ADDINID          = 3;
 		public const int K_DELETED			= 10;
 		public const int K_DATE_CREATED	    = 20;
 		public const int K_NAME_CREATED	    = 21;
@@ -638,6 +666,7 @@ namespace ExStorSys
 		public const int K_NAME_MODIFIED	= 23;
 
 		public const int K_SCHEMA_VERSION	= 100;
+		// public const int K_ADDINID          = 3;
 		// public const int K_WBK_SCHEMA_NAME	= 101;
 		// public const int K_SHT_SCHEMA_NAME	= 102;
 		// public const int K_SCHEMA_GUID	    = 103;
@@ -710,6 +739,13 @@ namespace ExStorSys
 		///  name used to search for the first Sht Ds (e.g. CsCells_SHT_AAAA)
 		/// </summary>
 		public const string EXS_SHT_DS_NAME_PREFIX_FIRST = $"{APP_CODE}_{EXS_SHT_NAME_CODE}_{EXS_SHT_FIRST_ID_CODE}";
+
+		/* restart const's*/
+
+		public static string[] RestartStatDesc = ["No Restart Needed", "Restart Required", "System Not Active"];
+
+		/* voided */
+
 
 		// /* ex stor status const */
 		//
@@ -963,7 +999,6 @@ namespace ExStorSys
 		//
 		// public static ICollectionView ActiveStatusDescView = ConfigEnumDesc(ActiveStatusDesc);
 
-
 		/*
 		/// <summary>
 		/// the rule for updating an item
@@ -1034,21 +1069,12 @@ namespace ExStorSys
 		};
 		*/
 
-
-		/* restart const's*/
-
-		public static string[] RestartStatDesc = ["No Restart Needed", "Restart Required", "System Not Active"];
-
-		/* voided */
-
-
 		/*
 		public static string[] DataClassAbbrevUc = ["WBK", "SHT"];
 		public static string[] DataClassAbbrevTc = ["Wbk", "Sht"];
 		public static string[] DataClassFull =     ["WorkBook", "Sheet"];
 		public static string[] DataContainerFull = ["Schema", "DataStorage"];
 		*/
-
 
 		/*
 		public static Dictionary<FieldStatus, Tuple<string, string, SolidColorBrush>> FieldStatusDesc = new ()
@@ -1085,6 +1111,8 @@ namespace ExStorSys
 		// PK_SD_SCHEMA_GUID         = K_SCHEMA_GUID,
 
 		PK_MD_MODEL_TITLE          ,
+		PK_CD_SHEETS_LIST		,
+
 	}
 
 	public enum SheetFieldKeys

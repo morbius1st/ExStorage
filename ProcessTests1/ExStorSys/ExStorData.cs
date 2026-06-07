@@ -1,9 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using UtilityLibrary;
 using static ExStorSys.ExSysStatus;
@@ -15,6 +11,7 @@ using static ExStorSys.ExSysStatus;
 
 namespace ExStorSys
 {
+	// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 	public class ExStorData : INotifyPropertyChanged
 	{
 		public int ObjectId;
@@ -38,11 +35,12 @@ namespace ExStorSys
 
 		// private MainWinModelUi xMui;
 
-		private ExStorLib xLib;
+		// private ExStorLib xLib;
 
 		private bool? restartRequired;
 
 		// private Sheet? currentSheet;
+		// ReSharper disable once InconsistentNaming
 		public static string? selectSheet { get; set; }
 
 		private bool applyBtnShtsLstStatus;
@@ -126,8 +124,8 @@ namespace ExStorSys
 
 	#region general propertries
 
-		// the source id currently being processed
-		public SourceId SrcId { get; set; }
+		// // the source id currently being processed
+		// public ChgSrcId SrcId { get; set; }
 
 		private ExSysStatus exStorStatus
 		{
@@ -183,7 +181,7 @@ namespace ExStorSys
 			get => applyBtnShtsLstStatus;
 			private set
 			{
-				R.AddRoute($"setting to {value}", 1, true);
+				R.AddRoute(  $"setting to {value}", 0, 1, true);
 
 				if (value == applyBtnShtsLstStatus) return;
 				applyBtnShtsLstStatus = value;
@@ -201,7 +199,7 @@ namespace ExStorSys
 			get => undoBtnShtsLstStatus;
 			private set
 			{
-				R.AddRoute($"setting to {value}", 1, true);
+				R.AddRoute(  $"setting to {value}", 0, 1, true);
 
 				if (value == undoBtnShtsLstStatus) return;
 				undoBtnShtsLstStatus = value;
@@ -580,59 +578,58 @@ namespace ExStorSys
 			}
 		}
 
-		public bool CurrSheetApplyChgs(SourceId topSrcId, SourceId bottSrcId = SourceId.SI_NONE)
-		{
-			R.AddRoute();
+		// public bool CurrSheetApplyChgs()
+		// {
+		// 	R.AddRoute();
+		//
+		// 	if (!CurrentSheet!.IsModifiedExo) return false;
+		//
+		// 	CurrentSheet.ApplyChangesAll(false);
+		//
+		// 	return true;
+		//
+		// 	// bool found = false;
+		// 	//
+		// 	// if (found) CurrentSheet.ApplyChangesAll(topSrcId, bottSrcId);
+		// 	//
+		// 	// return true;
+		//
+		// 	// // bool canEditField;
+		// 	//
+		// 	// // UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
+		// 	//
+		// 	// foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> fd) in CurrentSheet)
+		// 	// {
+		// 	// 	if ((fd.DyValue?.IsDirty ?? false))
+		// 	// 	{
+		// 	// 		// canEditField = 
+		// 	// 		// 	SecurityMgr.ValidateFieldEditing(fd.Field!.FieldEditLevel, usl) == 
+		// 	// 		// 	FieldEditStatus.FES_CAN_EDIT;
+		// 	//
+		// 	// 		// // if found AltSrcA
+		// 	// 		// if (fd.Field!.IsAltSrcA)
+		// 	// 		// {
+		// 	// 		// 	// if bypassing alt - cont.
+		// 	// 		// 	if (bypassAlt && !canEditField) continue;
+		// 	// 		// }
+		// 	// 		// else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
+		// 	//
+		// 	// 		// ExStorMgr.Instance?.UpdateShtEntityField(CurrentSheet.DsName,key, fd.DyValue);
+		// 	// 		found = true;
+		// 	// 	}
+		// 	// }
+		// }
 
-			if (!CurrentSheet!.IsModifiedExo) return false;
-
-			CurrentSheet.ApplyChangesAll(topSrcId, bottSrcId);
-
-			return true;
-
-			// bool found = false;
-			//
-			// if (found) CurrentSheet.ApplyChangesAll(topSrcId, bottSrcId);
-			//
-			// return true;
-
-			// // bool canEditField;
-			//
-			// // UserSecutityLevel usl = SecurityMgr.Instance.UserSecurityLevel;
-			//
-			// foreach ((SheetFieldKeys key, FieldData<SheetFieldKeys> fd) in CurrentSheet)
-			// {
-			// 	if ((fd.DyValue?.IsDirty ?? false))
-			// 	{
-			// 		// canEditField = 
-			// 		// 	SecurityMgr.ValidateFieldEditing(fd.Field!.FieldEditLevel, usl) == 
-			// 		// 	FieldEditStatus.FES_CAN_EDIT;
-			//
-			// 		// todo - add logic
-			// 		// // if found AltSrcA
-			// 		// if (fd.Field!.IsAltSrcA)
-			// 		// {
-			// 		// 	// if bypassing alt - cont.
-			// 		// 	if (bypassAlt && !canEditField) continue;
-			// 		// }
-			// 		// else if (!fd.Field.IsAltSrcB) if (!bypassAlt) continue;
-			//
-			// 		// ExStorMgr.Instance?.UpdateShtEntityField(CurrentSheet.DsName,key, fd.DyValue);
-			// 		found = true;
-			// 	}
-			// }
-		}
-
-		public bool CurrSheetUndoChgsx(SourceId topSrcId, SourceId bottSrcId = SourceId.SI_NONE)
-		{
-			R.AddRoute();
-
-			if (!CurrentSheet!.IsModifiedExo) return false;
-
-			CurrentSheet.UndoChangesAll(topSrcId, bottSrcId);
-
-			return true;
-		}
+		// public bool CurrSheetUndoChgsx(SourceId topSrcId, SourceId bottSrcId = SourceId.SI_NONE)
+		// {
+		// 	R.AddRoute();
+		//
+		// 	if (!CurrentSheet!.IsModifiedExo) return false;
+		//
+		// 	CurrentSheet.UndoChangesAll(topSrcId, bottSrcId);
+		//
+		// 	return true;
+		// }
 
 	#endregion
 
@@ -699,7 +696,7 @@ namespace ExStorSys
 
 			addSheet(sht);
 
-			validateSheetStatus(null);
+			validateSheetStatus(true);
 
 			// must follow update props
 			SelectSheet = sht.DsName;
@@ -747,14 +744,9 @@ namespace ExStorSys
 			// SelectSheet = null;
 			// IsModifiedSheetsList = true;
 
-			validateSheetStatus(null);
+			validateSheetStatus(true);
 
-			// updateSheetsListProps();
-
-			// must follow update props
 			setSelectedSheet();
-
-			wbk.ValidateChangeStatus();
 
 			R.AddRouteExit();
 
@@ -764,14 +756,11 @@ namespace ExStorSys
 		/// <summary>
 		/// revert a deleted sheet to active (restores its prior status)
 		/// </summary> 
-		public void UndoRemoveCurrentSheet(string name)
+		public void UnDeleteSheet(string name)
 		{
 			sheetsList[name].UndoSheetStatus();
 
-			// SelectSheet = null;
-
-			validateSheetStatus(null);
-			// updateSheetsListProps();
+			validateSheetStatus(false);
 
 			// must follow update props
 			setSelectedSheet();
@@ -793,36 +782,36 @@ namespace ExStorSys
 			// updateSheetsListProps();
 		}
 
-		public void ResetSheetsList()
-		{
-			string last = "";
-			string idCode;
-
-
-			for (int i = sheetsList.Count - 1; i >= 0; i--)
-			{
-				if (sheetsList[i].Value.SheetStatus != SheetStatus.SS_EXISTING)
-				{
-					sheetsList.Remove(sheetsList[i].Key);
-					continue;
-				}
-
-				idCode = xLib.ExtractIdFromShtName(sheetsList[i].Value.DsName, ExStorConst.EXS_SHT_NAME_SEARCH)!;
-
-				// ReSharper disable once StringCompareToIsCultureSpecific
-				if (idCode.CompareTo(last) > 0)
-				{
-					last = idCode;
-				}
-			}
-
-			if (!last.IsVoid()) WorkBook.SetLastId(last);
-
-
-			// updateSheetsListProps();
-
-			setSelectedSheet();
-		}
+		// public void ResetSheetsList()
+		// {
+		// 	string last = "";
+		// 	string idCode;
+		//
+		//
+		// 	for (int i = sheetsList.Count - 1; i >= 0; i--)
+		// 	{
+		// 		if (sheetsList[i].Value.SheetStatus != SheetStatus.SS_EXISTING)
+		// 		{
+		// 			sheetsList.Remove(sheetsList[i].Key);
+		// 			continue;
+		// 		}
+		//
+		// 		idCode = xLib.ExtractIdFromShtName(sheetsList[i].Value.DsName, ExStorConst.EXS_SHT_NAME_SEARCH)!;
+		//
+		// 		// ReSharper disable once StringCompareToIsCultureSpecific
+		// 		if (idCode.CompareTo(last) > 0)
+		// 		{
+		// 			last = idCode;
+		// 		}
+		// 	}
+		//
+		// 	if (!last.IsVoid()) WorkBook.SetLastId(last);
+		//
+		//
+		// 	// updateSheetsListProps();
+		//
+		// 	setSelectedSheet();
+		// }
 
 		/// <summary>
 		/// find and select a sheet that is not deleted - when a sheet exists
@@ -921,284 +910,6 @@ namespace ExStorSys
 			return 0;
 		}
 
-		/* primary routines */
-
-
-		/// <summary>
-		/// restore the sheets list - e.g., undo the changes<br/>
-		/// except that, any added sheet is marked to delete rather than being
-		/// removed - this allows for a 2nd level of undo
-		/// </summary>
-		public void ShtsLstUndoChgsAll()
-		{
-			R.AddRouteEnter(null, true);
-
-			R.WriteLine("\tUNDO SHTS LST");
-
-			bool result = false;
-			bool gotNew = false;
-			bool gotNewDeleted = false;
-
-
-			foreach ((string key, Sheet sht) in sheetsList)
-			{
-				R.Write($"\tUNDO SHTS LST | {sht.DsName} | status was {sht.SheetStatus} => ");
-
-				if (sht.SheetStatus == SheetStatus.SS_DELETED)
-				{
-					sht.UndoSheetStatus();
-
-					R.WriteLine($"{sht.SheetStatus}");
-				}
-				else if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED)
-				{
-					sht.UndoSheetStatus();
-					result = true;
-
-					R.WriteLine($"{sht.SheetStatus}");
-				}
-				else if (sht.SheetStatus == SheetStatus.SS_NEW)
-				{
-					sht.SheetStatus = SheetStatus.SS_NEW_DELETED;
-
-					R.WriteLine($"{sht.SheetStatus}");
-				}
-				else
-				{
-					R.WriteLine("no change");
-				}
-			}
-
-
-			if (!validateSheetStatus(false))
-			{
-				// if false, the sheets list is not modified is some way
-			}
-
-			// must follow update props
-			setSelectedSheet();
-
-			wbk.ValidateChangeStatus();
-
-			R.AddRouteExit();
-		}
-
-		/// <summary>
-		/// applies all sheet list changes
-		/// </summary>
-		public void ShtsLstApplyChgsAll()
-		{
-			R.AddRouteEnter();
-
-			int status;
-			bool foundNew = false;
-			Sheet sht;
-
-			for (int i = sheetsList.Count - 1; i >= 0; i--)
-			{
-				sht = sheetsList[i].Value;
-				status = sheetStatus(sht.SheetStatus);
-				// }
-				//
-				// foreach ((string key, Sheet sht) in sheetsList)
-				// {
-				// status = sheetStatus(sht.SheetStatus);
-
-				R.Write($"\tSHT LST | APPLY | {sht.DsName} [{status,2}] ");
-
-				// existing or created - do nothing
-				if (status == 0)
-				{
-					R.WriteLine("=> existing / created => do nothing");
-					continue;
-				}
-
-				// deleted or mod_deleted - delete the ds
-				if (status == -1)
-				{
-					// **** existing sheet removed from DS
-					// ExStorMgr.Instance.sheet
-					// -1 = delete a sheet
-					// if (sht.GotDs) ExStorLib.Instance.DeleteDs(sht.ExsDataStorage!);
-
-					sheetsList.RemoveAt(i);
-
-					R.WriteLine($"=> Removed from shts lst");
-					continue;
-				}
-
-				// modified - update (not handeled here)
-				if (status == 1) throw new InvalidOperationException("Sheet should not be modified");
-
-				// new - create the new sheet
-				if (status == 2)
-				{
-					R.WriteLine($"=> apply chg => flip to existing");
-
-					// **** new sheet moved to the DS
-					// removed - save the new sheet to memory
-					// ExStoreRtnCode a = ExStorLib.Instance.WriteNewSheet(sht, shtSchema);
-
-					sht.SheetStatus = SheetStatus.SS_EXISTING;
-
-					// WorkBook.CommitAltChanges(wbkSchema);
-					// WorkbookApplyChgsAll(SourceId.SI_INDIRECT, SourceId.SI_SRC);
-
-					foundNew = true;
-				}
-			}
-
-			if (!validateSheetStatus(true))
-			{
-				// false, is not modified
-				// apply last id
-				wbk.LastIdField.ApplyChg();
-				wbk.LastIdField.ChgSrcId = SourceId.SI_NONE;
-			}
-
-			R.NewLine();
-
-			// need to re-evaludate the status of all of the fields to determine
-			// the final status of date / name mod
-			WorkBook.ValidateChangeStatus();
-
-			// updateSheetsListProps();
-
-			// IsModifiedSheetsList = false;
-
-			R.AddRouteExit();
-		}
-
-		/// <summary>
-		/// check the status of each sheet to determine if it
-		/// is modified in some way - new, deleted, modified
-		/// set the buttons on / off & update or downgrade date / name modified<br/>
-		/// return true if the list is modified<br/>
-		/// provide status<br/>
-		/// true if apply all, false if undo all, null if neither
-		/// </summary>
-		private bool validateSheetStatus(bool? status)
-		{
-			string member = CsUtilities.GetCallingInfo(1, out string _) + " >> ";
-			member += CsUtilities.GetCallingInfo(2, out string _) + " >> ";
-			member += CsUtilities.GetCallingInfo(3, out string _) + " >> ";
-			// member += CsUtilities.GetCallingInfo(4, out fname) + " >> ";
-			// member += CsUtilities.GetCallingInfo(5, out fname) + " >> ";
-			// member += CsUtilities.GetCallingInfo(6, out fname) + " >> ";
-			// member += CsUtilities.GetCallingInfo(7, out fname) + " >> ";
-
-			R.AddRouteEnter(member, true);
-
-			bool isMod = false;
-			bool canUndo = false;
-			bool gotNew = false;
-			bool gotNewDeleted = false;
-
-			R.NewLine();
-
-			foreach ((string key, Sheet sht) in sheetsList)
-			{
-				R.Write($"\tSHT LST | VALIDATE | {sht.DsName} [ {sht.SheetStatus} ]");
-
-				if (sht.SheetStatus == SheetStatus.SS_DELETED ||
-					sht.SheetStatus == SheetStatus.SS_NEW)
-				{
-					R.AddRoute("A set both true", msg: true);
-					isMod = true;
-					canUndo = true;
-					if (sht.SheetStatus == SheetStatus.SS_NEW) gotNew = true;
-					R.WriteLine(" => break from loop");
-					break;
-				}
-
-				if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED ||
-					sht.SheetStatus == SheetStatus.SS_MOD_DELETED)
-				{
-					R.AddRoute("B set can undo true", msg: true);
-					if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED) gotNewDeleted = false;
-					canUndo = true;
-				}
-
-				R.NewLine();
-			}
-
-			// if is mod == false, apply false, else true
-			ApplyBtnShtsLstStatus = isMod;
-			// if canUndo == false, undo fa;se, else true
-			UndoBtnShtsLstStatus = canUndo;
-
-
-			// next - incomming => apply all / undo all / undo current (or any one) / neither (e.g. add / delete)
-
-			// if (is mod == false && in == undo)
-			// since this is an undo, it had been changed
-			// in == undo (status == false)  / is mod == false, apply last id stealth, undo date / name modified
-
-			// if (is mod == false)
-
-			// in == apply (status == true) / is mod == false, apply date / name => downgrade date / name
-
-			// in == neither (status == null) / is mod == false, ignore date name
-
-			// else ( is mod true) 
-			//		if needed, update date / name, set source id == SI_DEST_A
-			// in == apply /   is mod == true, if needed, update date / name, set source id == SI_DEST_A
-			// in == undo  /   is mod == true, if needed, update date / name, set source id == SI_DEST_A
-			// in == neither / is mod == true, if needed, update date / name, set source id == SI_DEST_A
-
-			processShtStatus(isMod, status);
-
-			R.NewLine();
-			R.AddRouteExit();
-
-			return isMod;
-		}
-
-		private void processShtStatus(bool isMod, bool? status)
-		{
-			if (!isMod)
-			{
-				R.WriteLine("\tSHT LST | VALIDATE | A  is NOT modified");
-
-				if (status.HasValue)
-				{
-					R.WriteLine("\tSHT LST | VALIDATE | A1  process apply and undo");
-
-					if (status == true)
-					{
-						R.WriteLine("\tSHT LST | VALIDATE | A111 apply for date / name modified");
-
-						// doing apply
-						wbk.ApplyModifiedDate(SourceId.SI_DEST_A_MOD);
-						wbk.ApplyModifiedName(SourceId.SI_DEST_A_MOD);
-
-						R.WriteLine("\tSHT LST | VALIDATE | A112  downgrade for date / name modified");
-						wbk.DownGradeDateModifiedSrcId(SourceId.SI_NONE);
-						wbk.DownGradeNameModifiedSrcId(SourceId.SI_NONE);
-					}
-					else
-					{
-						R.WriteLine("\tSHT LST | VALIDATE | A121 apply last id field");
-
-						wbk.LastIdField.ApplyChg();
-						wbk.LastIdField.ChgSrcId = SourceId.SI_NONE;
-
-						R.WriteLine("\tSHT LST | VALIDATE | A122 undo date / name modified");
-						wbk.UndoModifiedDate(SourceId.SI_NONE);
-						wbk.UndoModifiedName(SourceId.SI_NONE);
-					}
-				}
-			}
-			else
-			{
-				R.WriteLine("\tSHT LST | VALIDATE | B  is modified / update date / name modified");
-
-				wbk.UpdateModifiedDate(SourceId.SI_DEST_A_MOD);
-				wbk.UpdateModifiedName(SourceId.SI_DEST_A_MOD);
-			}
-		}
-
-
 		// helper
 		private void addSheet(Sheet sht)
 		{
@@ -1215,9 +926,327 @@ namespace ExStorSys
 			R.AddRouteExit();
 		}
 
-		/*  NOTES
-		* save sheet list
-		*/ // xMgr.write sheets ()
+		/* primary routines */
+
+
+		/// <summary>
+		/// restore the sheets list - e.g., undo the changes<br/>
+		/// except that, any added sheet is marked to delete rather than being
+		/// removed - this allows for a 2nd level of undo<br/>
+		/// changes:<br/>
+		/// existing => none<br/>
+		/// deleted => undo<br/>
+		/// new_deleted => undo<br/>
+		/// new => new_deleted
+		/// all else (modified or mod_deleted) => ignore
+		/// </summary>
+		public void ShtsLstUndoChgsAll()
+		{
+			R.AddRouteEnter();
+
+			R.WriteLine("\tUNDO SHTS LST");
+
+			bool result = false;
+			bool gotNew = false;
+			bool gotNewDeleted = false;
+
+
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				R.AddRoute( $"[ {sht.SheetStatus} ]", 0, name: "undo sht list", path: $"[ {sht.DsName} ]");
+				R.RouteDepth[0]++;
+
+				R.Write($"\tUNDO SHTS LST | {sht.DsName} | prior date mod {sht.DateModifiedField.DyValue.PriorValue}  | status was {sht.SheetStatus} => ");
+
+				if (sht.SheetStatus == SheetStatus.SS_EXISTING)
+				{
+					R.AddRoute( "EXISTING - status no change", 0, -1);
+					R.WriteLine("EXISTING / SKIP");
+					R.RouteDepth[0]--;
+					continue;
+				}
+
+				if (sht.SheetStatus == SheetStatus.SS_DELETED)
+				{
+					R.WriteLine("DELETED / UNDO");
+					sht.UndoSheetStatus();
+
+					R.AddRoute( $"DELETED - status adjusted to {sht.SheetStatus} (should be new)", 0, -1);
+
+					R.WriteLine($"{sht.SheetStatus}");
+				}
+				else if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED)
+				{
+					R.WriteLine("NEW_DELETED / UNDO");
+					sht.UndoSheetStatus();
+					R.AddRoute( $"NEW_DELETED - status adjusted to {sht.SheetStatus} (should be deleted)", 0, -1);
+					gotNew = true;
+				}
+				else if (sht.SheetStatus == SheetStatus.SS_NEW)
+				{
+					R.WriteLine("NEW / change => new_deleted");
+
+					sht.SheetStatus = SheetStatus.SS_NEW_DELETED;
+
+					gotNewDeleted = true;
+				}
+				else
+				{
+					// could be created (error) or modified or mod_deleted
+					R.AddRoute( "ALL ELSE", 0, -1);
+					R.WriteLine("no change");
+				}
+
+				R.RouteDepth[0]--;
+			}
+
+			// if (gotNew)
+			// {
+			// 	// a new deleted was flipped to new so need to reactivate last id
+			// 	// need to set chgsrc to E and flag "is dirty" but do not change the value
+			// 	wbk.LastIdField.DyValue.UnFixValue(ChgSrcId.CI_SRC_E);
+			// }
+			// else 
+			// if (gotNewDeleted)
+			// {
+			// 	// got no sheets that flipped to new but got
+			// 	// sheet that flipped from new to new deleted
+			// 	// need to keep the last id field's value but to
+			// 	// flag as chg src none and is not dirty
+			// 	wbk.LastIdField.DyValue.FixValue();
+			// }
+
+			validateSheetStatus(false);
+
+			// must follow update props
+			setSelectedSheet();
+
+			R.AddRouteExit();
+		}
+
+		/// <summary>
+		/// applies all sheet list changes
+		/// </summary>
+		public void ShtsLstApplyChgsAll()
+		{
+			R.AddRouteEnter();
+
+			int status;
+
+			Sheet sht;
+
+			// since this will modify the list, work from the back to the front
+			for (int i = sheetsList.Count - 1; i >= 0; i--)
+			{
+				sht = sheetsList[i].Value;
+				status = sheetStatus(sht.SheetStatus);
+
+				R.AddRoute($"[ {sht.SheetStatus} ]", 0, name: "apply sht list", path: $"[ {sht.DsName} ]");
+				
+				R.RouteDepth[0]++;
+
+
+				R.Write($"\tSHT LST | APPLY | {sht.DsName} [{status,2}] ");
+
+				// status == 0 => existing or created - do nothing
+				if (status == 0)
+				{
+					R.WriteLine("=> existing / created => do nothing");
+					R.AddRoute("=> existing / created => do nothing", 0, -1);
+					R.RouteDepth[0]--;
+					continue;
+				}
+
+				// status == -1 => deleted or mod_deleted - delete the ds
+				if (status == -1)
+				{
+					// **** existing sheet removed from DS
+					// ExStorMgr.Instance.sheet
+					// -1 = delete a sheet
+					// if (sht.GotDs) ExStorLib.Instance.DeleteDs(sht.ExsDataStorage!);
+
+					sheetsList.RemoveAt(i);
+					R.WriteLine($"=> Removed from shts lst");
+					R.AddRoute("=> Removed from shts lst", 0, -1);
+					continue;
+				}
+
+				// modified - update (not handeled here)
+				if (status == 1)
+				{
+					R.WriteLine("=> modified??  SHOULD NEVER BE MODIFIED => do nothing");
+					R.AddRoute("=> modified??  SHOULD NEVER BE MODIFIED => do nothing", 0, -1);
+					R.RouteDepth[0]--;
+					continue;
+				}
+
+				// new - create the new sheet
+				if (status == 2)
+				{
+					R.WriteLine($"=> apply chg => flip to existing");
+					R.AddRoute("=> apply chg => flip to existing", 0, -1);
+					// **** new sheet moved to the DS
+					// removed - save the new sheet to memory
+					// ExStoreRtnCode a = ExStorLib.Instance.WriteNewSheet(sht, shtSchema);
+
+					sht.SheetStatus = SheetStatus.SS_EXISTING;
+
+				}
+
+				R.RouteDepth[0]--;
+			}
+
+			// at this point,
+			// existing - ignored
+			// modified - none (ignored)
+			// new saved then made existing
+
+			validateSheetStatus(null);
+
+			// if (!validateSheetStatus())
+			// {
+			// 	// false, is not modified
+			// 	// apply last id
+			// 	wbk.ApplyChange(wbk.LastIdField, false);
+			// }
+
+			R.NewLine();
+
+			R.AddRouteExit();
+		}
+
+		/// <summary>
+		/// check the status of each sheet to determine if it
+		/// is modified in some way - new, deleted, modified
+		/// set the buttons on / off & update or downgrade date / name modified<br/>
+		/// return true if the list is modified<br/>
+		/// provide status<br/>
+		/// true if apply all, false if undo all, null if neither
+		/// </summary>
+		private bool validateSheetStatus(bool? chgType)
+		{
+			string member = "SHT LST | VALIDATE ALL SHEETS";
+			// member = CsUtilities.GetCallingInfo(1, out string _) + " >> ";
+			// member += CsUtilities.GetCallingInfo(2, out string _) + " >> ";
+			// member += CsUtilities.GetCallingInfo(3, out string _) + " >> ";
+			// member += CsUtilities.GetCallingInfo(4, out fname) + " >> ";
+			// member += CsUtilities.GetCallingInfo(5, out fname) + " >> ";
+			// member += CsUtilities.GetCallingInfo(6, out fname) + " >> ";
+			// member += CsUtilities.GetCallingInfo(7, out fname) + " >> ";
+
+			R.AddRouteEnter(  $"VSS1 => {member}", 0, true);
+
+			bool isMod= false;
+			bool canUndo= false;
+			int gotChange= 0;
+			int gotNotChange= 0;
+
+			// track the sheet changes to the whole list
+			// final answer, if any got changes, set wbk.sheetslist to true (+1)
+			// if only not got changes, set wbk.sheetslist to false (-1)
+			// if neither, set set wbk.sheetslist to none (0)
+			// if any sheets are a "change" - then true (e.g. deleted, new, modified)
+			bool gotChangeSht;
+			// if any sheets are a "not change" then true (e.g. new_deleted, mod_deleted)
+			bool gotNotChangeSht;
+
+			R.NewLine();
+
+			foreach ((string key, Sheet sht) in sheetsList)
+			{
+				gotChangeSht = false;
+				gotNotChangeSht = false;
+
+				R.AddRouteEnter( $"VSS2 => [ {sht.SheetStatus} ] | SHT LST | VALIDATE A SHEET", 0, false, "validate sht stat", sht.DsName);
+				R.WriteLine($"\tSHT LST VALIDATE A SHEET| {sht.DsName} [ {sht.SheetStatus} ]\n");
+
+				if (sht.SheetStatus == SheetStatus.SS_EXISTING)
+				{
+					R.AddRouteExit( "VSS2 <=", 0, "validate sht stat");
+					continue;
+				}
+
+				if (sht.SheetStatus == SheetStatus.SS_CREATED)
+				{
+					throw new InvalidOperationException("Sheet Status cannot be created");
+				}
+
+				if (sht.SheetStatus == SheetStatus.SS_DELETED ||
+					sht.SheetStatus == SheetStatus.SS_NEW || 
+					sht.SheetStatus == SheetStatus.SS_MODIFIED)
+				{
+					R.AddRoute( "A (s1) set both true / got change", 0, -1, true);
+					isMod = true;
+					canUndo = true;
+					gotChangeSht = true;
+				}
+				else
+				if (sht.SheetStatus == SheetStatus.SS_NEW_DELETED ||
+					sht.SheetStatus == SheetStatus.SS_MOD_DELETED)
+				{
+					R.AddRoute( "B set can undo true / got not change", 0, -1, true);
+					gotNotChangeSht = true;
+					canUndo = true;
+					// keep checking all of the sheets and look for 
+					// a gotChange item
+				}
+
+				gotChange += gotChangeSht ? 1 : 0;
+				gotNotChange += gotNotChangeSht ? 1 : 0;
+
+				R.AddRouteExit( "VSS2 <=", 0, "validate sht stat");
+			}
+
+			// if is mod == false, apply false, else true
+			ApplyBtnShtsLstStatus = isMod;
+			// if canUndo == false, undo fa;se, else true
+			UndoBtnShtsLstStatus = canUndo;
+
+
+			// sheets list 
+			// 1 = got changes (1+ sheets are new, deleted, or modified)
+			// -1 = not got changes (no "got changes") but got 1+ are new_deleted or mod_deleted
+			// 0 = neither of the above (all existing)
+			if (gotChange > 0)
+			{
+				// 1+ sheets set to deleted, new, modified
+				R.WriteLine("\tSHT LST VALIDATE | got change");
+				R.AddRoute($"got change", 0, -1);
+				// wbk.ShtsListField.ChgSrcDirty = wbk.ShtsListField.ChgSrcStd;
+				wbk.ShtsListField.DyValue.SetValue(1, wbk.ShtsListField.ChgSrcStd);
+				wbk.LastIdField.DyValue.UnFixValue(ChgSrcId.CI_SRC_E);
+			}
+			else if (gotNotChange > 0)
+			{
+				// no sheets match gotChange
+				// but 1+ sheets set to new_deleted or mod_deleted
+				R.WriteLine("\tSHT LST VALIDATE | got not change");
+				R.AddRoute($"got not change", 0, -1);
+				// wbk.ShtsListField.ChgSrcDirty = wbk.ShtsListField.ChgSrcAlt;
+				wbk.ShtsListField.DyValue.SetValue(-1, wbk.ShtsListField.ChgSrcAlt);
+				wbk.LastIdField.DyValue.FixValue();
+			}
+			else
+			{
+				// no sheets match gotChange or gotNotChange
+				R.WriteLine("\tSHT LST VALIDATE | got no change");
+				R.AddRoute($"got no change", 0, -1);
+				// wbk.ShtsListField.ChgSrcDirty = ChgSrcId.CI_NONE;
+				wbk.ShtsListField.DyValue.SetValue(0, ChgSrcId.CI_NONE);
+				// last id field should be un-modified
+
+				if (wbk.LastIdField.IsDirty()) wbk.ApplyChange(wbk.LastIdField, true);
+			}
+
+			R.AddRoute( $"wbk shts lst value {wbk.SheetsList} | chg src set to | {wbk.ShtsListField.ChgSrc} | is dirty? {wbk.ShtsListField.IsDirty()}", 0, -1);
+
+			wbk.ValidateChangeStatus(chgType);
+
+			R.NewLine();
+			R.AddRouteExit( "VSS1", 0);
+
+			return gotChange > 0 || gotNotChange > 0;
+		}
 
 	#endregion
 
@@ -1394,10 +1423,10 @@ namespace ExStorSys
 		{
 			if (e.PropId == PropertyId.PI_XDATA_SHT_MOD)
 			{
-				R.AddRoute($"idx = {tstIdx} | got prop change for | {e.Value}");
+				R.AddRoute( $"idx = {tstIdx} | got prop change for | {e.Value}", 0);
 				R.WriteLine($"\tidx = {tstIdx++} | got prop change for | {e.Value}");
 
-				validateSheetStatus(null);
+				validateSheetStatus(true);
 			}
 			else if (e.PropId == PropertyId.PI_XDATA_WBK_MOD)
 			{

@@ -1,0 +1,2219 @@
+﻿using System.Runtime.InteropServices.ComTypes;
+
+using ExStorSys;
+
+using ProcessTests2.General;
+
+using UtilityLibrary;
+
+using static ExStorSys.ExStorConstFaux;
+
+// user name: jeffs
+// created:   4/18/2026 4:50:12 PM
+
+namespace ProcessTests2
+{
+	public class Tests1
+	{
+		private static int shtIdx = 1;
+
+		private string tstTitle = "";
+		private int tstAnsIdx;
+		private bool[,] tstAns = new bool[1,1];
+		private int tstNameModIdx;
+		private string[] tstNamMod = new string[1];
+		private bool shwShtLst;
+
+		private ExStorData _xData;
+		
+		private Sheet _sht;
+		private Exid _exid;
+
+		public bool ShowWbkOverRideControl { get; set; } = true;
+
+		public Tests1()
+		{
+			_xData = null!;
+			_sht = null!;
+			_exid = null!;
+
+			// init();
+		}
+
+		public void init()
+		{
+			R.AddRouteEnter(  null, 1);
+
+			R.WriteLine("*******  init Test1 *******");
+
+
+			UseFauxUserName();
+			UseFauxModDate();
+
+			tstNameModIdx = -1;
+
+			
+			_xData = ExStorData.Instance;
+			_xData.WorkBook = WorkBook.CreateNewWorkBook();
+			// _Wbk.DescField.DyValue!.SetValue("created in test1 init", _Wbk.DescField.ChgSrcStd);
+			_xData.WorkBook.SetTrackChanges();
+			_exid = new();
+
+			_xData.RemovePlaceHolderSheet();
+
+			// _xData.AddSheetPreInit(CreateSheetStealth());
+			// _sht = CreateSheetStealth();
+			//
+			// // R.WriteLine($"sheet created {_sht.DsName}");
+			//
+			// _xData.AddSheetPreInit(_sht);
+			//
+			// // R.WriteLine($"sheet added selecting {_sht.DsName}");
+			//
+			// _xData.SelectSheet = _sht.DsName;
+			//
+			// _xData.AddSheetPreInit(CreateSheetStealth());
+			//
+			// _xData.WorkBook.LastIdField.ApplyChg();
+
+			UseAltUserName();
+			UseFauxModDate();
+
+			// ShowCommon.ShowCurrent("@ test 1 - after init()", _xData, _wbk);
+
+			R.AddRouteExit(  null, 1);
+		}
+
+		private void initCreateSheets()
+		{
+			R.WriteLine("*******  init create sheets Test1 *******");
+
+			ExStorConstFaux.UseFauxUserName();
+
+			_xData.AddSheetPreInit(CreateSheetStealth());
+			_sht = CreateSheetStealth();
+
+			_xData.AddSheetPreInit(_sht);
+
+			_xData.SelectSheet = _sht.DsName;
+
+			_xData.AddSheetPreInit(CreateSheetStealth());
+
+			_wbk.LastIdField.ApplyChg();
+
+			ExStorConstFaux.UseAltUserName();
+		}
+
+		private WorkBook _wbk => _xData.WorkBook;
+
+
+		/* wbk public */
+
+		// primary level 1 test
+
+		public bool Test1A(string desc = "wbk change desc, undo same")
+		{
+			bool result = true;
+
+			tstTitle = "TEST1A";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			result &= wbkUndoChgDesc();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test1B(string desc = "wbk change lastId (user) => undo each in non-matching order")
+		{
+			bool result = true;
+			bool showShtLst = false;
+
+			string title = "TEST1B";
+
+			bool[,] tst = _tstAnswers[title];
+			int ansIdx = 0;
+
+			tstTitle = title;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			chgLastIdUser(title);
+			// B
+			result &= showWbkValidateStatus(title, tst, ansIdx, showShtLst);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			undoChgStatus(title);
+			// D
+			result &= showWbkValidateStatus(title, tst, ansIdx, showShtLst);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// E
+			result &= wbkUndoChgDesc();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			undoChgLastIdUser(title);
+			// F
+			result &= showWbkValidateStatus(title, tst, ansIdx, showShtLst);
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test1C(string desc = "wbk change lastId (user) => apply all ()")
+		{
+			bool result = true;
+			bool showShtLst = false;
+
+			string title = "TEST1C";
+
+			bool[,] tst = _tstAnswers[title];
+			int ansIdx = 0;
+
+
+			tstTitle = title;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			chgLastIdUser(title);
+
+			// B
+			result &= showWbkValidateStatus(title, tst, ansIdx, showShtLst);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// D
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("*** APPLY changes all");
+				result &= wbkApplyAll();
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT apply changes all");
+				result = false;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test1D(string desc = "wbk change desc => undo all ()")
+		{
+			bool result = true;
+			bool showShtLst = false;
+
+			// bool  = ShowWbkOverRideControl;
+
+			string title = "TEST1D";
+
+			bool[,] tst = _tstAnswers[title];
+			int ansIdx = 0;
+
+
+			tstTitle = title;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			chgLastIdUser(title);
+
+			// B
+			result &= showWbkValidateStatus(title, tst, ansIdx, showShtLst);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+
+			// C
+			result &= chgStatus();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// D
+			if (_wbk.UndoBtnStatus)
+			{
+				R.WriteLine("*** UNDO changes all (good)");
+				result &= wbkUndoAll();
+			}
+			else
+			{
+				R.WriteLine("*** CANNOT undo changes all (bad)");
+				result = false;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test1E(string testId, string desc = "wbk change name mod, undo same")
+		{
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+
+			bool namesMatch;
+
+			UseAlt2UserName();
+
+			result &= chgNameModByUser(out namesMatch);
+
+			UseFauxUserName();
+
+			result &= !namesMatch;
+
+			R.NewLineAnyway();
+
+			result &= undoNameMod();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+
+		public bool Test2B(string desc = "wbk change status / mod lastId by add sheet => undo each in non-matching order")
+		{
+			bool result = true;
+
+			string title = "TEST2B";
+			bool[,] tst = _tstAnswers[title];
+			int ansIdx = 0;
+
+			tstTitle = title;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+			tstAnsIdx = ++ansIdx;
+
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			undoChgStatus(title);
+
+			// D
+			result &= showWbkValidateStatus(title, tst, ansIdx, true);
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// E
+			result &= shtsLstUndoAll();
+			tstAnsIdx = ++ansIdx;
+
+			R.NewLineAnyway();
+
+			// F
+			result &= wbkUndoChgDesc();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test2C(string desc = "wbk change status / mod lastId by add sheet => wbk apply all () => fail (good)")
+		{
+			bool result = true;
+
+			tstTitle = "TEST2C";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+
+			// D
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLineAnyway("*** APPLY changes all - should not happen - fail\n");
+				result = false;
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("*** CANNOT apply changes all\n");
+				// final result -s per the above
+				// because &= with true does not change anything
+				// and setting to true is not correct
+			}
+			
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test3C(string desc = "wbk change desc / mod lastId by add sheet / change status => shts lst apply all() => wbk apply all ()")
+		{
+			bool result = true;
+
+
+			tstTitle = "TEST3C";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+
+			R.NewLineAnyway();
+
+			// D
+			result &= shtLstApplyAll();
+
+			R.NewLineAnyway();
+
+			// E
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("\t*** APPLY changes all *** should happen");
+				result &= wbkApplyAll();
+			}
+			else
+			{
+				// this should happen
+				R.WriteLine("\n*** CANNOT apply changes all\n*** should happen\n****\n");
+				result = true;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test3D(string desc = "wbk change desc / mod lastId by add sheet / change status => shts lst apply all() => wbk undo all ()")
+		{
+			bool result = true;
+
+			tstTitle = "TEST3D"; ;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+
+			R.NewLineAnyway();
+
+			// D
+			result &= shtLstApplyAll();
+
+			R.NewLineAnyway();
+
+			// E
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("\t*** UNDO changes all *** should happen");
+				result &= wbkUndoAll();
+			}
+			else
+			{
+				// this should not happen
+				R.WriteLine("\n*** CANNOT undo changes all\n*** should NOT happen\n****\n");
+				result = false;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test4A(string testId, string desc = "add sheet, change name modified => fail")
+		{
+			bool result = true;
+			bool namesMatch;
+
+			tstTitle = $"TEST{testId}";
+			tstAnsIdx = 0;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+			
+			ExStorConstFaux.UseAltUserName();
+
+			// A
+			result &= xdChgLastIdByAddSht(out _);
+
+			ExStorConstFaux.UseFauxUserName();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= chgNameModByUser(out namesMatch);
+			// names matching is corect
+			result &= namesMatch;
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		// level 1 tests, one subject, one operation
+
+		public bool Test11A(string desc = "wbk basic test - change desc, undo all")
+		{
+			bool result = true;
+
+			tstTitle = "TEST11A"; ;
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = false;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			result &= wbkUndoAll();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test12A(string desc = "wbk basic test - change desc, apply all")
+		{
+			bool result = true;
+
+			tstTitle = "TEST12A";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = false;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+			
+			R.NewLineAnyway();
+
+			result &= wbkApplyAll();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		// public bool Test13A(string testId, string desc = "change desc, change mod date (user) (fail to change) [bogus test, user cannot change the date modified]")
+		// {
+		// 	bool result = true;
+		//
+		// 	tstTitle = $"TEST{testId}";
+		// 	tstAns = _tstAnswers[tstTitle];
+		// 	shwShtLst = false;
+		// 	tstIdx = 0;
+		//
+		// 	startTest(desc);
+		//
+		// 	result &= wbkChgDesc();
+		//
+		// 	R.NewLineAnyway();
+		//
+		// 	// this should fail
+		// 	result &= chgDateMod();
+		//
+		// 	R.NewLineAnyway();
+		//
+		// 	showTestResult(result);
+		//
+		// 	return result;
+		// }
+
+		// level 2 tests, two subjects, oen operation
+
+		public bool Test21A(string testId, string desc = "sht list & LastId - add a sheet, delete a sheet, sht list undo all")
+		{
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A - add a sheet
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// B - delete a different sheet
+			result &= xdDeleteSht("CsCells_SHT_AAAC_v1_10");
+
+			R.NewLineAnyway();
+
+			// C - undo all
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test21B(string testId, string desc = "sht list & LastId - add a sheets, delete sheets, sht list undo all")
+		{
+			string newShtName;
+
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= xdChgLastIdByAddSht(out newShtName);
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out newShtName);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= xdDeleteSht();
+
+			R.NewLineAnyway();
+
+			// D
+			result &= xdDeleteSht(newShtName);
+
+			R.NewLineAnyway();
+
+			// E
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test22A(string testId, string desc = "sht list & LastId - add a sheet, sht list apply all")
+		{
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			result &= xdDeleteSht();
+
+			R.NewLineAnyway();
+
+			result &= shtLstApplyAll();
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		// tests needed
+		//
+		// level 2 tests, two subjects, oen operation
+		// 3C change description, add sheet, apply sht list (+ more)
+		// 3D change description, add sheet, undo sht list
+
+		// level 3 tests, two subjects, two operations
+		// 3C change description, add sheet, apply sht list, apply all
+		// 3D change description, add sheet, apply sht list, undo all
+		// 23C change description, add sheet, undo sht list, apply all
+		// 23D change description, add sheet, undo sht list, undo all
+
+		// 4A add sheet, change name modified (fail)
+		// 24C change name modified, add sheet, apply sht list, apply all (fail - name modified over taken)
+		// 24D change name modified, add sheet, undo sht list, apply all
+
+		public bool Test23C(string testId, string desc = "wbk change desc / mod lastId by add sheet / change status => shts lst undo all() => wbk apply all ()")
+		{
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+
+			R.NewLineAnyway();
+
+			// D
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			// E
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("\t*** APPLY changes all *** should happen");
+				result &= wbkApplyAll();
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("\n*** CANNOT apply changes all\n*** should happen\n****\n");
+				result = true;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test23D(string testId, string desc = "wbk change desc / mod lastId by add sheet / change status => shts lst undo all() => wbk undo all ()")
+		{
+			bool result = true;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			wbkStartTest(desc);
+
+			// A
+			result &= wbkChgDesc();
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= chgStatus();
+
+			R.NewLineAnyway();
+
+			// D
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			// E
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLine("\t*** UNDO changes all *** should happen");
+				result &= wbkUndoAll();
+			}
+			else
+			{
+				// this should not happen
+				R.WriteLineAnyway("\n*** CANNOT undo changes all\n*** should NOT happen\n****\n");
+				result = false;
+			}
+
+			R.NewLineAnyway();
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test24C(string testId, string desc = "change name modified, add sheet, apply sheets, apply all => fail, name mod taken over, apply button not enabled")
+		{
+			bool result = true;
+			bool namesMatch;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+
+			// A
+			result &= chgNameModByUser(out namesMatch);
+			// names matching is a fail
+			// flip status to get the correct result
+			result &= !namesMatch;
+
+			R.NewLineAnyway();
+
+			ExStorConstFaux.UseFauxUserName();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			ExStorConstFaux.UseAltUserName();
+
+			R.NewLineAnyway();
+
+			// C
+			result &= shtLstApplyAll();
+
+			R.NewLineAnyway();
+
+			// D
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLineAnyway("*** can APPLY changes all - this should not happen - fail");
+				result = false;
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("*** CANNOT apply changes all - this should happen - correct\n");
+			}
+
+			
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test24D(string testId, string desc = "change name modified, add sheet, undo sheets, apply all => should work")
+		{
+			bool result = true;
+			bool namesMatch;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+
+			// A
+			result &= chgNameModByUser(out namesMatch);
+			// names matching is a fail
+			// flip status to get the correct result
+			result &= !namesMatch;
+
+			R.NewLineAnyway();
+
+			// B
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// C
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
+
+				// D
+				result = false;
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("*** CANNOT apply changes all - this should happen - correct\n");
+
+			}
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		// level 4 tests, 3 subjects, two operations
+		// 41A add sheet, add sheet, change user name (fail), apply sht lst, apply wkb disabled
+		// 42A add sheet, change user name (fail), add sheet, apply sht lst, apply wkb disabled
+		// 43A change user name, add sheet, add sheet, apply sht lst, apply wkb disabled
+		// 44A add sheet, add sheet, apply sht lst, change user name, apply wkb
+
+
+		public bool Test41A(string testId, string desc = "add sheet, add sheet, change user name (does not work), apply sht lst, apply wkb disabled")
+		{
+			bool result = true;
+			bool namesMatch;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// UseFauxUserName();
+
+			// the correct test is whether editing of name mod is allowed
+			// this will return true if the field can be edited - which is not good
+			// flip value for this test routine
+
+			bool answer = canEditNameModified();
+			result &= !answer;
+
+			// {
+			// 	result = false;
+			// 	// R.WriteLineAnyway("*** can change name modified - this NOT should happen - fail");
+			// //
+			// // }
+			// // else
+			// // {
+			// // 	// this should happen
+			// // 	R.WriteLineAnyway("*** CANNOT change name modified - this should happen - correct\n");
+			// }
+
+			showProgress("MODIFY name modified", answer, "this is a fail", "this is correct");
+
+
+			// // changing the name will not work as the current
+			// // chg src is higher precident - so the
+			// // before / after names will match
+			// result &= chgNameModByUser(out namesMatch);
+			//
+			// // matching names is correct
+			// result &= namesMatch;
+
+			// UseAltUserName();
+
+			R.NewLineAnyway();
+
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
+
+				result = false;
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("*** CANNOT apply changes all - this should happen - correct\n");
+			}
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+		public bool Test42A(string testId, string desc = "add sheet, change user name (does not work), add sheet, apply sht lst, apply wkb disabled")
+		{
+			bool result = true;
+			bool namesMatch;
+
+			tstTitle = $"TEST{testId}";
+			tstAns = _tstAnswers[tstTitle];
+			shwShtLst = true;
+			tstAnsIdx = 0;
+
+			tstNameModIdx = 0;
+			tstNamMod = _tstAnsNameMod[tstTitle];
+
+			wbkStartTest(desc);
+
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			// the correct test is whether editing of name mod is allowed
+			// this will return true if the field can be edited - which is not good
+			// flip value for this test routine
+
+			bool answer = canEditNameModified();
+			result &= !answer;
+
+			showProgress("MODIFY name modified", answer, "this is a fail", "this is correct");
+
+			R.NewLineAnyway();
+
+			result &= xdChgLastIdByAddSht(out _);
+
+			R.NewLineAnyway();
+
+			result &= shtsLstUndoAll();
+
+			R.NewLineAnyway();
+
+			if (_wbk.ApplyBtnStatus)
+			{
+				R.WriteLineAnyway("*** can APPLY changes all - this NOT should happen - fail");
+
+				result = false;
+			}
+			else
+			{
+				// this should happen
+				R.WriteLineAnyway("*** CANNOT apply changes all - this should happen - correct\n");
+			}
+
+			wbkShowTestResult(result);
+
+			return result;
+		}
+
+
+
+
+		/* sht public */
+
+		// public bool Test104A(string testId, string desc = "sht sheet description, undo same")
+		// {
+		// 	bool result = true;
+		//
+		// 	tstTitle = $"TEST{testId}";
+		// 	shwShtLst = true;
+		// 	tstAnsIdx = 0;
+		//
+		// 	tstAns = new[,]
+		// 	{
+		// 		{ true, true, true, false, false },   // A
+		// 		{ false, false, false, false, false } // B
+		// 	};
+		//
+		// 	wbkStartTest(desc);
+		//
+		// 	result &= shtChgDesc();
+		//
+		// 	R.NewLineAnyway();
+		//
+		// 	result &= shtUndoChgDesc();
+		//
+		// 	R.NewLineAnyway();
+		//
+		// 	wbkShowTestResult(result);
+		//
+		// 	return result;
+		// }
+		//
+		// public bool Test104E(string testId, string desc = "add a family and type")
+		// {
+		// 	bool result = true;
+		// 	bool showFatStat = true;
+		// 	bool showShtFldOverride = true;
+		//
+		// 	string title = "TEST4E";
+		//
+		// 	bool[,] tst = _tstAnswers[title];
+		// 	int ansIdx = 0;
+		//
+		// 	R.WriteLineAnyway($"{title} START | {desc}\n");
+		//
+		// 	ShowSht.ShowSheet();
+		// 	R.NewLine();
+		//
+		// 	shtChgByAddFamAndType(title);
+		//
+		// 	result &= shtValidateStatus(tst, ansIdx, showFatStat);
+		//
+		// 	R.WriteLineAnyway("\n");
+		// 	shtShowFieldsOverride(showShtFldOverride);
+		//
+		// 	string r = result ? "WORKED" : "FAIL";
+		//
+		// 	R.WriteLine("**********");
+		// 	R.WriteLine($"{r}");
+		// 	R.WriteLine("**********\n");
+		//
+		// 	return result;
+		// }
+		//
+		// public bool Test105C(string testId, string desc = "sht modify user field / add family & type to list => sheet apply all => fail (good)")
+		// {
+		// 	bool result = true;
+		// 	bool showShtLst = true;
+		// 	bool showShtFldOverride = true;
+		//
+		// 	string title = "TEST5C";
+		//
+		// 	bool[,] tst = _tstAnswers[title];
+		// 	int ansIdx = 0;
+		//
+		// 	R.WriteLineAnyway($"{title} START | {desc}\n");
+		//
+		// 	ShowSht.ShowSheet();
+		// 	R.NewLine();
+		//
+		// 	result &= shtChgDesc();
+		//
+		// 	// A
+		// 	result &= shtValidateStatus(tst, ansIdx++, showShtLst);
+		//
+		// 	R.WriteLineAnyway("\n");
+		// 	shtShowFieldsOverride(showShtFldOverride);
+		//
+		// 	shtChgByAddFamAndType(title);
+		//
+		// 	// B
+		// 	result &= shtValidateStatus(tst, ansIdx++, showShtLst);
+		//
+		// 	// start
+		// 	R.WriteLineAnyway("\n");
+		// 	shtShowFieldsOverride(showShtFldOverride);
+		//
+		// 	shtChgXlFilePath(title);
+		//
+		// 	// C
+		// 	result &= shtValidateStatus(tst, ansIdx++, showShtLst);
+		// 	// end
+		//
+		// 	if (_sht.ApplyBtnStatus)
+		// 	{
+		// 		R.WriteLine("**** APPLY change all (correct)\n");
+		// 		shtApplyAll(title);
+		// 	}
+		// 	else
+		// 	{
+		// 		// this should happen
+		// 		R.WriteLine("*** CANNOT apply changes all (wrong)\n");
+		// 	}
+		//
+		// 	// D
+		// 	result &= shtValidateStatus(tst, ansIdx, showShtLst);
+		//
+		// 	// end game
+		// 	R.WriteLineAnyway("\n");
+		// 	shtShowFieldsOverride(showShtFldOverride);
+		//
+		// 	string r = result ? "WORKED" : "FAIL";
+		//
+		// 	R.WriteLine("**********");
+		// 	R.WriteLine($"{r}");
+		// 	R.WriteLine("**********\n");
+		//
+		// 	return result;
+		// }
+
+
+		/* general */
+
+		public void Reset()
+		{
+			
+			R.WriteLine("\n****\nTEST1 perform complete date RESET\n****\n");
+
+			ExStorData.Instance.ResetAll();
+
+			init();
+
+			initCreateSheets();
+
+		}
+
+		private void showProgress(string title, bool status, string suffixT, string suffixF)
+		{
+			string s = status ? "WORKED" : "FAIL";
+			string suffix = status ? suffixT : suffixF;
+
+			R.WriteLine("**********");
+			R.WriteAnyway($"{title} | status {s} | {suffix}\n");
+			R.WriteLine("**********");
+		}
+
+
+
+		/* wbk private */
+
+
+		/* modification methods */
+
+		/* workbook primary methods */
+
+		private bool wbkApplyAll()
+		{
+			string proc = "WORKBOOK APPLY ALL";
+
+			wbkBeginTest(proc);
+
+			_wbk.ApplyChangesAll();
+
+			return wbkEndTest(proc);
+		}
+
+		private bool wbkUndoAll()
+		{
+			string proc = "WORKBOOK UNDO ALL";
+
+			wbkBeginTest(proc);
+
+			_wbk.UndoChangesAll();
+
+			return wbkEndTest(proc);
+		}
+
+		/* sheets list  primary methods */
+
+		private bool shtLstApplyAll()
+		{
+			string proc = "SHTS LST APPLY ALL";
+
+			wbkBeginTest(proc);
+
+			_xData.ShtsLstApplyChgsAll();
+
+			return wbkEndTest(proc);
+		}
+
+		private bool shtsLstUndoAll()
+		{
+			string proc = "SHEETS LIST UNDO ALL";
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(shtsLstUndoAll)}");
+
+			_xData.ShtsLstUndoChgsAll();
+
+			return wbkEndTest(proc);
+		}
+
+		/* general modification methods */
+
+
+		private bool wbkChgDesc()
+		{
+			string proc = "CHANGE DESC";
+
+			wbkBeginTest(proc);
+
+			_wbk.Desc = "new value";
+
+			return wbkEndTest(proc);
+		}
+
+		private bool wbkUndoChgDesc()
+		{
+			string proc = "UNDO DESC";
+
+			wbkBeginTest(proc);
+
+			_wbk.UndoChange(_wbk.DescField, false);
+
+			return wbkEndTest(proc);
+		}
+
+		private bool xdChgLastIdByAddSht(out string shtName)
+		{
+			string proc = "ADD SHEET - CHANGE LAST ID (alt src)";
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(xdChgLastIdByAddSht)}");
+
+			Sheet sht = CreateSheet();
+
+			_xData.AddNewSheet(sht);
+
+			shtName = sht.DsName;
+
+			return wbkEndTest(proc);
+		}
+
+		private bool xdDeleteSht(string name = "")
+		{
+			string proc = "REMOVE SHT FROM SHTS LST";
+
+			wbkBeginTest(proc);
+
+			showLastIdStatus($"before {nameof(xdDeleteSht)}");
+
+			if (name.IsVoid())
+			{
+				_xData.DeleteSheet("CsCells_SHT_AAAC_v1_10");
+			}
+			else
+			{
+				_xData.DeleteSheet(name);
+			}
+
+			return wbkEndTest(proc);
+		}
+
+		private bool chgStatus()
+		{
+			string proc = "CHANGE STATUS";
+
+			wbkBeginTest(proc);
+
+			_wbk.Status = ActivateStatus.AS_INACTIVE;
+
+			return wbkEndTest(proc);
+		}
+
+		private void undoChgStatus(string title)
+		{
+			R.WriteLineAnyway($"[ {tstAnsIdx,-3} ] BEGIN UNDO CHG STATUS");
+			R.NewLine();
+
+			R.AddRouteEnter();
+			_wbk.UndoChange(_wbk.StatusField, false);
+			R.AddRouteExit();
+
+			R.WriteLine("\nAFTER UNDO CHG STATUS");
+
+			wbkShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+
+		// private bool chgDateModx()
+		// {
+		// 	string proc = "CHANGE DATE MOD";
+		//
+		// 	beginTest(proc);
+		//
+		// 	string dateBefore = _Wbk.DateModified;
+		//
+		// 	_Wbk.ModDate_Update(SourceId.SI_SRC_MOD);
+		//
+		// 	if (dateBefore == _Wbk.DateModified)
+		// 	{
+		// 		R.WriteLine("\n\ttest worked - dates match");
+		// 	}
+		// 	else
+		// 	{
+		// 		R.WriteLine("\n********\nthis is a fail, dates do not match - should not get here\n***********\n");
+		// 	}
+		// 	
+		//
+		// 	return wbkEndTest(proc);
+		// }
+
+		private bool chgNameModByUser(out bool namesMatch)
+		{
+			string proc = "CHANGE NAME MOD";
+
+			wbkBeginTest(proc);
+
+			string nameBefore = _wbk.NameModified;
+
+			_wbk.NameModified = FauxUserName;
+
+			if (nameBefore == _wbk.NameModified)
+			{
+				R.WriteLine($"\tname modified match | {nameBefore} vs {_wbk.NameModified}");
+
+				namesMatch = true;
+			}
+			else
+			{
+				R.WriteLine($"\tname modified does not match | {nameBefore} vs {_wbk.NameModified}");
+
+				namesMatch = false;
+			}
+
+			return wbkEndTest(proc);
+		}
+
+		private bool undoNameMod()
+		{
+			string proc = "UNDO CHANGE NAME MOD";
+			
+			_wbk.UndoChange(_wbk.NameModifiedField, false);
+
+			return wbkEndTest(proc);
+		}
+
+		private void chgLastIdUser(string title)
+		{
+			R.WriteLineAnyway($"[ {tstAnsIdx,-3} ] BEGIN CHANGE LAST ID (user)");
+			R.NewLine();
+
+			R.AddRouteEnter();
+			_wbk.LastId = "BAAA";
+
+			R.AddRouteExit();
+
+			R.WriteLine("\nAFTER CHANGE LAST ID (user)");
+
+			wbkShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+		private void undoChgLastIdUser(string title)
+		{
+			R.WriteLineAnyway($"[ {tstAnsIdx,-3} ] BEGIN UNDO LAST ID (user) - do not use this");
+			R.NewLine();
+
+			R.StartRoute();
+
+			_wbk.UndoChange(_wbk.LastIdField, false);
+
+			R.WriteLine("\nAFTER UNDO LAST ID (user)");
+
+			wbkShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+
+		/* show / utility routines */
+
+		private void wbkStartTest(string desc)
+		{
+			string nametst = "";
+			string nameWbk = "";
+			bool nameStatus;
+			string nameResult = "";
+
+			R.WriteLineAnyway($"{tstTitle} START | {desc}");
+			// ShowWbk.ShowWorkbook();
+			ShowWbk.ShowWorkbookFields();
+
+			if (tstNameModIdx == 0)
+			{
+				nametst = tstNamMod[tstNameModIdx++];
+				nameWbk = _wbk.NameModified;
+				nameStatus = nametst.Equals(nameWbk);
+				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
+
+				R.WriteLine($"\n\tdoes actual {nameWbk} equal test {nametst}? {nameResult}");
+			}
+
+			R.NewLineAnyway();
+		}
+
+		private void wbkBeginTest(string proc)
+		{
+			R.WriteLine($"****************************");
+			R.WriteAnyway($"{$"[ {tstAnsIdx} ]",-5} {tstTitle} | ");
+			R.Write($"BEGIN ");
+			R.WriteAnyway($"{proc} ");
+			R.NewLine();
+			R.NewLine();
+			R.StartRoute();
+			R.AddRouteEnter();
+		}
+
+		private bool wbkEndTest(string proc)
+		{
+			R.AddRouteExit();
+			R.WriteLine($"\nAFTER {proc}");
+			wbkShowTestStatus(tstTitle);
+			R.ShowRoute();
+
+			return showWbkValidateStatus();
+		}
+
+		/// <summary>
+		/// determine if the nameModified field can be edited<br/>
+		/// true if yes, can be edited, false if no
+		/// </summary>
+		private bool canEditNameModified()
+		{
+			// bool canEdit1 = _Wbk.NameModifiedField.ChgSrc <= srcIdIn;
+			// bool canEdit2 = !(_Wbk.NameModifiedField.IsDirty() && _Wbk.NameModifiedField.ChgSrc > srcIdIn);
+			// bool canEditTstMatch = canEdit1 == canEdit2;
+
+			// R.WriteLine($"\n\tis Dirty = {_Wbk.NameModifiedField.IsDirty()} | chgSrcId = {_Wbk.NameModifiedField.ChgSrc} | srcIdIn = {srcIdIn}");
+			// R.WriteLine($"\tcanEdit1 is {canEdit1} [ chgsrcId <= srcIdIn ] |");
+			// R.WriteLine($"\tcanEdit2 is {canEdit2} [ not (is dirty && chgsrcId > srcIdIn)]");
+			// R.WriteLine($"\tfinal answer {canEdit1} | do they match = {canEditTstMatch}\n");
+
+			R.WriteLine($"\tfinal answer (via FieldCanEdit) {_wbk.NameModifiedField.FieldCanEdit}\n");
+
+			return _wbk.NameModifiedField.FieldCanEdit;
+
+			// true when
+			// not dirty
+			// is dirty && srcidin <= chgsrcId
+			// return !(_wbk.NameModifiedField.IsDirty() && _wbk.NameModifiedField.ChgSrcId > srcIdIn);
+		}
+
+		private String enableDisable(bool which)
+		{
+			return which ? "ENABLED" : "DISABLED";
+		}
+
+
+		private void wbkShowTestResult(bool result)
+		{
+			string r = result ? "WORKED" : "FAIL";
+
+			R.WriteLine("\n**********");
+			R.WriteLine($"{r}");
+			R.WriteLine("****************************\n");
+		}
+
+		private bool showWbkValidateStatus()
+		{
+			return showWbkValidateStatus(tstTitle, tstAns, tstAnsIdx++, shwShtLst);
+		}
+
+		private bool showWbkValidateStatus(string title, bool[,] a, int idx, bool shtList)
+		{
+			bool status = true;
+
+			string w;
+			string wbkA;
+			string wbkU;
+			string shtLstA = "";
+			string shtLstU = "";
+			string nametst = "";
+			string nameWbk = "";
+			bool nameStatus;
+			string nameResult = "";
+
+			status &= evalStatus(_wbk.IsModifiedExo, a[idx, 0], out w);
+			status &= evalStatus(_wbk.ApplyBtnStatus, a[idx, 1], out wbkA);
+			status &= evalStatus(_wbk.UndoBtnStatus, a[idx, 2], out wbkU);
+
+			if (shtList)
+			{
+				status &= evalStatus(_xData.ApplyBtnShtsLstStatus, a[idx, 3], out shtLstA);
+				status &= evalStatus(_xData.UndoBtnShtsLstStatus, a[idx, 4], out shtLstU);
+			}
+
+			if (tstNameModIdx >=0)
+			{
+				nametst = tstNamMod[tstNameModIdx++];
+				nameWbk = _wbk.NameModified;
+				nameStatus = nametst.Equals(nameWbk);
+				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
+				status &= nameStatus;
+			}
+
+			string i = $"[ {idx} ]";
+
+			string s = status ? "WORKED" : "FAIL";
+
+			R.WriteLine("**********");
+			R.WriteLine($"{title,-16} {i,-6}| WORKBOOK stat {w} [{a[idx, 0]}] ");
+			R.WriteAnyway($"status {s,-15}");
+			R.Write($" | WORKBOOK buttons | apply {wbkA} [should be {enableDisable(a[idx, 1])}] | undo {wbkU} [should be {enableDisable(a[idx, 2])}]");
+			R.NewLineAnyway();
+			if (shtList) R.WriteLine($"{" ".Repeat(23)}| SHTS LST buttons | apply {shtLstA} [should be {enableDisable(a[idx, 3])}] | undo {shtLstU} [should be {enableDisable(a[idx, 4])}]");
+			if (tstNameModIdx >= 0) R.WriteLine($"{" ".Repeat(23)}| does actual {nameWbk} equal test {nametst}? {nameResult}");
+			R.WriteLine("**********");
+
+			return status;
+		}
+
+		private void showLastIdStatus(string location)
+		{
+			string status = _xData.WorkBook.LastIdField.IsDirty() ? "is Dirty" : "is Clean";
+
+			R.WriteLine($"\n\t*** {location} | LastId | [ {_xData.WorkBook.LastId} ] | status [ {status} ] | chg src id [ {_xData.WorkBook.LastIdField.ChgSrc} ]\n");
+		}
+
+		private void showShtLst()
+		{
+			if (!shwShtLst) return;
+
+			ShowWbk.ShowShtsLst();
+
+			R.NewLine();
+		}
+
+		private void showWbkFieldsOverride()
+		{
+			if (!ShowWbkOverRideControl) return;
+
+			bool temp = R.RunSilent;
+
+			R.RunSilent = false;
+
+			ShowWbk.ShowWorkbookFields();
+
+			R.RunSilent = temp;
+		}
+
+		private bool evalStatus(bool value, bool tst, out string answer)
+		{
+			if (value == tst)
+			{
+				answer = "MATCH";
+				return true;
+			}
+
+			answer = "FAIL";
+			return false;
+		}
+
+		private void wbkShowTestStatus(string title)
+		{
+			R.NewLine();
+
+			showShtLst();
+
+			showWbkFieldsOverride();
+
+			ShowWbk.wbkUiStatus($"\t{title} END  ", shwShtLst);
+			R.NewLine();
+		}
+
+
+		/* sht private */
+
+		// private void addSheet()
+		// {
+		// 	_xData.AddNewSheet(createSheet());
+		// }
+
+		public Sheet CreateSheet()
+		{
+			R.AddRouteEnter();
+
+			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_wbk.GetId()),
+				new ($"path:\\file{shtIdx}.xls", $"no sheet name {shtIdx}"));
+
+			sht.SetTrackChanges();
+
+			shtIdx++;
+
+			R.AddRouteExit();
+
+			return sht;
+		}
+
+		public Sheet CreateSheetStealth()
+		{
+			Sheet sht = Sheet.CreateSheet(_exid.CreateShtDsName(_wbk.GetIdStealth()),
+				new ($"path:\\file{shtIdx}.xls", $"no sheet name {shtIdx}"));
+
+			sht.SetTrackChanges();
+
+			shtIdx++;
+
+			return sht;
+		}
+
+		private bool shtValidateStatus(bool[,] a, int idx, bool famList)
+		{
+			bool status = true;
+
+			string w;
+			string shtA;
+			string shtU;
+			// string famLstA;
+			string famLstU;
+
+			string famLst = "";
+
+			status &= evalStatus(_sht.IsModifiedExo, a[idx, 0], out w);
+			status &= evalStatus(_sht.ApplyBtnStatus, a[idx, 1], out shtA);
+			status &= evalStatus(_sht.UndoBtnStatus, a[idx, 2], out shtU);
+
+			if (famList)
+			{
+				// cannot "apply changes" these are automatically done
+				// but can undo changes
+				// status &= evalStatus(sht.IsModifiedFamList, a[idx, 3], out famLstA);
+				status &= evalStatus(_xData.UndoBtnShtsLstStatus, a[idx, 4], out famLstU);
+				famLst = $"FAMILY LST buttons | undo {famLstU} [{a[idx, 4]}]";
+			}
+
+			string s = status ? "WORKED" : "FAIL";
+
+			R.WriteLine("**********");
+			R.WriteLineAnyway($"==> {s} | sht stat {w} [{a[idx, 0]}] | SHEET buttons | apply {shtA} [{a[idx, 1]}] | undo {shtU} [{a[idx, 2]}] | {famLst}");
+			R.WriteLine("**********");
+
+			return status;
+		}
+
+		private void shtShowTestStatus(string title)
+		{
+			ShowSht.ShowSheet();
+			R.WriteLine(ShowSht.ChangeStatus($"\n\t{title} END  "));
+			ShowSht.shtUiStatus($"\t{title} END  ");
+			R.NewLine();
+		}
+
+		private void shtShowFieldsOverride(bool yes)
+		{
+			if (!yes) return;
+
+			bool temp = R.RunSilent;
+
+			R.RunSilent = false;
+
+			ShowSht.ShowSheetFields();
+
+			R.RunSilent = temp;
+		}
+
+		/* sheet operations*/
+
+		private bool shtChgDesc()
+		{
+			string proc = "CHANGE DESC";
+
+			wbkBeginTest(proc);
+
+			_sht.Desc = "new value";
+
+			return wbkEndTest(proc);
+		}
+
+		private bool shtUndoChgDesc()
+		{
+			string proc = "UNDO CHANGE DESC";
+
+			wbkBeginTest(proc);
+
+			_xData.CurrentSheet!.UndoChange(_xData.CurrentSheet.DescField, false);
+
+			return wbkEndTest(proc);
+		}
+
+		private void shtChgXlFilePath(string title)
+		{
+			R.WriteLineAnyway("BEGIN CHG XL FILE PATH");
+			R.NewLine();
+
+			R.StartRoute();
+
+			_sht.XlFilePath = "this is a new file path";
+
+			R.WriteLine("\nAFTER CHG XL FILE PATH");
+
+			shtShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+		private void shtChgByAddFamAndType(string title)
+		{
+			R.WriteLineAnyway("BEGIN ADD FAM AND TYPE");
+			R.NewLine();
+
+			R.StartRoute();
+
+			_sht.AddFamAndType("family name", "type name", "properties");
+
+			R.WriteLine("\nAFTER ADD FAM AND TYPE");
+
+			shtShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+		private void shtApplyAll(string title)
+		{
+			R.WriteLineAnyway("BEGIN SHEET APPLY ALL");
+			R.NewLine();
+
+			R.StartRoute();
+
+			_sht.ApplyChangesAll();
+
+			// xData.CurrSheetApplyChgs(SourceId.SI_SRC);
+
+			R.WriteLine("\nAFTER SHEET APPLY ALL");
+
+			shtShowTestStatus(title);
+
+			R.ShowRoute();
+		}
+
+		/* sheet show / utility ops*/
+
+		private void shtStartTest(string desc)
+		{
+			string nametst = "";
+			string nameWbk = "";
+			bool nameStatus;
+			string nameResult = "";
+
+			R.WriteLineAnyway($"{tstTitle} START | {desc}");
+			// ShowWbk.ShowWorkbook();
+
+			if (tstNameModIdx == 0)
+			{
+				nametst = tstNamMod[tstNameModIdx++];
+				nameWbk = _wbk.NameModified;
+				nameStatus = nametst.Equals(nameWbk);
+				nameResult = nameStatus ? "they MATCH" : "they do NOT match";
+
+				R.WriteLine($"\n\tdoes actual {nameWbk} equal test {nametst}? {nameResult}");
+			}
+
+			R.NewLineAnyway();
+		}
+
+
+		/* test answers */
+
+		private readonly Dictionary<string, string[]> _tstAnsNameMod = new ()
+		{
+			//                  start			test 0				test 2
+			{"TEST1E", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT2, FAUX_USER_NAME_INIT}},
+
+			{"TEST4A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT}},
+			{"TEST24C", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT, FAUX_USER_NAME_INIT }},
+			{"TEST24D", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
+			{"TEST41A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
+			{"TEST42A", new [] { FAUX_USER_NAME_INIT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_ALT, FAUX_USER_NAME_INIT }},
+		};
+
+		private readonly Dictionary<string, bool[,]> _tstAnswers = new ()
+		{
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST1A" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ false, false, false, false, false } // B
+				}
+			},
+
+			{
+				"TEST11A" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ false, false, false, false, false } // B
+				}
+			},
+
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST12A" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ false, false, false, false, false } // B
+				}
+			},
+
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST13A" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ true, true, true, false, false } // B
+				}
+			},
+
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST21A" ,
+				new [,]
+				{
+					{ true, false, false, true, true },  // A
+					{ true, false, false, true, true },  // B  - remove
+					{ false, false, false, false, true } // E
+				}
+			},
+
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST21B" ,
+				new [,]
+				{
+					{ true, false, false, true, true },  // A
+					{ true, false, false, true, true },  // B  - remove
+					{ true, false, false, true, true },  // C
+					{ true, false, false, true, true },  // D
+					{ true, false, false, true, true }   // E
+				}
+			},
+
+			{
+				//   wbk stat    wbk undo      shtlst undo
+				//         wbk apply     shtlst apply
+				"TEST22A" ,
+				new [,]
+				{
+					{ true, false, false, true, true },   // A - create
+					{ true, false, false, true, true },   // B  - remove
+					{ false, false, false, false, false } // C - save / apply
+				}
+			},
+
+			{
+				"TEST1B" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ true, true, true, false, false },   // B
+					{ true, true, true, false, false },   // C
+					{ true, true, true, false, false },   // D
+					{ true, true, true, false, false },   // E
+					{ false, false, false, false, false } // F
+				}
+			},
+
+			{
+				"TEST1C" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ true, true, true, false, false },   // B
+					{ true, true, true, false, false },   // B
+					{ false, false, false, false, false } // C
+				}
+			},
+
+			{
+				"TEST1D" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ true, true, true, false, false },   // B
+					{ true, true, true, false, false },   // B
+					{ false, false, false, false, false } // C
+				}
+			},
+
+			{
+				"TEST1E" ,
+				new [,]
+				{
+					{ true, true, true, false, false },   // A
+					{ false, false, false, false, false } // C
+				}
+			},
+
+			{
+				"TEST2B" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ true,  false , false , true  , true  }, // C
+					{ true,  false , false , true  , true  }, // D
+					{ true,  true  , true  , false , true },  // E
+					{ false, false , false , false , true }   // F
+				}
+			},
+
+			{
+				"TEST2C" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ true,  false , false , true  , true  }, // C
+					{ true,  false , false , true  , true  }, // D
+				}
+			},
+
+			{
+				"TEST3C" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ true,  false , false , true  , true  }, // C
+					{ true,  true  , true  , false , false }, // D
+					{ false, false , false , false , false }  // E
+				}
+			},
+
+			{
+				"TEST3D" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ true,  false , false , true  , true  }, // C
+					{ true,  true  , true  , false , false }, // D
+					{ false, false , false , false , false }  // E
+				}
+			},
+
+			{
+				"TEST4A" ,
+				new [,]
+				{
+					{ true,  false , false , true  , true  }, // bogus
+					{ true,  false , false , true  , true  }, // A
+					{ true,  false , false , true  , true  }, // B
+				}
+			},
+
+			{
+				"TEST23C" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A 0
+					{ true,  false , false , true  , true  }, // B 1
+					{ true,  false , false , true  , true  }, // C 2 
+					{ true,  true  , true  , false , true }, // D 3
+					{ false, false , false , false , true }  // E 4
+				}
+			},
+
+			{
+				"TEST23D" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ true,  false , false , true  , true  }, // C
+					{ true,  true  , true  , false , true }, // D
+					{ false, false , false , false , true }  // E
+				}
+			},
+
+			{
+				"TEST24C" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A
+					{ true,  false , false , true  , true  }, // B
+					{ false, false , false , false , false }  // C
+				}
+			},
+
+			{
+				"TEST24D" ,
+				new [,]
+				{
+					{ true,  true  , true  , false , false }, // A 0
+					{ true,  false , false , true  , true  }, // B 1
+					{ false, false , false , false , true }, // C 2
+					{ false, false , false , false , false }  // D 3
+				}
+			},
+
+			{
+				"TEST41A" ,
+				new [,]
+				{
+					{ true, false , false , true , true },  // 0
+					{ true, false , false , true , true },  // 1
+					{ false, false , false , false , true } // 2
+				}
+			},
+
+			{
+				"TEST42A" ,
+				new [,]
+				{
+					{ true, false , false , true , true },  // 0
+					{ true, false , false , true , true },  // 1
+					{ false, false , false , false , true } // 2
+				}
+			},
+
+			{
+				"TEST104A" ,
+				new [,]
+				{
+					//                       not
+					//                       used
+					{ true,  true  , true  , false , false }, // A
+					{ false, false , false , false , false }  // B
+				}
+			},
+
+			{
+				"TEST104E" ,
+				new [,]
+				{
+					//                       not
+					//                       used
+					{ true, true, true, true, true  }  // A
+				}
+			},
+
+			{
+				"TEST105C" ,
+				new [,]
+				{
+					//                       not
+					//                       used
+					{ true,  true  , true  , false , false }, // A
+					{ true,  true  , true  , false , true  }, // B
+					{ true,  true  , true  , false , true  }, // C
+					{ false, false , false , false , false }  // D
+				}
+			},
+		};
+	}
+}

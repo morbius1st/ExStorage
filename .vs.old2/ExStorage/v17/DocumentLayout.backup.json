@@ -1,0 +1,537 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\fieldvalidateapplyundo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\fieldvalidateapplyundo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\sheet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\sheet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:1:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\tests3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:1:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\tests3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:1:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:1:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\validate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\validate.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:2:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:2:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\exstordata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\workbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\workbook.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\fields.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\fields.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\general\\dynavalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\general\\dynavalue.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\exstormeta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\exstormeta.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\tests2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\tests2.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:2:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\tests3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:2:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\tests3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\fielddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\fielddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\exstorsys\\exstordataobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\exstorsys\\exstordataobj.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|c:\\users\\jeffs\\documents\\programming\\visualstudioprojects\\revitprojects\\exstorage\\processtests1\\tests1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{11E72EB0-CD4B-4747-8921-8464FCF77D57}|ProcessTests1\\ProcessTests1.csproj|solutionrelative:processtests1\\tests1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 332,
+          "SelectedChildIndex": 31,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{37fe8527-01e7-45dc-b1ef-5a8b12618770}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3da7753e-51d7-52a4-886a-c3f408fc504e}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{401f80a9-c289-52a9-a9cf-7efc659073ee}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{778b5376-ad77-4751-acdc-f3d18343f8dd}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{92f432fc-a0cd-5087-a713-2e44878d2f25}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{dcca5c53-7a37-4f9b-be15-e1063d061497}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{ca8cc5c7-0231-406a-95cd-aa5ed6ac0190}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b03e7fb9-8379-52db-b904-eb2479499478}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{59862695-e342-45e5-b59c-bd9eadf0e94b}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{004be353-6879-467c-9d1e-9ac23cdf6d49}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Validate.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Validate.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Validate.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Validate.cs",
+              "RelativeToolTip": "ProcessTests1\\Validate.cs",
+              "ViewState": "AgIAAFUBAAAAAAAAAAAAAC0BAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-20T05:15:19.126Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Tests3.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests3.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Tests3.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests3.cs",
+              "RelativeToolTip": "ProcessTests1\\Tests3.cs",
+              "ViewState": "AgIAAEcDAAAAAAAAAAAqwNkDAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T14:33:27.157Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Tests2.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests2.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Tests2.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests2.cs",
+              "RelativeToolTip": "ProcessTests1\\Tests2.cs",
+              "ViewState": "AgIAAOoBAAAAAAAAAAAUwBACAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T05:41:20.089Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Tests1.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests1.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Tests1.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests1.cs",
+              "RelativeToolTip": "ProcessTests1\\Tests1.cs",
+              "ViewState": "AgIAAGEBAAAAAAAAAAAcwHwBAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-16T00:12:16.424Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Program.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Program.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Program.cs",
+              "RelativeToolTip": "ProcessTests1\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-20T00:34:39.168Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 401,
+          "SelectedChildIndex": 13,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{ecb7191a-597b-41f5-9843-03a4cf275dde}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{e8868fee-d2f2-5e1b-967f-50e1f9ad5d0e}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:134:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:135:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:136:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Tests3.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests3.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\Tests3.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\Tests3.cs",
+              "RelativeToolTip": "ProcessTests1\\Tests3.cs",
+              "ViewState": "AgIAABsEAAAAAAAAAAAvwFUEAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T21:27:41.716Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "DynaValue.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\General\\DynaValue.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\General\\DynaValue.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\General\\DynaValue.cs",
+              "RelativeToolTip": "ProcessTests1\\General\\DynaValue.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-14T02:05:53.017Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "FieldData.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\FieldData.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\FieldData.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\FieldData.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\FieldData.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAAcwEgAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-13T06:15:46.731Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FieldValidateApplyUndo.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\FieldValidateApplyUndo.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\FieldValidateApplyUndo.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\FieldValidateApplyUndo.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\FieldValidateApplyUndo.cs",
+              "ViewState": "AgIAAH0CAAAAAAAAAAAcwJYCAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-20T01:36:52.4Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ExStorMeta.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorMeta.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\ExStorMeta.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorMeta.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\ExStorMeta.cs",
+              "ViewState": "AgIAAEgBAAAAAAAAAAAAAJMCAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T01:36:47.338Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 502,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{8f167ce3-b6b9-446c-9c22-7da52a102d41}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "b471a1b0-69e4-4736-80ab-2ffd557bf98a",
+        "Display": 0,
+        "X": 158,
+        "Y": 162,
+        "Width": 2878,
+        "Height": 1308,
+        "WindowState": 0
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 312,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "WorkBook.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\WorkBook.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\WorkBook.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\WorkBook.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\WorkBook.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAADwv8AAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T06:10:08.308Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 274,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Sheet.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\Sheet.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\Sheet.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\Sheet.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\Sheet.cs",
+              "ViewState": "AgIAAEsCAAAAAAAAAAAlwIcCAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T06:14:46.569Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 215,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ExStorDataObj.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorDataObj.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\ExStorDataObj.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorDataObj.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\ExStorDataObj.cs",
+              "ViewState": "AgIAAEkAAAAAAAAAAAAlwKMAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T14:36:31.031Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "30a9b1cb-36c7-43a7-8e9a-d77b74ad93b0",
+        "Display": 0,
+        "X": 535,
+        "Y": 34,
+        "Width": 2534,
+        "Height": 1485,
+        "WindowState": 0
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 185,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ExStorData.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "ViewState": "AgIAAJUEAAAAAAAAAAAuwL8EAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-20T01:20:57.803Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 215,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ExStorData.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\ExStorData.cs",
+              "ViewState": "AgIAABgEAAAAAAAAAAAAAPoDAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-20T13:51:44.407Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "4a30a5e6-bd9e-4814-93d5-646dea8dc361",
+        "Display": 0,
+        "X": 326,
+        "Y": 98,
+        "Width": 2672,
+        "Height": 1496,
+        "WindowState": 0
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Fields.cs",
+              "DocumentMoniker": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\Fields.cs",
+              "RelativeDocumentMoniker": "ProcessTests1\\ExStorSys\\Fields.cs",
+              "ToolTip": "C:\\Users\\jeffs\\Documents\\Programming\\VisualStudioProjects\\RevitProjects\\ExStorage\\ProcessTests1\\ExStorSys\\Fields.cs",
+              "RelativeToolTip": "ProcessTests1\\ExStorSys\\Fields.cs",
+              "ViewState": "AgIAADwAAAAAAAAAAAAAAFYAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-20T04:11:16.859Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -6,7 +6,7 @@ using static ExStorSys.UpdateRules;
 using static ExStorSys.ActivateStatus;
 using static ExStorSys.ExStorConst;
 using static ExStorSys.FieldCopyType;
-using static ExStorSys.SourceId;
+using static UtilityLibrary.ChgSrcId;
 
 using UtilityLibrary;
 
@@ -71,19 +71,23 @@ namespace ExStorSys
 		public static Dictionary<WorkBookFieldKeys, FieldDef<WorkBookFieldKeys>> WorkBookFields {get;} = new ()
 		{
 			// field usage flag is not used at this time
-			{PK_DS_NAME,             new (PK_DS_NAME,              KEY_DS_NAME,        KEY_DS_DESC                   , null                           , new DynaValue(KEY_DS_NAME)                , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_ALWAYS   , SI_LOCKED  , SI_NONE)} ,
-			{PK_AD_DESC,             new (PK_AD_DESC,              "Desc",             "WorkBook Description"        , nameof(WorkBook.Desc)          , new DynaValue(PRIMARY_SCHEMA_DESC)        , IU_SND_BY_USER    , FEL_BAS_VIEW_ONLY	, FC_NEVER    , SI_SRC_MOD , SI_FIXED)} ,
-			{PK_AD_STATUS,           new (PK_AD_STATUS,            "Status",           "Activate Status"             , nameof(WorkBook.Status)        , new DynaValue(AS_INACTIVE)                , IU_SND_BY_USER    , FEL_BAS_VIEW_ONLY	, FC_NEVER    , SI_SRC_MOD , SI_FIXED)} ,
-			{PK_MD_MODEL_TITLE,      new (PK_MD_MODEL_TITLE,       "ModelName",        "Model Name"                  , nameof(WorkBook.ModelTitle)    , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_TYPE_4   , SI_LOCKED  , SI_NONE)} ,
-			{PK_AD_VENDORID,         new (PK_AD_VENDORID,          "VendorId",         "Vendor Id"                   , nameof(WorkBook.VendorId)      , new DynaValue(ExStorConst.VendorId)       , IU_SND_ALT_SRC_B  , FEL_DEBUG			, FC_NEVER    , SI_FIXED   , SI_LOCKED)} ,
-			{PK_AD_LAST_ID,          new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code" , nameof(WorkBook.LastId)        , new DynaValue("AAAA")                     , IU_SND_ALT_SRC_A  , FEL_DEBUG			, FC_TYPE_4   , SI_DEST_A_MOD  , SI_SRC_MOD)} ,
-			{PK_AD_NAME_CREATED,     new (PK_AD_NAME_CREATED,      "CreateName",       "Creator's Name"              , nameof(WorkBook.NameCreated)   , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_ALT_SRC_B  , FEL_ADV_VIEW_ONLY	, FC_TYPE_14  , SI_LOCKED  , SI_NONE)} ,
-			{PK_AD_DATE_CREATED,     new (PK_AD_DATE_CREATED,      "CreateDate",       "Date Created"                , nameof(WorkBook.DateCreated)   , new DynaValue(DateTime.Now.ToString("s")) , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_TYPE_14  , SI_LOCKED  , SI_NONE)} ,
-			{PK_AD_NAME_MODIFIED,    new (PK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name"             , nameof(WorkBook.NameModified)  , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_ALT_SRC_B  , FEL_ADV_VIEW_ONLY	, FC_ALWAYS   , SI_DEST_B_MOD  , SI_SRC_MOD)} ,
-			{PK_AD_DATE_MODIFIED,    new (PK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified"               , nameof(WorkBook.DateModified)  , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_CTRL_FLD   , FEL_VIEW_ONLY		, FC_ALWAYS   , SI_INDIRECT, SI_DEST_B_MOD)} ,
-			{PK_SD_SCHEMA_VERSION,   new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version"              , nameof(WorkBook.SchemaVersion) , new DynaValue("1.0")                      , IU_SND_BY_USER    , FEL_LOCKED          , FC_IGNORE   , SI_FIXED   , SI_LOCKED)} ,
+			{PK_DS_NAME,             new (PK_DS_NAME,              KEY_DS_NAME,        KEY_DS_DESC                   , null                           , new DynaValue(KEY_DS_NAME)                , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_ALWAYS   ,  [CI_NOP  , CI_NOP  ])} ,
+			{PK_AD_DESC,             new (PK_AD_DESC,              "Desc",             "WorkBook Description"        , nameof(WorkBook.Desc)          , new DynaValue(PRIMARY_SCHEMA_DESC)        , IU_SND_BY_USER    , FEL_BAS_VIEW_ONLY	, FC_NEVER    ,  [CI_SRC_A, CI_SRC_A])} ,
+			{PK_AD_STATUS,           new (PK_AD_STATUS,            "Status",           "Activate Status"             , nameof(WorkBook.Status)        , new DynaValue(AS_INACTIVE)                , IU_SND_BY_USER    , FEL_BAS_VIEW_ONLY	, FC_NEVER    ,  [CI_SRC_A, CI_SRC_A])} ,
+			{PK_MD_MODEL_TITLE,      new (PK_MD_MODEL_TITLE,       "ModelName",        "Model Name"                  , nameof(WorkBook.ModelTitle)    , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_TYPE_4   ,  [CI_NOP  , CI_NOP  ])} ,
+			{PK_AD_VENDORID,         new (PK_AD_VENDORID,          "VendorId",         "Vendor Id"                   , nameof(WorkBook.VendorId)      , new DynaValue(ExStorConst.VendorId)       , IU_SND_ALT_SRC_B  , FEL_DEBUG			, FC_NEVER    ,  [CI_SRC_A, CI_SRC_A])} ,
+			{PK_AD_LAST_ID,          new (PK_AD_LAST_ID,           "LastId",           "Last DS Identification Code" , nameof(WorkBook.LastId)        , new DynaValue("AAAA")                     , IU_SND_ALT_SRC_A  , FEL_DEBUG			, FC_TYPE_4   ,  [CI_SRC_A, CI_SRC_E])} ,
+			{PK_AD_NAME_CREATED,     new (PK_AD_NAME_CREATED,      "CreateName",       "Creator's Name"              , nameof(WorkBook.NameCreated)   , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_ALT_SRC_B  , FEL_ADV_VIEW_ONLY	, FC_TYPE_14  ,  [CI_NOP  , CI_NOP  ])} ,
+			{PK_AD_DATE_CREATED,     new (PK_AD_DATE_CREATED,      "CreateDate",       "Date Created"                , nameof(WorkBook.DateCreated)   , new DynaValue(DateTime.Now.ToString("s")) , IU_SND_BY_USER    , FEL_VIEW_ONLY		, FC_TYPE_14  ,  [CI_NOP  , CI_NOP  ])} ,
+			{PK_AD_NAME_MODIFIED,    new (PK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name"             , nameof(WorkBook.NameModified)  , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_ALT_SRC_B  , FEL_ADV_VIEW_ONLY	, FC_ALWAYS   ,  [CI_SRC_X, CI_SRC_B])} ,
+			{PK_AD_DATE_MODIFIED,    new (PK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified"               , nameof(WorkBook.DateModified)  , new DynaValue(K_NOT_DEFINED_STR)          , IU_SND_CTRL_FLD   , FEL_VIEW_ONLY		, FC_ALWAYS   ,  [CI_SRC_X, CI_NOP  ])} ,
+			{PK_SD_SCHEMA_VERSION,   new (PK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version"              , nameof(WorkBook.SchemaVersion) , new DynaValue("1.0")                      , IU_SND_BY_USER    , FEL_LOCKED          , FC_IGNORE   ,  [CI_SRC_A, CI_SRC_A])} ,
+
+			// control fields - not saved to the DS
+			{PK_CD_SHEETS_LIST,      new (PK_CD_SHEETS_LIST,       "SheetsList",       "Sheets List Control"         , nameof(WorkBook.SheetsList)      , new DynaValue(0)						  , IU_CTRL_ONLY      , FEL_DEBUG           , FC_IGNORE   ,  [CI_SRC_E, CI_SRC_E])} ,
+			
+			
 			// full model name in case needs to be shown to the user / used to confirm working wiht the correct data																  				                                    
-																																													   
 			// voided fields																																						   
 			// {PK_AD_MODEL_CODE,        new (PK_AD_MODEL_CODE,        "ModelCode",        "Model's Identification Code",    new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS  , FEL_DEBUG) }   ,
 			// {PK_AD_ADDINID,           new (PK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS  , FEL_DEBUG) }   ,
@@ -100,24 +104,24 @@ namespace ExStorSys
 		public static Dictionary<SheetFieldKeys, FieldDef<SheetFieldKeys>> SheetFields {get; } = new ()
 		{
 			// field usage flag is not used at this time
-			{RK_DS_NAME,              new (RK_DS_NAME,              KEY_DS_NAME,        KEY_DS_DESC                   , nameof(Sheet.DsName)         , new DynaValue(KEY_DS_NAME)             , IU_SND_BY_USER   , FEL_VIEW_ONLY       , FC_ALWAYS   , SI_LOCKED   , SI_NONE)} ,
-			{RK_AD_DESC,              new (RK_AD_DESC,              "Desc",             "Sheet Description"           , nameof(Sheet.Desc)           , new DynaValue(PRIMARY_SCHEMA_DESC)     , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
- 			{RK_AD_VENDORID,          new (RK_AD_VENDORID,          "VendorId",         "Vendor Id"                   , nameof(Sheet.VendorId)       , new DynaValue(ExStorConst.VendorId)    , IU_SND_ALT_SRC_B , FEL_DEBUG           , FC_NEVER    , SI_FIXED    , SI_LOCKED)} ,
-			{RK_AD_NAME_CREATED,      new (RK_AD_NAME_CREATED,      "CreateName",       "Creator's Name"              , nameof(Sheet.NameCreated)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_ALT_SRC_B , FEL_ADV_VIEW_ONLY   , FC_TYPE_14  , SI_LOCKED   , SI_NONE)} ,
- 			{RK_AD_DATE_CREATED,      new (RK_AD_DATE_CREATED,      "CreateDate",       "Date Created"                , nameof(Sheet.DateCreated)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_VIEW_ONLY       , FC_TYPE_14  , SI_LOCKED   , SI_NONE)} ,
-			{RK_AD_NAME_MODIFIED,     new (RK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name"             , nameof(Sheet.NameModified)   , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_ALT_SRC_B , FEL_ADV_VIEW_ONLY   , FC_ALWAYS   , SI_DEST_B_MOD   , SI_SRC_MOD)} ,
-			{RK_AD_DATE_MODIFIED,     new (RK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified"               , nameof(Sheet.DateModified)   , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_CTRL_FLD  , FEL_VIEW_ONLY       , FC_ALWAYS   , SI_INDIRECT , SI_DEST_B_MOD)} ,
- 			{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version"              , nameof(Sheet.SchemaVersion)  , new DynaValue("1.0")                   , IU_SND_BY_USER   , FEL_LOCKED          , FC_IGNORE   , SI_FIXED    , SI_LOCKED)} ,
- 			{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name"             , nameof(Sheet.XlFilePath)     , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_ADVANCED        , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
-			{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name"            , nameof(Sheet.XlSheetName)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_ADVANCED        , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
- 			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status"            , nameof(Sheet.OpStatus)       , new DynaValue(SheetOpStatus.SOS_GOOD)  , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
-			{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence"          , nameof(Sheet.OpSequence)     , new DynaValue("A00")                   , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
-			{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule"                 , nameof(Sheet.UpdateRule)     , new DynaValue(UR_UNDEFINED)            , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
-			{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass"               , nameof(Sheet.UpdateSkip)     , new DynaValue(false)                   , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , SI_SRC_MOD  , SI_FIXED)} ,
+			{RK_DS_NAME,              new (RK_DS_NAME,              KEY_DS_NAME,        KEY_DS_DESC                   , nameof(Sheet.DsName)         , new DynaValue(KEY_DS_NAME)             , IU_SND_BY_USER   , FEL_VIEW_ONLY       , FC_ALWAYS   , [CI_NOP   , CI_NOP   ])} ,
+			{RK_AD_DESC,              new (RK_AD_DESC,              "Desc",             "Sheet Description"           , nameof(Sheet.Desc)           , new DynaValue(PRIMARY_SCHEMA_DESC)     , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+ 			{RK_AD_VENDORID,          new (RK_AD_VENDORID,          "VendorId",         "Vendor Id"                   , nameof(Sheet.VendorId)       , new DynaValue(ExStorConst.VendorId)    , IU_SND_ALT_SRC_B , FEL_DEBUG           , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+			{RK_AD_NAME_CREATED,      new (RK_AD_NAME_CREATED,      "CreateName",       "Creator's Name"              , nameof(Sheet.NameCreated)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_ALT_SRC_B , FEL_ADV_VIEW_ONLY   , FC_TYPE_14  , [CI_NOP   , CI_NOP   ])} ,
+ 			{RK_AD_DATE_CREATED,      new (RK_AD_DATE_CREATED,      "CreateDate",       "Date Created"                , nameof(Sheet.DateCreated)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_VIEW_ONLY       , FC_TYPE_14  , [CI_NOP   , CI_NOP   ])} ,
+			{RK_AD_NAME_MODIFIED,     new (RK_AD_NAME_MODIFIED,     "ModifyName",       "Modifier's Name"             , nameof(Sheet.NameModified)   , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_ALT_SRC_B , FEL_ADV_VIEW_ONLY   , FC_ALWAYS   , [CI_SRC_X , CI_SRC_B ])} ,
+			{RK_AD_DATE_MODIFIED,     new (RK_AD_DATE_MODIFIED,     "ModifyDate",       "Date Modified"               , nameof(Sheet.DateModified)   , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_CTRL_FLD  , FEL_VIEW_ONLY       , FC_ALWAYS   , [CI_SRC_X , CI_NOP   ])} ,
+ 			{RK_SD_SCHEMA_VERSION,    new (RK_SD_SCHEMA_VERSION,    "SchemaVersion",    "Schema Version"              , nameof(Sheet.SchemaVersion)  , new DynaValue("1.0")                   , IU_SND_BY_USER   , FEL_LOCKED          , FC_IGNORE   , [CI_SRC_A , CI_SRC_A ])} ,
+ 			{RK_ED_XL_FILE_PATH,      new (RK_ED_XL_FILE_PATH,      "XlFileName",       "Excel File Name"             , nameof(Sheet.XlFilePath)     , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_ADVANCED        , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+			{RK_ED_XL_SHEET_NAME,     new (RK_ED_XL_SHEET_NAME,     "XlSheetName",      "Excel Sheet Name"            , nameof(Sheet.XlSheetName)    , new DynaValue(K_NOT_DEFINED_STR)       , IU_SND_BY_USER   , FEL_ADVANCED        , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+ 			{RK_OD_STATUS,            new (RK_OD_STATUS,            "Status",           "Operation Status"            , nameof(Sheet.OpStatus)       , new DynaValue(SheetOpStatus.SOS_GOOD)  , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+			{RK_OD_SEQUENCE,          new (RK_OD_SEQUENCE,          "Sequence",         "Operation Sequence"          , nameof(Sheet.OpSequence)     , new DynaValue("A00")                   , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+			{RK_OD_UPDATE_RULE,       new (RK_OD_UPDATE_RULE,       "UpdateRule",       "Update Rule"                 , nameof(Sheet.UpdateRule)     , new DynaValue(UR_UNDEFINED)            , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
+			{RK_OD_UPDATE_SKIP,       new (RK_OD_UPDATE_SKIP,       "UpdateSkip",       "Update Bypass"               , nameof(Sheet.UpdateSkip)     , new DynaValue(false)                   , IU_SND_BY_USER   , FEL_BAS_VIEW_ONLY   , FC_NEVER    , [CI_SRC_A , CI_SRC_A ])} ,
  			
 			// for the family list, since the dictionary cannot be complex (e.g. <string, string>), the key for each entry must be a combination of family + type so that the entry is unique.
 			// so the value then can contain settings for the family + type combo
-			{RK_RD_FAMILY_LIST,      new (RK_RD_FAMILY_LIST,       "FamilyList",       "List of Families (& types)"  , null                         , new DynaValue(K_DICT)                  , IU_SND_ALT_SRC_A  , FEL_ADVANCED        , FC_NEVER     , SI_INDIRECT, SI_DEST_B_MOD)} , // family & types
+			{RK_RD_FAMILY_LIST,      new (RK_RD_FAMILY_LIST,       "FamilyList",       "List of Families (& types)"  , null                         , new DynaValue(K_DICT)                  , IU_SND_ALT_SRC_A  , FEL_ADVANCED        , FC_NEVER     , [CI_SRC_D, CI_SRC_D])} , // family & types
 																																																										  // 
 			// voided fields																																						   
 			// {RK_AD_ADDINID,           new (RK_AD_ADDINID,           "AddInId",          "AddIn Id",                       new DynaValue(K_NOT_DEFINED_STR)           , IU_S_AND_DS  , FEL_DEBUG) }   ,
