@@ -21,7 +21,6 @@ namespace ExStorSys
 	public abstract class FieldValidateApplyUndo<Te> : INotifyPropertyChanged
 		where Te : Enum
 	{
-		private double secToAdd = 24;
 
 		private bool isModExo;
 
@@ -34,7 +33,6 @@ namespace ExStorSys
 				// R.WriteLineAnyway($"isModifiedExo set to {value}");
 			}
 		}
-
 
 		protected bool undoBtnStatus;
 		protected bool applyBtnStatus;
@@ -79,7 +77,6 @@ namespace ExStorSys
 
 		public abstract void SetDateModifiedByInternal(string value, ChgSrcId cs);
 		public abstract void SetNameModifiedInternal(string value, ChgSrcId cs);
-
 
 		/* modified date routines */
 
@@ -160,23 +157,6 @@ namespace ExStorSys
 
 			R.AddRouteExit();
 		}
-
-		// /// <summary>
-		// /// change the chgSrcId based on the srcIdIn - not sure this is still needed<br/>
-		// /// in = SI_DEST_A => chg to SI_SRC<br/>
-		// /// in = SI_NONE => chg to SI_NONE
-		// /// </summary>
-		// public void ModDate_DownGrade(ChgSrcId tstSrcId, ChgSrcId resultSrcId)
-		// {
-		// 	R.AddRoute();
-		// 	
-		// 	if (DateModifiedField.ChgSrc == tstSrcId)
-		// 	{
-		// 		R.WriteLine($"\tDate modified downgraded to {resultSrcId}");
-		// 		DateModifiedField.ChgSrc = resultSrcId;
-		// 	}
-		// }
-
 
 		/* modified name routines */
 
@@ -269,44 +249,6 @@ namespace ExStorSys
 			R.AddRouteExit();
 		}
 
-		// /// <summary>
-		// /// change the chgSrcId based on the srcIdIn - not sure this is still needed<br/>
-		// /// in = SI_DEST_A => chg to SI_SRC
-		// /// </summary>
-		// public void ModName_DownGrade(ChgSrcId tstSrcId, ChgSrcId resultSrcId)
-		// {
-		// 	R.AddRoute();
-		// 	
-		// 	if (NameModifiedField.ChgSrc == tstSrcId)
-		// 	{
-		// 		R.WriteLine($"\tName modified downgraded to {resultSrcId}");
-		//
-		// 		NameModifiedField.ChgSrc = resultSrcId;
-		// 	}
-		// }
-
-
-		private int[,] configSrcArr = new int[,]
-		{ 
-			//   v == A = chg src - ignore identifiers
-			//      v == B = source - show only identifiers
-			{ 0,  0}, // SI_NONE
-			{ 0,  0}, // SI_LOCKED
-			{ 0,  0}, // SI_FIXED
-			{ 0, -1}, // SI_SRC
-			{ 0, -1}, // SI_SRC_UNDO
-			{ 0,  0}, // SI_SRC
-			{ 0, -1}, // SI_DEST_MOD
-			{ 0, -1}, // SI_DEST_UNDO
-			{ 0, -1}, // SI_DEST_REDO
-			{ 0,  0}, // SI_DEST_A
-			{ 0,  0}, // SI_DEST_B
-			{ 0, -1}, // SI_INDR_MOD
-			{ 0, -1}, // SI_INDR_UNDO
-			{ 0,  0}, // SI_INDIRECT
-
-		};
-
 		[DebuggerStepThrough]
 		protected void OnPropertyChanged([CallerMemberName] string memberName = "")
 		{
@@ -373,18 +315,6 @@ namespace ExStorSys
 
 		}
 
-		// /// <summary>
-		// /// does an undo but does not run validate status to allow this to be
-		// /// run multiple times and run validate only once
-		// /// </summary>
-		// public void UndoChangeMultiple(FieldData<Te> fd)
-		// {
-		// 	fd.UndoChg();
-		// 	fd.ChgSrc = SourceId.SI_NONE;
-		// 	// ValidateChangeStatus(srcIdIn);
-		// 	OnPropertyChanged(fd.Field.FieldPropName);
-		// }
-
 		/// <summary>
 		/// undo the change in the local copy to all fields
 		/// this suppresses validate for all fields and runs
@@ -393,9 +323,9 @@ namespace ExStorSys
 		/// </summary>
 		public void UndoChangesAll()
 		{
-			R.AddRouteEnter(msg: $"Undo All");
+			R.AddRouteEnter(msg: $"Base Undo All");
 
-			R.WriteLine("\tUndoChangesAll | undo changes");
+			R.WriteLine("\tBase UndoChangesAll | undo changes");
 
 			if (!isModifiedExo) return;
 
@@ -484,6 +414,27 @@ namespace ExStorSys
 
 			R.AddRouteExit();
 		}
+
+		private int[,] configSrcArr = new int[,]
+		{ 
+			//   v == A = chg src - ignore identifiers
+			//      v == B = source - show only identifiers
+			{ 0,  0}, // SI_NONE
+			{ 0,  0}, // SI_LOCKED
+			{ 0,  0}, // SI_FIXED
+			{ 0, -1}, // SI_SRC
+			{ 0, -1}, // SI_SRC_UNDO
+			{ 0,  0}, // SI_SRC
+			{ 0, -1}, // SI_DEST_MOD
+			{ 0, -1}, // SI_DEST_UNDO
+			{ 0, -1}, // SI_DEST_REDO
+			{ 0,  0}, // SI_DEST_A
+			{ 0,  0}, // SI_DEST_B
+			{ 0, -1}, // SI_INDR_MOD
+			{ 0, -1}, // SI_INDR_UNDO
+			{ 0,  0}, // SI_INDIRECT
+
+		};
 
 		/// <summary>
 		/// validate the status of all of the fields<br/>
@@ -651,97 +602,5 @@ namespace ExStorSys
 			R.AddRouteExit(msg: "complete");
 		}
 		
-		// private List<Tuple<SourceId, SourceId, bool, bool, bool, string>> validateResults = new ()
-		// {
-		// 	new (SourceId.SI_DEST_MOD, SourceId.SI_INDIRECT, false, false, true, "DEST_MOD"),
-		// 	new (SourceId.SI_INDR_MOD, SourceId.SI_INDIRECT, true, true, true, "INDR_MOD"),
-		// 	new (SourceId.SI_SRC_MOD, SourceId.SI_SRC, true, true, true, "SRC_MOD"),
-		// 	// new (SourceId.SI_SRC, SourceId.SI_NONE, false, false, false, "SRC"),
-		// 	// default if none of the above are used
-		// 	new (SourceId.SI_NONE, SourceId.SI_NONE, false, false, false, "NONE"),
-		// };
-
-
-		// protected void ValidateChangeStatus1(SourceId srcIdIn, [CallerMemberName] string who = "")
-		// {
-		// 	R.WriteLine($"\tVALIDATE START | srcId in {srcIdIn} | chg srcId {DateModifiedField.ChgSrcId} | is in src > chg src = {srcIdIn > DateModSrcId}");
-		// 	R.WriteLine(ShowWbk.ChangeStatus("\tVALIDATE START"));
-		// 	R.WriteLine(ShowWbk.wbkUiStatus("\tVALIDATE START"));
-		// 	R.Write("\n\tVALIDATE | MODIFIED ");
-		// 	int hasMod = 0;
-		// 	int[] hasModChgSrc = new int[srcEnumLen];
-		// 	int[] hasModSrc = new int[srcEnumLen];
-		//
-		//
-		// 	foreach ((Te? key, FieldData<Te>? fd) in rows)
-		// 	{
-		// 		if (fd.DyValue!.IsClean) continue;
-		//
-		// 		R.Write($"| {fd.Field!.FieldName} ({fd.ChgSrcId})");
-		//
-		// 		hasModChgSrc[(int) fd.ChgSrcId]++;
-		// 		hasModSrc[(int) fd.Field.FieldSrcIdxMax]++;
-		//
-		// 		hasMod++;
-		// 	}
-		//
-		// 	R.Write("|\n");
-		// 	R.NewLine();
-		//
-		// 	R.WriteLine($"\tVALIDATE MID   | has mod {hasMod}");
-		//
-		// 	R.WriteLine($"\tVALIDATE MID   | has mod - change source");
-		// 	R.WriteLine(ShowWbk.ShowHasModArray2("\tVALIDATE MID   | ", hasModChgSrc, 0, configSrcArr));
-		// 	R.WriteLine($"\tVALIDATE MID   | has mod - field source");
-		// 	R.WriteLine(ShowWbk.ShowHasModArray2("\tVALIDATE MID   | ", hasModSrc, 1, configSrcArr));
-		//
-		// 	R.Write($"\n\tVALIDATE MID   | ROUTE | ");
-		//
-		// 	if (hasModChgSrc[(int) SourceId.SI_SRC] > 0 ||
-		// 		hasModChgSrc[(int) SourceId.SI_SRC] > 0)
-		// 	{
-		// 		R.Write($"=> A chg src [src_mod] > 0 ");
-		//
-		// 		if (hasModSrc[(int) SourceId.SI_SRC] > 0)
-		// 		{
-		// 			R.Write($"=> B fld src [src] > 0 ");
-		// 			R.Write($"=> C mod date / enable buttons ");
-		//
-		// 			UpdateModifiedDate(0, SourceId.SI_SRC);
-		//
-		// 			ApplyBtnStatus = true;
-		// 			UndoBtnStatus = true;
-		// 		}
-		// 		else
-		// 		{
-		// 			R.Write($"=> J fld src [src] == 0 ");
-		// 			R.Write($"=> K undo date / disable buttons ");
-		//
-		// 			UpdateModifiedDate(-1, SourceId.SI_NONE);
-		//
-		// 			ApplyBtnStatus = false;
-		// 			UndoBtnStatus = false;
-		//
-		// 			hasMod = 0;
-		// 		}
-		//
-		// 	}
-		// 	else
-		// 	if (hasModChgSrc[(int) SourceId.SI_SRC_UNDO] > 0)
-		// 	{
-		// 		R.Write($"=> S has mod [src_undo] true ");
-		// 		R.Write($"=> T undo date ");
-		//
-		// 		UpdateModifiedDate(-1, srcIdIn);
-		// 	}
-		//
-		// 	IsModifiedExo = hasMod > 0;
-		//
-		//
-		// 	R.NewLine();
-		//
-		// }
-
-
 	}
 }

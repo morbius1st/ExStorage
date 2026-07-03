@@ -8,8 +8,10 @@ using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
+using System.Runtime.InteropServices;
 using UtilityLibrary;
+
+using static ExStoreTest2025.WindowsApiCalls;
 
 #endregion
 
@@ -22,10 +24,7 @@ namespace ExStoreTest2025
 {
 	internal class AppRibbon : IExternalApplication
 	{
-		public Result OnShutdown(UIControlledApplication a)
-		{
-			return Result.Succeeded;
-		}
+
 		// application: launch with revit - setup interface elements
 		// display information
 
@@ -33,6 +32,11 @@ namespace ExStoreTest2025
 
 		private const string PANEL_NAME = "ExStoreTest2025";
 
+		private const string MAIN_WIN_HELP_FILE = "Delux_Measure_Intro_and_Main_Window_Help.pdf";
+
+		internal static string AddInResourcesLocation => $"{AppRibbon.AddInLocation}\\CsDeluxMeasure";
+
+		internal static string AddinMainWinHelpFile => $"{AddInResourcesLocation}\\{MAIN_WIN_HELP_FILE}";
 
 		private const string BUTTON_NAME = "ExStoreTest2025";
 		private const string BUTTON_TEXT = "ExStoreTest2025";
@@ -46,6 +50,8 @@ namespace ExStoreTest2025
 		private const string SMALLICON = "information16.png";
 		private const string LARGEICON = "information32.png";
 
+		public static ContextualHelp CtxHelp;
+
 		internal UIApplication uiApp;
 
 		//		internal UIControlledApplication uiCtrlApp;
@@ -53,13 +59,21 @@ namespace ExStoreTest2025
 		//		public static PulldownButton pb;
 		//		public static SplitButton sb;
 
+		internal static string AddInLocation { get; set; }
+
+		public Result OnShutdown(UIControlledApplication a)
+		{
+			return Result.Succeeded;
+		}
+
 
 		public Result OnStartup(UIControlledApplication app)
 		{
+
+			AddInLocation = app.ControlledApplication.CurrentUserAddinsLocation;
+
 			try
 			{
-				//				uiCtrlApp = app;
-
 				app.ControlledApplication.ApplicationInitialized += OnAppInitalized;
 
 				// create the ribbon tab first - this is the top level
@@ -114,7 +128,7 @@ namespace ExStoreTest2025
 
 				ribbonPanel.AddItem(
 					createButton(BUTTON_NAME, BUTTON_TEXT, COMMAND_CLASS_NAME,
-						BUTTON_TOOL_TIP, SMALLICON, LARGEICON));
+						BUTTON_TOOL_TIP, AddinMainWinHelpFile, SMALLICON, LARGEICON));
 
 
 				//				// example 1
@@ -165,7 +179,8 @@ namespace ExStoreTest2025
 		}
 
 		private PushButtonData createButton(string ButtonName, string ButtonText,
-			string className, string ToolTip, string smallIcon, string largeIcon)
+			string className, string ToolTip, string contextHelpPath, 
+			string smallIcon, string largeIcon)
 		{
 			PushButtonData pbd;
 
@@ -176,7 +191,13 @@ namespace ExStoreTest2025
 					Image = CsUtilitiesMedia.GetBitmapImage(smallIcon, NAMESPACE_PREFIX),
 					LargeImage = CsUtilitiesMedia.GetBitmapImage(largeIcon, NAMESPACE_PREFIX),
 					ToolTip = ToolTip
+					
 				};
+
+				CtxHelp = new ContextualHelp(ContextualHelpType.Url, contextHelpPath);
+
+				pbd.SetContextualHelp(CtxHelp);
+				
 			}
 			catch
 			{

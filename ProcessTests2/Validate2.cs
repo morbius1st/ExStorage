@@ -294,10 +294,25 @@ namespace ProcessTests2
 		/// F) sht fam lst count | G) sht fam lst wkg count<br/>
 		/// name mod - matches: ) H) str, I) isDirty, J) chgSrc<br/>
 		/// date mod - matches: K) str, L) isDirty, M) chgSrc<br/>
-		/// buttons: L) ismodexo, M) undo, N) apply
+		/// buttons: N) ismodexo, O) undo, P) apply
 		/// </summary>
 		public TestSequence2 Ts2_ShtStdTestsC;
 
+
+		/// <summary>
+		/// Tests - related to fam and type list<br/>
+		/// Desc field -    matches: A) str, B) isDirty, C) chgSrc<br/>
+		/// UpdRule field - matches: D) enum, E) isDirty, F) chgSrc<br/>
+		/// OpSeq field -   matches: G) str,  H) isDirty, I) chgSrc<br/>
+		/// J) Sht fam lst is dirty | K) sht fam lst chg src<br/>
+		/// L) Sht fam lst wkg has new | M) sht fam lst has key<br/>
+		/// N) sht fam lst wkg has key<br/>
+		/// O) sht fam lst count | P) sht fam lst wkg count<br/>
+		/// name mod - matches: Q) str, R) isDirty, S) chgSrc<br/>
+		/// date mod - matches: T) str, U) isDirty, V) chgSrc<br/>
+		/// buttons: W) ismodexo, X) undo, Y) apply
+		/// </summary>
+		public TestSequence2 Ts2_ShtStdTestsD;
 
 		/// <summary>
 		/// UI Tests<br/>
@@ -323,6 +338,16 @@ namespace ProcessTests2
 		/// D) Sht Apply btn enabled | E) Sht undo btn enabled<br/>
 		/// </summary>
 		public TestSequence2 Ts2_ShtUiEndSequenceC;
+
+		/// <summary>
+		/// UI Tests - related to fam and type list<br/>
+		/// A) Sht Desc can undo | B) UpdRule can undo
+		/// C) OpSeq can undo
+		/// D) Sht is mod fam lst wkg<br/>
+		/// E) Sht can edit | F) sht changed<br/>
+		/// G) Sht Apply btn enabled | H) Sht undo btn enabled<br/>
+		/// </summary>
+		public TestSequence2 Ts2_ShtUiEndSequenceD;
 
 	#endregion
 
@@ -784,6 +809,7 @@ namespace ProcessTests2
 					new ("Init", true, Faux_FatItemKey_Init),
 					new ("InitF", false, Faux_FatItemKey_Init),
 					new ("Alt1", true, Faux_FatItemKey_Alt1),
+					new ("Alt1F", false, Faux_FatItemKey_Alt1),
 					new ("Alt2", true, Faux_FatItemKey_Alt2)
 				], ref shtFatHasKey);
 
@@ -793,6 +819,7 @@ namespace ProcessTests2
 					new ("Init", true, Faux_FatItemKey_Init),
 					new ("InitF", false, Faux_FatItemKey_Init),
 					new ("Alt1", true, Faux_FatItemKey_Alt1),
+					new ("Alt1F", false, Faux_FatItemKey_Alt1),
 					new ("Alt2", true, Faux_FatItemKey_Alt2),
 				], ref shtFatHasKeyWkg);
 
@@ -1051,6 +1078,14 @@ namespace ProcessTests2
 				uiShtApplyBtnEnabled, uiShtUndoBtnEnabled
 			]);
 
+			Ts2_ShtUiEndSequenceD = new ("Ui Std Verification Tests C (Sht - Fat - desc)",
+			[
+				uiShtDescCanUndo, uiShtUpdRuleCanUndo, uiShtOpSeqCanUndo,
+				uiShtIsModFamLstWkg,
+				uiShtCanBeEdited, uiShtChanged,
+				uiShtApplyBtnEnabled, uiShtUndoBtnEnabled
+			]);
+
 
 			Ts2_ShtStdTestsA = new ("Standard Tests A (Sht) (desc, name mod, date mod, buttons)",
 			[
@@ -1072,6 +1107,19 @@ namespace ProcessTests2
 
 			Ts2_ShtStdTestsC= new ("Standard Tests C (Sht) (fam and type added)",
 			[
+				shtFatIsDirty, shtFatCs, shtFatWkgHasNew, shtFatHasKey, shtFatHasKeyWkg,
+				shtFatCountInt, shtFatCountIntWkg,
+				shtNameModStr, shtNameModDirty, shtNameModCs,
+				shtDateModStr, shtDateModDirty, shtDateModCs,
+				shtIsModExo, shtUndoBtn, shtApplyBtn,
+			]);
+
+
+			Ts2_ShtStdTestsD = new ("Standard Tests D (Sht) (desc changed, fam and type added)",
+			[
+				shtDescStr, shtDescDirty, shtDescCs,
+				shtUpdRuleEnum, shtUpdRuleDirty, shtUpdRuleCs,
+				shtOpSeqStr, shtOpSeqDirty, shtOpSeqCs,
 				shtFatIsDirty, shtFatCs, shtFatWkgHasNew, shtFatHasKey, shtFatHasKeyWkg,
 				shtFatCountInt, shtFatCountIntWkg,
 				shtNameModStr, shtNameModDirty, shtNameModCs,

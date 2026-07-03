@@ -1,0 +1,158 @@
+﻿
+General container
+
+> "Exid" or something like this
+	* global / static object
+	* contains names
+		> for workbook / sheet / DS
+	* contains objects
+		> DS, schema fields, schema, entities
+	* initialize at startup
+		> determine if ExStor system in use for this model
+
+
+
+
+Data containers
+
+ExStor object naming
+* subjects
+
+> workbook
+	{app_name}_{type}_{Model_Id_code}_{version}
+
+	> Workbook DS (one per model)
+		CsCells_Wbk_{model code}_v1_00
+			* example: CsCells_Wbk_250101_160101_v1_00
+		> search
+			* CsCells_Wbk
+
+	
+	// there is only one of these for every model
+	// this name cannot be unique (I cannot find then)
+	// no model code
+	> Workbook Schema (one)
+		CsCells_Wbk_Schema_v1_00
+	
+
+	{app_name}_{type}_{Model_Id_code}_{ID}_{version}
+
+	> Sheet DS (multiple)
+		CsCells_Sht_{model code}_{ID}_v1_00
+			* example CsCells_Sht_250101_16010_AAAA1_v1_00
+				CsCells_Sht_250101_160101_AAAB_v1_00 - etc.
+		> search
+			* model specific: CsCells_Sht_250101_160101
+				> search only after the workbook & model code is found
+			* general: CsCells_Sht
+				> search all Cells related
+
+	
+	// there is only one of these for every model
+	// this name cannot be unique (I cannot find then)
+	// no model code
+	> Sheet schema (one)
+		CsCells_Sht_Schema_v1_00
+
+
+
+
+
+
+	// incorrect
+	> (void) Workbook Schema (one)
+		CsCells_Wbk_{model code}_v1_00
+		CsCells_Wbk_250101_160101_v1_00
+
+	// incorrect
+	> (void) Sheet schema (one)
+		CsCells_Sht_{model code}_v1_00
+		CsCells_Sht_250101_160101_v1_00
+
+
+		
+		
+
+
+> schema
+	* these are shared between different models
+	* for workbook {app_name}_Schemna_WorkBook_{ID}_{model code}_{version}
+	* for sheet {app_name}_Schema_Sheet_{ID}_{model code}_{version}
+		CsCells_Wkbk_{model code}_v1_00
+		CsCells_Sht_{model code}_v1_00
+
+		CsCells_Wkbk_250101_160101_v1_00
+		CsCells_Sh_250101_160101_v1_00
+
+	* the {ID} is NOT needed since there will be only (1) schema of each type
+
+	must revise
+		(voided)
+		* e.g. CsCells_Schema_WorkBook_v1_00
+		* e.g. CsCells_Schema_Sheet_v1_00
+
+
+
+
+> data storage (revised)
+	* assume that there is nothing that can be used as a
+		unique identifier for the model and that any
+		unique information for the model could change
+			e.g. name could change, file create date / time could change
+				for example when a local model is moved to the cloud
+	* validation that the correct DS is found is comparison of the 
+		Document associated witht the DS and the document associated with
+		the current invocation of the add-in	
+	* these are unique per model
+	* there is two or more per model
+	* model code is just to make the DS names unique per model
+	* naming
+		> {app_name}_DS_0000_{Model_Id_code}_{version}  [first / prime DS]
+		> e.g. CsCells_DS_0000_250101_160101_v1_00  {for example} {contains the workbook data}
+		> e.g. CsCells_Sht_AAAA_250101_160101_v1_00 {first of one or more sheet DS objects}
+	* {ID} sequence AAAA, AAAB, AAAC ... AAAZ, AAA0 ... AAA9, AABA ... etc. 
+		* note that the last number is Z999 (first digit is never a number) so that
+			the {ID} of 0000 for the prime DS is unique
+
+
+Using an "excel" metaphor for the data storage
+
+
+alternative storage method
+* data storage object - contains multiple entities with the data
+	> named "workbook"
+	> contains a primary sheet (entity)
+	> contains sheets for each excel link (entities)
+		> contains row(s)
+* primary sheet  (schema needed)
+	> workbook is both a schema and an entity
+	> stored in the data storage object
+	> contains the basic admin data
+* sheet(s)  (schema needed)
+	> sheet is both a schema and an entity
+	> stored in the data storage object
+	> contains basic admin data
+	> contains the data container information (excel file ?or alternate?)
+	> contains "rows" (the linked family information)
+		* is a array list of <string>
+* row(s) (schema not needed)
+	> stored in the sheet object as a list
+	> contains the linked family name (& type name as applies)
+
+
+
+(void)
+* data storage object - contains all of the entities with the data
+	> i.e. workbook that can contain multiple "sheets"
+* sheet (i.e. work sheet) is the primary data structure
+	> contains the basic admin data
+	> contains a "map" (i.e. table) for the remaining data (map of <string, entity>)
+		* entity is the data structure that contains the actual data
+	> sheet is both a schema and an entity stored in the data storage object
+* table the collection of "rows"
+* row contains the data for a single link
+	> contains the basic admin data
+	> contains the data container information (excel file ?or alternate?)
+	> contains the linked family information
+(void)
+

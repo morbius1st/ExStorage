@@ -1,0 +1,133 @@
+﻿*************
+system / object / future revisions
+
+make more things objects
+e.g. 
+make sheets list an object
+make ExStorMgr several objects (divide by purpose / subject / sub-objects)
+
+
+***********
+fixes
+
+* sht: make chance, workbook tab is disabled (correct) but sheets list needs to be disabled
+* sht: either disalow editing of creater's name or integrate
+* sht: either disalow editing of vendor''s id or integrate
+
+* wbk: make chance, no tab is disabled
+* Wbk: adjust mod and created dates - center vertically
+
+
+
+
+
+
+***********
+
+current todo & revisions
+
+*** todo ***
+
+
+
+(wbk tab) add sheet (works), updates last id and mod date (correct).  modify a user item, sets field undo 
+	* however, sheets list, press apply changes keeps undo changes, keeps the date mod and last id as changed?
+
+
+(shts list) restore the sheet list, need to restore the last DS id code
+
+
+
+(sheets tab) if sheets list (no deleted) == 0, hide sheets list, add message, no sheets
+(sheets tab) if sheet selected is null, hide sheets fields, add message, no sheet selected
+
+(workbook tab) rename to workbook and sheets list
+(workbook tab) remove undo ability for last DS id code
+(workbook tab) clear the sheets list == set all to deleted
+(workbook tab) restore, set all to prior status
+(workbook tab) sheets list, add button, make new item have a sequence one greater than the last last item
+
+both tabs, make sheets list look the same
+both tabs, sheets list. center fam count
+both tabs, sheets list. fam count, make wider, change cnt to count
+both tabs, sheets list. make status larger
+
+all, make buttons work
+
+all, move buttons to above the prime object, make slimmer, add icon, reduce text - e.g. "add a sheet" to jsut "+ Add"  and "Clear the sheets list" to "() Clear", etc.
+
+
+
+
+
+*** buttons *** to make work (or may work and just verify)
+(sht lst) apply changes
+
+(wbk tab) verify that buttons are disabled on win show
+(all) move some / all buttons to top of subject / change style to flat & square
+
+(sheets tab) disable tabs when sheet needs to be saved
+
+
+
+todo done
+fixed - opening window, doing something, closing window, closing model, open another model, open window crashes
+(both tabs) select a sheet if one exists when the window is opened
+(wbk tab) sheets list and (sheet tab) sheets list need to either share the same selected item or selecting the item needs to raise prop change
+(sheet tab) adding a family type needs to also set the overall flag
+(sheet tab) resetting the sheet needs to reset the overall flag
+(both) changing a sheet, flags the sheet as modified (correct), however
+	(wbk tab) clear the sheets list works but then restore the sheets list is not available
+	and
+	(sheet tab) pressing the reset the sheet button works but the overall flag is not un-set
+(sheet tab) modifying an item works and the overall flag is set.  but using the individual undo works but the overall flag does not change
+(sheet tab) changing a sheet, flags work except, overall flag is set but the top sheet flag is not set
+(wbk tab) changing an item sets the workbook flag but both top level flags are not set
+deleting a sheet - needs to update all flags - and turn on the buttons
+(sheets tab) sheet fields - make taller when no sheets
+(sheet tab) save sheet - needs to set family and type list to not modified
+(wbk tab) change modifier's name does not "reset" on reset button press.
+(header) add tooltip to flags
+(fam&type list) move bar to left edge & verify colors
+(both tabs) (sheets list) fam count needs to update
+(shts tab) reset the fam list
+(shts tab) reset the sheet
+(shts tab) Apply Changes
+fix reading data from memory - issue: exo.entity versus tempwbkentity
+(wbk tab) reset the workbook
+(sht lst) clear the sheets list
+(sht lst) restore the sheets list
+(shts lst) (wbk tab) when add a new sheet
+	workbook is changed and gets flagged (correct)
+	Last DS id code is changed (correct)
+	but reset workbook button should not become active
+	last DS Id code should get red border
+(wbk tab) when only add a sheet, last id code gets updated (correct) and modify date gets updated (correct)
+	however, the reset button becomes active and, when pressed, the workbook is reset but the sheets list still has the added
+		sheet with the updated id code which was just reset (wrong)
+	reset workbook does not reset the id code and the reset process must validate the whole list incase the id code is still revised
+(wbk tab) add sheet (works), updates last id and mod date (correct).  modify a user item, sets field undo 
+	* however, wbk undo and apply changes are not active
+
+
+revisions??
+
+* (workbook tab) remove undo ability for last DS id code
+* (workbook tab) sheets list, add button, make new item have a sequence one greater than the last last item
+* both tabs, make sheets list look the same as workbook tab
+* both tabs, sheets list. center fam count
+* both tabs, sheets list. fam count, make wider, change cnt to count
+* both tabs, sheets list. make status larger
+
+
+* all, move buttons to above the prime object, make slimmer, add icon, reduce text - e.g. "add a sheet" to jsut "+ Add"  and "Clear the sheets list" to "() Clear", etc.
+
+
+revisions done
+not sure what this was - ** adding place holder sheet ExStorData / init
+* (sheets tab) if sheets list (no deleted) == 0, hide sheets list, add message, no sheets
+* (sheets tab) if sheet selected is null, hide sheets fields, add message, no sheet selected
+* (workbook tab) rename to workbook and sheets list
+* (workbook tab) clear the sheets list == set all to deleted
+* (workbook tab) restore, set all to prior status
+

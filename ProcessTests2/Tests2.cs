@@ -25,14 +25,23 @@ namespace ProcessTests2
 			// RunTheseTests = new List<string>();
 			// Program.RunTheseTests.AddRange(["Test101A", "Test102A", ]);
 
-			OneTestId = "Test1312A";
+			OneTestId = "Test1403A";
+			register(nameof(Test1403A), Test1403A, test1403aDesc);
+
+
+			register(nameof(Test1402A), Test1402A, test1402aDesc);
+			register(nameof(Test1401A), Test1401A, test1401aDesc);
+
+			register(nameof(Test1315A), Test1315A, test1315aDesc);
+			register(nameof(Test1314A), Test1314A, test1314aDesc);
+			register(nameof(Test1313A), Test1313A, test1313aDesc);
 			register(nameof(Test1312A), Test1312A, test1312aDesc);
-
-
 			register(nameof(Test1311A), Test1311A, test1311aDesc);
+
 			register(nameof(Test1213A), Test1213A, test1213aDesc);
 			register(nameof(Test1212A), Test1212A, test1212aDesc);
 			register(nameof(Test1211A), Test1211A, test1211aDesc);
+
 			register(nameof(Test1032A), Test1032A, test1032aDesc);
 			register(nameof(Test1031A), Test1031A, test1031aDesc);
 
@@ -96,6 +105,20 @@ namespace ProcessTests2
 			return endValidateTest(proc);
 		}
 
+		private bool shtDelFamAndType(string key)
+		{
+			string proc = "REMOVE FAM AND TYPE";
+
+			beginTest(proc);
+
+			_sht.RemoveFamAndType(key);
+
+			endTest(proc);
+
+			return endValidateTest(proc);
+		}
+
+		
 
 		private bool shtCanApply(bool result)
 		{
@@ -200,7 +223,8 @@ namespace ProcessTests2
 
 			tests2 = new ([
 				V2.Ts2_ShtStdTestsA.SetTests([
-					"Alt1", "T", "A",   "Alt1", "T", "T",  "Upd1", "T", "T",  "T", "T", "T"
+					"Alt1", "T", "A",   
+					"Alt1", "T", "T",  "Upd1", "T", "T",  "T", "T", "T"
 				])
 			]);
 
@@ -475,12 +499,14 @@ namespace ProcessTests2
 				// pre-test values
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"F", "N", "F", "Init", "Init",
+					"4", "4",
 					"Init", "F", "N",
 					"Init", "F", "N",
 					"F", "F", "F"
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Init", "Init",
+					"5", "5",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
@@ -529,6 +555,7 @@ namespace ProcessTests2
 			tests2 = new ([
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Init", "Init",
+					"4", "4",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
@@ -536,6 +563,7 @@ namespace ProcessTests2
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"F", "N", "F", "None", "None",
+					"4", "4",
 					"Init", "F", "N",
 					"Init", "F", "N",
 					"F", "F", "F"
@@ -588,6 +616,7 @@ namespace ProcessTests2
 			tests2 = new ([
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Init", "Init",
+					"4", "4",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
@@ -595,6 +624,7 @@ namespace ProcessTests2
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"F", "N", "F", "None", "None",
+					"4", "4",
 					"Alt1", "F", "N",
 					"Upd1", "F", "N",
 					"F", "F", "F"
@@ -645,24 +675,28 @@ namespace ProcessTests2
 				// pre-test values
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"F", "N", "F", "Init", "Init",
+					"4", "4",
 					"Init", "F", "N",
 					"Init", "F", "N",
 					"F", "F", "F"
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Init", "Init",
+					"5", "5",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Alt1", "Alt1",
+					"6", "6",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
 					"T", "D", "T", "Alt2", "Alt2",
+					"7", "7",
 					"Alt1", "T", "T",
 					"Upd1", "T", "T",
 					"T", "T", "T"
@@ -786,7 +820,6 @@ namespace ProcessTests2
 			return result;
 		}
 
-
 		private string test1313aDesc = "add three fam and types, then apply";
 		public bool Test1313A(string testId)
 		{
@@ -827,7 +860,7 @@ namespace ProcessTests2
 					"T", "T", "T"
 				]),
 				V2.Ts2_ShtStdTestsC.SetTests([
-					"F", "N", "F", "None", "None",
+					"F", "N", "F", "Alt2", "Alt2",
 					"7", "7",
 					"Alt1", "F", "N",
 					"Upd1", "F", "N",
@@ -872,6 +905,456 @@ namespace ProcessTests2
 			return result;
 		}
 
+		private string test1314aDesc = "add three fam and types, delete one of the new after add all";
+		public bool Test1314A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests2 = new ([
+				// pre-test values
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"F", "N", "F", "Init", "Init",
+					"4", "4",
+					"Init", "F", "N",
+					"Init", "F", "N",
+					"F", "F", "F"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Init", "Init",
+					"5", "5",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt1", "Alt1",
+					"6", "6",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt2", "Alt2",
+					"7", "7",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt1F", "Alt1F",
+					"6", "6",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+			]);
+
+			uiTests2 = new ([
+				//                                  A    B    C   D    E
+				V2.Ts2_ShtUiEndSequenceC.SetTests(null), // pre-test filler
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+			]);
+
+			startTest(testDesc[testId]);
+
+			result = startPreTest();
+
+			if (!shtCanEdit(true)) return false;
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_INIT,
+				FAUX_SHT_FAM_TYPE_INIT, FAUX_SHT_FAM_PROP_INIT, out _);
+
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_ALT1,
+				FAUX_SHT_FAM_TYPE_ALT1, FAUX_SHT_FAM_PROP_ALT1, out _);
+
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_ALT2,
+				FAUX_SHT_FAM_TYPE_ALT2, FAUX_SHT_FAM_PROP_ALT2, out _);
+
+			result &= shtDelFamAndType(Faux_FatItemKey_Alt1);
+			
+			ShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test1315aDesc = "add three fam and types, delete one of the new after added";
+		public bool Test1315A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests2 = new ([
+				// pre-test values
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"F", "N", "F", "Init", "Init",
+					"4", "4",
+					"Init", "F", "N",
+					"Init", "F", "N",
+					"F", "F", "F"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Init", "Init",
+					"5", "5",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt1", "Alt1",
+					"6", "6",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt1F", "Alt1F",
+					"5", "5",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+				V2.Ts2_ShtStdTestsC.SetTests([
+					"T", "D", "T", "Alt1F", "Alt1F",
+					"6", "6",
+					"Alt1", "T", "T",
+					"Upd1", "T", "T",
+					"T", "T", "T"
+				]),
+
+			]);
+
+			uiTests2 = new ([
+				//                                  A    B    C   D    E
+				V2.Ts2_ShtUiEndSequenceC.SetTests(null), // pre-test filler
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceC.SetTests(["T", "T", "T", "T", "T"]),
+			]);
+
+			startTest(testDesc[testId]);
+
+			result = startPreTest();
+
+			if (!shtCanEdit(true)) return false;
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_INIT,
+				FAUX_SHT_FAM_TYPE_INIT, FAUX_SHT_FAM_PROP_INIT, out _);
+
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_ALT1,
+				FAUX_SHT_FAM_TYPE_ALT1, FAUX_SHT_FAM_PROP_ALT1, out _);
+
+			result &= shtDelFamAndType(Faux_FatItemKey_Alt1);
+			
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_ALT2,
+				FAUX_SHT_FAM_TYPE_ALT2, FAUX_SHT_FAM_PROP_ALT2, out _);
+
+
+			ShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		/* 14x tests - change user field(s) + add fat */
+
+		private string test1401aDesc = "change user field (desc) + add fam and type";
+		public bool Test1401A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests2 = new ([
+				// pre-test values
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Init", "F", "N",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Init", "F", "N",              // q, r, s
+					"Init", "F", "N",              // t, u, v
+					"F", "F", "F"                  // w, x, y
+				]),
+
+				// after change desc
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Alt1", "T", "T",              // q, r, s
+					"Upd1", "T", "T",              // t, u, v
+					"T", "T", "T"                  // w, x, y
+				]),
+
+				// after add sheet
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",  // a, b, c
+					"Init", "F", "N",  // d, e, f
+					"Init", "F", "N",  // g, h, i
+					"T", "D", "T", "Init", "Init", // j, k, l ,m, n
+					"5", "5",          // o, p
+					"Alt1", "T", "T",  // q, r, s
+					"Upd1", "T", "T",  // t, u, v
+					"T", "T", "T"      // w, x, y
+				]),
+			]);
+
+			uiTests2 = new ([
+				//                                  A    B    C    D    E    F    G    H
+				V2.Ts2_ShtUiEndSequenceD.SetTests(null),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "F", "F", "F", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "F", "F", "T", "T", "T", "T", "T"]),
+
+			]);
+
+			startTest(testDesc[testId]);
+
+			result = startPreTest();
+
+			if (!shtCanEdit(true)) return false;
+
+			result &= shtChgDesc(FAUX_SHT_DESC_ALT1);
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_INIT,
+				FAUX_SHT_FAM_TYPE_INIT, FAUX_SHT_FAM_PROP_INIT, out _);
+
+			ShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+		private string test1402aDesc = "change user fields (desc, update rule) + add fam and type, undo all";
+		public bool Test1402A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests2 = new ([
+				// pre-test values
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Init", "F", "N",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Init", "F", "N",              // q, r, s
+					"Init", "F", "N",              // t, u, v
+					"F", "F", "F"                  // w, x, y
+				]),
+
+				// after change desc
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Alt1", "T", "T",              // q, r, s
+					"Upd1", "T", "T",              // t, u, v
+					"T", "T", "T"                  // w, x, y
+				]),
+
+				// after change update rule
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",              // a, b, c
+					"Alt1", "T", "A",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Alt1", "T", "T",              // q, r, s
+					"Upd1", "T", "T",              // t, u, v
+					"T", "T", "T"                  // w, x, y
+				]),
+
+				// after add sheet
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",  // a, b, c
+					"Alt1", "T", "A",  // d, e, f
+					"Init", "F", "N",  // g, h, i
+					"T", "D", "T", "Init", "Init", // j, k, l ,m, n
+					"5", "5",          // o, p
+					"Alt1", "T", "T",  // q, r, s
+					"Upd1", "T", "T",  // t, u, v
+					"T", "T", "T"      // w, x, y
+				]),
+
+				// after undo all
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Init", "F", "N",                // a, b, c
+					"Init", "F", "N",                // d, e, f
+					"Init", "F", "N",                // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                        // o, p
+					"Init", "F", "N",                // q, r, s
+					"Init", "F", "N",                // t, u, v
+					"F", "F", "F"                    // w, x, y
+				]),
+			]);
+
+			uiTests2 = new ([
+				//                                  A    B    C    D    E    F    G    H
+				V2.Ts2_ShtUiEndSequenceD.SetTests(null),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "F", "F", "F", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "T", "F", "F", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "T", "F", "T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["F", "F", "F", "F", "T", "F", "F", "F"]),
+
+			]);
+
+			startTest(testDesc[testId]);
+
+			result = startPreTest();
+
+			if (!shtCanEdit(true)) return false;
+
+			result &= shtChgDesc(FAUX_SHT_DESC_ALT1);
+
+			result &= shtChgUpdateRule(FAUX_SHT_UPDATE_RULE_ALT1);
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_INIT,
+				FAUX_SHT_FAM_TYPE_INIT, FAUX_SHT_FAM_PROP_INIT, out _);
+
+			result &= shtUndoAll();
+
+			ShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
+
+
+		private string test1403aDesc = "change user fields (desc, update rule) + add fam and type, apply all";
+		public bool Test1403A(string testId)
+		{
+			// remember to register routine
+			R.AddRouteEnter();
+			bool result = true;
+
+			tstId = testId;
+
+			tests2 = new ([
+				// pre-test values
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Init", "F", "N",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Init", "F", "N",              // q, r, s
+					"Init", "F", "N",              // t, u, v
+					"F", "F", "F"                  // w, x, y
+				]),
+
+				// after change desc
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",              // a, b, c
+					"Init", "F", "N",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Alt1", "T", "T",              // q, r, s
+					"Upd1", "T", "T",              // t, u, v
+					"T", "T", "T"                  // w, x, y
+				]),
+
+				// after change update rule
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",              // a, b, c
+					"Alt1", "T", "A",              // d, e, f
+					"Init", "F", "N",              // g, h, i
+					"F", "N", "F", "InitF", "InitF", // j, k, l ,m, n
+					"4", "4",                      // o, p
+					"Alt1", "T", "T",              // q, r, s
+					"Upd1", "T", "T",              // t, u, v
+					"T", "T", "T"                  // w, x, y
+				]),
+
+				// after add sheet
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "T", "A",  // a, b, c
+					"Alt1", "T", "A",  // d, e, f
+					"Init", "F", "N",  // g, h, i
+					"T", "D", "T", "Init", "Init", // j, k, l ,m, n
+					"5", "5",          // o, p
+					"Alt1", "T", "T",  // q, r, s
+					"Upd1", "T", "T",  // t, u, v
+					"T", "T", "T"      // w, x, y
+				]),
+
+				// after undo all
+				V2.Ts2_ShtStdTestsD.SetTests([
+					"Alt1", "F", "N",                // a, b, c
+					"Alt1", "F", "N",                // d, e, f
+					"Init", "F", "N",                // g, h, i
+					"F", "N", "F", "Init", "Init", // j, k, l ,m, n
+					"5", "5",                        // o, p
+					"Alt1", "F", "N",                // q, r, s
+					"Upd1", "F", "N",                // t, u, v
+					"F", "F", "F"                    // w, x, y
+				]),
+			]);
+
+			uiTests2 = new ([
+				//                                  A    B    C    D    E    F    G    H
+				V2.Ts2_ShtUiEndSequenceD.SetTests(null),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "F", "F", "F", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "T", "F", "F", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["T", "T", "F", "T", "T", "T", "T", "T"]),
+				V2.Ts2_ShtUiEndSequenceD.SetTests(["F", "F", "F", "F", "T", "F", "F", "F"]),
+
+			]);
+
+			startTest(testDesc[testId]);
+
+			result = startPreTest();
+
+			if (!shtCanEdit(true)) return false;
+
+			result &= shtChgDesc(FAUX_SHT_DESC_ALT1);
+
+			result &= shtChgUpdateRule(FAUX_SHT_UPDATE_RULE_ALT1);
+
+			result &= shtAddFamAndType(FAUX_SHT_FAM_NAME_INIT,
+				FAUX_SHT_FAM_TYPE_INIT, FAUX_SHT_FAM_PROP_INIT, out _);
+
+			result &= shtApplyAll();
+
+			ShowTestCompletionResult(result);
+
+			R.AddRouteExit();
+
+			return result;
+		}
 
 
 	}

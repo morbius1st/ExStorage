@@ -1,0 +1,196 @@
+﻿
+for PropChgd System, add back property category
+
+
+	ExStorData		    =>	public event		 RestartRequiredEventHandler		 			RestartRequiredChanged;
+notes: revise to use propChgd system only
+
+	FamAndType		    =>	public static event	 ModifiedEventHandler?		 					Modified;
+notes: revise to use propChgd system only
+
+
+	ExStorData		    =>	public event		 PropChgdEventHandler		 					PropChgd;
+	Sheet		        =>	public static event	 OnPropChgdEventHandler		 					PropChgd;
+	WorkBook		    =>	public static event	 OnPropChgdEventHandler		 					PropChgd;
+	ExStorMgr		    =>	public event		 ExStorMgr.PropChgdEventHandler		 			PropChgd;
+
+
+	APropChgdEvt		=>	public event		 ExStorMgr.PropChgdEventHandler		 			PropChgd;
+notes: this is an abstract class that is inherited by other classes
+
+
+
+
+
+ui adjustments
+
+> maybe, move sheets list to its own tab?
+> move sheet undo / apply to the bottom of the sheet editor
+> require changes to the workbook / to each sheet to be applied before being able to change tabs
+
+
+T = todo
+R = revise
+V = verify / validate
+
+ui integration
+
+ui element
+
+											| eval	| re-connect	| tested	| notes
+* editor header								| 		| 				| 			| 
+											| 		| 				| 			| 
+	header flag	/ needs saving				| *		| 				| 			| tied to xd needs saving
+											| 		| 				| 			| revise / add flag for xd restart required
+	header flag	/ needs saving				| *		| 				| 			| tied to xd apply btn shts list status
+											| *		| 				| 			| revise / add flag for xd undo btn shts list status
+											| 		| 				| 			| 
+	header flag	/ needs saving				| *		| 				| 			| tied to wbk is mod exo
+											| 		| 				| 			| 
+											| *		| 				| 			| revise / add flag for curr sheet / is mod exo
+											| *		| 				| 			| revise / add flag for curr sheet / fam lst is dirty
+											| *		| 				| 			| revise / add flag for curr sheet / fam lst wkg is mod
+											| 		| 				| 			| 
+											| *		| 				| 			| revise / add flag for curr sheet / Fat is modified
+											| 		| 				| 			| 
+* workbook tab								| eval	| re-connect	| tested	| notes
+											| 		| 				| 			| 
+	switcher tab / enable-disable			| *		| 				| 			| tied to current sheet / is mod exo => [ revise to, disable if wbk / is mod exo is true ]
+											| 		| 				| 			| 
+* workbook editor							| 		| 				| 			| 
+											| 		| 				| 			| 
+	header flag								| *		| 				| 			| tied to wbk / is mod exo
+											| 		| 				| 			| 
+	field / vidlble							| *		| 				| 			| row wired, should be ok / field wired, should be ok
+	field / can edit						| *		| 				| 			| row wired, should be ok / field wired, should be ok
+	field / undo							| *		| 				| 			| button wired to dy value / is dirty / should be ok
+											| 		| 				| 			| 
+	btn / undo								| *		| 				| 			| wired to command, uses"apply btn status" => revise to use (undo btn status) 
+											| 		| 				| 			|	pressed => wbk, undo changes all
+	btn / apply								| *		| 				| 			| wired to command, uses "apply btn status" 
+											| 		| 				| 			| 
+* sheets list tab							| 		| 				| 			| 
+											| 		| 				| 			| 
+	switcher tab / enable-disable			| V		| 				| 			| verify - no restriction noted.  does this need to be disabled
+											| 		| 				| 			| 
+* sheets list								| 		| 				| 			| 
+											| 		| 				| 			| 
+	header flag								| *		| 				| 			| tied to curr sht is mod exo
+	header flag								| *		| 				| 			| tied to xd apply btn shts list status
+											| 		| 				| 			| 
+	list / add a sheet						| T		| 				| 			| wired to command / cmd add sheet / tied to xmgr create new sheet => revise to use method
+	list / reset the list					| *		| 				| 			| wired to command / tied to xd reset sheets list / should be ok
+	list / clear the list					| *		| 				| 			| wired to command / tied to xd clear sheets list / should be ok
+	list / undo list						| *		| 				| 			| wired to command / tied to xd shts lst undo all
+	list / apply list						| *		| 				| 			| wired to command / tied to xd shts lst apply all
+	list / status button / delete			| *		| 				| 			| wired to command / tied to xd delete sheet / should be ok
+	list / status button / undo				| T		| 				| 			| wired to command / tied to xd un delete sheet / should be ok => revise to undo delete sheet
+											| 		| 				| 			| 
+* sheets tab								| 		| 				| 			| 
+											| 		| 				| 			| 
+	switcher tab / enable-disable			| V		| 				| 			| verify - no restriction noted.  does this need to be disabled
+											| 		| 				| 			| 
+* sheets list								| 		| 				| 			| 
+											| 		| 				| 			| 
+	sheet selected							| *		| 				| 			| wired to listbox lbx02 / lbx02 saves / reads from selected sheet
+	sheet changed							| *		| 				| 			| see above
+											| 		| 				| 			| 
+* sheet editor								| 		| 				| 			| 
+											| 		| 				| 			| 
+	header flag								| *		| 				| 			| tied to is mod exo (guessing sht) / should be ok
+											| 		| 				| 			| 
+	field / vidlble							| *		| 				| 			| row wired, should be ok / field wired, should be ok
+	field / can edit						| *		| 				| 			| row wired, should be ok / field wired, should be ok
+	field / undo							| *		| 				| 			| button wired to dy value / is dirty / should be ok
+											| 		| 				| 			| 
+	btn / undo								| *		| 				| 			| wired to command / tied to curr sht, undo fam ... list changes
+	btn / apply								| *		| 				| 			| wired to command / tied to curr sht, apply fam ... list changes
+											| 		| 				| 			| 
+* family and type list						| 		| 				| 			| 
+											| 		| 				| 			| 
+	list / save a fat						| T		| 				| 			| no specific add, just enter data and save / save wired to command / tied to xmgr add sheet family
+											| 		| 				| 			|	should this be revised so that the routine is on xd?
+	list / delete a fat						| 		| 				| 			| wired to command / tied to curr sht remove fam and type
+	list / undo fat list					| 		| 				| 			| wired to command / tied to curr sht undo fam list changes
+	list / apply fat list					| 		| 				| 			| N/A - automatically saved - and the sheet apply button also saves FAT list
+											| 		| 				| 			| 
+* window / general							| 		| 				| 			| 
+											| 		| 				| 			| 
+	exit / enable-disable due to 			| T		| 				| 			| revise - add this feature
+		changes								| 		| 				| 			| 
+											| 		| 				| 			| 
+	system / revit needs to be restart / 	| T		| 				| 			| revise - add this feature
+		window disable due to changes		| 		| 				| 			| 
+
+
+
+ui flags that get updated
+GEN needs saving
+GEN restart status
+xd apply btn sheets list
+xd undo btn sheets list
+
+wbk is mod exo
+wbk apply bth 
+wbk undo btn
+
+curr sht is mod exo
+curr sht apply bth 
+curr sht undo btn
+curr sht fam list is dirty
+curr sht is mod fam list wkg
+
+
+
+
+
+
+
+code integration
+
+												| basic
+file:					| re-org	| re-name	| re-code	| compare / re-code
+Exid				done
+ExStorConst			done
+ExStorLib			done
+FamAndType			done
+PropChgEvtArgs		done
+
+ExStorDataObj				x			x			x			x
+ExStorData					x			x			x			x			todo: coordinate this WorkbookApplyChgs() / CurrSheetApplyChgs()
+FieldData<Te>				x			x			x			x
+FieldDef<Te>				x			x			x			x
+Fields						x			x			x			x
+Sheet						x			x			x			x
+WorkBook					x			x			x			x
+
+DynaValue					x			x			x			x
+
+R
+
+enums
+
+ActivateStatus
+ChangeType
+ExSysStatus
+FamTypeCategories
+FamTypeProcessProp
+FamTypeRequirement
+FelSubCat
+FieldCopyType
+FieldEditLevel
+FieldEditStatus
+FieldStatus
+ItemUsage
+LaunchCode
+Numbers
+PropertyId
+RunningStatus
+SheetFieldKeys
+SheetOpStatus
+SheetStatus
+UpdateRules
+ValidateDataStorage
+ValidateSchema
+WorkBookFieldKeys
+

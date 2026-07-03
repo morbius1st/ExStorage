@@ -6,6 +6,8 @@ using Autodesk.Revit.UI.Selection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Interop;
+using Autodesk.Revit.UI.Events;
 using ExStoreTest2025.Windows;
 using UtilityLibrary;
 
@@ -78,12 +80,17 @@ namespace ExStoreTest2025
 		{
 			MainWindow win = new MainWindow();
 
+			win.Owner = RevitLibrary.RevitLibrary.WindowHandle(RvtUiApp.MainWindowHandle);
+
+			win.Owner.
+
 			bool? result = win.ShowDialog();
 
 			if (result.HasValue && result.Value) return Result.Succeeded;
 
 			return Result.Cancelled;
 		}
+
 	}
 
 #endregion

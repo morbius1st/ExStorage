@@ -128,7 +128,7 @@ namespace ProcessTests2
 			bool rs = R.RunSilent;
 			R.RunSilent = true;
 
-			AnySht.FamAndTypeApplyChanges();
+			AnySht.ApplyFamAndTypeChanges();
 			AnySht.ApplyChange(AnySht.FamilyListField, true);
 
 			AnySht.ModName_Undo();

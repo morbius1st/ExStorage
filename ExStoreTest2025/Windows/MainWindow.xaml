@@ -1,167 +1,545 @@
-﻿<Window
+﻿<Window x:Name="mainWin"
 		x:Class="ExStoreTest2025.Windows.MainWindow"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:local="clr-namespace:ExStoreTest2025.Windows"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		x:Name="mainWin"
+		xmlns:vx="clr-namespace:Windows.Support"
 		Title="MainWindow"
+		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		WindowStyle="None"
+		AllowsTransparency="True"
 		Width="1200"
 		Height="650"
 		mc:Ignorable="d"
-		Background="#222222"
-		DataContext="{Binding RelativeSource={RelativeSource Self}}"
+		Background="#00020202"
+		ResizeMode="NoResize"
+		Focusable="False"
+		ShowInTaskbar="False"
+		
+		Activated="mainWin_Activated"
+
+		MouseEnter="MainWindow_OnMouseEnter"
+		MouseLeave="MainWindow_OnMouseLeave"
+		MouseDown="MiniMain_OnMouseDown"
+		MouseLeftButtonUp="Window_MouseLeftButtonUp"
 		>
+
+	<!-- PreviewKeyDown="mainWin_PreviewKeyUp" -->
+	<!-- PreviewKeyUp="MainWindow_OnKeyDown" -->
+	<!-- KeyDown="MainWindow_OnKeyDown" -->
+	<!-- KeyUp="MainWindow_OnKeyDown" -->
+
+	<Window.CommandBindings>
+		<CommandBinding Command="ApplicationCommands.Help"
+				Executed="CommandBinding_OnExecuted"/>
+	</Window.CommandBindings>
+
 	<Window.Resources>
+
+		<Geometry x:Key="Ic.ClearText"
+				x:Shared="False"
+				>
+			F0 M 17.8761 0.0826 C 17.8761 0.1254 17.789 0.1988 17.6147 0.3028 C 17.4404 0.4067 17.1927 0.5596 16.8716 0.7615 C 16.5505 0.9633 16.1605 1.2263 15.7018 1.5505 C 15.2431 1.8746 14.7278 2.2768 14.156 2.7569 C 13.5841 3.237 12.9633 3.8058 12.2936 4.4633 C 11.6239 5.1208 10.9159 5.8838 10.1697 6.7523 C 10.2064 6.8012 10.2661 6.8761 10.3486 6.9771 C 10.4312 7.078 10.5199 7.185 10.6147 7.2982 C 10.7095 7.4113 10.7997 7.5183 10.8853 7.6193 C 10.9709 7.7202 11.0321 7.7951 11.0688 7.844 C 11.6682 8.6147 12.2034 9.3761 12.6743 10.1284 C 13.1453 10.8807 13.5566 11.6024 13.9083 12.2936 C 14.2599 12.9847 14.5581 13.6346 14.8028 14.2431 C 15.0474 14.8517 15.2446 15.3976 15.3945 15.8807 C 15.5443 16.3639 15.6529 16.7752 15.7202 17.1147 C 15.7875 17.4541 15.8211 17.6972 15.8211 17.844 C 15.8211 17.9419 15.8089 17.9939 15.7844 18 L 15.7752 18 C 15.7324 18 15.6498 17.893 15.5275 17.6789 C 15.4052 17.4648 15.2294 17.1606 15 16.7661 C 14.7706 16.3716 14.4771 15.8976 14.1193 15.344 C 13.7615 14.7905 13.3257 14.1728 12.8119 13.4908 C 12.2982 12.8089 11.6988 12.0749 11.0138 11.289 C 10.3287 10.5031 9.5398 9.682 8.6468 8.8257 L 8.5734 8.9083 C 8.5245 8.9633 8.4633 9.0367 8.3899 9.1284 C 8.3165 9.2202 8.2339 9.3226 8.1422 9.4358 C 8.0505 9.5489 7.9648 9.6636 7.8853 9.7798 C 7.2492 10.6728 6.7095 11.4908 6.2661 12.2339 C 5.8226 12.9771 5.4587 13.6269 5.1743 14.1835 C 4.8899 14.7401 4.6743 15.1911 4.5275 15.5367 C 4.3807 15.8823 4.2798 16.104 4.2248 16.2018 C 4.1636 16.3119 4.0688 16.367 3.9404 16.367 C 3.8792 16.367 3.818 16.3517 3.7569 16.3211 C 3.7263 16.3028 3.6651 16.263 3.5734 16.2018 C 3.4817 16.1407 3.3716 16.0657 3.2431 15.9771 C 3.1147 15.8884 2.9755 15.7936 2.8257 15.6927 C 2.6758 15.5917 2.5291 15.4939 2.3853 15.3991 C 2.2416 15.3043 2.1086 15.2171 1.9862 15.1376 C 1.8639 15.0581 1.7661 14.9969 1.6927 14.9541 C 1.6376 14.9235 1.5917 14.8853 1.555 14.8394 C 1.5183 14.7936 1.5 14.7431 1.5 14.6881 C 1.5 14.6575 1.5122 14.6116 1.5367 14.5505 C 1.6529 14.2936 1.8471 13.9327 2.1193 13.4679 C 2.3914 13.0031 2.7446 12.4557 3.1789 11.8257 C 3.6131 11.1957 4.1361 10.4939 4.7477 9.7202 C 5.3593 8.9465 6.0657 8.1254 6.867 7.2569 C 6.0474 6.5535 5.2844 5.9327 4.578 5.3945 C 3.8716 4.8563 3.2385 4.3899 2.6789 3.9954 C 2.1193 3.6009 1.6391 3.2768 1.2385 3.0229 C 0.8379 2.7691 0.5275 2.5749 0.3073 2.4404 C 0.2523 2.4098 0.208 2.3792 0.1743 2.3486 C 0.1407 2.318 0.1239 2.2783 0.1239 2.2294 C 0.1239 2.1743 0.1514 2.1132 0.2064 2.0459 C 0.2309 2.0031 0.2997 1.9083 0.4128 1.7615 C 0.526 1.6147 0.6606 1.4465 0.8165 1.2569 C 0.9725 1.0673 1.1376 0.8716 1.3119 0.6697 C 1.4862 0.4679 1.6529 0.2936 1.8119 0.1468 C 1.8609 0.1101 1.9037 0.0765 1.9404 0.0459 C 1.9771 0.0153 2.0291 0 2.0963 0 C 2.1514 0 2.2003 0.0153 2.2431 0.0459 C 2.3777 0.1193 2.6498 0.2921 3.0596 0.5642 C 3.4694 0.8364 3.9664 1.1957 4.5505 1.6422 C 5.1346 2.0887 5.7768 2.6177 6.4771 3.2294 C 7.1774 3.841 7.8853 4.5199 8.6009 5.2661 C 9.182 4.685 9.7997 4.1514 10.4541 3.6651 C 11.1086 3.1789 11.7599 2.7431 12.4083 2.3578 C 13.0566 1.9725 13.682 1.6361 14.2844 1.3486 C 14.8868 1.0612 15.4327 0.8226 15.922 0.633 C 16.4113 0.4434 16.8226 0.3012 17.156 0.2064 C 17.4893 0.1116 17.708 0.0642 17.8119 0.0642 C 17.8486 0.0642 17.87 0.0673 17.8761 0.0734 Z
+		</Geometry>
+
+		<Geometry x:Key="Ic.HeavyX"
+				x:Shared="false"
+				>
+			F0 M 12 10.0032 L 15.9935 6.0002 L 17.9998 7.997 L 13.9968 12 L 17.9998 16.003 L 15.9935 17.9997 L 12 13.9967 L 7.997 17.9997 L 6.0003 16.003 L 9.9937 12 L 6.0003 7.997 L 7.997 6.0002 Z
+		</Geometry>
+
+		<SolidColorBrush x:Key="test1" Color="LawnGreen" />
+
+		<Style x:Key="lblTitle"
+				TargetType="Label"
+				>
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Margin" Value="5,0,0,2" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Content" Value="Title" />
+		</Style>
+
+		<Style x:Key="pathStyle"
+				TargetType="Path"
+				>
+			<Setter Property="Margin" Value="4" />
+			<Setter Property="Stretch" Value="Uniform" />
+			<Setter Property="Focusable" Value="False" />
+			<Setter Property="Data" Value="{StaticResource Ic.ClearText}" />
+			<Setter Property="HorizontalAlignment" Value="Right" />
+		</Style>
+
+		<ContentControl x:Key="CC1"
+				x:Shared="False"
+				>
+			<DockPanel
+					Margin="0,0,0,5"
+					Height="20"
+					VerticalAlignment="Top"
+					Background="{Binding RelativeSource={RelativeSource Self},
+															 Path=(vx:VisualStatesAP.GenericBrushA)}"
+					>
+
+				<Label
+						Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentControl}},
+																 Path=(vx:VisualStatesAP.GenericBrushB)}"
+						Style="{StaticResource lblTitle}"
+						/>
+
+				<Path
+						DockPanel.Dock="Right"
+						Fill="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentControl}},
+													 Path=(vx:VisualStatesAP.GenericBrushC)}"
+						Style="{StaticResource pathStyle}"
+						>
+
+				</Path>
+
+			</DockPanel>
+		</ContentControl>
+
+
+		<SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
+		<SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
+		<SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
+		<SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
+
+		<SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
+		<SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
+		<SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
+
+		<ControlTemplate x:Key="ButtonTemplate1"
+				TargetType="{x:Type ButtonBase}"
+				>
+			<Border x:Name="border"
+					Background="{TemplateBinding Background}"
+					BorderThickness="{TemplateBinding BorderThickness}"
+					BorderBrush="{TemplateBinding BorderBrush}"
+					SnapsToDevicePixels="true"
+					>
+				<ContentPresenter x:Name="contentPresenter"
+						Margin="{TemplateBinding Padding}"
+						HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+						VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+						Focusable="False"
+						RecognizesAccessKey="True"
+						SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+						/>
+			</Border>
+			<ControlTemplate.Triggers>
+				<Trigger Property="Button.IsDefaulted" Value="true">
+					<Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+				</Trigger>
+				<!-- <Trigger Property="IsMouseOver" Value="true"> -->
+				<!-- 	<Setter TargetName="border" Property="Background" Value="{StaticResource Button.MouseOver.Background}" /> -->
+				<!-- 	<Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}" /> -->
+				<!-- </Trigger> -->
+				<Trigger Property="IsPressed" Value="true">
+					<!-- <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Pressed.Background}" /> -->
+					<Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
+				</Trigger>
+				<Trigger Property="IsEnabled" Value="false">
+					<!-- <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Disabled.Background}" /> -->
+					<Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}" />
+					<Setter TargetName="contentPresenter" Property="TextElement.Foreground" Value="{StaticResource Button.Disabled.Foreground}" />
+				</Trigger>
+			</ControlTemplate.Triggers>
+		</ControlTemplate>
 
 	</Window.Resources>
 
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="120" />
-		</Grid.ColumnDefinitions>
+	<Border
+			Background="#222222"
+			BorderThickness="1"
+			BorderBrush="Red"
+			CornerRadius="8"
+			>
+		<!-- BorderBrush="DodgerBlue" -->
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="*" />
-			<RowDefinition Height="40" />
-		</Grid.RowDefinitions>
 
-		<StackPanel
-					Grid.Column="1"
+		<Grid Background="Transparent">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="120" />
+				<ColumnDefinition Width="100" />
+			</Grid.ColumnDefinitions>
+
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="40" />
+			</Grid.RowDefinitions>
+
+			<Border
 					Grid.Row="0"
+					Grid.Column="0"
+					Grid.ColumnSpan="3"
+					Background="{Binding Path=TitleBarBackground,
+															 FallbackValue='Transparent'}"
+					CornerRadius="8,8,0,0"
+					>
+				<DockPanel>
+
+
+					<Button x:Name="BtnClose"
+							Margin="0,4,6,3"
+							Width="20"
+							Height="20"
+							Background="Transparent"
+							BorderThickness="0"
+							DockPanel.Dock="Right"
+							Template="{DynamicResource ButtonTemplate1}"
+							Click="BtnClose_OnClick"
+							>
+						<Button.Style>
+							<Style TargetType="Button">
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="ContentTemplate">
+									<Setter.Value>
+										<DataTemplate>
+											<ContentControl>
+												<ContentControl.Content>
+													<Path
+															DataContext="{Binding Path=DataContext,
+																										RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+															Stretch="UniformToFill"
+															Focusable="False"
+															>
+														<Path.Style>
+															<Style TargetType="Path">
+																<Setter Property="Data" Value="{StaticResource Ic.ClearText}" />
+																<Setter Property="Fill" Value="{Binding Path=CloseButtonFill, FallbackValue='Lime'}" />
+																<Style.Triggers>
+																	<DataTrigger Value="true" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=IsPressed}">
+																		<Setter Property="Fill" Value="DarkRed" />
+																	</DataTrigger>
+																	<DataTrigger Value="false" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=IsEnabled}">
+																		<Setter Property="Fill" Value="#8a8a8a" />
+																	</DataTrigger>
+																	<DataTrigger Value="true" Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type Button}}, Path=IsMouseOver}">
+																		<Setter Property="Fill" Value="White" />
+																	</DataTrigger>
+																</Style.Triggers>
+															</Style>
+														</Path.Style>
+													</Path>
+												</ContentControl.Content>
+											</ContentControl>
+										</DataTemplate>
+									</Setter.Value>
+								</Setter>
+
+							</Style>
+						</Button.Style>
+					</Button>
+
+					<Image
+							Margin="7,3,0,2"
+							Width="20"
+							Height="20"
+							Source="/ExStoreTest2025;component/Assets/CyberStudio Logo - Narrow.png"
+							Stretch="Uniform"
+							/>
+
+					<Image
+							Width="18"
+							Height="18"
+							Source="/ExStoreTest2025;component/Assets/CyberStudio Logo - Full v2.png"
+							Stretch="Uniform"
+							
+							/>
+
+					<Label
+							Content="{Binding Path=TitleBarText,
+																FallbackValue='TitleBarText'}"
+							Margin="5,3,0,2"
+							Padding="0"
+							FontSize="14"
+							Foreground="{Binding Path=TitleBarForeground,
+																	 FallbackValue='White'}"
+							DockPanel.Dock="Left"
+							/>
+
+
+				</DockPanel>
+			</Border>
+
+
+			<StackPanel
+					Grid.Row="1"
+					Grid.Column="1"
 					VerticalAlignment="Top"
 					Orientation="Vertical"
-				>
-			<Button
-					x:Name="Btn_Write"
-					Height="26"
-					VerticalAlignment="Top"
+					>
+				<Button x:Name="Btn_Write"
+						Content="Write"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Write_OnClick"
+						/>
+
+				<Button x:Name="Btn_Read"
+						Content="Read"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Read_OnClick"
+						/>
+
+				<Button x:Name="Btn_Delete"
+						Content="Delete"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Delete_OnClick"
+						/>
+
+				<Button x:Name="Btn_Find"
+						Content="Find Ds"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_FindDs_OnClick"
+						/>
+
+				<Button x:Name="Btn_Erase"
+						Content="Erase Ds"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Erase_OnClick"
+						/>
+
+				<Button x:Name="Btn_FindSchema"
+						Content="Find Schema"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_FindSchema_OnClick"
+						/>
+
+				<Button x:Name="Btn_EraseSchema"
+						Content="Erase Schema"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_EraseSchema_OnClick"
+						/>
+
+
+				<Button x:Name="Btn_Test1"
+						Content="Test1"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Test1_OnClick"
+						/>
+
+
+				<Button x:Name="Btn_Test2"
+						Content="Test1 (values)"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_Values_OnClick"
+						/>
+
+				<Button x:Name="Btn_Test3"
+						Content="Test3 (chg values)"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="Btn_ChgValues_OnClick"
+						/>
+
+
+				<Button x:Name="BtnTitleBarTest1"
+						Content="Test Title Bar 1"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="BtnTitleBarTest1_OnClick"
+						/>
+
+				<Button x:Name="BtnTitleBarTest2"
+						Content="Test Title Bar 2"
+						Margin="5"
+						Width="120"
+						Height="26"
+						VerticalAlignment="Top"
+						Click="BtnTitleBarTest2_OnClick"
+						/>
+
+			</StackPanel>
+
+
+			<Button x:Name="Btn_Exit"
+					Grid.Row="2"
+					Grid.Column="1"
+					Content="Exit"
 					Margin="5"
-					Content="Write"
-					Width="120"
-					Click="Btn_Write_OnClick" />
+					Click="Btn_Exit_OnClick"
+					/>
 
-			<Button
-					x:Name="Btn_Read"
-					Height="26"
-					VerticalAlignment="Top"
+			<Button x:Name="Btn_Clear"
+					Grid.Row="2"
+					Grid.Column="0"
+					Content="Clear Message"
 					Margin="5"
-					Content="Read"
 					Width="120"
-					Click="Btn_Read_OnClick" />
+					HorizontalAlignment="Right"
+					Click="Btn_Clear_OnClick"
+					/>
 
-			<Button
-					x:Name="Btn_Delete"
-					Height="26"
-					VerticalAlignment="Top"
+			<TextBox
+					Grid.Row="1"
+					FontFamily="Consolas"
+					FontSize="12"
+					Background="Transparent"
+					Foreground="White"
+					Text="{Binding Path=Message}"
+					VerticalScrollBarVisibility="Visible"
+					HorizontalScrollBarVisibility="Visible"
+					/>
+
+
+			<StackPanel
+					Grid.Row="1"
+					Grid.Column="2"
 					Margin="5"
-					Content="Delete"
-					Width="120"
-					Click="Btn_Delete_OnClick" />
+					VerticalAlignment="Stretch"
+					>
+				<!--    -->
+				<!--  <DockPanel  -->
+				<!--  Height="20"  -->
+				<!--  VerticalAlignment="Top"  -->
+				<!--  Background="Blue"  -->
+				<!--  DockPanel.Dock="Top"  -->
+				<!--  >  -->
+				<!--    -->
+				<!--  <Label  -->
+				<!--  Foreground="White"  -->
+				<!--  Style="{StaticResource lblTitle}"  -->
+				<!--  />  -->
+				<!--    -->
+				<!--  <ContentControl  -->
+				<!--  HorizontalAlignment="Right"  -->
+				<!--  DockPanel.Dock="Right"  -->
+				<!--  >  -->
+				<!-- 		<ContentControl.Content> -->
+				<!--  <Path  -->
+				<!--  Fill="LawnGreen"  -->
+				<!--  vx:VisualStatesAP.GenericBrushC="LawnGreen"  -->
+				<!--  Style="{StaticResource pathStyle}"  -->
+				<!--  >  -->
+				<!--    -->
+				<!-- 			</Path> -->
+				<!-- 		</ContentControl.Content> -->
+				<!-- 	</ContentControl> -->
+				<!-- </DockPanel> -->
 
-			<Button
-					x:Name="Btn_Find"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Find Ds"
-					Width="120"
-					Click="Btn_FindDs_OnClick" />
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Blue"
+						vx:VisualStatesAP.GenericBrushB="White"
+						vx:VisualStatesAP.GenericBrushC="LawnGreen"
+						DockPanel.Dock="Top"
+						/>
 
-			<Button
-					x:Name="Btn_Erase"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Erase Ds"
-					Width="120"
-					Click="Btn_Erase_OnClick" />
-
-			<Button
-					x:Name="Btn_FindSchema"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Find Schema"
-					Width="120"
-					Click="Btn_FindSchema_OnClick" />
-
-			<Button
-					x:Name="Btn_EraseSchema"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Erase Schema"
-					Width="120"
-					Click="Btn_EraseSchema_OnClick" />
-
-
-			<Button
-					x:Name="Btn_Test1"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Test1"
-					Width="120"
-					Click="Btn_Test1_OnClick" />
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="DodgerBlue"
+						vx:VisualStatesAP.GenericBrushB="White"
+						vx:VisualStatesAP.GenericBrushC="LawnGreen"
+						DockPanel.Dock="Top"
+						/>
 
 
-			<Button
-					x:Name="Btn_Test2"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Test1 (values)"
-					Width="120"
-					Click="Btn_Values_OnClick" />
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="LawnGreen"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
 
-			<Button
-					x:Name="Btn_Test3"
-					Height="26"
-					VerticalAlignment="Top"
-					Margin="5"
-					Content="Test3 (chg values)"
-					Width="120"
-					Click="Btn_ChgValues_OnClick" />
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Cyan"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Aqua"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Lime"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Lime"
+						vx:VisualStatesAP.GenericBrushB="DimGray"
+						vx:VisualStatesAP.GenericBrushC="DimGray"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="SpringGreen"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="Chartreuse"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
+
+				<ContentControl
+						Content="{StaticResource CC1}"
+						vx:VisualStatesAP.GenericBrushA="YellowGreen"
+						vx:VisualStatesAP.GenericBrushB="Black"
+						vx:VisualStatesAP.GenericBrushC="Black"
+						DockPanel.Dock="Top"
+						/>
 
 
 			</StackPanel>
 
 
-		<Button
-				x:Name="Btn_Exit"
-				Grid.Column="1"
-				Grid.Row="1"
-				Margin="5"
-				Content="Exit"
-				Click="Btn_Exit_OnClick"
-				/>
+		</Grid>
 
-		<Button
-				x:Name="Btn_Clear"
-				Grid.Column="0"
-				Grid.Row="1"
-				Margin="5"
-				Content="Clear Message"
-				Width="120"
-				HorizontalAlignment="Right"
-				Click="Btn_Clear_OnClick"
-				/>
+	</Border>
 
-
-
-		<TextBox
-				Foreground="White"
-				Background="Transparent" 
-				FontFamily="Consolas"
-				FontSize="12"
-				Text="{Binding Path=Message}"
-				VerticalScrollBarVisibility="Visible"
-				HorizontalScrollBarVisibility="Visible"
-				/>
-
-
-	</Grid>
 </Window>

@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Windows;
+using System.Windows.Interop;
 using System.Xml.Serialization;
 using Autodesk.Revit.DB;
 // using ExStorage;
@@ -6,6 +9,23 @@ using UtilityLibrary;
 
 namespace RevitLibrary
 {
+	public static class RevitLibrary
+	{
+		public static Window WindowHandle(IntPtr h)
+		{
+			try
+			{
+				HwndSource hs = HwndSource.FromHwnd(h);
+				Window w = hs.RootVisual as Window;
+				return w;
+			}
+			catch (Exception e)
+			{
+				return null;
+			}
+		}
+	}
+
 	public static class RevitAddinsUtil
 	{
 		public static RevitAddIns addinManifest { get; private set; }

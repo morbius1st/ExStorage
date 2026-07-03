@@ -79,20 +79,20 @@ namespace ExStorSys
 		/// </summary>
 		public override bool IsModifiedExo
 		{
-			get => isModifiedExo || IsModifiedFamList;
+			get => isModExo || IsModifiedFamList;
 			set
 			{
-				if (value == isModifiedExo) return;
-				isModifiedExo = value;
+				if (value == isModExo) return;
+				isModExo = value;
 				OnPropertyChanged();
 
-				if (!isModifiedExo)
+				if (!isModExo)
 				{
 					isModifiedFamList = false;
 					OnPropertyChanged(nameof(IsModifiedFamList));
 				}
 
-				setSheetStatus(isModifiedExo);
+				setSheetStatus(isModExo);
 
 				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, ""));
 

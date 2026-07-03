@@ -7,18 +7,18 @@ using static ExStorSys.SheetFieldKeys;
 
 namespace ExStorSys
 {
-	public class SheetListItemCompare : IEqualityComparer<Dictionary<string, string?>>
-	{
-		public bool Equals(Dictionary<string, string?>? x, Dictionary<string, string?>? y)
-		{
-			return false;
-		}
-
-		public int GetHashCode(Dictionary<string, string?> obj)
-		{
-			return 0;
-		}
-	}
+	// public class SheetListItemCompare : IEqualityComparer<Dictionary<string, string?>>
+	// {
+	// 	public bool Equals(Dictionary<string, string?>? x, Dictionary<string, string?>? y)
+	// 	{
+	// 		return false;
+	// 	}
+	//
+	// 	public int GetHashCode(Dictionary<string, string?> obj)
+	// 	{
+	// 		return 0;
+	// 	}
+	// }
 
 
 	// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
@@ -54,16 +54,16 @@ namespace ExStorSys
 			// FamListWkgViewSource = new CollectionViewSource { Source = famListWkg };
 
 
-
 // 			famListNewViewSource = new CollectionViewSource { Source = famListWkg };
 // 			famListNewViewSource.Filter += FamListNewViewSourceOnFilter;
 //
 // 			famListModViewSource = new CollectionViewSource { Source = famListWkg };
 // 			famListModViewSource.Filter += FamListModViewSourceOnFilter;
-
 		}
 
 	#region shortcuts & properties
+
+
 
 		/* shortcuts & properties*/
 
@@ -108,7 +108,7 @@ namespace ExStorSys
 			get => isModifiedFamListWkg;
 			set
 			{
-				R.AddRoute( $"set to {value} (IsModifiedExo is {IsModifiedExo}", 0);
+				R.AddRouteEnter( $"set to {value} (IsModifiedExo is {IsModifiedExo}", 0);
 
 				if (value == isModifiedFamListWkg) return;
 				isModifiedFamListWkg = value;
@@ -119,6 +119,8 @@ namespace ExStorSys
 				OnPropertyChanged(nameof(IsModifiedExo));
 
 				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_SHT_MOD, $"placeholder {nameof(IsModifiedFamListWkg)}"));
+
+				R.AddRouteExit();
 			}
 		}
 
@@ -275,7 +277,6 @@ namespace ExStorSys
 
 		private void updateWithBasicInfo(string shtName)
 		{
-
 			IsEmpty = false;
 
 			updateWithInitialData(shtName);
@@ -289,12 +290,10 @@ namespace ExStorSys
 			// SetInitValueDym(RK_AD_DATE_MODIFIED , "2026-01-01T08:10:18");
 			SetInitValueDym(RK_AD_DATE_MODIFIED , ExStorConstFaux.FauxModDate);
 			SetInitValueDym(RK_AD_NAME_MODIFIED , ExStorConstFaux.FauxUserName);
-
 		}
 
 		private void updateWithCurrentData(string shtName, SheetCreationData sd)
 		{
-
 			updateWithBasicInfo(shtName);
 
 			SetInitValueDym(RK_ED_XL_FILE_PATH  , sd.XlFilePath!);
@@ -303,24 +302,30 @@ namespace ExStorSys
 			SetInitValueDym(RK_OD_SEQUENCE      , ExStorConstFaux.FAUX_SHT_OP_SEQ_INIT);
 			SetInitValueDym(RK_OD_UPDATE_RULE   , sd.UpdateRule);
 			SetInitValueDym(RK_OD_UPDATE_SKIP   , sd.Skip);
-
 		}
 
-		// protected override void UpdateModifiedDate(int state)
-		// {
-		// 	if (state == 0)
-		// 	{
-		// 		DateModifiedByUser = DateTime.Now.ToString("s");
-		// 	}
-		// 	else if (state == 1)
-		// 	{
-		// 		DateModifiedByAltSrcA = DateTime.Now.ToString("s");
-		// 	}
-		// 	else
-		// 	{
-		// 		DateModifiedField.DyValue!.UndoChange();
-		// 	}
-		// }
+		/* sheet processing */
+
+		public new void UndoChangesAll()
+		{
+			R.Write("\t");
+			R.WriteLine("*** got sheet UNDO ALL ***", true);
+
+			UndoFamAndTypeListChanges();
+
+			base.UndoChangesAll();
+		}
+
+		// HOLD TILL NEEDED
+		public new void ApplyChangesAll()
+		{
+			R.Write("\t");
+			R.WriteLine("*** got sheet APPLY ALL ***", true);
+		
+			ApplyFamAndTypeChanges();
+
+			base.ApplyChangesAll();
+		}
 
 		public override string ToString()
 		{
@@ -364,7 +369,7 @@ namespace ExStorSys
 
 		/* fields */
 
-	#region locked
+	#region editing locked
 
 		/* locked - never view except for debug */
 
@@ -377,7 +382,7 @@ namespace ExStorSys
 
 	#endregion
 
-	#region view only
+	#region editing view only
 
 		/* view only */
 
@@ -688,6 +693,8 @@ namespace ExStorSys
 
 	#endregion
 
+	#region debug editing only
+
 		/* debug only */
 
 		/// <summary>
@@ -709,6 +716,8 @@ namespace ExStorSys
 		}
 
 		public FieldData<SheetFieldKeys> VendorIdField => Rows[RK_AD_VENDORID];
+
+	#endregion
 
 	#region undo processing
 
@@ -825,10 +834,8 @@ namespace ExStorSys
 		// public int FamListWkgViewSourceCount => FamListWkgViewSource.View.Cast<object>().Count();
 
 
-
-
 		// ReSharper disable once MemberCanBePrivate.Global
-		
+
 		public bool FamLstHasElements => FamilyListCnt > 0;
 
 		public bool FamLstHasKey(string key)
@@ -844,7 +851,7 @@ namespace ExStorSys
 
 		// primary routines
 
-		// public void FamAndTypeApplyChanges()
+		// public void ApplyFamAndTypeChanges()
 		// {
 		// 	_FamilyList.Clear();
 		//
@@ -870,7 +877,7 @@ namespace ExStorSys
 		// {
 		// 	famListWkg.Clear();
 		//
-		// 	FamAndTypeApplyChanges();
+		// 	ApplyFamAndTypeChanges();
 		//
 		// 	updateFamListProps();
 		// }
@@ -894,7 +901,7 @@ namespace ExStorSys
 
 			// this routine applies the changes to the family list
 			// and then does a validate
-			FamAndTypeApplyChanges();
+			ApplyFamAndTypeChanges();
 
 			validateFamListWkg();
 
@@ -908,7 +915,7 @@ namespace ExStorSys
 		/// <summary>
 		/// get a family name and type from the working list via name & type
 		/// </summary>
-		public FamAndType? GetFamAndTypeWkg(string famName, 
+		public FamAndType? GetFamAndTypeWkg(string famName,
 			string typName)
 		{
 			R.AddRoute();
@@ -982,7 +989,7 @@ namespace ExStorSys
 
 			// UpdateModifiedDate(SourceId.SI_INDR_MOD);
 
-			FamAndTypeApplyChanges();
+			ApplyFamAndTypeChanges();
 
 			validateFamListWkg();
 
@@ -1007,13 +1014,17 @@ namespace ExStorSys
 		/// </summary>
 		public void UndoFamAndTypeListChanges()
 		{
-			UndoChange(FamilyListField, false);
+			R.AddRouteEnter();
+			// UndoChange(FamilyListField, false);
+			UndoChange(FamilyListField, true);
 
 			updateFamElemList();
 
 			validateFamListWkg();
 
 			updateFamListProps();
+
+			R.AddRouteExit();
 		}
 
 		/// <summary>
@@ -1021,7 +1032,7 @@ namespace ExStorSys
 		/// that is, update the family list field with the current family list values<br/>
 		/// update _FamilyList does the validate
 		/// </summary>
-		public void FamAndTypeApplyChanges()
+		public void ApplyFamAndTypeChanges()
 		{
 			R.AddRouteEnter(addMorM: true);
 
@@ -1078,6 +1089,8 @@ namespace ExStorSys
 		/// </summary>
 		private void validateFamListWkg()
 		{
+			R.AddRouteEnter();
+
 			if (FamilyListField.DyValue.IsDirty)
 			{
 				IsModifiedFamListWkg = true;
@@ -1094,10 +1107,14 @@ namespace ExStorSys
 			}
 
 			IsModifiedFamListWkg = false;
+
+			R.AddRouteExit();
 		}
 
 		private void updateFamElemList()
 		{
+			R.AddRoute();
+
 			string? famName;
 			string? famTypeName;
 

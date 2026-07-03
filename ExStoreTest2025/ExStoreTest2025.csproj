@@ -15,6 +15,12 @@
 	<PropertyGroup>
 		<AddinDirectory>$(AppData)\Autodesk\Revit\Addins\2026</AddinDirectory>
 	</PropertyGroup>
+	
+	<ItemGroup>
+	  <None Remove="Assets\CyberStudio Icon.png" />
+	  <None Remove="Assets\CyberStudio Logo - Full v2.png" />
+	  <None Remove="Assets\CyberStudio Logo - Narrow.png" />
+	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="RevitAPI">
 			<HintPath>..\..\..\..\..\..\..\..\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
@@ -30,8 +36,34 @@
 		<Exec Command="echo work dir $(AddinDirectory)&#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\other\*.addin&quot;  &quot;$(AddinDirectory)&quot; &#xD;&#xA;if exist  &quot;$(AddinDirectory)&quot; copy  &quot;$(MSBuildProjectDirectory)\$(OutputPath)*.dll&quot;  &quot;$(AddinDirectory)&quot;  " />
 	</Target>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\information16.png" />
-    <EmbeddedResource Include="Assets\information32.png" />
+    <Resource Include="Assets\CyberStudio Icon.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\CyberStudio Logo - Full v2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\CyberStudio Logo - Narrow.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <EmbeddedResource Include="Assets\information16.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\information32.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
   <!-- <ItemGroup> -->

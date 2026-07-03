@@ -23,9 +23,16 @@ namespace ExStorSys
 		private DataStorage? exsDataStorage;
 		private Entity? exsEntity;
 
+		protected Dictionary<Te, FieldData<Te>> Rows
+		{
+			get => rows;
+			set => rows = value;
+		}
+
 		protected Dictionary<Te, FieldData<Te>> rows;
-		
-		protected bool isModifiedExo;
+
+		private bool isModExo;
+
 		private bool canApplyResetBtn;
 
 		protected ExStorDataObj()
@@ -75,6 +82,7 @@ namespace ExStorSys
 				OnPropertyChanged();
 			}
 		}
+
 		public abstract bool IsModifiedExo { get; set; }
 
 		/* shortcuts */
@@ -83,7 +91,7 @@ namespace ExStorSys
 		public abstract string Desc { get; set; }
 
 		public abstract string DsSearchName { get; }
-		public abstract string? SchemaName { get; }
+		// public abstract string? SchemaName { get; }
 		public abstract string SchemaDesc { get; }
 		public abstract Guid SchemaGuid { get; }
 
@@ -91,12 +99,6 @@ namespace ExStorSys
 		public bool GotEntity => ExsEntity != null && ExsEntity.IsValid();
 
 		/* rows */
-
-		protected Dictionary<Te, FieldData<Te>> Rows 
-		{
-			get => rows;
-			set => rows = value;
-		}
 
 		public IEnumerator<KeyValuePair<Te, FieldData<Te>>> GetEnumerator()
 		{
@@ -138,8 +140,6 @@ namespace ExStorSys
 			}
 		}
 
-
-
 		/// <summary>
 		/// update the DS & E objects (S to be removed)
 		/// </summary>
@@ -155,7 +155,6 @@ namespace ExStorSys
 
 			return true;
 		}
-
 
 		protected void ValidateChangeStatus([CallerMemberName] string who = "")
 		{
@@ -204,7 +203,6 @@ namespace ExStorSys
 			}
 		}
 
-
 		/// <summary>
 		/// validate the state of field changes to determine the state of<br/>
 		/// IsModifiedExo (basic modified flag)<br/>
@@ -247,7 +245,7 @@ namespace ExStorSys
 
 			if (isMod > 0)
 			{
-				isModifiedExo = userFieldCount > 0;
+				isModExo = userFieldCount > 0;
 				CanApplyResetBtn = userFieldCount  > 0;
 
 				if (altSrcCount == 0)
@@ -265,7 +263,7 @@ namespace ExStorSys
 				// no changes, clear the info
 				// disallow buttons
 				UpdateModifiedDate(-1);
-				isModifiedExo = false;
+				isModExo = false;
 				CanApplyResetBtn = false;;
 			}
 

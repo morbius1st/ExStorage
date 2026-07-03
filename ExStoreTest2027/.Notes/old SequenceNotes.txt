@@ -1,0 +1,47 @@
+﻿
+
+startup operations
+
+when first time activating
+	operation s1 - create new local workbook
+	operation s2 - save local workbook to xData
+
+when already activated / no repair needed
+	operation s3a - read data storage workbook to temp workbook
+	operation s3b - read data storage sheet(s) to temp sheet(s) (when applies)
+	operation s4a - transfer temp workbook to local workbook
+	operation s4b - transfer temp sheet(s) to local sheet(s)
+	operation s5 - setup xData
+
+
+when aready activated / needs repair
+	operation s6a - read data storage workbook to temp workbook
+	operation sgb - read data storage sheet(s) to temp sheet(s) (when applies)
+	operation s7 - repair as needed
+	operation s8a - transfer temp workbook to local workbook
+	operation s8b - transfer temp sheet(s) to local sheet(s)
+	operation s9 - setup xData
+
+operations after startup
+	> last operation after startup is to flag data objects are locked
+
+
+
+system running operations
+
+	operation r1 - update a local field							xData
+	operation r2 - determine if save needed						xData
+	operation r3a - save local workbook to data storage			xMgr
+	operation r3b - save local sheet(s) to data storage			xMgr
+	operation r4 - undo local field update (when applies)		xData
+	operation r5 - redo local field update (when applies)		xData
+	operation r6 - undo all local changes (when applies)		xData
+	operation r7 - redo all local changes (when applies)		xData
+
+
+
+
+todo notes:
+
+
+

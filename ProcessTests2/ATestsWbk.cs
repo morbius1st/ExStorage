@@ -113,7 +113,7 @@ namespace ProcessTests2
 		// 	bool rs = R.RunSilent;
 		// 	R.RunSilent = true;
 		//
-		// 	_sht.FamAndTypeApplyChanges();
+		// 	_sht.ApplyFamAndTypeChanges();
 		// 	_sht.ApplyChange(_sht.FamilyListField, true);
 		//
 		// 	_sht.ModName_Undo();

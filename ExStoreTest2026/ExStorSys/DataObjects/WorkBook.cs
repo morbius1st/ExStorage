@@ -20,7 +20,7 @@ namespace ExStorSys
 
 		// private Schema? exsSchema;
 		// private bool? isEmpty;
-		// private bool isModifiedExo;
+		// private bool isModExo;
 
 		private WorkBook()
 		{
@@ -49,11 +49,11 @@ namespace ExStorSys
 
 		public override bool IsModifiedExo
 		{
-			get => isModifiedExo;
+			get => isModExo;
 			set
 			{
-				if (value == isModifiedExo) return;
-				isModifiedExo = value;
+				if (value == isModExo) return;
+				isModExo = value;
 				OnPropertyChanged();
 
 				OnPropChgd(new PropChgEvtArgs(PropertyId.PI_XDATA_WBK_MOD, ""));

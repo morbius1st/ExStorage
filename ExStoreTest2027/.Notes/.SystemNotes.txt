@@ -1,0 +1,40 @@
+﻿
+system to store "cells" data using schema
+
+using schema because it is stored inside of the model's database and is threfore always available.
+
+this is used via 
+
+1. linking excel file cells with a family in the model
+2. (void) linking data from one family to another
+3. linking data from a spreadsheet to a family
+4. linking data from a spreadsheet to an excel file
+
+general data needed for
+
+1. linking excel file cells with a family in the model
+   > management information
+   > excel file path
+   > sheet name
+   > list of ... linked family (& family type) unique id
+		> linked family contains how to use the data / has the cell id
+   * this is the first linking type - other types developed later
+   * simple transfer of data.  cell to family parameter
+
+3. linking data from a spreadsheet to a family
+   > management information
+   > revit spreadsheet name
+   > can only access a column total (or sub-total?)
+   > linked family (& family type) unique id
+		> linked family contains how to use the data / has the column id (sub-total id)
+
+4. linking data from a spreadsheet to an excel file
+   > management information
+   > revit spreadsheet name
+   > excel file path
+   > sheet name
+   > can only access a column total (or sub-total?)
+   > the column id (sub-total id)
+   > the excel cell id
+
+

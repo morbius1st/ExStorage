@@ -1,0 +1,168 @@
+﻿
+primary object repro
+	> app ribbon / stMgrs - creates / stores / re-stores / manages the repo list
+
+root object
+	> command
+
+
+primary object
+	> start manager - child objects:
+		> exstormgr - child objects:
+			> MainWinUi (Mui)
+			> exstordata - child objects
+				> workbook
+				> sheets list
+					> sheet (1+)
+static objects
+	> exstorlib
+
+
+start manager +
+	> when created, makes xMgr
+			* TODO - revise - have Mui created by start manager
+		> xLib = instance (creates static object)
+		> xMgr, when created, makes xData / Mui
+				* Mui, created after xData
+			> xData, when created prepares for workbook & sheet(s) but does not create
+				* creates nothing
+
+	> when restored
+			* xmgr.instance = start manager . xMgr
+			* mui.instance = start manager .  Mui
+
+		-> then xMgr.Init()
+				* xdata.instance = xMgr . xData
+			
+			-> then xData.Init()
+					* workbook = create empty
+					* reset sheets()
+
+		-> them mui.Init()
+
+routines:
+	Create() -> init()
+		* when the object is created
+	
+	Restore() -> config()
+		* when the object is re-created
+
+
+
+
+start / config
+
+StartManager
+	* TODO: create a model specific object resository
++ .Create()
+	Instance = new ()
+	Instance.init()
+	return Instance
+
+	.init()
+		ObjectId = StartManager.AddObject(this);
+		xLib = Instance()
+		xMui = WinMainUi.Create()
+		xMgr = ExStorMgr.Create()
+		xData = ExStorData.Instance()
+		Mui.Init()
+		Mui = Instance()
+		Mw = new MainWindow()
+		Mui / config events / in & out
+
+	
+ExStorMgr
++ .Create()
+	Instance = new ()
+	Instance.init()
+	return Instance
+
+	.init()
+		ObjectId = StartManager.AddObject(this);
+		xLib = instance
+		Exid = new ()
+		xData = ExStorData.Create()
+** make not dependant		Mui = instance
+		RestartRequired = null;
+		Mui / config events / in & out
+
+ExStorData
++ .Create()
+	Instance = new ()
+	Instance.init()
+	return Instance
+
+	.init()
+		ObjectId = StartManager.AddObject(this);
+		WorkBook = CreateEmpty()
+		ResetSheets();
+		Mui = instance
+		Mui / config events / in & out
+
+
+WinMainUi
++ .Create()
+	Instance = new ()
+	Instance.init()
+	return Instance
+
+	.init()
+		ObjectId = StartManager.AddObject(this);
+		xMgr = Instance
+		xData = Instance
+		OnPropChanged(open model count)
+		xMgr (config events)
+
+
+	re-start / restore
+
+
+AppRibbon
+	> find saved start manager
+		Start Manager.Instance = saved
+	> start manager.Restore()
+
+
+start manager
+
+	.Restore()
+		NOT object id
+		xLib = Instance()
+		MainWinUi.Instance = xMui
+		ExStorMgr.Instance = xMgr
+			> xMgr.Restore
+		xMui.Restore()
+		xData = ExStorData.Instance()
+		Mw = new MainWindow()
+		{events}
+
+ExStorMgr
+
+	.Restore() 
+		NOT object id
+		xLib = Instance()
+		Exid - Ok As Is
+		ExStorData.Instance = xData
+			xData.Restore()
+		Mui = MainWinUi.Instance
+		{events}
+
+
+ExStorData
+
+	.Restore()
+		NOT object id
+		Workbook - ok as is
+		Sheet(s) - ok as is
+		Mui = Instance
+		{events}
+
+
+mainwinUi
+
+	.Restore() 
+		NOT object id
+		xMgr = Instance
+		xData = Instance (need this?)
+		OnPropChanged(open model count)
+		{events}
